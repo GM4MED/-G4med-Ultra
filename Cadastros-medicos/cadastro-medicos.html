@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Médicos | Sistema GM4</title>
+    <link rel="stylesheet" href="cadastro-medicos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <i class="fas fa-user-md"></i>
+                <h1>Cadastro de Médicos Profissionais</h1>
+            </div>
+            <div class="toolbar">
+                <button id="btnNovo" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Novo Médico
+                </button>
+                <button id="btnSalvar" class="btn btn-success" disabled>
+                    <i class="fas fa-save"></i> Gravar
+                </button>
+                <button id="btnEditar" class="btn btn-warning" disabled>
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+                <button id="btnExcluir" class="btn btn-danger" disabled>
+                    <i class="fas fa-trash"></i> Excluir
+                </button>
+                <button id="btnSair" class="btn btn-dark" onclick="window.location.href='agenda_enterprise.html'">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <!-- ÁREA DE FORMULÁRIO COM ABAS -->
+            <section class="form-area">
+                <nav class="tabs-nav">
+                    <button class="tab-link active" onclick="openTab(event, 'dados-pessoais')">1. Dados Básicos</button>
+                    <button class="tab-link" onclick="openTab(event, 'especialidades')">2. Especialidades & CRM</button>
+                    <button class="tab-link" onclick="openTab(event, 'agenda-config')">3. Config. Agenda</button>
+                    <button class="tab-link" onclick="openTab(event, 'financeiro')">4. Financeiro</button>
+                </nav>
+
+                <div class="form-content">
+                    <form id="medicoForm">
+                        <!-- ABA 1: DADOS BÁSICOS -->
+                        <div id="dados-pessoais" class="tab-content active">
+                            <div class="form-grid">
+                                <div class="form-group col-2">
+                                    <label>ID</label>
+                                    <input type="text" id="medicoId" readonly placeholder="Auto">
+                                </div>
+                                <div class="form-group col-10">
+                                    <label>Nome Completo do Profissional</label>
+                                    <input type="text" id="nome" class="uppercase" disabled required>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>CPF</label>
+                                    <input type="text" id="cpf" disabled>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Data de Nascimento</label>
+                                    <input type="date" id="dataNasc" disabled>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Sexo</label>
+                                    <select id="sexo" disabled>
+                                        <option value="">Selecione...</option>
+                                        <option value="masculino">Masculino</option>
+                                        <option value="feminino">Feminino</option>
+                                        <option value="nao_binario">Não-binário</option>
+                                        <option value="transgenero">Transgênero</option>
+                                        <option value="outro">Outro</option>
+                                        <option value="prefiro_nao_informar">Prefiro não informar</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label>E-mail Profissional</label>
+                                    <input type="email" id="email" disabled>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label>Celular/WhatsApp</label>
+                                    <input type="text" id="celular" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ABA 2: ESPECIALIDADES -->
+                        <div id="especialidades" class="tab-content">
+                            <div class="form-grid">
+                                <div class="form-group col-4">
+                                    <label>Sigla Conselho (Ex: CRM)</label>
+                                    <select id="siglaConselho" disabled>
+                                        <option value="">Selecione...</option>
+                                        <option value="COREN">COREN (Enfermagem)</option>
+                                        <option value="CRAS">CRAS (Assistência Social)</option>
+                                        <option value="CRBio">CRBio (Biologia)</option>
+                                        <option value="CRBM">CRBM (Biomedicina)</option>
+                                        <option value="CRC">CRC (Contabilidade - auditoria hospitalar)</option>
+                                        <option value="CREF">CREF (Educação Física)</option>
+                                        <option value="CREFITO">CREFITO (Fisioterapia e Terapia Ocupacional)</option>
+                                        <option value="CRFA">CRFA (Fonoaudiologia)</option>
+                                        <option value="CRM">CRM (Medicina)</option>
+                                        <option value="CRN">CRN (Nutrição)</option>
+                                        <option value="CRO">CRO (Odontologia)</option>
+                                        <option value="CRP">CRP (Psicologia)</option>
+                                        <option value="CRQ">CRQ (Química - análises clínicas)</option>
+                                        <option value="CRTR">CRTR (Radiologia)</option>
+                                        <option value="CRV">CRV (Veterinária)</option>
+                                        <option value="CNS">CNS (Saúde - Cartão Nacional de Saúde)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Número Registro</label>
+                                    <input type="text" id="numeroConselho" disabled>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>UF Conselho</label>
+                                    <select id="ufConselho" disabled>
+                                        <option value="">Selecione...</option>
+                                        <option value="AC">Acre</option>
+                                        <option value="AL">Alagoas</option>
+                                        <option value="AP">Amapá</option>
+                                        <option value="AM">Amazonas</option>
+                                        <option value="BA">Bahia</option>
+                                        <option value="CE">Ceará</option>
+                                        <option value="DF">Distrito Federal</option>
+                                        <option value="ES">Espírito Santo</option>
+                                        <option value="GO">Goiás</option>
+                                        <option value="MA">Maranhão</option>
+                                        <option value="MT">Mato Grosso</option>
+                                        <option value="MS">Mato Grosso do Sul</option>
+                                        <option value="MG">Minas Gerais</option>
+                                        <option value="PA">Pará</option>
+                                        <option value="PB">Paraíba</option>
+                                        <option value="PR">Paraná</option>
+                                        <option value="PE">Pernambuco</option>
+                                        <option value="PI">Piauí</option>
+                                        <option value="RJ">Rio de Janeiro</option>
+                                        <option value="RN">Rio Grande do Norte</option>
+                                        <option value="RS">Rio Grande do Sul</option>
+                                        <option value="RO">Rondônia</option>
+                                        <option value="RR">Roraima</option>
+                                        <option value="SC">Santa Catarina</option>
+                                        <option value="SP">São Paulo</option>
+                                        <option value="SE">Sergipe</option>
+                                        <option value="TO">Tocantins</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-12">
+                                    <label>Especialidades (RQE)</label>
+                                    <textarea id="especialidadesTexto" rows="3" disabled
+                                        placeholder="Descreva as especialidades e registros RQE..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ABA 3: CONFIGURAÇÃO DE AGENDA -->
+                        <div id="agenda-config" class="tab-content">
+                            <div class="form-grid">
+                                <!-- DIAS DE ATENDIMENTO -->
+                                <div class="col-12">
+                                    <h3 class="section-title">Dias de Atendimento</h3>
+                                </div>
+                                <div class="form-group col-12">
+                                    <div class="checkbox-group">
+                                        <label><input type="checkbox" id="dom"> Domingo</label>
+                                        <label><input type="checkbox" id="seg"> Segunda</label>
+                                        <label><input type="checkbox" id="ter"> Terça</label>
+                                        <label><input type="checkbox" id="qua"> Quarta</label>
+                                        <label><input type="checkbox" id="qui"> Quinta</label>
+                                        <label><input type="checkbox" id="sex"> Sexta</label>
+                                        <label><input type="checkbox" id="sab"> Sábado</label>
+                                    </div>
+                                </div>
+
+                                <!-- PERÍODOS -->
+                                <div class="col-12">
+                                    <h3 class="section-title">Períodos de Atendimento</h3>
+                                </div>
+                                <div class="form-group col-12">
+                                    <div class="checkbox-group">
+                                        <label><input type="checkbox" id="periodoMatutino"> Matutino</label>
+                                        <label><input type="checkbox" id="periodoVespertino"> Vespertino</label>
+                                        <label><input type="checkbox" id="periodoNoturno"> Noturno</label>
+                                    </div>
+                                </div>
+
+                                <!-- HORÁRIOS -->
+                                <div class="col-12">
+                                    <h3 class="section-title">Horários de Atendimento</h3>
+                                </div>
+
+                                <div class="form-group col-4">
+                                    <div class="periodo-card">
+                                        <h4>Matutino</h4>
+                                        <label>Início</label>
+                                        <input type="time" id="matInicio">
+                                        <label>Fim</label>
+                                        <input type="time" id="matFim">
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-4">
+                                    <div class="periodo-card">
+                                        <h4>Vespertino</h4>
+                                        <label>Início</label>
+                                        <input type="time" id="vespInicio">
+                                        <label>Fim</label>
+                                        <input type="time" id="vespFim">
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-4">
+                                    <div class="periodo-card">
+                                        <h4>Noturno</h4>
+                                        <label>Início</label>
+                                        <input type="time" id="notInicio">
+                                        <label>Fim</label>
+                                        <input type="time" id="notFim">
+                                    </div>
+                                </div>
+
+                                <!-- CONFIGURAÇÕES DA CONSULTA -->
+                                <div class="col-12">
+                                    <h3 class="section-title">Configurações da Consulta</h3>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Tempo Médio da Consulta (min)</label>
+                                    <input type="number" id="tempoConsulta" value="30">
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Intervalo entre Consultas (min)</label>
+                                    <input type="number" id="intervaloConsulta" value="0">
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Máximo de Encaixes</label>
+                                    <input type="number" id="maxEncaixes" value="0">
+                                </div>
+
+                                <!-- LIMITES E UNIDADE -->
+                                <div class="form-group col-4">
+                                    <label>Máximo Pacientes/Dia</label>
+                                    <input type="number" id="maxPacientesDia">
+                                </div>
+                                <div class="form-group col-8">
+                                    <label>Unidade / Consultório</label>
+                                    <select id="unidade">
+                                        <option value="">Selecione...</option>
+                                        <option>Matriz</option>
+                                        <option>Filial 01</option>
+                                        <option>Filial 02</option>
+                                    </select>
+                                </div>
+
+                                <!-- BLOQUEIO TOTAL -->
+                                <div class="col-12">
+                                    <h3 class="section-title">Bloqueio Total da Agenda</h3>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Data Inicial</label>
+                                    <input type="date" id="bloqueioInicio">
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Data Final</label>
+                                    <input type="date" id="bloqueioFim">
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Motivo</label>
+                                    <input type="text" id="motivoBloqueio">
+                                </div>
+
+                                <!-- BLOQUEIO PARCIAL -->
+                                <div class="col-12">
+                                    <h3 class="section-title">Bloqueio Parcial da Agenda</h3>
+                                </div>
+                                <div class="form-group col-3">
+                                    <label>Data</label>
+                                    <input type="date" id="bloqueioParcialData">
+                                </div>
+                                <div class="form-group col-3">
+                                    <label>Hora Inicial</label>
+                                    <input type="time" id="bloqueioParcialInicio">
+                                </div>
+                                <div class="form-group col-3">
+                                    <label>Hora Final</label>
+                                    <input type="time" id="bloqueioParcialFim">
+                                </div>
+                                <div class="form-group col-3">
+                                    <label>Motivo</label>
+                                    <input type="text" id="motivoBloqueioParcial">
+                                </div>
+
+                                <!-- OBSERVAÇÕES -->
+                                <div class="col-12">
+                                    <h3 class="section-title">Observações</h3>
+                                </div>
+                                <div class="form-group col-12">
+                                    <textarea id="observacoesAgenda" rows="4"
+                                        placeholder="Ex.: atende apenas convênio X nas quartas-feiras"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ABA 4: FINANCEIRO -->
+                        <div id="financeiro" class="tab-content">
+                            <div class="form-grid">
+                                <div class="form-group col-4">
+                                    <label>Valor Consulta Particular</label>
+                                    <input type="text" id="valorConsulta" placeholder="R$ 0,00" disabled>
+                                </div>
+                                <div class="form-group col-8">
+                                    <label>Status no Sistema</label>
+                                    <select id="status" disabled>
+                                        <option value="A">Ativo (Aparece na Agenda)</option>
+                                        <option value="I">Inativo (Bloqueado)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ÁREA DE GRADE (GRID) -->
+            <section class="grid-area">
+                <div class="grid-header">
+                    <span><i class="fas fa-list"></i> Médicos Cadastrados</span>
+                    <div class="grid-search">
+                        <input type="text" placeholder="Filtrar por nome ou CRM...">
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="tabelaMedicos">
+                        <thead>
+                            <tr>
+                                <th width="80">ID</th>
+                                <th>Nome do Médico</th>
+                                <th width="150">CRM/Conselho</th>
+                                <th width="200">Especialidade</th>
+                                <th width="100">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaMedicos">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="cadastro-medicos.js"></script>
+</body>
+
+</html>

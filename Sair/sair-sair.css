@@ -1,0 +1,431 @@
+/* ==========================================================
+   VARIÁVEIS
+========================================================== */
+
+:root {
+    --danger: #dc2626;
+    --danger-dark: #b91c1c;
+    --danger-light: #ef4444;
+
+    --primary: #1d4f91;
+
+    --white: #ffffff;
+
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e5e7eb;
+    --gray-500: #64748b;
+    --gray-800: #0f172a;
+
+    --shadow-danger: 0 6px 20px rgba(220, 38, 38, 0.25);
+    --shadow-danger-hover: 0 10px 25px rgba(220, 38, 38, 0.35);
+}
+
+/* ==========================================================
+   BOTÃO SAIR
+========================================================== */
+
+.logout-btn {
+    width: 100%;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    border: none;
+    border-radius: 14px;
+
+    background: linear-gradient(135deg,
+            var(--danger),
+            var(--danger-light));
+
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all .25s ease;
+
+    box-shadow: var(--shadow-danger);
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+
+    background: linear-gradient(135deg,
+            var(--danger-dark),
+            var(--danger));
+
+    box-shadow: var(--shadow-danger-hover);
+}
+
+.logout-btn:active {
+    transform: scale(.98);
+}
+
+.logout-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* ==========================================================
+   MODAL
+========================================================== */
+
+.modal-logout {
+    position: fixed;
+    inset: 0;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(15, 23, 42, .65);
+    backdrop-filter: blur(6px);
+
+    z-index: 99999;
+}
+
+.modal-logout.show {
+    display: flex;
+}
+
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+}
+
+/* ==========================================================
+   CONTEÚDO MODAL
+========================================================== */
+
+.modal-logout-content {
+    position: relative;
+    z-index: 2;
+
+    width: 100%;
+    max-width: 500px;
+
+    background: var(--white);
+
+    border-radius: 24px;
+
+    padding: 35px;
+
+    text-align: center;
+
+    animation: logoutShow .25s ease;
+}
+
+@keyframes logoutShow {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================
+   CABEÇALHO
+========================================================== */
+
+.logout-header {
+    margin-bottom: 25px;
+}
+
+.logout-header h2 {
+    margin-bottom: 10px;
+
+    color: var(--gray-800);
+
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.logout-header p {
+    color: var(--gray-500);
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* ==========================================================
+   ÍCONE
+========================================================== */
+
+.logout-icon {
+    width: 80px;
+    height: 80px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #fee2e2;
+}
+
+.logout-icon svg {
+    width: 36px;
+    height: 36px;
+
+    color: var(--danger);
+}
+
+/* ==========================================================
+   USUÁRIO
+========================================================== */
+
+.logout-user {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 16px;
+
+    background: var(--gray-50);
+
+    border-radius: 16px;
+
+    margin-bottom: 20px;
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: linear-gradient(135deg,
+            var(--primary),
+            #2563eb);
+
+    color: var(--white);
+
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.user-info strong {
+    color: var(--gray-800);
+    font-size: 15px;
+}
+
+.user-info span {
+    color: var(--gray-500);
+    font-size: 13px;
+}
+
+/* ==========================================================
+   INFORMAÇÕES
+========================================================== */
+
+.logout-info {
+    background: var(--gray-50);
+
+    border-radius: 16px;
+
+    padding: 16px;
+
+    margin-bottom: 25px;
+}
+
+.logout-info div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 8px 0;
+}
+
+.logout-info div:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, .05);
+}
+
+.logout-info strong {
+    color: var(--gray-800);
+    font-size: 14px;
+}
+
+.logout-info span {
+    color: var(--gray-500);
+    font-size: 14px;
+}
+
+/* ==========================================================
+   AÇÕES
+========================================================== */
+
+.logout-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.logout-actions button {
+    flex: 1;
+
+    height: 52px;
+
+    border: none;
+    border-radius: 14px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all .25s ease;
+}
+
+/* ==========================================================
+   CANCELAR
+========================================================== */
+
+.btn-cancel {
+    background: var(--gray-200);
+    color: var(--gray-800);
+}
+
+.btn-cancel:hover {
+    background: #dbe2ea;
+    transform: translateY(-2px);
+}
+
+/* ==========================================================
+   CONFIRMAR SAÍDA
+========================================================== */
+
+.btn-logout-confirm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    background: linear-gradient(135deg,
+            var(--danger),
+            var(--danger-light));
+
+    color: var(--white);
+
+    box-shadow: var(--shadow-danger);
+}
+
+.btn-logout-confirm:hover {
+    transform: translateY(-2px);
+
+    background: linear-gradient(135deg,
+            var(--danger-dark),
+            var(--danger));
+
+    box-shadow: var(--shadow-danger-hover);
+}
+
+.btn-logout-confirm:active {
+    transform: scale(.98);
+}
+
+.btn-logout-confirm svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* ==========================================================
+   LOADING
+========================================================== */
+
+.logout-loading {
+    position: fixed;
+    inset: 0;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    gap: 20px;
+
+    background: var(--white);
+
+    z-index: 999999;
+}
+
+.logout-loading.show {
+    display: flex;
+}
+
+.logout-loading h3 {
+    color: var(--gray-800);
+    font-size: 18px;
+}
+
+.logout-loading p {
+    color: var(--gray-500);
+    font-size: 14px;
+}
+
+/* ==========================================================
+   SPINNER
+========================================================== */
+
+.spinner {
+    width: 70px;
+    height: 70px;
+
+    border: 6px solid var(--gray-200);
+    border-top-color: var(--primary);
+
+    border-radius: 50%;
+
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==========================================================
+   RESPONSIVO
+========================================================== */
+
+@media (max-width: 576px) {
+
+    .modal-logout-content {
+        padding: 25px;
+        margin: 20px;
+    }
+
+    .logout-actions {
+        flex-direction: column;
+    }
+
+    .logout-actions button {
+        width: 100%;
+    }
+
+    .logout-header h2 {
+        font-size: 24px;
+    }
+}

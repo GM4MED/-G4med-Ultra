@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Exames | Sistema GM4</title>
+    <link rel="stylesheet" href="cadastro-exames.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <i class="fas fa-microscope"></i>
+                <h1>Cadastro de Exames</h1>
+            </div>
+            <div class="toolbar">
+                <button id="btnNovo" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Novo Exame
+                </button>
+                <button id="btnSalvar" class="btn btn-success" disabled>
+                    <i class="fas fa-save"></i> Gravar
+                </button>
+                <button id="btnEditar" class="btn btn-warning" disabled>
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+                <button id="btnExcluir" class="btn btn-danger" disabled>
+                    <i class="fas fa-trash"></i> Excluir
+                </button>
+                <button id="btnAnterior" class="btn btn-dark" disabled>
+                    <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <button id="btnProximo" class="btn btn-dark" disabled>
+                    Próximo <i class="fas fa-chevron-right"></i>
+                </button>
+                <button id="btnSair" class="btn btn-dark" onclick="window.location.href='index.html'">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <section class="form-area">
+                <nav class="tabs-nav">
+                    <button class="tab-link active" onclick="openTab(event, 'dados-exame')">1. Dados do Exame</button>
+                    <button class="tab-link" onclick="openTab(event, 'convenios')">2. Convênios & Financeiro</button>
+                </nav>
+
+                <div class="form-content">
+                    <form id="exameForm">
+                        <!-- ABA 1: DADOS DO EXAME -->
+                        <div id="dados-exame" class="tab-content active">
+                            <div class="form-grid">
+                                <div class="form-group col-2">
+                                    <label>Código ID</label>
+                                    <input type="text" id="exameId" readonly placeholder="Auto">
+                                </div>
+                                <div class="form-group col-10">
+                                    <label>Nome do Exame</label>
+                                    <input type="text" id="nomeExame" class="uppercase" disabled required>
+                                </div>
+
+                                <div class="form-group col-6">
+                                    <label>Categoria</label>
+                                    <select id="categoriaExame" disabled>
+                                        <option value="">Selecione...</option>
+                                        <option value="01">01 - Cardiologia</option>
+                                        <option value="02">02 - Laboratório / Análises Clínicas</option>
+                                        <option value="03">03 - Diagnóstico por Imagem</option>
+                                        <option value="04">04 - Ultrassonografia</option>
+                                        <option value="05">05 - Vascular</option>
+                                        <option value="06">06 - Pneumologia</option>
+                                        <option value="07">07 - Neurologia</option>
+                                        <option value="08">08 - Oftalmologia</option>
+                                        <option value="09">09 - Otorrinolaringologia</option>
+                                        <option value="10">10 - Endoscopia</option>
+                                        <option value="11">11 - Ginecologia e Obstetrícia</option>
+                                        <option value="12">12 - Patologia</option>
+                                        <option value="13">13 - Reprodução Humana</option>
+                                        <option value="14">14 - Procedimentos Ambulatoriais</option>
+                                        <option value="15">15 - Outros</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-6">
+                                    <label>Tipo de Exame</label>
+                                    <select id="tipoExame" disabled>
+                                        <option value="">Selecione...</option>
+                                        <option value="01">01 - Laboratorial</option>
+                                        <option value="02">02 - Imagem</option>
+                                        <option value="03">03 - Ultrassonografia</option>
+                                        <option value="04">04 - Cardiológico</option>
+                                        <option value="05">05 - Vascular</option>
+                                        <option value="06">06 - Endoscópico</option>
+                                        <option value="07">07 - Neurológico</option>
+                                        <option value="08">08 - Oftalmológico</option>
+                                        <option value="09">09 - Otorrinolaringológico</option>
+                                        <option value="10">10 - Funcional</option>
+                                        <option value="11">11 - Procedimento</option>
+                                        <option value="12">12 - Antomopatológico</option>
+                                        <option value="13">13 - Citológico</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ABA 2: CONVÊNIOS & FINANCEIRO -->
+                        <div id="convenios" class="tab-content">
+                            <div class="form-grid">
+                                <div class="col-12">
+                                    <h3 class="section-title">Dados do Convênio Vinculado</h3>
+                                </div>
+                                <div class="form-group col-2">
+                                    <label>Código ID</label>
+                                    <input type="text" id="convenioId" disabled>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label>Nome do Convênio</label>
+                                    <input type="text" id="nomeConvenio" disabled>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Registro ANS</label>
+                                    <input type="text" id="registroAns" disabled>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>CNPJ</label>
+                                    <input type="text" id="cnpjConvenio" disabled>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Telefone</label>
+                                    <input type="text" id="telConvenio" disabled>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>E-mail</label>
+                                    <input type="email" id="emailConvenio" disabled>
+                                </div>
+
+                                <div class="col-12">
+                                    <h3 class="section-title">Valores e Status</h3>
+                                </div>
+                                <div class="form-group col-3">
+                                    <label>Valor Particular</label>
+                                    <input type="text" id="valorParticular" placeholder="R$ 0,00" disabled>
+                                </div>
+                                <div class="form-group col-3">
+                                    <label>Valor Convênio</label>
+                                    <input type="text" id="valorConvenio" placeholder="R$ 0,00" disabled>
+                                </div>
+                                <div class="form-group col-3">
+                                    <label>Custo Interno</label>
+                                    <input type="text" id="custoInterno" placeholder="R$ 0,00" disabled>
+                                </div>
+                                <div class="form-group col-3">
+                                    <label>Status</label>
+                                    <select id="statusExame" disabled>
+                                        <option value="A">Ativo</option>
+                                        <option value="I">Inativo</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section class="grid-area">
+                <div class="grid-header">
+                    <span><i class="fas fa-list"></i> Exames Cadastrados</span>
+                    <div class="grid-search">
+                        <input type="text" id="inputBusca" placeholder="Buscar por nome ou código...">
+                        <button class="btn btn-primary btn-sm"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="tabelaExames">
+                        <thead>
+                            <tr>
+                                <th width="80">ID</th>
+                                <th>Nome do Exame</th>
+                                <th width="200">Categoria</th>
+                                <th width="150">Tipo</th>
+                                <th width="100">Valor Part.</th>
+                                <th width="100">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaExames">
+                            <!-- Injetado via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="cadastro-exames.js"></script>
+</body>
+
+</html>

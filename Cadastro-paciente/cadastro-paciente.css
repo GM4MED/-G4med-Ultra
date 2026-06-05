@@ -1,0 +1,460 @@
+/* ===================================
+   cadastro-paciente.css
+   Sistema GM4 - Cadastro de Pacientes
+=================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f6f9;
+    color: #333;
+    height: 100vh;
+} */
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f6f9;
+    color: #333;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+/* .container {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 10px 15px;
+} */
+
+/* ocupar literalmente toda a janela (estilo sistema desktop) */
+.container {
+    width: 100vw;
+    min-height: 100vh;
+    padding: 10px 15px;
+
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+}
+
+/* ===================================
+   HEADER
+=================================== */
+
+/* header {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .08);
+} */
+
+
+header {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .08);
+}
+
+header h1 {
+    font-size: 24px;
+    color: #1f2937;
+    margin-bottom: 15px;
+}
+
+header h1 i {
+    margin-right: 8px;
+}
+
+.form-area {
+    width: 100%;
+}
+
+.grid-area {
+    width: 100%;
+}
+
+/* ===================================
+   TOOLBAR
+=================================== */
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn {
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: .2s;
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.btn:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.btn i {
+    margin-right: 5px;
+}
+
+.btn-primary {
+    background: #0d6efd;
+    color: white;
+}
+
+.btn-success {
+    background: #198754;
+    color: white;
+}
+
+.btn-warning {
+    background: #ffc107;
+    color: #222;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-dark {
+    background: #212529;
+    color: white;
+}
+
+/* ===================================
+   LAYOUT PRINCIPAL
+=================================== */
+
+/* main {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+} */
+main {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-area,
+.grid-area {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .08);
+    overflow: hidden;
+}
+
+/* ===================================
+   ABAS
+=================================== */
+
+.tabs-nav {
+    display: flex;
+    flex-wrap: wrap;
+    background: #e9ecef;
+    border-bottom: 1px solid #d6d6d6;
+}
+
+.tab-link {
+    border: none;
+    background: transparent;
+    padding: 14px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: .2s;
+}
+
+.tab-link:hover {
+    background: #dfe5eb;
+}
+
+.tab-link.active {
+    background: #0d6efd;
+    color: #fff;
+}
+
+.form-content {
+    padding: 20px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ===================================
+   FORMULÁRIO
+=================================== */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 15px;
+}
+
+.col-1 {
+    grid-column: span 1;
+}
+
+.col-2 {
+    grid-column: span 2;
+}
+
+.col-3 {
+    grid-column: span 3;
+}
+
+.col-4 {
+    grid-column: span 4;
+}
+
+.col-5 {
+    grid-column: span 5;
+}
+
+.col-6 {
+    grid-column: span 6;
+}
+
+.col-7 {
+    grid-column: span 7;
+}
+
+.col-8 {
+    grid-column: span 8;
+}
+
+.col-9 {
+    grid-column: span 9;
+}
+
+.col-10 {
+    grid-column: span 10;
+}
+
+.col-11 {
+    grid-column: span 11;
+}
+
+.col-12 {
+    grid-column: span 12;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: .2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #0d6efd;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, .15);
+}
+
+.form-group input[disabled] {
+    background: #f1f3f5;
+    color: #555;
+    cursor: not-allowed;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+/* ===================================
+   GRADE
+=================================== */
+
+.grid-header {
+    background: #0d6efd;
+    color: #fff;
+    padding: 12px 18px;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.grid-header i {
+    margin-right: 6px;
+}
+
+/* .table-wrapper {
+    overflow-x: auto;
+} */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* table {
+    width: 100%;
+    border-collapse: collapse;
+} */
+
+table {
+    width: 100%;
+    min-width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #f8f9fa;
+}
+
+thead th {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 2px solid #dee2e6;
+    font-size: 14px;
+}
+
+tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #ececec;
+    font-size: 14px;
+}
+
+tbody tr {
+    cursor: pointer;
+    transition: .15s;
+}
+
+tbody tr:hover {
+    background: #f5f9ff;
+}
+
+tbody tr.selected {
+    background: #dbeafe;
+}
+
+/* ===================================
+   SCROLLBAR
+=================================== */
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #b8c1cc;
+    border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #9aa5b1;
+}
+
+/* ===================================
+   RESPONSIVO
+=================================== */
+
+@media (max-width: 992px) {
+
+    .form-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .col-7,
+    .col-8,
+    .col-9,
+    .col-10,
+    .col-11,
+    .col-12 {
+        grid-column: span 6;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .container {
+        padding: 10px;
+    }
+
+    .toolbar {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .col-1,
+    .col-2,
+    .col-3,
+    .col-4,
+    .col-5,
+    .col-6,
+    .col-7,
+    .col-8,
+    .col-9,
+    .col-10,
+    .col-11,
+    .col-12 {
+        grid-column: span 1;
+    }
+
+    .tabs-nav {
+        flex-direction: column;
+    }
+
+    .tab-link {
+        width: 100%;
+        text-align: left;
+    }
+}

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios & BI · Atendimentos · G4Med</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="relatorio-atendimentos.css">
+</head>
+
+<body>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="../index.html" class="back-btn" title="Voltar"><i data-lucide="arrow-left"></i></a>
+            <div class="brand">
+                <div class="brand-mark"><i data-lucide="bar-chart-3"></i></div>
+                <div>
+                    <div class="brand-name">G4Med <span>BI</span></div>
+                    <div class="brand-sub">Relatórios de Atendimento</div>
+                </div>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <button class="icon-btn" id="toggleTheme" title="Tema"><i data-lucide="moon"></i></button>
+            <button class="icon-btn" title="Atualizar" id="btnRefresh"><i data-lucide="refresh-cw"></i></button>
+            <button class="icon-btn has-dot" title="Alertas"><i data-lucide="bell"></i><span
+                    class="dot"></span></button>
+            <div class="user-chip">
+                <div class="avatar">DR</div>
+                <div class="user-meta"><span class="user-name">Dr. Rodrigo</span><span class="user-role">Gestor
+                        BI</span></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="page">
+
+        <!-- HEADER -->
+        <section class="page-header">
+            <div class="page-title">
+                <span class="crumb"><a href="../index.html">Início</a> · Relatórios ·
+                    <strong>Atendimentos</strong></span>
+                <h1>Inteligência de Atendimentos</h1>
+                <p>Análise 360° da operação clínica — volume, performance, ocupação e tendências em tempo real.</p>
+            </div>
+            <div class="page-actions">
+                <div class="period-tabs" id="periodTabs">
+                    <button data-period="7">7 dias</button>
+                    <button data-period="30" class="active">30 dias</button>
+                    <button data-period="90">90 dias</button>
+                    <button data-period="365">12 meses</button>
+                    <button data-period="custom"><i data-lucide="calendar"></i> Personalizado</button>
+                </div>
+                <button class="btn ghost" id="btnPrint"><i data-lucide="printer"></i> Imprimir</button>
+                <button class="btn ghost" id="btnExport"><i data-lucide="download"></i> Exportar</button>
+                <button class="btn primary" id="btnShare"><i data-lucide="share-2"></i> Compartilhar</button>
+            </div>
+        </section>
+
+        <!-- FILTERS -->
+        <section class="filter-bar">
+            <div class="filter-group">
+                <label>Período</label>
+                <div class="date-range">
+                    <input type="date" id="dateFrom"><span>—</span><input type="date" id="dateTo">
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>Unidade</label>
+                <select id="fUnit">
+                    <option>Todas as unidades</option>
+                    <option>Itaim Bibi · Matriz</option>
+                    <option>Alphaville</option>
+                    <option>Jardins</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Especialidade</label>
+                <select id="fSpec">
+                    <option>Todas</option>
+                    <option>Cardiologia</option>
+                    <option>Ortopedia</option>
+                    <option>Pediatria</option>
+                    <option>Ginecologia</option>
+                    <option>Dermatologia</option>
+                    <option>Neurologia</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Médico</label>
+                <select id="fDoc">
+                    <option>Todos os profissionais</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Convênio</label>
+                <select id="fIns">
+                    <option>Todos</option>
+                    <option>Particular</option>
+                    <option>Unimed</option>
+                    <option>Bradesco Saúde</option>
+                    <option>Amil</option>
+                    <option>SulAmérica</option>
+                </select>
+            </div>
+            <div class="filter-actions">
+                <button class="btn ghost sm" id="btnClear"><i data-lucide="rotate-ccw"></i> Limpar</button>
+                <button class="btn primary sm" id="btnApply"><i data-lucide="filter"></i> Aplicar</button>
+            </div>
+        </section>
+
+        <!-- KPI ROW -->
+        <section class="kpi-row">
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon brand"><i data-lucide="activity"></i></div>
+                    <span class="kpi-trend up"><i data-lucide="trending-up"></i> +12.4%</span>
+                </div>
+                <span class="kpi-label">Total de Atendimentos</span>
+                <span class="kpi-value" data-counter="4827">0</span>
+                <div class="kpi-foot"><canvas class="spark" data-spark="brand"></canvas></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon ok"><i data-lucide="check-circle-2"></i></div>
+                    <span class="kpi-trend up"><i data-lucide="trending-up"></i> +3.1%</span>
+                </div>
+                <span class="kpi-label">Taxa de Conclusão</span>
+                <span class="kpi-value">87.4<small>%</small></span>
+                <div class="kpi-foot"><canvas class="spark" data-spark="ok"></canvas></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon warn"><i data-lucide="user-x"></i></div>
+                    <span class="kpi-trend down"><i data-lucide="trending-down"></i> -1.8%</span>
+                </div>
+                <span class="kpi-label">Taxa de No-Show</span>
+                <span class="kpi-value">6.2<small>%</small></span>
+                <div class="kpi-foot"><canvas class="spark" data-spark="warn"></canvas></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon info"><i data-lucide="clock"></i></div>
+                    <span class="kpi-trend up"><i data-lucide="trending-down"></i> -4min</span>
+                </div>
+                <span class="kpi-label">Tempo Médio de Espera</span>
+                <span class="kpi-value">14<small>min</small></span>
+                <div class="kpi-foot"><canvas class="spark" data-spark="info"></canvas></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon purple"><i data-lucide="timer"></i></div>
+                    <span class="kpi-trend up"><i data-lucide="trending-up"></i> estável</span>
+                </div>
+                <span class="kpi-label">Duração Média</span>
+                <span class="kpi-value">28<small>min</small></span>
+                <div class="kpi-foot"><canvas class="spark" data-spark="purple"></canvas></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon rose"><i data-lucide="star"></i></div>
+                    <span class="kpi-trend up"><i data-lucide="trending-up"></i> +0.2</span>
+                </div>
+                <span class="kpi-label">NPS Pacientes</span>
+                <span class="kpi-value">9.1<small>/10</small></span>
+                <div class="kpi-foot"><canvas class="spark" data-spark="rose"></canvas></div>
+            </div>
+        </section>
+
+        <!-- INSIGHTS -->
+        <section class="insights-row">
+            <div class="insight">
+                <div class="insight-icon ok"><i data-lucide="lightbulb"></i></div>
+                <div>
+                    <strong>Destaque do período</strong>
+                    <p>A <b>Cardiologia</b> registrou pico de demanda às terças (+18%). Recomendação: abrir 2 horários
+                        extras das 14h às 16h.</p>
+                </div>
+            </div>
+            <div class="insight">
+                <div class="insight-icon warn"><i data-lucide="alert-triangle"></i></div>
+                <div>
+                    <strong>Atenção</strong>
+                    <p><b>3 médicos</b> estão com taxa de no-show acima da média. Considere ativar lembretes 2h antes
+                        via WhatsApp.</p>
+                </div>
+            </div>
+            <div class="insight">
+                <div class="insight-icon info"><i data-lucide="rocket"></i></div>
+                <div>
+                    <strong>Oportunidade</strong>
+                    <p>Quartas-feiras têm <b>23% de capacidade ociosa</b>. Campanha de retorno pode aumentar receita em
+                        ~R$ 32k/mês.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHARTS GRID -->
+        <section class="grid">
+
+            <!-- CHART 1: VOLUME POR MÉDICO -->
+            <div class="card span-2">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="users-round"></i> Volume de Atendimentos por Médico</h3>
+                        <span class="card-sub">Top 10 profissionais por volume no período</span>
+                    </div>
+                    <div class="card-actions">
+                        <div class="seg" data-target="chartDoctors">
+                            <button class="active" data-mode="bar">Barras</button>
+                            <button data-mode="bar-h">Horizontal</button>
+                        </div>
+                        <button class="icon-btn sm" title="Exportar"><i data-lucide="download"></i></button>
+                        <button class="icon-btn sm" title="Maximizar"><i data-lucide="maximize-2"></i></button>
+                    </div>
+                </div>
+                <div class="chart-wrap"><canvas id="chartDoctors"></canvas></div>
+            </div>
+
+            <!-- CHART 2: STATUS -->
+            <div class="card">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="pie-chart"></i> Status das Consultas</h3>
+                        <span class="card-sub">Distribuição percentual</span>
+                    </div>
+                    <button class="icon-btn sm" title="Mais"><i data-lucide="more-horizontal"></i></button>
+                </div>
+                <div class="chart-wrap doughnut">
+                    <canvas id="chartStatus"></canvas>
+                    <div class="dough-center">
+                        <span class="dough-num">4.827</span>
+                        <span class="dough-lbl">Atendimentos</span>
+                    </div>
+                </div>
+                <div class="legend" id="legendStatus"></div>
+            </div>
+
+            <!-- CHART 3: ESPECIALIDADES -->
+            <div class="card">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="layers"></i> Por Especialidade</h3>
+                        <span class="card-sub">Distribuição por área médica</span>
+                    </div>
+                    <button class="icon-btn sm" title="Mais"><i data-lucide="more-horizontal"></i></button>
+                </div>
+                <div class="chart-wrap"><canvas id="chartSpec"></canvas></div>
+            </div>
+
+            <!-- CHART 4: DIAS DA SEMANA -->
+            <div class="card">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="calendar-clock"></i> Dia da Semana</h3>
+                        <span class="card-sub">Heatmap de demanda</span>
+                    </div>
+                    <button class="icon-btn sm" title="Mais"><i data-lucide="more-horizontal"></i></button>
+                </div>
+                <div class="chart-wrap"><canvas id="chartWeek"></canvas></div>
+            </div>
+
+            <!-- CHART 5: HEATMAP HORÁRIO -->
+            <div class="card">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="grid-3x3"></i> Mapa de Calor — Hora × Dia</h3>
+                        <span class="card-sub">Intensidade de atendimentos por slot</span>
+                    </div>
+                    <button class="icon-btn sm" title="Mais"><i data-lucide="more-horizontal"></i></button>
+                </div>
+                <div class="heatmap" id="heatmap"></div>
+                <div class="heatmap-legend">
+                    <span>Baixo</span>
+                    <div class="scale"><span></span><span></span><span></span><span></span><span></span></div>
+                    <span>Alto</span>
+                </div>
+            </div>
+
+            <!-- CHART 6: HISTÓRICO -->
+            <div class="card span-3">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="line-chart"></i> Histórico Mensal de Atendimentos</h3>
+                        <span class="card-sub">Comparativo entre realizado, meta e ano anterior</span>
+                    </div>
+                    <div class="card-actions">
+                        <div class="seg" data-target="chartHistory">
+                            <button class="active" data-metric="all">Tudo</button>
+                            <button data-metric="real">Realizado</button>
+                            <button data-metric="target">Meta</button>
+                            <button data-metric="prev">Ano Anterior</button>
+                        </div>
+                        <button class="icon-btn sm"><i data-lucide="download"></i></button>
+                    </div>
+                </div>
+                <div class="chart-wrap tall"><canvas id="chartHistory"></canvas></div>
+            </div>
+
+            <!-- TOP CONVÊNIOS -->
+            <div class="card">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="id-card"></i> Top Convênios</h3>
+                        <span class="card-sub">Participação no volume</span>
+                    </div>
+                </div>
+                <div class="bar-list" id="topInsurance"></div>
+            </div>
+
+            <!-- TOP MÉDICOS RANKING -->
+            <div class="card span-2">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="trophy"></i> Ranking de Médicos</h3>
+                        <span class="card-sub">Performance composta — volume, NPS e pontualidade</span>
+                    </div>
+                    <div class="card-actions">
+                        <div class="seg">
+                            <button class="active">Geral</button>
+                            <button>Volume</button>
+                            <button>NPS</button>
+                            <button>Pontualidade</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table class="rank-table" id="rankTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Profissional</th>
+                                <th>Especialidade</th>
+                                <th>Atendimentos</th>
+                                <th>NPS</th>
+                                <th>Pontualidade</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- BREAKDOWN TABLE -->
+        <section class="card">
+            <div class="card-head">
+                <div>
+                    <h3><i data-lucide="table-2"></i> Detalhamento por Especialidade</h3>
+                    <span class="card-sub">Métricas consolidadas e variação vs. período anterior</span>
+                </div>
+                <div class="card-actions">
+                    <div class="search-mini"><i data-lucide="search"></i><input id="tblSearch"
+                            placeholder="Buscar especialidade..."></div>
+                    <button class="btn ghost sm"><i data-lucide="download"></i> CSV</button>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table class="data-table" id="breakdownTable">
+                    <thead>
+                        <tr>
+                            <th>Especialidade</th>
+                            <th class="num">Atendimentos</th>
+                            <th class="num">No-Show</th>
+                            <th class="num">Tempo médio</th>
+                            <th class="num">NPS</th>
+                            <th class="num">Receita</th>
+                            <th class="num">Variação</th>
+                            <th>Tendência</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <th>TOTAL</th>
+                            <th class="num" id="tFAtend">0</th>
+                            <th class="num" id="tFNs">0%</th>
+                            <th class="num" id="tFTm">0min</th>
+                            <th class="num" id="tFNps">0</th>
+                            <th class="num" id="tFRev">R$ 0</th>
+                            <th class="num">—</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+
+        <footer class="page-footer">
+            <span>© 2026 G4Med · Inteligência Hospitalar · Última atualização: <b id="lastUpdate">agora</b></span>
+            <span>Dados consolidados · Fonte: Data Warehouse v3.2 · SLA 99.98%</span>
+        </footer>
+    </main>
+
+    <div id="toastBox" class="toast-box"></div>
+
+    <script src="relatorio-atendimentos.js"></script>
+</body>
+
+</html>

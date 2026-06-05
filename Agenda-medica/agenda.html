@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="G4Med Ultra — Agenda Médica de classe mundial" />
+    <meta name="theme-color" content="#0d9488" />
+    <title>G4Med Ultra · Agenda Médica</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.469.0/font/lucide.css" />
+    <link rel="stylesheet" href="./agenda.css" />
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- ============== SIDEBAR ============== -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand__logo" aria-hidden="true"><i class="lucide lucide-stethoscope"></i></div>
+                <div>
+                    <div class="brand__name">G4Med <span>Ultra</span></div>
+                    <div class="brand__sub">Hospital Suite</div>
+                </div>
+            </div>
+
+            <button class="btn btn--primary btn--block" id="btnNovoAgendamento">
+                <i class="lucide lucide-plus"></i> Novo Agendamento
+            </button>
+
+            <!-- Mini calendar -->
+            <section class="mini-cal" aria-label="Calendário">
+                <header class="mini-cal__head">
+                    <button class="icon-btn icon-btn--ghost" id="calPrev" aria-label="Mês anterior"><i
+                            class="lucide lucide-chevron-left"></i></button>
+                    <span id="calLabel">—</span>
+                    <button class="icon-btn icon-btn--ghost" id="calNext" aria-label="Próximo mês"><i
+                            class="lucide lucide-chevron-right"></i></button>
+                </header>
+                <div class="mini-cal__weekdays" id="calWeekdays"></div>
+                <div class="mini-cal__grid" id="calGrid"></div>
+            </section>
+
+            <!-- Doctors filter -->
+            <section class="side-section">
+                <header class="side-section__head">
+                    <span>Profissionais</span>
+                    <span class="muted" id="docCount">0</span>
+                </header>
+                <ul class="doc-list" id="docList" role="list"></ul>
+            </section>
+
+            <!-- Specialties -->
+            <section class="side-section">
+                <header class="side-section__head"><span>Especialidades</span></header>
+                <div class="chip-cloud" id="specChips"></div>
+            </section>
+
+            <!-- Footer user -->
+            <div class="sidebar__footer">
+                <div class="user-card">
+                    <img src="https://ui-avatars.com/api/?name=Dr+Renato&background=0d9488&color=fff&size=64&font-size=0.4&bold=true"
+                        alt="" class="user-card__avatar" />
+                    <div class="user-card__info">
+                        <span class="user-card__name">Dr. Renato Silva</span>
+                        <span class="user-card__role">Diretor Clínico · CRM 123456</span>
+                    </div>
+                    <button class="icon-btn icon-btn--ghost" id="btnSair" aria-label="Sair"><i
+                            class="lucide lucide-log-out"></i></button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ============== MAIN ============== -->
+        <main class="main">
+
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <div class="topbar__left">
+                    <button class="icon-btn icon-btn--ghost" id="sidebarToggle" aria-label="Menu"><i
+                            class="lucide lucide-menu"></i></button>
+                    <div>
+                        <h1 class="topbar__title" id="displayDate">—</h1>
+                        <p class="topbar__subtitle"><i class="lucide lucide-clock"></i> <span
+                                id="displayClock">--:--:--</span> · <span id="displayWeekday">—</span></p>
+                    </div>
+                </div>
+
+                <div class="topbar__center">
+                    <div class="search-box" role="search">
+                        <i class="lucide lucide-search"></i>
+                        <input type="search" id="globalSearch" placeholder="Paciente, CPF, CID, médico, guia..."
+                            aria-label="Busca global" />
+                        <kbd>⌘K</kbd>
+                    </div>
+                </div>
+
+                <div class="topbar__right">
+                    <div class="view-tabs" role="tablist">
+                        <button class="view-tab view-tab--active" data-view="day" role="tab"><i
+                                class="lucide lucide-calendar-days"></i><span>Dia</span></button>
+                        <button class="view-tab" data-view="week" role="tab"><i
+                                class="lucide lucide-calendar-range"></i><span>Semana</span></button>
+                        <button class="view-tab" data-view="list" role="tab"><i
+                                class="lucide lucide-list"></i><span>Lista</span></button>
+                    </div>
+
+                    <button class="icon-btn" title="Painel TV Recepção"><i class="lucide lucide-monitor"></i></button>
+                    <button class="icon-btn" title="Notificações" id="btnNotif">
+                        <i class="lucide lucide-bell"></i>
+                        <span class="icon-btn__badge">5</span>
+                    </button>
+                    <a href="../index.html" class="btn btn--ghost"><i
+                            class="lucide lucide-arrow-left"></i><span>Voltar</span></a>
+                </div>
+            </header>
+
+            <div class="content">
+
+                <!-- ===== DATE NAV + KPIs ===== -->
+                <section class="top-row">
+                    <div class="date-nav">
+                        <button class="icon-btn" id="dayPrev" aria-label="Dia anterior"><i
+                                class="lucide lucide-chevron-left"></i></button>
+                        <button class="btn btn--ghost btn--sm" id="todayBtn"><i
+                                class="lucide lucide-calendar-check-2"></i> Hoje</button>
+                        <button class="icon-btn" id="dayNext" aria-label="Próximo dia"><i
+                                class="lucide lucide-chevron-right"></i></button>
+                        <input type="date" id="datePicker" class="select" aria-label="Selecionar data" />
+                    </div>
+
+                    <div class="kpis">
+                        <article class="kpi kpi--patients">
+                            <div class="kpi__icon"><i class="lucide lucide-users"></i></div>
+                            <div class="kpi__data"><span class="kpi__val" data-counter-int
+                                    id="kpiPatients">0</span><span class="kpi__lbl">Pacientes / mês</span></div>
+                        </article>
+                        <article class="kpi kpi--revenue">
+                            <div class="kpi__icon"><i class="lucide lucide-trending-up"></i></div>
+                            <div class="kpi__data"><span class="kpi__val">R$ <span data-counter
+                                        id="kpiRevenue">0</span></span><span class="kpi__lbl">Receita Estimada</span>
+                            </div>
+                        </article>
+                        <article class="kpi kpi--noshow">
+                            <div class="kpi__icon"><i class="lucide lucide-user-x"></i></div>
+                            <div class="kpi__data"><span class="kpi__val"><span data-counter-decimal
+                                        id="kpiNoshow">0</span>%</span><span class="kpi__lbl">Taxa No-show</span></div>
+                        </article>
+                        <article class="kpi kpi--occ">
+                            <div class="kpi__icon"><i class="lucide lucide-activity"></i></div>
+                            <div class="kpi__data"><span class="kpi__val"><span data-counter-int
+                                        id="kpiOcc">0</span>%</span><span class="kpi__lbl">Ocupação</span></div>
+                        </article>
+                        <article class="kpi kpi--wait">
+                            <div class="kpi__icon"><i class="lucide lucide-timer"></i></div>
+                            <div class="kpi__data"><span class="kpi__val"><span data-counter-int id="kpiWait">0</span>
+                                    min</span><span class="kpi__lbl">Tempo Médio Espera</span></div>
+                        </article>
+                        <article class="kpi kpi--sat">
+                            <div class="kpi__icon"><i class="lucide lucide-heart-pulse"></i></div>
+                            <div class="kpi__data"><span class="kpi__val"><span data-counter-decimal
+                                        id="kpiSat">0</span>/5</span><span class="kpi__lbl">Satisfação</span></div>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- ===== STATUS LEGEND + FILTERS ===== -->
+                <section class="legend-bar">
+                    <div class="legend-bar__left">
+                        <span class="legend-item"><span class="dot dot--scheduled"></span> Agendado</span>
+                        <span class="legend-item"><span class="dot dot--confirmed"></span> Confirmado</span>
+                        <span class="legend-item"><span class="dot dot--checkedin"></span> Check-in</span>
+                        <span class="legend-item"><span class="dot dot--inroom"></span> Em atendimento</span>
+                        <span class="legend-item"><span class="dot dot--done"></span> Concluído</span>
+                        <span class="legend-item"><span class="dot dot--noshow"></span> No-show</span>
+                        <span class="legend-item"><span class="dot dot--canceled"></span> Cancelado</span>
+                    </div>
+                    <div class="legend-bar__right">
+                        <select class="select" id="filterStatus">
+                            <option value="">Todos os status</option>
+                            <option value="scheduled">Agendado</option>
+                            <option value="confirmed">Confirmado</option>
+                            <option value="checkedin">Check-in</option>
+                            <option value="inroom">Em atendimento</option>
+                            <option value="done">Concluído</option>
+                            <option value="noshow">No-show</option>
+                            <option value="canceled">Cancelado</option>
+                        </select>
+                        <button class="btn btn--ghost btn--sm" id="btnExport"><i class="lucide lucide-download"></i>
+                            Exportar</button>
+                        <button class="btn btn--ghost btn--sm" id="btnPrint"><i class="lucide lucide-printer"></i>
+                            Imprimir</button>
+                    </div>
+                </section>
+
+                <!-- ===== SCHEDULER + WAITING ROOM ===== -->
+                <section class="grid-area">
+
+                    <!-- Scheduler -->
+                    <article class="card scheduler">
+                        <header class="scheduler__head" id="schedHeader">
+                            <div class="scheduler__time-col-h">Horário</div>
+                            <!-- Doctor headers populated by JS -->
+                        </header>
+                        <div class="scheduler__body">
+                            <div class="now-line" id="nowLine" hidden><span>Agora</span></div>
+                            <div class="scheduler__time-col" id="timeCol"></div>
+                            <div class="scheduler__cols" id="schedCols"></div>
+                        </div>
+                    </article>
+
+                    <!-- Waiting room / quick info -->
+                    <aside class="side-panel">
+
+                        <article class="card panel-card">
+                            <header class="panel-card__head">
+                                <h2><i class="lucide lucide-armchair" style="color:var(--brand-700)"></i> Sala de Espera
+                                </h2>
+                                <span class="badge" id="waitBadge">0</span>
+                            </header>
+                            <ul class="wait-list" id="waitList"></ul>
+                        </article>
+
+                        <article class="card panel-card">
+                            <header class="panel-card__head">
+                                <h2><i class="lucide lucide-bed" style="color:var(--info)"></i> Leitos &amp; Salas</h2>
+                            </header>
+                            <div class="rooms" id="roomsGrid"></div>
+                        </article>
+
+                        <article class="card panel-card">
+                            <header class="panel-card__head">
+                                <h2><i class="lucide lucide-bell-ring" style="color:var(--warn)"></i> Avisos</h2>
+                            </header>
+                            <ul class="notice-list" id="noticeList"></ul>
+                        </article>
+
+                    </aside>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- =========== MODAL: NOVO/EDIT AGENDAMENTO =========== -->
+    <div class="modal" id="modalAg" role="dialog" aria-modal="true" hidden>
+        <div class="modal__backdrop" data-close></div>
+        <div class="modal__dialog modal__dialog--lg">
+            <header class="modal__head">
+                <h2 class="modal__title" id="modalAgTitle"><i class="lucide lucide-calendar-plus"></i> Novo Agendamento
+                </h2>
+                <button class="icon-btn icon-btn--ghost" data-close aria-label="Fechar"><i
+                        class="lucide lucide-x"></i></button>
+            </header>
+            <form class="modal__body form" id="formAg" novalidate>
+                <!-- Patient block -->
+                <div class="patient-block">
+                    <label class="field">
+                        <span class="field__label">Paciente *</span>
+                        <div class="patient-input">
+                            <input type="text" name="paciente" required placeholder="Nome ou CPF..." list="patientList"
+                                autocomplete="off" />
+                            <datalist id="patientList"></datalist>
+                            <button type="button" class="icon-btn" id="btnNovoPaciente" title="Novo paciente"><i
+                                    class="lucide lucide-user-plus"></i></button>
+                        </div>
+                    </label>
+                    <div class="form__row">
+                        <label class="field field--third"><span class="field__label">Telefone</span><input type="tel"
+                                name="telefone" placeholder="(00) 00000-0000" /></label>
+                        <label class="field field--third"><span class="field__label">Convênio</span>
+                            <select name="convenio">
+                                <option value="Particular">Particular</option>
+                                <option>Unimed</option>
+                                <option>Bradesco Saúde</option>
+                                <option>SulAmérica</option>
+                                <option>Amil</option>
+                                <option>Hapvida</option>
+                                <option>SUS</option>
+                            </select>
+                        </label>
+                        <label class="field field--third"><span class="field__label">Tipo</span>
+                            <select name="tipo">
+                                <option>Consulta</option>
+                                <option>Retorno</option>
+                                <option>Exame</option>
+                                <option>Procedimento</option>
+                                <option>Cirurgia</option>
+                                <option>Telemedicina</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form__row">
+                    <label class="field field--half"><span class="field__label">Médico *</span><select name="medico"
+                            id="agMedico" required></select></label>
+                    <label class="field field--half"><span class="field__label">Procedimento</span>
+                        <select name="procedimento">
+                            <optgroup label="Consultas">
+                                <option>Consulta Clínica</option>
+                                <option>Consulta de Retorno</option>
+                                <option>Avaliação Pré-operatória</option>
+                            </optgroup>
+                            <optgroup label="Exames">
+                                <option>Eletrocardiograma</option>
+                                <option>Ultrassonografia</option>
+                                <option>Mapeamento de Retina</option>
+                            </optgroup>
+                            <optgroup label="Procedimentos">
+                                <option>Pequena Cirurgia</option>
+                                <option>Aplicação de Medicação</option>
+                                <option>Curativo</option>
+                            </optgroup>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="form__row">
+                    <label class="field field--third"><span class="field__label">Data *</span><input type="date"
+                            name="data" required /></label>
+                    <label class="field field--third"><span class="field__label">Horário *</span><input type="time"
+                            name="hora" required step="600" /></label>
+                    <label class="field field--third"><span class="field__label">Duração</span>
+                        <select name="duracao">
+                            <option value="15">15 min</option>
+                            <option value="30" selected>30 min</option>
+                            <option value="45">45 min</option>
+                            <option value="60">60 min</option>
+                            <option value="90">90 min</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="form__row">
+                    <label class="field field--half"><span class="field__label">Sala / Consultório</span>
+                        <select name="sala">
+                            <option>Consultório 1</option>
+                            <option>Consultório 2</option>
+                            <option>Consultório 3</option>
+                            <option>Sala de Procedimentos</option>
+                            <option>Telemedicina</option>
+                        </select>
+                    </label>
+                    <label class="field field--half"><span class="field__label">Prioridade</span>
+                        <select name="prioridade">
+                            <option>Normal</option>
+                            <option>Preferencial</option>
+                            <option>Urgente</option>
+                        </select>
+                    </label>
+                </div>
+
+                <label class="field"><span class="field__label">Observações clínicas</span><textarea name="obs" rows="2"
+                        placeholder="Anotações, queixas, medicações em uso..."></textarea></label>
+
+                <div class="reminder-row">
+                    <label class="check"><input type="checkbox" name="lembreteSMS" checked /><span>Enviar lembrete
+                            SMS</span></label>
+                    <label class="check"><input type="checkbox" name="lembreteWA" checked /><span>WhatsApp 24h
+                            antes</span></label>
+                    <label class="check"><input type="checkbox" name="lembreteEmail" /><span>E-mail de
+                            confirmação</span></label>
+                </div>
+
+                <footer class="modal__foot">
+                    <button type="button" class="btn btn--ghost" data-close>Cancelar</button>
+                    <button type="submit" class="btn btn--primary"><i class="lucide lucide-check"></i> Confirmar
+                        Agendamento</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- =========== MODAL: SAIR =========== -->
+    <div class="modal" id="modalSair" role="dialog" aria-modal="true" hidden>
+        <div class="modal__backdrop" data-close></div>
+        <div class="modal__dialog">
+            <header class="modal__head">
+                <h2 class="modal__title"><i class="lucide lucide-log-out"></i> Encerrar sessão?</h2>
+            </header>
+            <div class="modal__body">
+                <p>Tem certeza que deseja sair? Você será redirecionado.</p>
+            </div>
+            <footer class="modal__foot">
+                <button type="button" class="btn btn--ghost" data-close>Continuar</button>
+                <a href="../index.html" class="btn btn--danger"><i class="lucide lucide-log-out"></i> Sair agora</a>
+            </footer>
+        </div>
+    </div>
+
+    <!-- =========== DRAWER: DETALHE DO AGENDAMENTO =========== -->
+    <aside class="drawer" id="drawerApt" aria-hidden="true">
+        <div class="drawer__backdrop" data-close></div>
+        <div class="drawer__panel" role="dialog" aria-modal="true" id="drawerPanel"></div>
+    </aside>
+
+    <!-- =========== TOAST =========== -->
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+    <script src="./agenda.js" defer></script>
+</body>
+
+</html>

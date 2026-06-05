@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GMED - Cadastro de Usuários</title>
+
+    <link rel="stylesheet" href="../estilizacao/cadastro-usuario.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <header class="main-header">
+            <div class="breadcrumb">
+                <span>Usuários</span>
+                <i data-lucide="chevron-right"></i>
+                <strong>Cadastro de Usuário</strong>
+            </div>
+
+            <div class="header-actions">
+                <div class="search-box">
+                    <i data-lucide="search"></i>
+                    <input type="text" placeholder="Buscar no sistema...">
+                </div>
+                <div class="user-nav">
+                    <i data-lucide="bell"></i>
+                    <div class="profile-info">
+                        <span class="name">Administrador</span>
+                        <span class="role">admin@gmed.com.br</span>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=4f46e5&color=fff" alt="Avatar"
+                        class="avatar">
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+            <section class="card form-section">
+                <div class="card-header">
+                    <div class="title-group">
+                        <i data-lucide="user-plus" class="icon-primary"></i>
+                        <div>
+                            <h2>Cadastro de Usuário</h2>
+                            <p>Preencha os dados abaixo para criar um novo usuário no sistema.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="userForm" class="registration-form">
+                    <div class="form-body">
+                        <div class="fields-column">
+                            <div class="input-grid">
+                                <div class="form-group"><label>Nome Completo *</label><input type="text" id="nome"
+                                        placeholder="Ex: João da Silva" required></div>
+                                <div class="form-group"><label>CPF *</label><input type="text" id="cpf"
+                                        placeholder="000.000.000-00" required></div>
+                                <div class="form-group"><label>E-mail *</label><input type="email" id="email"
+                                        placeholder="ex: joao@email.com" required></div>
+                                <div class="form-group"><label>Telefone</label><input type="text" id="telefone"
+                                        placeholder="(00) 00000-0000"></div>
+                                <div class="form-group"><label>Login *</label><input type="text" id="login"
+                                        placeholder="Ex: joaosilva" required></div>
+                                <div class="form-group">
+                                    <label>Perfil *</label>
+                                    <select id="perfil" required>
+                                        <option value="">Selecione um perfil</option>
+                                        <option value="Administrador">Administrador</option>
+                                        <option value="Médico">Médico</option>
+                                        <option value="Recepção">Recepção</option>
+                                    </select>
+                                </div>
+                                <div class="form-group"><label>Senha *</label><input type="password" id="senha"
+                                        placeholder="Mínimo 6 caracteres" required></div>
+                                <div class="form-group"><label>Confirmar Senha *</label><input type="password"
+                                        id="confirmarSenha" placeholder="Confirme a senha" required></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Status do Usuário *</label>
+                                <div class="status-options">
+                                    <label class="radio-card">
+                                        <input type="radio" name="status" value="true" checked>
+                                        <span>Ativo</span>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="status" value="false">
+                                        <span>Inativo</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- ================================================================================================ -->
+                            <div class="form-group">
+                                <label>Observações</label>
+                                <textarea id="observacoes"
+                                    placeholder="Adicione comentários ou observações sobre o usuário..."
+                                    rows="3"></textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="side-column">
+                            <div class="image-upload" id="dropZone">
+                                <input type="file" id="inputFoto" accept="image/*" style="display: none;">
+                                <i data-lucide="image-plus"></i>
+                                <p>Clique para enviar ou arraste uma imagem</p>
+                                <span>PNG, JPG ou SVG (max. 2MB)</span>
+                            </div>
+
+                            <div class="tips-card">
+                                <h4><i data-lucide="shield-check"></i> Dicas de segurança</h4>
+                                <ul>
+                                    <li>Use senhas com letras e números.</li>
+                                    <li>Evite nomes de usuários óbvios.</li>
+                                    <li>Defina o perfil correto para o acesso.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-ghost" id="btnClear">
+                            <i data-lucide="eraser"></i> Limpar Campos
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i data-lucide="save"></i> Salvar Usuário
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script src="../dinamica/cadastro-usuario.js"></script>
+    <script>
+        // Inicialização global de ícones
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

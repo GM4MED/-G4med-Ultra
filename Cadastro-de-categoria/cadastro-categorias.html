@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Categorias | Sistema GM4</title>
+    <link rel="stylesheet" href="cadastro-categorias.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <i class="fas fa-tags"></i>
+                <h1>Cadastro de Categorias de Exames</h1>
+            </div>
+            <div class="toolbar">
+                <button id="btnNovo" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Novo
+                </button>
+                <button id="btnSalvar" class="btn btn-success" disabled>
+                    <i class="fas fa-save"></i> Gravar
+                </button>
+                <button id="btnEditar" class="btn btn-warning" disabled>
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+                <button id="btnExcluir" class="btn btn-danger" disabled>
+                    <i class="fas fa-trash"></i> Excluir
+                </button>
+                <button id="btnAnterior" class="btn btn-dark" disabled>
+                    <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <button id="btnProximo" class="btn btn-dark" disabled>
+                    Próximo <i class="fas fa-chevron-right"></i>
+                </button>
+                <!-- <button id="btnSair" class="btn btn-dark" onclick="window.location.href='index.html'">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button> -->
+                <button type="button" id="btnSair" class="btn btn-dark">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Sair
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <section class="form-area">
+                <nav class="tabs-nav">
+                    <button class="tab-link active" onclick="openTab(event, 'dados-categoria')">1. Dados da
+                        Categoria</button>
+                    <button class="tab-link" onclick="openTab(event, 'metadados')">2. Auditoria & Controle</button>
+                </nav>
+
+                <div class="form-content">
+                    <form id="categoriaForm">
+                        <!-- ABA 1: DADOS DA CATEGORIA -->
+                        <div id="dados-categoria" class="tab-content active">
+                            <div class="form-grid">
+                                <div class="form-group col-2">
+                                    <label>Código ID</label>
+                                    <input type="text" id="categoriaId" readonly placeholder="Auto">
+                                </div>
+                                <div class="form-group col-8">
+                                    <label>Nome da Categoria</label>
+                                    <input type="text" id="nomeCategoria" class="uppercase" maxlength="25" disabled
+                                        required>
+                                </div>
+                                <div class="form-group col-2">
+                                    <label>Sigla</label>
+                                    <input type="text" id="siglaCategoria" class="uppercase" maxlength="4" disabled>
+                                </div>
+
+                                <div class="form-group col-10">
+                                    <label>Descrição da Categoria</label>
+                                    <input type="text" id="descricaoCategoria" maxlength="50" disabled>
+                                </div>
+                                <div class="form-group col-2">
+                                    <label>Status</label>
+                                    <select id="statusCategoria" disabled>
+                                        <option value="A">Ativo</option>
+                                        <option value="I">Inativo</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ABA 2: METADADOS (AUDITORIA) -->
+                        <div id="metadados" class="tab-content">
+                            <div class="form-grid">
+                                <div class="form-group col-4">
+                                    <label>Data do Cadastro</label>
+                                    <input type="date" id="dataCadastro" disabled>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Usuário de Cadastro</label>
+                                    <input type="text" id="usuarioCadastro" maxlength="12" disabled>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Data da Alteração</label>
+                                    <input type="date" id="dataAlteracao" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section class="grid-area">
+                <div class="grid-header">
+                    <span><i class="fas fa-list"></i> Categorias Cadastradas</span>
+                    <div class="grid-search">
+                        <input type="text" id="inputBusca" placeholder="Filtrar por nome ou sigla...">
+                        <button class="btn btn-primary btn-sm"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="tabelaCategorias">
+                        <thead>
+                            <tr>
+                                <th width="100">Cód.</th>
+                                <th>Categoria</th>
+                                <th width="150">Sigla</th>
+                                <th width="150">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaCategorias">
+                            <!-- Injetado via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="cadastro-categorias.js"></script>
+</body>
+
+</html>

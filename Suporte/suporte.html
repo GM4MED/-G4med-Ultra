@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central de Suporte · G4Med</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="suporte.css">
+</head>
+
+<body>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="../index.html" class="back-btn" title="Voltar"><i data-lucide="arrow-left"></i></a>
+            <div class="brand">
+                <div class="brand-mark"><i data-lucide="life-buoy"></i></div>
+                <div>
+                    <div class="brand-name">G4Med <span>Suporte</span></div>
+                    <div class="brand-sub">Central de Atendimento</div>
+                </div>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div class="status-pill ok"><span class="dot-live"></span> Todos os sistemas operacionais</div>
+            <button class="icon-btn" id="toggleTheme" title="Tema"><i data-lucide="moon"></i></button>
+            <div class="user-chip">
+                <div class="avatar">DR</div>
+                <div class="user-meta"><span class="user-name">Dr. Rodrigo</span><span class="user-role">Plano
+                        Premium</span></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="page">
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-text">
+                <span class="badge"><i data-lucide="zap"></i> Resposta média em <b>14 min</b></span>
+                <h1>Como podemos ajudar você hoje?</h1>
+                <p>Suporte humano 24/7, base de conhecimento com 380+ artigos, status em tempo real e SLA garantido por
+                    contrato.</p>
+                <div class="search-hero">
+                    <i data-lucide="search"></i>
+                    <input id="searchKb"
+                        placeholder="Pesquisar na base de conhecimento... (ex: como cadastrar paciente)">
+                    <kbd>⌘ K</kbd>
+                </div>
+                <div class="hero-stats">
+                    <div><strong>14min</strong><span>Resposta média</span></div>
+                    <div><strong>98.6%</strong><span>SLA cumprido</span></div>
+                    <div><strong>9.4/10</strong><span>CSAT</span></div>
+                    <div><strong>380+</strong><span>Artigos</span></div>
+                </div>
+            </div>
+            <div class="hero-card">
+                <div class="hero-card-head">
+                    <i data-lucide="headset"></i>
+                    <div>
+                        <strong>Falar com um especialista</strong>
+                        <span>Online agora · Equipe G4Med</span>
+                    </div>
+                </div>
+                <div class="agent-row">
+                    <div class="agent" style="--c:#4f46e5">CL</div>
+                    <div class="agent" style="--c:#06b6d4">FA</div>
+                    <div class="agent" style="--c:#8b5cf6">MS</div>
+                    <div class="agent" style="--c:#f43f5e">RO</div>
+                    <div class="agent more">+12</div>
+                </div>
+                <button class="btn primary block" id="openChat"><i data-lucide="message-circle"></i> Iniciar conversa ao
+                    vivo</button>
+                <div class="hero-card-foot">
+                    <span><i data-lucide="phone"></i> 0800 940 1234</span>
+                    <span><i data-lucide="mail"></i> suporte@g4med.com</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUICK CHANNELS -->
+        <section class="channels">
+            <button class="channel" data-channel="chat">
+                <div class="ch-icon brand"><i data-lucide="message-square"></i></div>
+                <strong>Chat ao vivo</strong>
+                <span>Resposta imediata</span>
+                <em class="ch-meta"><span class="dot-live"></span> Online · 4 agentes</em>
+            </button>
+            <button class="channel" data-channel="ticket">
+                <div class="ch-icon ok"><i data-lucide="ticket"></i></div>
+                <strong>Abrir ticket</strong>
+                <span>Resposta em até 2h</span>
+                <em class="ch-meta">SLA garantido</em>
+            </button>
+            <button class="channel" data-channel="phone">
+                <div class="ch-icon info"><i data-lucide="phone"></i></div>
+                <strong>Telefone</strong>
+                <span>0800 940 1234</span>
+                <em class="ch-meta">Seg-Sex 7h-22h</em>
+            </button>
+            <button class="channel" data-channel="whatsapp">
+                <div class="ch-icon green"><i data-lucide="message-circle"></i></div>
+                <strong>WhatsApp</strong>
+                <span>(11) 9 9876-1234</span>
+                <em class="ch-meta">24/7</em>
+            </button>
+            <button class="channel" data-channel="email">
+                <div class="ch-icon purple"><i data-lucide="mail"></i></div>
+                <strong>E-mail</strong>
+                <span>suporte@g4med.com</span>
+                <em class="ch-meta">Resposta em 4h</em>
+            </button>
+            <button class="channel" data-channel="emergency">
+                <div class="ch-icon rose"><i data-lucide="siren"></i></div>
+                <strong>Emergência</strong>
+                <span>Sistema fora do ar</span>
+                <em class="ch-meta urgent">Atendimento imediato</em>
+            </button>
+        </section>
+
+        <div class="layout">
+
+            <!-- LEFT: TICKET FORM -->
+            <section class="card form-card">
+                <div class="card-head">
+                    <div>
+                        <h2><i data-lucide="ticket"></i> Abrir um chamado</h2>
+                        <span class="card-sub">Preencha os detalhes — nossa equipe responde em até 2 horas úteis</span>
+                    </div>
+                    <span class="step-pill">Passo <b id="stepNow">1</b> de 3</span>
+                </div>
+
+                <!-- STEPPER -->
+                <div class="stepper">
+                    <div class="step active" data-step="1"><span>1</span><b>Categoria</b></div>
+                    <div class="step" data-step="2"><span>2</span><b>Detalhes</b></div>
+                    <div class="step" data-step="3"><span>3</span><b>Confirmação</b></div>
+                </div>
+
+                <form id="supportForm" novalidate>
+
+                    <!-- STEP 1 -->
+                    <div class="step-pane active" data-pane="1">
+                        <h3 class="form-h3">Qual o tipo do chamado?</h3>
+                        <div class="cat-grid">
+                            <label class="cat"><input type="radio" name="cat" value="bug">
+                                <div><i data-lucide="bug"></i><strong>Erro / Bug</strong><span>Algo não funciona como
+                                        esperado</span></div>
+                            </label>
+                            <label class="cat"><input type="radio" name="cat" value="feature">
+                                <div><i data-lucide="sparkles"></i><strong>Sugestão</strong><span>Nova funcionalidade ou
+                                        melhoria</span></div>
+                            </label>
+                            <label class="cat"><input type="radio" name="cat" value="question">
+                                <div><i data-lucide="help-circle"></i><strong>Dúvida</strong><span>Como usar uma
+                                        funcionalidade</span></div>
+                            </label>
+                            <label class="cat"><input type="radio" name="cat" value="billing">
+                                <div><i data-lucide="credit-card"></i><strong>Financeiro</strong><span>Cobrança, plano
+                                        ou nota fiscal</span></div>
+                            </label>
+                            <label class="cat"><input type="radio" name="cat" value="integration">
+                                <div><i data-lucide="plug"></i><strong>Integrações</strong><span>API, webhooks,
+                                        conectores</span></div>
+                            </label>
+                            <label class="cat"><input type="radio" name="cat" value="other">
+                                <div><i data-lucide="more-horizontal"></i><strong>Outro</strong><span>Não encontrei na
+                                        lista</span></div>
+                            </label>
+                        </div>
+
+                        <h3 class="form-h3">Qual o nível de prioridade?</h3>
+                        <div class="prio-grid">
+                            <label class="prio low"><input type="radio" name="prio" value="low">
+                                <div><strong>Baixa</strong><span>Sem urgência · resposta em 24h</span></div>
+                            </label>
+                            <label class="prio med"><input type="radio" name="prio" value="med" checked>
+                                <div><strong>Média</strong><span>Impacta rotina · resposta em 4h</span></div>
+                            </label>
+                            <label class="prio high"><input type="radio" name="prio" value="high">
+                                <div><strong>Alta</strong><span>Bloqueia trabalho · resposta em 1h</span></div>
+                            </label>
+                            <label class="prio crit"><input type="radio" name="prio" value="crit">
+                                <div><strong>Crítica</strong><span>Sistema fora do ar · imediato</span></div>
+                            </label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn primary" data-next="2">Continuar <i
+                                    data-lucide="arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2 -->
+                    <div class="step-pane" data-pane="2">
+                        <div class="row">
+                            <div class="field">
+                                <label>Nome completo *</label>
+                                <div class="input-wrap"><i data-lucide="user"></i><input type="text" name="name"
+                                        placeholder="Como devemos te chamar?" required></div>
+                            </div>
+                            <div class="field">
+                                <label>E-mail *</label>
+                                <div class="input-wrap"><i data-lucide="mail"></i><input type="email" name="email"
+                                        placeholder="seu@email.com" required></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="field">
+                                <label>Telefone (opcional)</label>
+                                <div class="input-wrap"><i data-lucide="phone"></i><input type="tel" name="phone"
+                                        placeholder="(11) 9 0000-0000"></div>
+                            </div>
+                            <div class="field">
+                                <label>Unidade</label>
+                                <div class="input-wrap"><i data-lucide="building-2"></i>
+                                    <select name="unit">
+                                        <option>Itaim Bibi · Matriz</option>
+                                        <option>Alphaville</option>
+                                        <option>Jardins</option>
+                                        <option>Outra</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label>Assunto *</label>
+                            <div class="input-wrap"><i data-lucide="type"></i><input type="text" name="subject"
+                                    placeholder="Resuma em uma frase" maxlength="120" required></div>
+                            <small class="hint"><span id="subjLen">0</span>/120 caracteres</small>
+                        </div>
+
+                        <div class="field">
+                            <label>Descreva sua solicitação *</label>
+                            <textarea name="message" id="msg" rows="6"
+                                placeholder="Conte os detalhes: o que aconteceu, quando ocorreu, quais passos reproduzem o problema..."
+                                required></textarea>
+                            <small class="hint"><span id="msgLen">0</span> caracteres · <span
+                                    id="msgWarn"></span></small>
+                        </div>
+
+                        <div class="field upload" id="dropzone">
+                            <input type="file" id="fileInput" multiple hidden>
+                            <div class="dz-empty">
+                                <i data-lucide="upload-cloud"></i>
+                                <strong>Arraste arquivos ou <span class="link">clique para enviar</span></strong>
+                                <span>PNG, JPG, PDF, MP4 · até 25MB cada</span>
+                            </div>
+                            <div class="dz-files" id="fileList"></div>
+                        </div>
+
+                        <label class="check"><input type="checkbox" name="urgent"><span></span> Marcar como visualização
+                            urgente — eu (cliente Premium) recebo notificação direta no celular do agente.</label>
+                        <label class="check"><input type="checkbox" name="agree" required><span></span> Concordo com a
+                            <a href="#" class="link">Política de Privacidade</a> e autorizo o armazenamento dos dados
+                            desta solicitação.</label>
+
+                        <div class="form-actions split">
+                            <button type="button" class="btn ghost" data-back="1"><i data-lucide="arrow-left"></i>
+                                Voltar</button>
+                            <button type="button" class="btn primary" data-next="3">Revisar <i
+                                    data-lucide="arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3 -->
+                    <div class="step-pane" data-pane="3">
+                        <h3 class="form-h3">Confirme as informações</h3>
+                        <div class="review" id="review"></div>
+
+                        <div class="form-actions split">
+                            <button type="button" class="btn ghost" data-back="2"><i data-lucide="arrow-left"></i>
+                                Voltar</button>
+                            <button type="submit" class="btn primary"><i data-lucide="send"></i> Enviar chamado</button>
+                        </div>
+                    </div>
+
+                </form>
+
+                <div id="statusMessage"></div>
+            </section>
+
+            <!-- RIGHT: SIDEBAR -->
+            <aside class="side">
+
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h3><i data-lucide="book-open"></i> Base de Conhecimento</h3>
+                            <span class="card-sub">Artigos mais acessados</span>
+                        </div>
+                    </div>
+                    <ul class="kb-list" id="kbList"></ul>
+                    <a href="#" class="link see-all">Ver todos os 380 artigos <i data-lucide="arrow-right"></i></a>
+                </div>
+
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h3><i data-lucide="activity"></i> Status do Sistema</h3>
+                            <span class="card-sub">Tempo real · últimos 30 dias</span>
+                        </div>
+                        <span class="status-pill ok"><span class="dot-live"></span> Operacional</span>
+                    </div>
+                    <ul class="status-list" id="statusList"></ul>
+                    <a href="#" class="link see-all">Página de status completo <i data-lucide="external-link"></i></a>
+                </div>
+
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h3><i data-lucide="history"></i> Meus chamados</h3>
+                            <span class="card-sub">Últimos atendimentos</span>
+                        </div>
+                    </div>
+                    <ul class="ticket-list" id="ticketList"></ul>
+                </div>
+
+                <div class="card faq">
+                    <div class="card-head">
+                        <div>
+                            <h3><i data-lucide="help-circle"></i> Perguntas frequentes</h3>
+                            <span class="card-sub">Talvez sua dúvida já tenha resposta</span>
+                        </div>
+                    </div>
+                    <div class="faq-list" id="faqList"></div>
+                </div>
+
+            </aside>
+        </div>
+
+        <footer class="page-footer">
+            <span>© 2026 G4Med · Suporte 24/7 · SLA contratual 99,98%</span>
+            <span><a href="#" class="link">Termos</a> · <a href="#" class="link">Privacidade</a> · <a href="#"
+                    class="link">Status</a></span>
+        </footer>
+    </main>
+
+    <!-- CHAT WIDGET -->
+    <button class="chat-fab" id="chatFab" title="Conversar agora">
+        <i data-lucide="message-circle"></i>
+        <span class="badge-num">2</span>
+    </button>
+
+    <div class="chat-panel" id="chatPanel" hidden>
+        <div class="chat-head">
+            <div class="agent" style="--c:#4f46e5">CL</div>
+            <div>
+                <strong>Camila Lopes</strong>
+                <span><span class="dot-live"></span> Online · Especialista nível 2</span>
+            </div>
+            <button class="icon-btn sm" id="closeChat"><i data-lucide="x"></i></button>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="msg agent">
+                <div class="bubble">Oi! 👋 Sou a Camila, da equipe G4Med. Como posso te ajudar hoje?</div>
+                <span class="time">agora</span>
+            </div>
+            <div class="msg agent">
+                <div class="bubble">Para agilizar, você pode descrever o que está acontecendo ou anexar uma captura de
+                    tela.</div>
+                <span class="time">agora</span>
+            </div>
+        </div>
+        <div class="chat-typing" id="chatTyping" hidden><span></span><span></span><span></span> Camila está digitando...
+        </div>
+        <form class="chat-input" id="chatInput">
+            <button type="button" class="icon-btn sm" title="Anexar"><i data-lucide="paperclip"></i></button>
+            <input type="text" placeholder="Escreva sua mensagem..." required>
+            <button type="submit" class="icon-btn sm primary" title="Enviar"><i data-lucide="send"></i></button>
+        </form>
+    </div>
+
+    <!-- SUCCESS MODAL -->
+    <div class="modal" id="successModal" hidden>
+        <div class="modal-card">
+            <div class="success-anim"><i data-lucide="check"></i></div>
+            <h2>Chamado criado com sucesso!</h2>
+            <p>Recebemos sua solicitação. Você receberá atualizações por e-mail.</p>
+            <div class="ticket-id">Protocolo <b id="newTicketId">#G4M-000000</b></div>
+            <div class="modal-actions">
+                <button class="btn ghost" id="closeModal">Fechar</button>
+                <button class="btn primary" id="trackTicket"><i data-lucide="external-link"></i> Acompanhar
+                    chamado</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastBox" class="toast-box"></div>
+
+    <script src="suporte.js"></script>
+</body>
+
+</html>

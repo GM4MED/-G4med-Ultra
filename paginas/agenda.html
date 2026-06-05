@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Agenda Médica</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Agenda Médica</h1>
+    </header>
+    <div class="container">
+        <h2>Cadastrar Consulta</h2>
+        <form id="consultaForm">
+            <input type="text" id="paciente" placeholder="Nome do Paciente" required>
+            <input type="text" id="medico" placeholder="Nome do Médico" required>
+            <input type="date" id="data" required>
+            <input type="time" id="hora" required>
+            <select id="especialidade" required>
+                <option value="">Selecione a Especialidade</option>
+                <option>Cardiologia</option>
+                <option>Pediatria</option>
+                <option>Dermatologia</option>
+                <option>Ortopedia</option>
+            </select>
+            <span class="error" id="erroMsg"></span>
+            <button type="submit">Adicionar Consulta</button>
+        </form>
+
+        <h2>Consultas Agendadas</h2>
+        <table id="agendaTable">
+            <thead>
+                <tr>
+                    <th>Paciente</th>
+                    <th>Médico</th>
+                    <th>Data</th>
+                    <th>Hora</th>
+                    <th>Especialidade</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

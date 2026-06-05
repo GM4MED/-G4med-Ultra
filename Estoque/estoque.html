@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Estoque Central & Almoxarifado — GM4 Premium Enterprise" />
+    <title>Estoque Central &amp; Almoxarifado | GM4 Premium</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.469.0/font/lucide.css" />
+    <link rel="stylesheet" href="./estoque.css" />
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- ================== SIDEBAR ================== -->
+        <aside class="sidebar" aria-label="Navegação principal">
+            <div class="sidebar__brand">
+                <div class="sidebar__logo" aria-hidden="true"><i class="lucide lucide-warehouse"></i></div>
+                <div>
+                    <div class="sidebar__brand-name">GM4</div>
+                    <div class="sidebar__brand-sub">Premium Suite</div>
+                </div>
+            </div>
+
+            <nav class="sidebar__nav" aria-label="Menu">
+                <ul class="nav-list" role="list">
+                    <li class="nav-group">
+                        <span class="nav-group__title">Operação</span>
+                        <ul role="list">
+                            <li><a href="../index.html" class="nav-item"><i
+                                        class="lucide lucide-home"></i><span>Início</span></a></li>
+                            <li><a href="#" class="nav-item nav-item--active" aria-current="page"
+                                    data-tab-link="dashboard"><i
+                                        class="lucide lucide-layout-dashboard"></i><span>Dashboard</span></a></li>
+                            <li><a href="#" class="nav-item" data-tab-link="almoxarifado"><i
+                                        class="lucide lucide-package"></i><span>Almoxarifado</span></a></li>
+                            <li><a href="#" class="nav-item" data-tab-link="movimentacoes"><i
+                                        class="lucide lucide-arrow-left-right"></i><span>Movimentações</span></a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-group">
+                        <span class="nav-group__title">Cadeia de Suprimentos</span>
+                        <ul role="list">
+                            <li><a href="#" class="nav-item" data-tab-link="fornecedores"><i
+                                        class="lucide lucide-truck"></i><span>Fornecedores</span></a></li>
+                            <li><a href="#" class="nav-item" data-tab-link="requisicoes"><i
+                                        class="lucide lucide-clipboard-list"></i><span>Requisições</span></a></li>
+                            <li><a href="#" class="nav-item" data-tab-link="patrimonio"><i
+                                        class="lucide lucide-cpu"></i><span>Patrimônio</span></a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-group">
+                        <span class="nav-group__title">Inteligência</span>
+                        <ul role="list">
+                            <li><a href="#" class="nav-item" data-tab-link="auditoria"><i
+                                        class="lucide lucide-shield-check"></i><span>Auditoria</span></a></li>
+                            <li><a href="#" class="nav-item" data-tab-link="relatorios"><i
+                                        class="lucide lucide-bar-chart-3"></i><span>Relatórios</span></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar__footer">
+                <div class="user-card">
+                    <div class="user-card__avatar" aria-hidden="true">DR</div>
+                    <div class="user-card__info">
+                        <span class="user-card__name">Dr. Renato</span>
+                        <span class="user-card__role">Gestor de Estoque</span>
+                    </div>
+                    <button class="icon-btn icon-btn--ghost" id="btnSair" aria-label="Sair"><i
+                            class="lucide lucide-log-out"></i></button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ================== MAIN ================== -->
+        <main class="main">
+
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <div class="topbar__left">
+                    <button class="icon-btn icon-btn--ghost" id="sidebarToggle" aria-label="Alternar menu"><i
+                            class="lucide lucide-menu"></i></button>
+                    <div>
+                        <h1 class="topbar__title">Estoque Central &amp; Almoxarifado</h1>
+                        <p class="topbar__subtitle">Controle multi-depósito, requisições e patrimônio em tempo real</p>
+                    </div>
+                </div>
+
+                <div class="topbar__right">
+                    <div class="search-box" role="search">
+                        <i class="lucide lucide-search"></i>
+                        <input type="search" id="globalSearch" placeholder="Buscar SKU, item, fornecedor..."
+                            aria-label="Buscar" />
+                        <kbd>⌘K</kbd>
+                    </div>
+
+                    <select class="select select--warehouse" id="warehouseSelect" aria-label="Depósito ativo">
+                        <option value="all">Todos os Depósitos</option>
+                        <option value="CD-01">CD-01 · Matriz</option>
+                        <option value="CD-02">CD-02 · Filial Sul</option>
+                        <option value="A1">Corredor A · Prateleira 1</option>
+                        <option value="B2">Corredor B · Prateleira 2</option>
+                        <option value="C3">Corredor C · Prateleira 3</option>
+                    </select>
+
+                    <button class="icon-btn" aria-label="Notificações" id="btnNotif">
+                        <i class="lucide lucide-bell"></i>
+                        <span class="icon-btn__dot"></span>
+                    </button>
+
+                    <button class="btn btn--ghost" id="btnRequisicao"><i
+                            class="lucide lucide-clipboard-list"></i><span>Nova Requisição</span></button>
+                    <button class="btn btn--primary" id="btnNovoAtivo"><i class="lucide lucide-plus"></i><span>Novo
+                            Item</span></button>
+                </div>
+            </header>
+
+            <!-- CONTEÚDO -->
+            <div class="content">
+
+                <!-- ===== KPIs ===== -->
+                <section class="kpis" aria-label="Indicadores chave">
+                    <article class="kpi kpi--value">
+                        <div class="kpi__head">
+                            <span class="kpi__label">Valor em Estoque</span>
+                            <span class="kpi__icon"><i class="lucide lucide-dollar-sign"></i></span>
+                        </div>
+                        <div class="kpi__value">R$ <span data-counter id="valorTotalEstoque">0,00</span></div>
+                        <div class="kpi__foot"><span class="trend trend--up"><i class="lucide lucide-trending-up"></i>
+                                +4,2%</span><span class="kpi__hint">vs. semana anterior</span></div>
+                    </article>
+
+                    <article class="kpi kpi--suppliers">
+                        <div class="kpi__head"><span class="kpi__label">Fornecedores Ativos</span><span
+                                class="kpi__icon"><i class="lucide lucide-truck"></i></span></div>
+                        <div class="kpi__value"><span data-counter-int id="totalFornecedores">0</span></div>
+                        <div class="kpi__foot"><span class="trend trend--up"><i class="lucide lucide-trending-up"></i>
+                                +2</span><span class="kpi__hint">novos no mês</span></div>
+                    </article>
+
+                    <article class="kpi kpi--pending">
+                        <div class="kpi__head"><span class="kpi__label">Requisições Pendentes</span><span
+                                class="kpi__icon"><i class="lucide lucide-clock"></i></span></div>
+                        <div class="kpi__value"><span data-counter-int id="requisicoesPendentes">0</span></div>
+                        <div class="kpi__foot"><span class="trend trend--neutral"><i class="lucide lucide-minus"></i>
+                                aguardando</span><span class="kpi__hint">aprovação</span></div>
+                    </article>
+
+                    <article class="kpi kpi--turnover">
+                        <div class="kpi__head"><span class="kpi__label">Giro de Estoque (Mês)</span><span
+                                class="kpi__icon"><i class="lucide lucide-repeat"></i></span></div>
+                        <div class="kpi__value"><span data-counter-decimal id="giroEstoque">0,0</span>x</div>
+                        <div class="kpi__foot"><span class="trend trend--up"><i class="lucide lucide-trending-up"></i>
+                                +0,3</span><span class="kpi__hint">vs. mês anterior</span></div>
+                    </article>
+
+                    <article class="kpi kpi--alert">
+                        <div class="kpi__head"><span class="kpi__label">Itens em Alerta</span><span class="kpi__icon"><i
+                                    class="lucide lucide-alert-triangle"></i></span></div>
+                        <div class="kpi__value"><span data-counter-int id="itensAlerta">0</span></div>
+                        <div class="kpi__foot"><span class="trend trend--down"><i
+                                    class="lucide lucide-trending-down"></i> abaixo do mínimo</span></div>
+                    </article>
+
+                    <article class="kpi kpi--patrim">
+                        <div class="kpi__head"><span class="kpi__label">Patrimônio (Ativos)</span><span
+                                class="kpi__icon"><i class="lucide lucide-cpu"></i></span></div>
+                        <div class="kpi__value"><span data-counter-int id="totalPatrimonio">0</span></div>
+                        <div class="kpi__foot"><span class="trend trend--neutral"><i class="lucide lucide-shield"></i>
+                                rastreados</span></div>
+                    </article>
+                </section>
+
+                <!-- ===== ABAS ===== -->
+                <section class="tabs-card">
+                    <nav class="tabs-nav" role="tablist" aria-label="Seções do estoque">
+                        <button class="tab-link tab-link--active" role="tab" aria-selected="true"
+                            data-tab="dashboard"><i class="lucide lucide-layout-dashboard"></i> Dashboard</button>
+                        <button class="tab-link" role="tab" aria-selected="false" data-tab="almoxarifado"><i
+                                class="lucide lucide-package"></i> Almoxarifado</button>
+                        <button class="tab-link" role="tab" aria-selected="false" data-tab="fornecedores"><i
+                                class="lucide lucide-truck"></i> Fornecedores</button>
+                        <button class="tab-link" role="tab" aria-selected="false" data-tab="requisicoes"><i
+                                class="lucide lucide-clipboard-list"></i> Requisições</button>
+                        <button class="tab-link" role="tab" aria-selected="false" data-tab="patrimonio"><i
+                                class="lucide lucide-cpu"></i> Patrimônio</button>
+                        <button class="tab-link" role="tab" aria-selected="false" data-tab="movimentacoes"><i
+                                class="lucide lucide-arrow-left-right"></i> Movimentações</button>
+                        <button class="tab-link" role="tab" aria-selected="false" data-tab="auditoria"><i
+                                class="lucide lucide-shield-check"></i> Auditoria</button>
+                        <button class="tab-link" role="tab" aria-selected="false" data-tab="relatorios"><i
+                                class="lucide lucide-bar-chart-3"></i> Relatórios</button>
+                    </nav>
+
+                    <!-- ====== TAB: DASHBOARD ====== -->
+                    <div class="tab-content tab-content--active" data-tab-content="dashboard" role="tabpanel">
+                        <div class="charts-grid">
+                            <article class="card chart-card chart-card--wide">
+                                <header class="card__head">
+                                    <div>
+                                        <h2 class="card__title">Movimentação de Estoque (12 meses)</h2>
+                                        <p class="card__subtitle">Entradas vs Saídas em valor</p>
+                                    </div>
+                                    <div class="chip-group" role="tablist">
+                                        <button class="chip chip--active" data-range="12m">12M</button>
+                                        <button class="chip" data-range="6m">6M</button>
+                                        <button class="chip" data-range="3m">3M</button>
+                                    </div>
+                                </header>
+                                <div class="card__body"><canvas id="chartMov" height="120"></canvas></div>
+                            </article>
+
+                            <article class="card chart-card">
+                                <header class="card__head">
+                                    <div>
+                                        <h2 class="card__title">Composição do Estoque</h2>
+                                        <p class="card__subtitle">Por categoria</p>
+                                    </div>
+                                </header>
+                                <div class="card__body"><canvas id="chartCat"></canvas></div>
+                            </article>
+
+                            <article class="card chart-card">
+                                <header class="card__head">
+                                    <div>
+                                        <h2 class="card__title">Top 5 Itens em Valor</h2>
+                                        <p class="card__subtitle">Maior valor imobilizado</p>
+                                    </div>
+                                </header>
+                                <div class="card__body"><canvas id="chartTop"></canvas></div>
+                            </article>
+
+                            <article class="card chart-card">
+                                <header class="card__head">
+                                    <div>
+                                        <h2 class="card__title">Health Status</h2>
+                                        <p class="card__subtitle">Distribuição por situação</p>
+                                    </div>
+                                </header>
+                                <div class="card__body card__body--center"><canvas id="chartHealth"></canvas></div>
+                            </article>
+                        </div>
+
+                        <article class="card alerts-card">
+                            <header class="card__head">
+                                <div>
+                                    <h2 class="card__title"><i class="lucide lucide-alert-triangle"
+                                            style="color:var(--warn)"></i> Alertas Inteligentes</h2>
+                                    <p class="card__subtitle">Itens que requerem atenção imediata</p>
+                                </div>
+                                <button class="btn btn--ghost btn--sm" id="btnVerTodosAlertas"><i
+                                        class="lucide lucide-arrow-right"></i> Ver todos</button>
+                            </header>
+                            <div class="card__body card__body--flush">
+                                <ul class="alert-list" id="alertList"></ul>
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- ====== TAB: ALMOXARIFADO ====== -->
+                    <div class="tab-content" data-tab-content="almoxarifado" role="tabpanel" hidden>
+                        <div class="grid-toolbar">
+                            <div class="search-box search-box--sm">
+                                <i class="lucide lucide-search"></i>
+                                <input type="search" id="searchInventory"
+                                    placeholder="Pesquisar por descrição, SKU ou localização..."
+                                    aria-label="Pesquisar itens" />
+                            </div>
+                            <select class="select" id="filtroCategoria">
+                                <option value="">Todas as categorias</option>
+                                <option>Material Médico</option>
+                                <option>Equipamento</option>
+                                <option>Consumível</option>
+                                <option>Limpeza</option>
+                                <option>Escritório</option>
+                                <option>EPI</option>
+                            </select>
+                            <select class="select" id="filtroLocalizacao">
+                                <option value="">Todos os depósitos</option>
+                                <option value="A1">Corredor A · Prateleira 1</option>
+                                <option value="B2">Corredor B · Prateleira 2</option>
+                                <option value="C3">Corredor C · Prateleira 3</option>
+                            </select>
+                            <select class="select" id="filtroStatus">
+                                <option value="">Todos os status</option>
+                                <option value="ok">Em estoque</option>
+                                <option value="low">Baixo</option>
+                                <option value="out">Sem estoque</option>
+                                <option value="exp">Próx. validade</option>
+                            </select>
+                            <button class="btn btn--ghost btn--sm" id="btnLimparFiltros"><i
+                                    class="lucide lucide-eraser"></i> Limpar</button>
+                            <button class="btn btn--ghost btn--sm" id="btnImportar"><i class="lucide lucide-upload"></i>
+                                Importar</button>
+                            <button class="btn btn--ghost btn--sm" id="btnExportar"><i
+                                    class="lucide lucide-download"></i> Exportar CSV</button>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table class="table" id="tabelaAlmoxarifado">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAll" aria-label="Selecionar todos" /></th>
+                                        <th>SKU</th>
+                                        <th>Descrição</th>
+                                        <th>Categoria</th>
+                                        <th>Localização</th>
+                                        <th class="num">Qtd</th>
+                                        <th class="num">Mín</th>
+                                        <th class="num">Custo Unit.</th>
+                                        <th class="num">Valor Total</th>
+                                        <th>Validade</th>
+                                        <th>Status</th>
+                                        <th class="actions">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="corpoTabelaAlmoxarifado"></tbody>
+                            </table>
+                            <p class="table-empty" id="emptyInv" hidden>Nenhum item encontrado.</p>
+                        </div>
+                        <footer class="grid-foot">
+                            <span class="muted" id="invCount">0 itens</span>
+                            <div class="bulk-actions" id="bulkActions" hidden>
+                                <span class="muted"><span id="bulkCount">0</span> selecionados</span>
+                                <button class="btn btn--ghost btn--sm" id="bulkAdjust"><i
+                                        class="lucide lucide-sliders-horizontal"></i> Ajustar</button>
+                                <button class="btn btn--ghost btn--sm" id="bulkTransfer"><i
+                                        class="lucide lucide-arrow-left-right"></i> Transferir</button>
+                                <button class="btn btn--danger btn--sm" id="bulkDelete"><i
+                                        class="lucide lucide-trash-2"></i> Excluir</button>
+                            </div>
+                        </footer>
+                    </div>
+
+                    <!-- ====== TAB: FORNECEDORES ====== -->
+                    <div class="tab-content" data-tab-content="fornecedores" role="tabpanel" hidden>
+                        <div class="grid-toolbar">
+                            <div class="search-box search-box--sm"><i class="lucide lucide-search"></i><input
+                                    type="search" id="searchSup" placeholder="Buscar fornecedor..." /></div>
+                            <select class="select" id="filtroSupStatus">
+                                <option value="">Todos</option>
+                                <option value="ativo">Ativo</option>
+                                <option value="pendente">Pendente</option>
+                                <option value="inativo">Inativo</option>
+                            </select>
+                            <button class="btn btn--primary btn--sm" id="btnNovoFornecedor"><i
+                                    class="lucide lucide-plus"></i> Novo Fornecedor</button>
+                        </div>
+                        <div class="supplier-grid" id="supplierGrid"></div>
+                    </div>
+
+                    <!-- ====== TAB: REQUISIÇÕES ====== -->
+                    <div class="tab-content" data-tab-content="requisicoes" role="tabpanel" hidden>
+                        <div class="grid-toolbar">
+                            <div class="search-box search-box--sm"><i class="lucide lucide-search"></i><input
+                                    type="search" id="searchReq" placeholder="Buscar requisição..." /></div>
+                            <select class="select" id="filtroReqSetor">
+                                <option value="">Todos os setores</option>
+                                <option>Recepção</option>
+                                <option>Enfermagem</option>
+                                <option>Administrativo</option>
+                                <option>TI / Suporte</option>
+                                <option>Manutenção</option>
+                            </select>
+                            <select class="select" id="filtroReqStatus">
+                                <option value="">Todos os status</option>
+                                <option>Pendente</option>
+                                <option>Aprovada</option>
+                                <option>Atendida</option>
+                                <option>Rejeitada</option>
+                            </select>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Setor</th>
+                                        <th>Item</th>
+                                        <th class="num">Qtd</th>
+                                        <th>Prioridade</th>
+                                        <th>Solicitante</th>
+                                        <th>Data</th>
+                                        <th>Status</th>
+                                        <th class="actions">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="corpoTabelaReq"></tbody>
+                            </table>
+                            <p class="table-empty" id="emptyReq" hidden>Nenhuma requisição encontrada.</p>
+                        </div>
+                    </div>
+
+                    <!-- ====== TAB: PATRIMÔNIO ====== -->
+                    <div class="tab-content" data-tab-content="patrimonio" role="tabpanel" hidden>
+                        <div class="grid-toolbar">
+                            <div class="search-box search-box--sm"><i class="lucide lucide-search"></i><input
+                                    type="search" id="searchPat" placeholder="Buscar ativo, série, responsável..." />
+                            </div>
+                            <select class="select" id="filtroPatStatus">
+                                <option value="">Todos</option>
+                                <option>Em uso</option>
+                                <option>Em manutenção</option>
+                                <option>Baixado</option>
+                            </select>
+                            <button class="btn btn--primary btn--sm" id="btnNovoPatrim"><i
+                                    class="lucide lucide-plus"></i> Cadastrar Ativo</button>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Tag</th>
+                                        <th>Equipamento</th>
+                                        <th>Série</th>
+                                        <th>Setor</th>
+                                        <th>Responsável</th>
+                                        <th>Aquisição</th>
+                                        <th class="num">Valor</th>
+                                        <th>Status</th>
+                                        <th class="actions">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="corpoTabelaPat"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ====== TAB: MOVIMENTAÇÕES ====== -->
+                    <div class="tab-content" data-tab-content="movimentacoes" role="tabpanel" hidden>
+                        <div class="grid-toolbar">
+                            <div class="search-box search-box--sm"><i class="lucide lucide-search"></i><input
+                                    type="search" id="searchMov" placeholder="Buscar movimentação..." /></div>
+                            <select class="select" id="filtroMovTipo">
+                                <option value="">Todos os tipos</option>
+                                <option>Entrada</option>
+                                <option>Saída</option>
+                                <option>Transferência</option>
+                                <option>Ajuste</option>
+                            </select>
+                            <input type="date" class="select" id="filtroMovDe" />
+                            <input type="date" class="select" id="filtroMovAte" />
+                            <button class="btn btn--primary btn--sm" id="btnNovaMov"><i class="lucide lucide-plus"></i>
+                                Nova Movimentação</button>
+                        </div>
+                        <div class="timeline" id="timelineMov"></div>
+                    </div>
+
+                    <!-- ====== TAB: AUDITORIA ====== -->
+                    <div class="tab-content" data-tab-content="auditoria" role="tabpanel" hidden>
+                        <div class="grid-toolbar">
+                            <div class="search-box search-box--sm"><i class="lucide lucide-search"></i><input
+                                    type="search" id="searchAudit" placeholder="Buscar ação, usuário, recurso..." />
+                            </div>
+                            <select class="select" id="filtroAuditAction">
+                                <option value="">Todas as ações</option>
+                                <option>create</option>
+                                <option>update</option>
+                                <option>delete</option>
+                                <option>login</option>
+                                <option>export</option>
+                            </select>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Quando</th>
+                                        <th>Usuário</th>
+                                        <th>Ação</th>
+                                        <th>Recurso</th>
+                                        <th>Detalhe</th>
+                                        <th>IP</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="corpoTabelaAudit"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ====== TAB: RELATÓRIOS ====== -->
+                    <div class="tab-content" data-tab-content="relatorios" role="tabpanel" hidden>
+                        <div class="reports-grid">
+                            <article class="report-tile" data-report="curva-abc"><i
+                                    class="lucide lucide-bar-chart-3"></i>
+                                <h3>Curva ABC</h3>
+                                <p>Classificação por valor e giro</p>
+                            </article>
+                            <article class="report-tile" data-report="ruptura"><i
+                                    class="lucide lucide-alert-octagon"></i>
+                                <h3>Risco de Ruptura</h3>
+                                <p>Itens com tendência de zerar</p>
+                            </article>
+                            <article class="report-tile" data-report="validade"><i
+                                    class="lucide lucide-calendar-clock"></i>
+                                <h3>Próx. à Validade</h3>
+                                <p>Lotes que vencem em 90 dias</p>
+                            </article>
+                            <article class="report-tile" data-report="consumo"><i class="lucide lucide-line-chart"></i>
+                                <h3>Consumo por Setor</h3>
+                                <p>Quem mais consome cada item</p>
+                            </article>
+                            <article class="report-tile" data-report="fornecedor"><i class="lucide lucide-truck"></i>
+                                <h3>Performance Fornecedor</h3>
+                                <p>Lead time, OTIF, qualidade</p>
+                            </article>
+                            <article class="report-tile" data-report="patrimonio"><i class="lucide lucide-cpu"></i>
+                                <h3>Inventário Patrimonial</h3>
+                                <p>Snapshot dos ativos</p>
+                            </article>
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- ============ MODAL: NOVO/EDITAR ITEM ============ -->
+    <div class="modal" id="modalItem" role="dialog" aria-modal="true" aria-labelledby="modalItemTitle" hidden>
+        <div class="modal__backdrop" data-close></div>
+        <div class="modal__dialog modal__dialog--lg">
+            <header class="modal__head">
+                <h2 id="modalItemTitle" class="modal__title"><i class="lucide lucide-package-plus"></i> Novo Item</h2>
+                <button class="icon-btn icon-btn--ghost" data-close aria-label="Fechar"><i
+                        class="lucide lucide-x"></i></button>
+            </header>
+            <form class="modal__body form" id="formItem" novalidate>
+                <div class="form__row">
+                    <label class="field field--half"><span class="field__label">SKU *</span><input type="text"
+                            name="sku" required placeholder="EX: SKU-0001" /></label>
+                    <label class="field field--half"><span class="field__label">Categoria *</span>
+                        <select name="categoria" required>
+                            <option value="">Selecione</option>
+                            <option>Material Médico</option>
+                            <option>Equipamento</option>
+                            <option>Consumível</option>
+                            <option>Limpeza</option>
+                            <option>Escritório</option>
+                            <option>EPI</option>
+                        </select>
+                    </label>
+                </div>
+                <label class="field"><span class="field__label">Descrição *</span><input type="text" name="descricao"
+                        required maxlength="160" /></label>
+                <div class="form__row">
+                    <label class="field field--third"><span class="field__label">Localização *</span>
+                        <select name="localizacao" required>
+                            <option value="">Selecione</option>
+                            <option value="A1">Corredor A · P1</option>
+                            <option value="B2">Corredor B · P2</option>
+                            <option value="C3">Corredor C · P3</option>
+                        </select>
+                    </label>
+                    <label class="field field--third"><span class="field__label">Quantidade *</span><input type="number"
+                            name="qtd" min="0" required value="0" /></label>
+                    <label class="field field--third"><span class="field__label">Mínimo</span><input type="number"
+                            name="qtdMin" min="0" value="5" /></label>
+                </div>
+                <div class="form__row">
+                    <label class="field field--half"><span class="field__label">Custo Unitário (R$) *</span><input
+                            type="number" name="custo" min="0" step="0.01" required value="0" /></label>
+                    <label class="field field--half"><span class="field__label">Validade</span><input type="date"
+                            name="validade" /></label>
+                </div>
+                <label class="field"><span class="field__label">Fornecedor preferencial</span><select name="fornecedor">
+                        <option value="">—</option>
+                    </select></label>
+                <footer class="modal__foot">
+                    <button type="button" class="btn btn--ghost" data-close>Cancelar</button>
+                    <button type="submit" class="btn btn--primary"><i class="lucide lucide-check"></i> Salvar
+                        Item</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ MODAL: REQUISIÇÃO ============ -->
+    <div class="modal" id="modalRequisicao" role="dialog" aria-modal="true" aria-labelledby="modalRequisicaoTitle"
+        hidden>
+        <div class="modal__backdrop" data-close></div>
+        <div class="modal__dialog">
+            <header class="modal__head">
+                <h2 id="modalRequisicaoTitle" class="modal__title"><i class="lucide lucide-clipboard-check"></i> Nova
+                    Requisição Interna</h2>
+                <button class="icon-btn icon-btn--ghost" data-close aria-label="Fechar"><i
+                        class="lucide lucide-x"></i></button>
+            </header>
+            <form class="modal__body form" id="formRequisicao" novalidate>
+                <div class="form__row">
+                    <label class="field field--half"><span class="field__label">Setor Solicitante *</span>
+                        <select name="setor" required>
+                            <option value="">Selecione</option>
+                            <option>Recepção</option>
+                            <option>Enfermagem</option>
+                            <option>Administrativo</option>
+                            <option>TI / Suporte</option>
+                            <option>Manutenção</option>
+                        </select>
+                    </label>
+                    <label class="field field--half"><span class="field__label">Prioridade</span>
+                        <select name="prioridade">
+                            <option>Normal</option>
+                            <option>Urgente</option>
+                            <option>Crítica</option>
+                        </select>
+                    </label>
+                </div>
+                <label class="field"><span class="field__label">Item Solicitado *</span><input type="text" name="item"
+                        list="datalistItens" required placeholder="Busque o item..." /><datalist
+                        id="datalistItens"></datalist></label>
+                <div class="form__row">
+                    <label class="field field--half"><span class="field__label">Quantidade *</span><input type="number"
+                            name="qtd" min="1" value="1" required /></label>
+                    <label class="field field--half"><span class="field__label">Data *</span><input type="date"
+                            name="data" required /></label>
+                </div>
+                <label class="field"><span class="field__label">Solicitante</span><input type="text" name="solicitante"
+                        placeholder="Seu nome" /></label>
+                <label class="field"><span class="field__label">Observações</span><textarea name="obs" rows="2"
+                        placeholder="Detalhes adicionais..."></textarea></label>
+                <footer class="modal__foot">
+                    <button type="button" class="btn btn--ghost" data-close>Cancelar</button>
+                    <button type="submit" class="btn btn--primary"><i class="lucide lucide-send"></i> Enviar
+                        Requisição</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ MODAL: FORNECEDOR ============ -->
+    <div class="modal" id="modalFornecedor" role="dialog" aria-modal="true" hidden>
+        <div class="modal__backdrop" data-close></div>
+        <div class="modal__dialog">
+            <header class="modal__head">
+                <h2 class="modal__title"><i class="lucide lucide-truck"></i> Novo Fornecedor</h2><button
+                    class="icon-btn icon-btn--ghost" data-close><i class="lucide lucide-x"></i></button>
+            </header>
+            <form class="modal__body form" id="formFornecedor" novalidate>
+                <label class="field"><span class="field__label">Razão Social *</span><input type="text" name="nome"
+                        required /></label>
+                <div class="form__row">
+                    <label class="field field--half"><span class="field__label">CNPJ</span><input type="text"
+                            name="cnpj" placeholder="00.000.000/0001-00" /></label>
+                    <label class="field field--half"><span class="field__label">Categoria</span><select name="cat">
+                            <option>Material Médico</option>
+                            <option>Equipamento</option>
+                            <option>Consumível</option>
+                            <option>Serviços</option>
+                        </select></label>
+                </div>
+                <div class="form__row">
+                    <label class="field field--half"><span class="field__label">Contato</span><input type="text"
+                            name="contato" /></label>
+                    <label class="field field--half"><span class="field__label">Telefone</span><input type="tel"
+                            name="tel" /></label>
+                </div>
+                <label class="field"><span class="field__label">E-mail</span><input type="email" name="email" /></label>
+                <footer class="modal__foot"><button type="button" class="btn btn--ghost"
+                        data-close>Cancelar</button><button type="submit" class="btn btn--primary"><i
+                            class="lucide lucide-check"></i> Salvar</button></footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ MODAL: MOVIMENTAÇÃO ============ -->
+    <div class="modal" id="modalMov" role="dialog" aria-modal="true" hidden>
+        <div class="modal__backdrop" data-close></div>
+        <div class="modal__dialog">
+            <header class="modal__head">
+                <h2 class="modal__title"><i class="lucide lucide-arrow-left-right"></i> Nova Movimentação</h2><button
+                    class="icon-btn icon-btn--ghost" data-close><i class="lucide lucide-x"></i></button>
+            </header>
+            <form class="modal__body form" id="formMov" novalidate>
+                <div class="form__row">
+                    <label class="field field--half"><span class="field__label">Tipo *</span><select name="tipo"
+                            required>
+                            <option value="">Selecione</option>
+                            <option>Entrada</option>
+                            <option>Saída</option>
+                            <option>Transferência</option>
+                            <option>Ajuste</option>
+                        </select></label>
+                    <label class="field field--half"><span class="field__label">Data *</span><input type="date"
+                            name="data" required /></label>
+                </div>
+                <label class="field"><span class="field__label">Item *</span><input type="text" name="item"
+                        list="datalistItens" required /></label>
+                <div class="form__row">
+                    <label class="field field--half"><span class="field__label">Quantidade *</span><input type="number"
+                            name="qtd" min="1" value="1" required /></label>
+                    <label class="field field--half"><span class="field__label">Origem/Destino</span><input type="text"
+                            name="local" placeholder="Ex: CD-01 → Recepção" /></label>
+                </div>
+                <label class="field"><span class="field__label">Observações</span><textarea name="obs"
+                        rows="2"></textarea></label>
+                <footer class="modal__foot"><button type="button" class="btn btn--ghost"
+                        data-close>Cancelar</button><button type="submit" class="btn btn--primary"><i
+                            class="lucide lucide-check"></i> Registrar</button></footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ MODAL: SAIR ============ -->
+    <div class="modal" id="modalSair" role="dialog" aria-modal="true" hidden>
+        <div class="modal__backdrop" data-close></div>
+        <div class="modal__dialog">
+            <header class="modal__head">
+                <h2 class="modal__title"><i class="lucide lucide-log-out"></i> Encerrar sessão?</h2>
+            </header>
+            <div class="modal__body">
+                <p>Tem certeza que deseja sair? Alterações não salvas serão perdidas.</p>
+            </div>
+            <footer class="modal__foot">
+                <button type="button" class="btn btn--ghost" data-close>Continuar</button>
+                <a href="../index.html" class="btn btn--danger"><i class="lucide lucide-log-out"></i> Sair agora</a>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ============ DRAWER: DETALHES DO ITEM ============ -->
+    <aside class="drawer" id="drawerItem" aria-hidden="true">
+        <div class="drawer__backdrop" data-close></div>
+        <div class="drawer__panel" role="dialog" aria-modal="true">
+            <header class="drawer__head">
+                <div>
+                    <span class="muted" id="drawerSku">SKU</span>
+                    <h2 class="drawer__title" id="drawerTitle">—</h2>
+                </div>
+                <button class="icon-btn icon-btn--ghost" data-close><i class="lucide lucide-x"></i></button>
+            </header>
+            <div class="drawer__body" id="drawerBody"></div>
+        </div>
+    </aside>
+
+    <!-- ============ TOAST ============ -->
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+    <!-- ============ COMMAND PALETTE ============ -->
+    <div class="palette" id="palette" hidden>
+        <div class="palette__backdrop" data-close></div>
+        <div class="palette__box">
+            <div class="palette__input"><i class="lucide lucide-search"></i><input type="text" id="paletteInput"
+                    placeholder="O que você quer fazer?" /></div>
+            <ul class="palette__list" id="paletteList"></ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="./estoque.js" defer></script>
+</body>
+
+</html>

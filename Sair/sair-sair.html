@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Médico - G4med</title>
+
+    <link rel="stylesheet" href="sair-sair.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <!-- BOTÃO SAIR -->
+
+    <button class="menu-item logout-btn" onclick="abrirModalLogout()">
+
+        <i data-lucide="log-out"></i>
+
+        <span>Sair</span>
+
+    </button>
+
+    <!-- MODAL LOGOUT -->
+
+    <div class="modal-logout" id="modalLogout">
+
+        <div class="modal-logout-content">
+
+            <div class="logout-icon">
+                <i data-lucide="log-out"></i>
+            </div>
+
+            <h2>Encerrar Sessão</h2>
+
+            <p>
+                Tem certeza que deseja sair do sistema?
+            </p>
+
+            <div class="logout-info">
+
+                <div>
+                    <strong>Usuário:</strong>
+                    <span id="logoutUsuario">
+                        Administrador
+                    </span>
+                </div>
+
+                <div>
+                    <strong>Horário:</strong>
+                    <span id="logoutHora"></span>
+                </div>
+
+            </div>
+
+            <div class="logout-actions">
+
+                <button class="btn-cancel" onclick="fecharModalLogout()">
+
+                    Cancelar
+
+                </button>
+
+                <button class="btn-logout" onclick="realizarLogout()">
+
+                    Sim, Sair
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- LOADING -->
+
+    <div class="logout-loading" id="logoutLoading">
+
+        <div class="spinner"></div>
+
+        <h3>Encerrando sessão...</h3>
+
+    </div>
+    <script>lucide.createIcons();</script>
+    <script src="sair-sair.js"></script>
+</body>
+
+</html>

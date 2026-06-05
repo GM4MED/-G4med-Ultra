@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Gestão Financeira e Fluxo de Caixa - G4Med Ultra" />
+    <title>Gestão Financeira &amp; Fluxo de Caixa | G4Med Ultra</title>
+
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+
+    <!-- Ícones -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.469.0/font/lucide.css" />
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="./financeiro.css" />
+</head>
+
+<body>
+
+    <!-- ============================================
+       LAYOUT PRINCIPAL
+       ============================================ -->
+    <div class="app">
+
+        <!-- =========================================
+         SIDEBAR
+         ========================================= -->
+        <aside class="sidebar" aria-label="Navegação principal">
+            <div class="sidebar__brand">
+                <div class="sidebar__logo" aria-hidden="true">
+                    <i class="lucide lucide-activity"></i>
+                </div>
+                <span class="sidebar__brand-name">G4Med</span>
+            </div>
+
+            <nav class="sidebar__nav" aria-label="Menu">
+                <ul class="nav-list" role="list">
+
+                    <li class="nav-group">
+                        <span class="nav-group__title">Principal</span>
+                        <ul role="list">
+                            <li>
+                                <a href="../index.html" class="nav-item" data-tooltip="Voltar ao Início">
+                                    <i class="lucide lucide-home" aria-hidden="true"></i>
+                                    <span>Início</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="nav-item nav-item--active" aria-current="page"
+                                    data-tooltip="Dashboard">
+                                    <i class="lucide lucide-layout-dashboard" aria-hidden="true"></i>
+                                    <span>Dashboard</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#fluxo" class="nav-item" data-tooltip="Fluxo de Caixa">
+                                    <i class="lucide lucide-trending-up" aria-hidden="true"></i>
+                                    <span>Fluxo de Caixa</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-group">
+                        <span class="nav-group__title">Relatórios Detalhados</span>
+                        <ul role="list">
+                            <li>
+                                <a href="#dre" class="nav-item" data-tooltip="DRE">
+                                    <i class="lucide lucide-file-bar-chart" aria-hidden="true"></i>
+                                    <span>DRE</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#balanco" class="nav-item" data-tooltip="Balanço Patrimonial">
+                                    <i class="lucide lucide-scale" aria-hidden="true"></i>
+                                    <span>Balanço Patrimonial</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#relatorios" class="nav-item" data-tooltip="Relatórios">
+                                    <i class="lucide lucide-file-text" aria-hidden="true"></i>
+                                    <span>Relatórios</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-group">
+                        <span class="nav-group__title">Configurações de Categoria</span>
+                        <ul role="list">
+                            <li>
+                                <a href="#categorias" class="nav-item" data-tooltip="Customizar Categorias">
+                                    <i class="lucide lucide-tags" aria-hidden="true"></i>
+                                    <span>Customizar Categorias</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#suplementos" class="nav-item" data-tooltip="Suplementos">
+                                    <i class="lucide lucide-pill" aria-hidden="true"></i>
+                                    <span>Suplementos</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#convenios" class="nav-item" data-tooltip="Convênios">
+                                    <i class="lucide lucide-shield-check" aria-hidden="true"></i>
+                                    <span>Convênios</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-group">
+                        <span class="nav-group__title">Gestão</span>
+                        <ul role="list">
+                            <li>
+                                <a href="#clientes" class="nav-item" data-tooltip="Clientes / Pacientes">
+                                    <i class="lucide lucide-users" aria-hidden="true"></i>
+                                    <span>Clientes / Pacientes</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#bancos" class="nav-item" data-tooltip="Integrações Bancárias">
+                                    <i class="lucide lucide-landmark" aria-hidden="true"></i>
+                                    <span>Integrações Bancárias</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </nav>
+
+            <div class="sidebar__footer">
+                <div class="user-card">
+                    <div class="user-card__avatar" aria-hidden="true">DR</div>
+                    <div class="user-card__info">
+                        <span class="user-card__name">Dr. Renato</span>
+                        <span class="user-card__role">Administrador</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- =========================================
+         CONTEÚDO PRINCIPAL
+         ========================================= -->
+        <main class="main">
+
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <div class="topbar__left">
+                    <button class="icon-btn icon-btn--ghost" id="sidebarToggle" aria-label="Alternar menu">
+                        <i class="lucide lucide-menu" aria-hidden="true"></i>
+                    </button>
+                    <div>
+                        <h1 class="topbar__title">Gestão Financeira &amp; Fluxo de Caixa</h1>
+                        <p class="topbar__subtitle">Acompanhe receitas, despesas e indicadores em tempo real</p>
+                    </div>
+                </div>
+
+                <div class="topbar__right">
+                    <div class="search-box" role="search">
+                        <i class="lucide lucide-search" aria-hidden="true"></i>
+                        <input type="search" placeholder="Buscar lançamento, paciente, categoria..." aria-label="Buscar"
+                            id="globalSearch" />
+                        <kbd>⌘K</kbd>
+                    </div>
+
+                    <button class="icon-btn" aria-label="Notificações">
+                        <i class="lucide lucide-bell" aria-hidden="true"></i>
+                        <span class="icon-btn__dot" aria-hidden="true"></span>
+                    </button>
+
+                    <button class="btn btn--primary" id="btnNovoLancamento">
+                        <i class="lucide lucide-plus" aria-hidden="true"></i>
+                        <span>Novo Lançamento</span>
+                    </button>
+
+                    <button class="btn btn--ghost" id="btnSair">
+                        <i class="lucide lucide-log-out" aria-hidden="true"></i>
+                        <span>Sair</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- CONTEÚDO ROLÁVEL -->
+            <div class="content">
+
+                <!-- ===== KPIs ===== -->
+                <section class="kpis" aria-label="Indicadores do mês">
+                    <article class="kpi kpi--income">
+                        <div class="kpi__head">
+                            <span class="kpi__label">Receitas do Mês</span>
+                            <span class="kpi__icon" aria-hidden="true"><i
+                                    class="lucide lucide-arrow-down-left"></i></span>
+                        </div>
+                        <div class="kpi__value">R$ <span data-counter="125750">0,00</span></div>
+                        <div class="kpi__foot">
+                            <span class="trend trend--up"><i class="lucide lucide-trending-up"></i> +12,4%</span>
+                            <span class="kpi__hint">vs. mês anterior</span>
+                        </div>
+                    </article>
+
+                    <article class="kpi kpi--expense">
+                        <div class="kpi__head">
+                            <span class="kpi__label">Despesas do Mês</span>
+                            <span class="kpi__icon" aria-hidden="true"><i
+                                    class="lucide lucide-arrow-up-right"></i></span>
+                        </div>
+                        <div class="kpi__value">R$ <span data-counter="89200">0,00</span></div>
+                        <div class="kpi__foot">
+                            <span class="trend trend--down"><i class="lucide lucide-trending-down"></i> -3,1%</span>
+                            <span class="kpi__hint">vs. mês anterior</span>
+                        </div>
+                    </article>
+
+                    <article class="kpi kpi--balance">
+                        <div class="kpi__head">
+                            <span class="kpi__label">Saldo Líquido</span>
+                            <span class="kpi__icon" aria-hidden="true"><i class="lucide lucide-wallet"></i></span>
+                        </div>
+                        <div class="kpi__value">R$ <span data-counter="36550">0,00</span></div>
+                        <div class="kpi__foot">
+                            <span class="trend trend--up"><i class="lucide lucide-trending-up"></i> +28,7%</span>
+                            <span class="kpi__hint">resultado positivo</span>
+                        </div>
+                    </article>
+
+                    <article class="kpi kpi--pending">
+                        <div class="kpi__head">
+                            <span class="kpi__label">Pendentes</span>
+                            <span class="kpi__icon" aria-hidden="true"><i class="lucide lucide-clock"></i></span>
+                        </div>
+                        <div class="kpi__value">R$ <span data-counter="42900">0,00</span></div>
+                        <div class="kpi__foot">
+                            <span class="trend trend--neutral"><i class="lucide lucide-minus"></i> 8 títulos</span>
+                            <span class="kpi__hint">aguardando baixa</span>
+                        </div>
+                    </article>
+                </section>
+
+                <!-- ===== GRÁFICOS ===== -->
+                <section class="charts" aria-label="Análises gráficas">
+
+                    <article class="card chart-card chart-card--wide">
+                        <header class="card__head">
+                            <div>
+                                <h2 class="card__title">Receitas vs Despesas</h2>
+                                <p class="card__subtitle">Comparativo dos últimos 12 meses</p>
+                            </div>
+                            <div class="chip-group" role="tablist" aria-label="Período">
+                                <button class="chip chip--active" role="tab" aria-selected="true"
+                                    data-range="12m">12M</button>
+                                <button class="chip" role="tab" aria-selected="false" data-range="6m">6M</button>
+                                <button class="chip" role="tab" aria-selected="false" data-range="3m">3M</button>
+                            </div>
+                        </header>
+                        <div class="card__body">
+                            <canvas id="chartLine" height="120" aria-label="Gráfico de receitas vs despesas"></canvas>
+                        </div>
+                    </article>
+
+                    <article class="card chart-card">
+                        <header class="card__head">
+                            <div>
+                                <h2 class="card__title">Despesas por Categoria</h2>
+                                <p class="card__subtitle">Distribuição percentual</p>
+                            </div>
+                            <button class="icon-btn icon-btn--ghost" aria-label="Mais opções">
+                                <i class="lucide lucide-more-horizontal" aria-hidden="true"></i>
+                            </button>
+                        </header>
+                        <div class="card__body">
+                            <canvas id="chartPie" aria-label="Despesas por categoria"></canvas>
+                        </div>
+                    </article>
+
+                    <article class="card chart-card">
+                        <header class="card__head">
+                            <div>
+                                <h2 class="card__title">Performance Trimestral</h2>
+                                <p class="card__subtitle">Receita por trimestre</p>
+                            </div>
+                            <button class="icon-btn icon-btn--ghost" aria-label="Mais opções">
+                                <i class="lucide lucide-more-horizontal" aria-hidden="true"></i>
+                            </button>
+                        </header>
+                        <div class="card__body">
+                            <canvas id="chartBar" aria-label="Performance trimestral"></canvas>
+                        </div>
+                    </article>
+
+                    <article class="card chart-card">
+                        <header class="card__head">
+                            <div>
+                                <h2 class="card__title">Contas a Receber / Pagar</h2>
+                                <p class="card__subtitle">Resumo atual</p>
+                            </div>
+                            <button class="icon-btn icon-btn--ghost" aria-label="Mais opções">
+                                <i class="lucide lucide-more-horizontal" aria-hidden="true"></i>
+                            </button>
+                        </header>
+                        <div class="card__body card__body--center">
+                            <canvas id="chartDonut" aria-label="Contas a receber e a pagar"></canvas>
+                        </div>
+                    </article>
+
+                </section>
+
+                <!-- ===== TABELA DE LANÇAMENTOS ===== -->
+                <section class="card table-card" id="fluxo" aria-label="Lançamentos financeiros">
+                    <header class="card__head card__head--stack">
+                        <div>
+                            <h2 class="card__title">Lançamentos Financeiros</h2>
+                            <p class="card__subtitle">Histórico completo com filtros avançados</p>
+                        </div>
+
+                        <div class="filters" role="toolbar" aria-label="Filtros">
+                            <div class="search-box search-box--sm">
+                                <i class="lucide lucide-search" aria-hidden="true"></i>
+                                <input type="search" id="tableSearch" placeholder="Buscar..."
+                                    aria-label="Buscar na tabela" />
+                            </div>
+
+                            <select class="select" id="filterCategoria" aria-label="Filtrar por categoria">
+                                <option value="">Todas as categorias</option>
+                                <option value="Consultas">Consultas</option>
+                                <option value="Procedimentos">Procedimentos</option>
+                                <option value="Salários">Salários</option>
+                                <option value="Suprimentos">Suprimentos</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Contas Fixas">Contas Fixas</option>
+                                <option value="Convênios">Convênios</option>
+                            </select>
+
+                            <select class="select" id="filterTipo" aria-label="Filtrar por tipo">
+                                <option value="">Todos os tipos</option>
+                                <option value="Entrada">Entrada</option>
+                                <option value="Saída">Saída</option>
+                            </select>
+
+                            <div class="date-range">
+                                <input type="date" id="filterDateFrom" aria-label="Data inicial" />
+                                <span aria-hidden="true">→</span>
+                                <input type="date" id="filterDateTo" aria-label="Data final" />
+                            </div>
+
+                            <button class="btn btn--ghost btn--sm" id="btnLimparFiltros">
+                                <i class="lucide lucide-eraser" aria-hidden="true"></i>
+                                Limpar
+                            </button>
+
+                            <button class="btn btn--ghost btn--sm" id="btnExportar">
+                                <i class="lucide lucide-download" aria-hidden="true"></i>
+                                Exportar
+                            </button>
+                        </div>
+                    </header>
+
+                    <div class="card__body card__body--flush">
+                        <div class="table-wrap">
+                            <table class="table" id="tableLancamentos">
+                                <thead>
+                                    <tr>
+                                        <th>Vencimento</th>
+                                        <th>Descrição</th>
+                                        <th>Categoria</th>
+                                        <th class="num">Valor</th>
+                                        <th>Tipo</th>
+                                        <th>Cliente / Paciente</th>
+                                        <th>Pagamento</th>
+                                        <th>Banco</th>
+                                        <th class="actions">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                    <!-- preenchido via JS -->
+                                </tbody>
+                            </table>
+                            <p class="table-empty" id="tableEmpty" hidden>Nenhum lançamento encontrado.</p>
+                        </div>
+                    </div>
+
+                    <footer class="card__foot">
+                        <span class="muted" id="tableCount">0 lançamentos</span>
+                        <div class="pagination" role="navigation" aria-label="Paginação">
+                            <button class="icon-btn icon-btn--ghost" aria-label="Anterior" disabled>
+                                <i class="lucide lucide-chevron-left" aria-hidden="true"></i>
+                            </button>
+                            <button class="chip chip--active">1</button>
+                            <button class="chip">2</button>
+                            <button class="chip">3</button>
+                            <button class="icon-btn icon-btn--ghost" aria-label="Próxima">
+                                <i class="lucide lucide-chevron-right" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </footer>
+                </section>
+
+                <!-- ===== FLUXO DE CAIXA PROJETADO ===== -->
+                <section class="projection" aria-label="Fluxo de caixa projetado">
+                    <article class="card projection__card projection__card--positive">
+                        <span class="projection__label">Próximos 3 Meses</span>
+                        <span class="projection__value">R$ 412.300,00</span>
+                        <span class="projection__hint"><i class="lucide lucide-trending-up"></i> Projeção
+                            otimista</span>
+                    </article>
+                    <article class="card projection__card">
+                        <span class="projection__label">Próximos 3 Meses (Conservador)</span>
+                        <span class="projection__value">R$ 318.750,00</span>
+                        <span class="projection__hint"><i class="lucide lucide-activity"></i> Cenário base</span>
+                    </article>
+                    <article class="card projection__card projection__card--warn">
+                        <span class="projection__label">Pendente de Confirmação</span>
+                        <span class="projection__value">R$ 42.900,00</span>
+                        <span class="projection__hint"><i class="lucide lucide-clock"></i> 8 títulos em aberto</span>
+                    </article>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ============================================
+       MODAL: NOVO LANÇAMENTO
+       ============================================ -->
+    <div class="modal" id="modalLancamento" role="dialog" aria-modal="true" aria-labelledby="modalLancamentoTitle"
+        hidden>
+        <div class="modal__backdrop" data-close></div>
+        <div class="modal__dialog modal__dialog--lg" role="document">
+            <header class="modal__head">
+                <h2 id="modalLancamentoTitle" class="modal__title">
+                    <i class="lucide lucide-plus-circle" aria-hidden="true"></i>
+                    Novo Lançamento
+                </h2>
+                <button class="icon-btn icon-btn--ghost" data-close aria-label="Fechar">
+                    <i class="lucide lucide-x" aria-hidden="true"></i>
+                </button>
+            </header>
+
+            <form class="modal__body form" id="formLancamento" novalidate>
+                <div class="form__row">
+                    <label class="field field--half">
+                        <span class="field__label">Tipo *</span>
+                        <div class="segmented" role="radiogroup" aria-label="Tipo">
+                            <input type="radio" id="tipo-entrada" name="tipo" value="Entrada" checked />
+                            <label for="tipo-entrada"><i class="lucide lucide-arrow-down-left"></i> Entrada</label>
+                            <input type="radio" id="tipo-saida" name="tipo" value="Saída" />
+                            <label for="tipo-saida"><i class="lucide lucide-arrow-up-right"></i> Saída</label>
+                        </div>
+                    </label>
+
+                    <label class="field field--half">
+                        <span class="field__label">Vencimento *</span>
+                        <input type="date" name="vencimento" required />
+                    </label>
+                </div>
+
+                <label class="field">
+                    <span class="field__label">Descrição *</span>
+                    <input type="text" name="descricao" required maxlength="120"
+                        placeholder="Ex.: Consulta cardiológica - João Silva" />
+                </label>
+
+                <div class="form__row">
+                    <label class="field field--half">
+                        <span class="field__label">Categoria *</span>
+                        <select name="categoria" required>
+                            <option value="">Selecione...</option>
+                            <option>Consultas</option>
+                            <option>Procedimentos</option>
+                            <option>Salários</option>
+                            <option>Suprimentos</option>
+                            <option>Marketing</option>
+                            <option>Contas Fixas</option>
+                            <option>Convênios</option>
+                        </select>
+                    </label>
+
+                    <label class="field field--half">
+                        <span class="field__label">Valor (R$) *</span>
+                        <input type="number" name="valor" min="0" step="0.01" required placeholder="0,00" />
+                    </label>
+                </div>
+
+                <div class="form__row">
+                    <label class="field field--half">
+                        <span class="field__label">Cliente / Paciente</span>
+                        <input type="text" name="cliente" placeholder="Nome completo" />
+                    </label>
+
+                    <label class="field field--half">
+                        <span class="field__label">Modo de Pagamento</span>
+                        <select name="pagamento">
+                            <option value="">Selecione...</option>
+                            <option>Pix</option>
+                            <option>Cartão de Crédito</option>
+                            <option>Cartão de Débito</option>
+                            <option>Boleto</option>
+                            <option>Transferência</option>
+                            <option>Dinheiro</option>
+                        </select>
+                    </label>
+                </div>
+
+                <label class="field">
+                    <span class="field__label">Banco de Destino / Origem</span>
+                    <select name="banco">
+                        <option value="">Selecione...</option>
+                        <option>Itaú</option>
+                        <option>Bradesco</option>
+                        <option>Santander</option>
+                        <option>Banco do Brasil</option>
+                        <option>Caixa</option>
+                        <option>Nubank</option>
+                        <option>Inter</option>
+                    </select>
+                </label>
+
+                <footer class="modal__foot">
+                    <button type="button" class="btn btn--ghost" data-close>Cancelar</button>
+                    <button type="submit" class="btn btn--primary">
+                        <i class="lucide lucide-check" aria-hidden="true"></i>
+                        Salvar Lançamento
+                    </button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================
+       MODAL: CONFIRMAR SAÍDA
+       ============================================ -->
+    <div class="modal" id="modalSair" role="dialog" aria-modal="true" aria-labelledby="modalSairTitle" hidden>
+        <div class="modal__backdrop" data-close></div>
+        <div class="modal__dialog" role="document">
+            <header class="modal__head">
+                <h2 id="modalSairTitle" class="modal__title">
+                    <i class="lucide lucide-log-out" aria-hidden="true"></i>
+                    Encerrar sessão?
+                </h2>
+            </header>
+            <div class="modal__body">
+                <p>Tem certeza que deseja sair? Alterações não salvas serão perdidas.</p>
+            </div>
+            <footer class="modal__foot">
+                <button type="button" class="btn btn--ghost" data-close>Continuar trabalhando</button>
+                <a href="../index.html" class="btn btn--danger" id="confirmSair">
+                    <i class="lucide lucide-log-out" aria-hidden="true"></i>
+                    Sair agora
+                </a>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ============================================
+       TOAST CONTAINER
+       ============================================ -->
+    <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="./financeiro.js" defer></script>
+</body>
+
+</html>

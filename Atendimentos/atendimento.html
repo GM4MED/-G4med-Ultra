@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G4med | Atendimentos</title>
+
+    <!-- Folha de estilos principal -->
+    <link rel="stylesheet" href="atendimento.css">
+
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Google Fonts - Inter -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+
+    <!-- Lucide Icons para ícones modernos (alternativa ao Font Awesome) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+    <div class="atendimento-page">
+
+        <!-- ========================================= -->
+        <!-- CABEÇALHO DA PÁGINA -->
+        <!-- ========================================= -->
+        <header class="page-header">
+            <div class="header-left">
+                <h1>
+                    <i class="fas fa-stethoscope" aria-hidden="true"></i>
+                    Atendimentos
+                </h1>
+                <span class="subtitle">
+                    Gestão completa dos atendimentos médicos
+                </span>
+            </div>
+
+            <div class="actions-header">
+                <button id="btnVoltar" class="btn-secondary" aria-label="Voltar para página anterior">
+                    <i class="fas fa-arrow-left" aria-hidden="true"></i> Voltar
+                </button>
+                <button id="btnNovoAtendimento" class="btn-primary" aria-label="Abrir formulário de novo atendimento">
+                    <i class="fas fa-plus" aria-hidden="true"></i> Novo Atendimento
+                </button>
+                <button id="btnSair" class="btn-logout" aria-label="Sair do sistema">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Sair
+                </button>
+            </div>
+        </header>
+
+        <!-- ========================================= -->
+        <!-- SEÇÃO DE DASHBOARD COM CARDS DE INFORMAÇÃO -->
+        <!-- ========================================= -->
+        <section class="dashboard-cards" aria-labelledby="dashboard-title">
+            <h2 id="dashboard-title" class="sr-only">Resumo dos Atendimentos</h2>
+
+            <div class="card-info">
+                <div class="card-icon">
+                    <i class="fas fa-calendar-day" aria-hidden="true"></i>
+                </div>
+                <div>
+                    <span>145</span>
+                    <p>Atendimentos Hoje</p>
+                </div>
+            </div>
+
+            <div class="card-info success">
+                <div class="card-icon">
+                    <i class="fas fa-check-circle" aria-hidden="true"></i>
+                </div>
+                <div>
+                    <span>98</span>
+                    <p>Finalizados</p>
+                </div>
+            </div>
+
+            <div class="card-info warning">
+                <div class="card-icon">
+                    <i class="fas fa-clock" aria-hidden="true"></i>
+                </div>
+                <div>
+                    <span>35</span>
+                    <p>Aguardando</p>
+                </div>
+            </div>
+
+            <div class="card-info primary">
+                <div class="card-icon">
+                    <i class="fas fa-user-doctor" aria-hidden="true"></i>
+                </div>
+                <div>
+                    <span>12</span>
+                    <p>Em Atendimento</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================= -->
+        <!-- SEÇÃO DE FILTROS E PESQUISA -->
+        <!-- ========================================= -->
+        <section class="search-panel" aria-labelledby="filters-title">
+            <h2 id="filters-title" class="sr-only">Filtros de Pesquisa</h2>
+
+            <div class="search-box">
+                <label for="searchPaciente" class="sr-only">Pesquisar paciente</label>
+                <i class="fas fa-search" aria-hidden="true"></i>
+                <input type="text" id="searchPaciente" placeholder="Pesquisar paciente...">
+            </div>
+
+            <label for="filtroStatus" class="sr-only">Filtrar por Status</label>
+            <select id="filtroStatus">
+                <option value="">Todos os Status</option>
+                <option>Aguardando</option>
+                <option>Atendimento</option>
+                <option>Finalizado</option>
+            </select>
+        </section>
+
+        <!-- ========================================= -->
+        <!-- SEÇÃO DA TABELA DE ATENDIMENTOS -->
+        <!-- ========================================= -->
+        <section class="table-container" aria-labelledby="appointments-table-title">
+            <h2 id="appointments-table-title" class="sr-only">Tabela de Atendimentos</h2>
+
+            <table class="table-atendimento">
+                <thead>
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Médico</th>
+                        <th>Convênio</th>
+                        <th>Horário</th>
+                        <th>Status</th>
+                        <th width="180">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyAtendimento">
+                    <!-- Conteúdo da tabela será inserido via JavaScript -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ========================================= -->
+        <!-- MODAL NOVO ATENDIMENTO -->
+        <!-- ========================================= -->
+        <div id="modalNovoAtendimento" class="modal" role="dialog" aria-modal="true"
+            aria-labelledby="modal-new-appointment-title">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-new-appointment-title">
+                        <i class="fas fa-calendar-plus" aria-hidden="true"></i>
+                        Novo Atendimento
+                    </h2>
+                    <button type="button" class="btn-close" onclick="fecharModalNovoAtendimento()" aria-label="Fechar">
+                        &times;
+                    </button>
+                </div>
+                <form id="formNovoAtendimento">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="paciente">Paciente</label>
+                            <input type="text" id="paciente" placeholder="Nome do paciente" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="medico">Médico</label>
+                            <select id="medico" required>
+                                <option value="">Selecione</option>
+                                <option>Dr. Ricardo Silva</option>
+                                <option>Dra. Ana Beatriz</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="convenio">Convênio</label>
+                            <input type="text" id="convenio" placeholder="Convênio">
+                        </div>
+                        <div class="form-group">
+                            <label for="horario">Horário</label>
+                            <input type="time" id="horario" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select id="status">
+                                <option>Aguardando</option>
+                                <option>Atendimento</option>
+                                <option>Finalizado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary"
+                            onclick="fecharModalNovoAtendimento()">Cancelar</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save" aria-hidden="true"></i>
+                            Salvar Atendimento
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ========================================= -->
+        <!-- MODAL VISUALIZAÇÃO DE ATENDIMENTO -->
+        <!-- ========================================= -->
+        <div id="modalVisualizar" class="modal" role="dialog" aria-modal="true"
+            aria-labelledby="modal-view-appointment-title">
+            <div class="modal-content modal-view">
+                <div class="modal-header">
+                    <h2 id="modal-view-appointment-title">Detalhes do Atendimento</h2>
+                    <button class="btn-close" onclick="fecharModalVisualizar()" aria-label="Fechar">
+                        &times;
+                    </button>
+                </div>
+                <div id="conteudoVisualizacao">
+                    <!-- Conteúdo da visualização será inserido via JavaScript -->
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- Fim de atendimento-page -->
+
+    <!-- Scripts JavaScript -->
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="atendimento.js"></script>
+
+</body>
+
+</html>

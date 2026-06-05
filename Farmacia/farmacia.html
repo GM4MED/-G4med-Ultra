@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmácia & Estoque · GM4 Premium</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="farmacia.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <i class="fas fa-pills"></i>
+                <h1>Gestão de Farmácia e Suprimentos</h1>
+            </div>
+            <div class="toolbar">
+                <button id="btnVoltar" class="btn btn-secondary" onclick="window.history.back()"><i
+                        class="fas fa-arrow-left"></i> Voltar</button>
+                <button id="btnNovoItem" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Novo
+                    Medicamento</button>
+                <button id="btnEntrada" class="btn btn-success"><i class="fas fa-box-open"></i> Registrar
+                    Entrada</button>
+                <button class="btn btn-dark" onclick="window.location.href='../index.html'"><i class="fas fa-home"></i>
+                    Home</button>
+            </div>
+        </header>
+
+        <main>
+            <!-- KPIs -->
+            <section class="dashboard-kpis">
+                <div class="kpi-card">
+                    <div class="kpi-icon total"><i class="fas fa-boxes"></i></div>
+                    <div class="kpi-data"><label>Total de Itens</label><span id="totalItens">0</span></div>
+                </div>
+                <div class="kpi-card warning">
+                    <div class="kpi-icon low-stock"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="kpi-data"><label>Estoque Baixo</label><span id="estoqueBaixo">0</span></div>
+                </div>
+                <div class="kpi-card danger">
+                    <div class="kpi-icon expired"><i class="fas fa-calendar-times"></i></div>
+                    <div class="kpi-data"><label>Vencendo (30 dias)</label><span id="vencendo">0</span></div>
+                </div>
+                <div class="kpi-card info">
+                    <div class="kpi-icon movements"><i class="fas fa-exchange-alt"></i></div>
+                    <div class="kpi-data"><label>Saídas Hoje</label><span id="saidasHoje">0</span></div>
+                </div>
+            </section>
+
+            <!-- TABS -->
+            <section class="inventory-content">
+                <nav class="tabs-nav">
+                    <button class="tab-link active" onclick="openTab(event,'estoque')">Inventário Geral</button>
+                    <button class="tab-link" onclick="openTab(event,'movimentacoes')">Movimentações</button>
+                    <button class="tab-link" onclick="openTab(event,'controlados')">Controlados</button>
+                </nav>
+                <div class="grid-area">
+                    <div class="grid-header">
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Pesquisar por nome, lote ou princípio ativo...">
+                        </div>
+                        <div class="filters">
+                            <select id="filtroCategoria">
+                                <option value="">Todas Categorias</option>
+                                <option value="Medicamento">Medicamento</option>
+                                <option value="Descartável">Descartável</option>
+                                <option value="Cirúrgico">Cirúrgico</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="tabelaEstoque">
+                            <thead>
+                                <tr>
+                                    <th width="80">Cód.</th>
+                                    <th>Descrição</th>
+                                    <th>Categoria</th>
+                                    <th width="120">Lote</th>
+                                    <th width="120">Validade</th>
+                                    <th width="100">Qtd</th>
+                                    <th width="120">Status</th>
+                                    <th width="80">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corpoTabelaEstoque"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modalItem" class="modal" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-prescription-bottle-alt"></i> Cadastro de Item</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formItem">
+                    <div class="form-row col-1">
+                        <div class="form-group col-12"><label>Nome <span class="req">*</span></label><input type="text"
+                                id="nomeItem" placeholder="Ex: Dipirona Sódica 500mg" required></div>
+                    </div>
+                    <div class="form-row col-2">
+                        <div class="form-group"><label>Categoria</label><select id="categoriaItem">
+                                <option>Medicamento</option>
+                                <option>Descartável</option>
+                                <option>Controlado (Portaria 344)</option>
+                                <option>Material de Higiene</option>
+                            </select></div>
+                        <div class="form-group"><label>Fabricante</label><input type="text" id="fabricante"></div>
+                    </div>
+                    <div class="form-row col-3">
+                        <div class="form-group"><label>Lote <span class="req">*</span></label><input type="text"
+                                id="lote" required></div>
+                        <div class="form-group"><label>Validade <span class="req">*</span></label><input type="date"
+                                id="validade" required></div>
+                        <div class="form-group"><label>Qtd. Inicial <span class="req">*</span></label><input
+                                type="number" id="quantidade" value="0" required></div>
+                    </div>
+                    <div class="form-row col-2">
+                        <div class="form-group"><label>Estoque Mínimo</label><input type="number" id="estoqueMinimo"
+                                value="10"></div>
+                        <div class="form-group"><label>Unidade</label><select id="unidade">
+                                <option>Caixa</option>
+                                <option>Frasco</option>
+                                <option>Unidade</option>
+                                <option>Ampola</option>
+                            </select></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-cancel">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Gravar no Estoque</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="farmacia.js"></script>
+</body>
+
+</html>

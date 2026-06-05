@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Médico - G4med</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div class="background-glow"></div>
+
+    <aside class="sidebar">
+        <nav>
+            <div class="sidebar-header">
+                <i data-lucide="stethoscope" class="heart-pulse medical-icon"></i>
+                <div class="brand-container">
+                    <h1 class="brand-name">G4med</h1>
+                    <p class="brand-slogan">Intelligent Health System</p>
+                </div>
+            </div>
+
+            <a href="agenda-medica/agenda.html" class="menu-item">
+                <i class="fa-solid fa-calendar-days"></i> <span>Agenda Médica</span>
+            </a>
+
+            <a href="Atendimentos/atendimento.html" class="menu-item">
+                <i class="fa-solid fa-stethoscope"></i> <span>Atendimentos</span>
+            </a>
+            <a href="Atendimento-do-paciente-na-recepcao/atendimento-recepcao.html" class="menu-item">
+                <i class="fa-solid fa-clipboard-user"></i> <span>Atendimento do Paciente na recepção</span>
+            </a>
+
+            <div class="menu-group">
+                <div class="menu-item submenu-toggle" aria-expanded="false">
+                    <div><i class="fa-solid fa-folder-open"></i> <span>Cadastro</span></div>
+                    <i class="fa-solid fa-chevron-down arrow"></i>
+                </div>
+                <div class="submenu">
+                    <a href="Cadastro-paciente/cadastro-paciente.html"><i class="fa-solid fa-user"></i> Paciente</a>
+                    <a href="Cadastros-medicos/cadastro-medicos.html"><i class="fa-solid fa-user-doctor"></i> Médico</a>
+                </div>
+            </div>
+
+            <a href="financeiro/financeiro.html" class="menu-item">
+                <i class="fa-solid fa-money-bill-wave"></i> <span>Financeiro</span>
+            </a>
+
+            <a href="Farmacia/farmacia.html" class="menu-item">
+                <i class="fa-solid fa-capsules"></i> <span>Farmácia</span>
+            </a>
+
+            <a href="Estoque/estoque.html" class="menu-item">
+                <i class="fa-solid fa-boxes-stacked"></i> <span>Estoque</span>
+            </a>
+
+            <div class="menu-group">
+                <div class="menu-item submenu-toggle" aria-expanded="false">
+                    <div><i class="fa-solid fa-chart-column"></i> <span>Relatórios</span></div>
+                    <i class="fa-solid fa-chevron-down arrow"></i>
+                </div>
+                <div class="submenu">
+                    <a href="Relatorios/relatorio-atendimento.html"><i class="fa-solid fa-file-lines"></i>
+                        Atendimentos</a>
+                    <a href="Relatorios/relatorio-paciente.html"><i class="fa-solid fa-users"></i> Pacientes</a>
+                    <a href="Relatorios/relatorio-financeiro.html"><i class="fa-solid fa-money-check-dollar"></i>
+                        Financeiro</a>
+                    <a href="Relatorios/relatorio-estoque.html"><i class="fa-solid fa-warehouse"></i> Estoque</a>
+                </div>
+            </div>
+
+            <div class="menu-group">
+                <div class="menu-item submenu-toggle" aria-expanded="false">
+                    <div><i class="fa-solid fa-screwdriver-wrench"></i> <span>Utilitários</span></div>
+                    <i class="fa-solid fa-chevron-down arrow"></i>
+                </div>
+                <div class="submenu">
+                    <a href="Cadastro-de-categoria/cadastro-categorias.html">
+                        <i class="fa-solid fa-list"></i> Cadastro de Categoria
+                    </a>
+                    <a href="Cadastro-de-exames/Cadastro-exames.html">
+                        <i class="fa-solid fa-file-medical"></i> Cadastro de Exames
+                    </a>
+                    <a href="convenios/convenios.html">
+                        <i class="fa-solid fa-file-medical"></i> Convênio
+                    </a>
+                    <a href="Utilitarios/utilitario-logs.html">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Logs
+                    </a>
+                    <a href="Siglas/siglas.html">
+                        <i class="fa-solid fa-list-ul"></i> Siglas
+                    </a>
+                    <a href="Utilitarios/utilitario-usuario.html">
+                        <i class="fa-solid fa-users-gear"></i> Usuários
+                    </a>
+                </div>
+            </div>
+
+            <a href="configuracoes/configuracoes.html" class="menu-item">
+                <i class="fa-solid fa-gear"></i> <span>Configurações</span>
+            </a>
+
+            <a href="Suporte/suporte.html" class="menu-item">
+                <i class="fa-solid fa-headset"></i>
+                <span>Suporte</span>
+            </a>
+            <a href="Sair/sair-sair.html" class="menu-item logout">
+                <i class="fa-solid fa-right-from-bracket"></i> <span>Sair</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="system-info">
+                    <h3>G4 — Premium V1.0.0</h3>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="datetime-box">
+                    <i class="fa fa-calendar"></i>
+                    <span id="relogio-dinamico" class="monospace-text">Carregando...</span>
+                </div>
+
+                <div class="user-session">
+                    <svg class="user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21a8 8 0 0 0-16 0"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <div class="user-info">
+                        <div class="username">admin</div>
+                        <div class="status">
+                            <div class="status-dot"></div>
+                            <span class="status-text">Online</span>
+                        </div>
+                        <div class="session-time">
+                            Tempo logado: <span id="tempoLogado" class="monospace-text">00h 00m 00s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </main>
+
+    <footer class="footer">
+        © 2026 G4med - Intelligent Health System. Todos os direitos reservados.
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

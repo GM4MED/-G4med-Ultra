@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Siglas · G4Med</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="siglas.css">
+</head>
+
+<body>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="../index.html" class="back-btn" title="Voltar"><i data-lucide="arrow-left"></i></a>
+            <div class="brand">
+                <div class="brand-mark"><i data-lucide="list-todo"></i></div>
+                <div>
+                    <div class="brand-name">G4Med <span>Cadastro</span></div>
+                    <div class="brand-sub">Siglas de Saúde</div>
+                </div>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <button class="icon-btn" id="toggleTheme" title="Tema"><i data-lucide="moon"></i></button>
+            <div class="user-chip">
+                <div class="avatar">DR</div>
+                <div class="user-meta"><span class="user-name">Dr. Rodrigo</span><span
+                        class="user-role">Administrador</span></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="page">
+
+        <!-- PAGE HEADER -->
+        <section class="page-header">
+            <div class="page-title">
+                <span class="crumb"><a href="../index.html">Início</a> · Cadastros · <strong>Siglas</strong></span>
+                <h1>Cadastro de Siglas de Saúde</h1>
+                <p>Gerencie abreviaturas, códigos e siglas utilizadas no sistema. Tudo centralizado e auditável.</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn ghost" id="btnExport"><i data-lucide="download"></i> Exportar CSV</button>
+                <button class="btn ghost" id="btnPrint"><i data-lucide="printer"></i> Imprimir</button>
+            </div>
+        </section>
+
+        <!-- KPI ROW -->
+        <section class="kpi-row">
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon brand"><i data-lucide="list"></i></div>
+                </div>
+                <span class="kpi-label">Total de Siglas</span>
+                <span class="kpi-value" id="kpiTotal">0</span>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon ok"><i data-lucide="check-circle-2"></i></div>
+                </div>
+                <span class="kpi-label">Ativas</span>
+                <span class="kpi-value" id="kpiAtivas">0</span>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon warn"><i data-lucide="x-circle"></i></div>
+                </div>
+                <span class="kpi-label">Inativas</span>
+                <span class="kpi-value" id="kpiInativas">0</span>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon info"><i data-lucide="clock"></i></div>
+                </div>
+                <span class="kpi-label">Última edição</span>
+                <span class="kpi-value" id="kpiLast">—</span>
+            </div>
+        </section>
+
+        <!-- FORM CARD -->
+        <section class="card form-card" id="formCard">
+            <div class="card-head">
+                <div>
+                    <h2><i data-lucide="file-plus"></i> <span id="formTitle">Nova Sigla</span></h2>
+                    <span class="card-sub">Preencha os campos e clique em Gravar</span>
+                </div>
+                <span class="step-pill" id="formMode">Modo: <b>Inserção</b></span>
+            </div>
+
+            <form id="siglaForm" novalidate>
+                <div class="form-grid">
+                    <div class="field col-1">
+                        <label>ID</label>
+                        <div class="input-wrap"><i data-lucide="hash"></i><input type="text" id="idSigla" readonly
+                                placeholder="Auto"></div>
+                    </div>
+                    <div class="field col-3">
+                        <label>Sigla <span class="req">*</span></label>
+                        <div class="input-wrap"><i data-lucide="type"></i><input type="text" id="sigla"
+                                class="uppercase" placeholder="Ex: AMB, SUS, TCE" maxlength="20" required></div>
+                        <small class="hint">Máximo 20 caracteres · será convertido para maiúsculas</small>
+                    </div>
+                    <div class="field col-2">
+                        <label>Status</label>
+                        <div class="input-wrap"><i data-lucide="toggle-left"></i>
+                            <select id="status">
+                                <option value="ativo">Ativo</option>
+                                <option value="inativo">Inativo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field col-6">
+                        <label>Observação</label>
+                        <div class="input-wrap area"><i data-lucide="align-left"></i><textarea id="obs" rows="3"
+                                placeholder="Descrição completa do significado da sigla..."></textarea></div>
+                        <small class="hint"><span id="obsLen">0</span>/500 caracteres</small>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn ghost" id="btnCancelar"><i data-lucide="rotate-ccw"></i>
+                        Cancelar</button>
+                    <button type="submit" class="btn primary" id="btnGravar"><i data-lucide="save"></i> Gravar</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- TOOLBAR + TABLE -->
+        <section class="card">
+            <div class="card-head">
+                <div>
+                    <h2><i data-lucide="table-2"></i> Registros Cadastrados</h2>
+                    <span class="card-sub">Clique em uma linha para editar ou excluir</span>
+                </div>
+                <div class="card-actions">
+                    <div class="search-mini"><i data-lucide="search"></i><input id="searchSigla"
+                            placeholder="Buscar sigla..."></div>
+                    <select id="filtroStatus" class="select-sm">
+                        <option value="">Todos</option>
+                        <option value="ativo">Ativos</option>
+                        <option value="inativo">Inativos</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table class="data-table" id="tabelaSiglas">
+                    <thead>
+                        <tr>
+                            <th width="70">ID</th>
+                            <th width="140">Sigla</th>
+                            <th>Observação</th>
+                            <th width="110">Status</th>
+                            <th width="120">Criado em</th>
+                            <th width="90">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabela"></tbody>
+                </table>
+            </div>
+
+            <div class="table-foot" id="tableFoot">
+                <span>Mostrando <b id="showing">0</b> de <b id="totalRows">0</b> registros</span>
+            </div>
+        </section>
+
+        <footer class="page-footer">
+            <span>© 2026 G4Med · Cadastro de Siglas · Última sincronização: <b id="lastSync">agora</b></span>
+        </footer>
+    </main>
+
+    <!-- DELETE MODAL -->
+    <div class="modal" id="delModal" hidden>
+        <div class="modal-card">
+            <div class="modal-icon warn"><i data-lucide="alert-triangle"></i></div>
+            <h3>Confirmar exclusão</h3>
+            <p>Tem certeza que deseja excluir a sigla <b id="delName">—</b>?<br>Esta ação não pode ser desfeita.</p>
+            <div class="modal-actions">
+                <button class="btn ghost" id="delCancel">Cancelar</button>
+                <button class="btn danger" id="delConfirm"><i data-lucide="trash-2"></i> Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastBox" class="toast-box"></div>
+
+    <script src="siglas.js"></script>
+</body>
+
+</html>

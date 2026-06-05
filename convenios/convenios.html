@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Convênios | Sistema GM4</title>
+    <link rel="stylesheet" href="../convenios/convenios.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <i class="fas fa-handshake"></i>
+                <h1>Gestão de Convênios e Planos</h1>
+            </div>
+            <div class="toolbar">
+                <button id="btnNovo" class="btn btn-primary"><i class="fas fa-plus"></i> Novo Convênio</button>
+                <button id="btnSalvar" class="btn btn-success" disabled><i class="fas fa-save"></i> Gravar</button>
+                <button id="btnEditar" class="btn btn-warning" disabled><i class="fas fa-edit"></i> Editar</button>
+                <button id="btnExcluir" class="btn btn-danger" disabled><i class="fas fa-trash"></i> Excluir</button>
+                <button id="btnSair" class="btn btn-dark" onclick="window.location.href='index.html'">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <!-- ÁREA DE FORMULÁRIO COM ABAS -->
+            <section class="form-area">
+                <nav class="tabs-nav">
+                    <button class="tab-link active" onclick="openTab(event, 'dados-gerais')">1. DADOS GERAIS</button>
+                    <button class="tab-link" onclick="openTab(event, 'faturamento')">2. FATURAMENTO & TABELAS</button>
+                    <button class="tab-link" onclick="openTab(event, 'contato-convenio')">3. CONTATOS & SUPORTE</button>
+                </nav>
+
+                <div class="form-content">
+                    <form id="convenioForm">
+                        <!-- ABA 1: DADOS GERAIS -->
+                        <div id="dados-gerais" class="tab-content active">
+                            <div class="form-grid">
+                                <div class="form-group col-2">
+                                    <label>ID</label>
+                                    <input type="text" id="convenioId" readonly placeholder="Auto">
+                                </div>
+                                <div class="form-group col-10">
+                                    <label>Razão Social</label>
+                                    <input type="text" id="razaoSocial" class="uppercase" disabled required>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label>Nome Fantasia</label>
+                                    <input type="text" id="nomeFantasia" class="uppercase" disabled required>
+                                </div>
+                                <div class="form-group col-3">
+                                    <label>CNPJ</label>
+                                    <input type="text" id="cnpj" disabled>
+                                </div>
+                                <div class="form-group col-3">
+                                    <label>Registro ANS</label>
+                                    <input type="text" id="registroAns" disabled>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Status do Convênio</label>
+                                    <select id="status" disabled>
+                                        <option value="A">Ativo</option>
+                                        <option value="I">Inativo/Suspenso</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-8">
+                                    <label>Web-Service / Portal Autorizador</label>
+                                    <input type="url" id="urlPortal" placeholder="https://..." disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ABA 2: FATURAMENTO -->
+                        <div id="faturamento" class="tab-content">
+                            <div class="form-grid">
+                                <div class="form-group col-4">
+                                    <label>Tabela de Honorários</label>
+                                    <select id="tabelaHonorarios" disabled>
+                                        <option value="TUSS">TUSS</option>
+                                        <option value="CBHPM">CBHPM</option>
+                                        <option value="PROPRIA">Tabela Própria</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Prazo Pagamento (Dias)</label>
+                                    <input type="number" id="prazoPagamento" value="30" disabled>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>% Taxa Administração</label>
+                                    <input type="text" id="taxaAdm" placeholder="0,00%" disabled>
+                                </div>
+                                <div class="form-group col-12">
+                                    <label>Observações de Faturamento</label>
+                                    <textarea id="obsFaturamento" rows="3" disabled
+                                        placeholder="Ex: Exige autorização prévia para exames de imagem..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ABA 3: CONTATOS -->
+                        <div id="contato-convenio" class="tab-content">
+                            <div class="form-grid">
+                                <div class="form-group col-6">
+                                    <label>E-mail Faturamento</label>
+                                    <input type="email" id="emailFat" disabled>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label>Telefone Suporte Prestador</label>
+                                    <input type="text" id="telSuporte" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ÁREA DE GRADE (GRID) -->
+            <section class="grid-area">
+                <div class="grid-header">
+                    <span><i class="fas fa-list"></i> Convênios Cadastrados</span>
+                    <div class="grid-search">
+                        <input type="text" placeholder="Filtrar por nome ou CNPJ...">
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="tabelaConvenios">
+                        <thead>
+                            <tr>
+                                <th width="80">ID</th>
+                                <th>Nome Fantasia</th>
+                                <th width="180">CNPJ</th>
+                                <th width="150">ANS</th>
+                                <th width="150">Tabela</th>
+                                <th width="100">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaConvenios">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../convenios/convenios.js"></script>
+</body>
+
+</html>

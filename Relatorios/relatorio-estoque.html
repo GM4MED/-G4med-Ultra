@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios & BI · Estoque · G4Med</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="relatorio-estoque.css">
+</head>
+
+<body>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="../index.html" class="back-btn" title="Voltar"><i data-lucide="arrow-left"></i></a>
+            <div class="brand">
+                <div class="brand-mark"><i data-lucide="package-2"></i></div>
+                <div>
+                    <div class="brand-name">G4Med <span>BI</span></div>
+                    <div class="brand-sub">Relatório de Estoque</div>
+                </div>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <button class="icon-btn" id="toggleTheme" title="Tema"><i data-lucide="moon"></i></button>
+            <button class="icon-btn" title="Atualizar" id="btnRefresh"><i data-lucide="refresh-cw"></i></button>
+            <button class="icon-btn has-dot" title="Alertas"><i data-lucide="bell"></i><span
+                    class="dot"></span></button>
+            <div class="user-chip">
+                <div class="avatar">DR</div>
+                <div class="user-meta"><span class="user-name">Dr. Rodrigo</span><span class="user-role">Gestor
+                        BI</span></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="page">
+
+        <!-- HEADER -->
+        <section class="page-header">
+            <div class="page-title">
+                <span class="crumb"><a href="../index.html">Início</a> · Relatórios · <strong>Estoque</strong></span>
+                <h1>Inteligência de Estoque</h1>
+                <p>Visão completa de inventário, validade, ruptura e consumo — tudo em tempo real para decisões de
+                    compra mais inteligentes.</p>
+            </div>
+            <div class="page-actions">
+                <div class="period-tabs" id="periodTabs">
+                    <button data-period="7">7 dias</button>
+                    <button data-period="30" class="active">30 dias</button>
+                    <button data-period="90">90 dias</button>
+                    <button data-period="365">12 meses</button>
+                    <button data-period="custom"><i data-lucide="calendar"></i> Personalizado</button>
+                </div>
+                <button class="btn ghost" id="btnPrint"><i data-lucide="printer"></i> Imprimir</button>
+                <button class="btn ghost" id="btnExport"><i data-lucide="download"></i> Exportar</button>
+                <button class="btn primary" id="btnShare"><i data-lucide="share-2"></i> Compartilhar</button>
+            </div>
+        </section>
+
+        <!-- FILTERS -->
+        <section class="filter-bar">
+            <div class="filter-group">
+                <label>Período</label>
+                <div class="date-range">
+                    <input type="date" id="dateFrom"><span>—</span><input type="date" id="dateTo">
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>Unidade</label>
+                <select id="fUnit">
+                    <option>Todas as unidades</option>
+                    <option>Itaim Bibi · Matriz</option>
+                    <option>Alphaville</option>
+                    <option>Jardins</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Categoria</label>
+                <select id="fCat">
+                    <option>Todas</option>
+                    <option>Medicamentos</option>
+                    <option>Materiais Cirúrgicos</option>
+                    <option>EPIs</option>
+                    <option>Descartáveis</option>
+                    <option>Limpeza</option>
+                    <option>Escritório</option>
+                    <option>Laboratório</option>
+                    <option>Reagentes</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Fornecedor</label>
+                <select id="fSup">
+                    <option>Todos os fornecedores</option>
+                    <option>MedSupply Brasil</option>
+                    <option>FarmaDistribuidora</option>
+                    <option>HospitalCare</option>
+                    <option>BioMed Soluções</option>
+                    <option>CirurgiCenter</option>
+                    <option>Equipamed</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Almoxarifado</label>
+                <select id="fAlmox">
+                    <option>Todos</option>
+                    <option>Central</option>
+                    <option>Farmácia Clínica</option>
+                    <option>Bloco Cirúrgico</option>
+                </select>
+            </div>
+            <div class="filter-actions">
+                <button class="btn ghost sm" id="btnClear"><i data-lucide="rotate-ccw"></i> Limpar</button>
+                <button class="btn primary sm" id="btnApply"><i data-lucide="filter"></i> Aplicar</button>
+            </div>
+        </section>
+
+        <!-- KPI ROW -->
+        <section class="kpi-row">
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon brand"><i data-lucide="wallet"></i></div>
+                    <span class="kpi-trend up"><i data-lucide="trending-up"></i> +6.2%</span>
+                </div>
+                <span class="kpi-label">Valor Total em Estoque</span>
+                <span class="kpi-value">R$ <span data-counter="2847">0</span><small>k</small></span>
+                <div class="kpi-foot"><canvas class="spark" data-spark="brand"></canvas></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon warn"><i data-lucide="alert-triangle"></i></div>
+                    <span class="kpi-trend down"><i data-lucide="trending-up"></i> +4 itens</span>
+                </div>
+                <span class="kpi-label">Itens em Baixo Estoque</span>
+                <span class="kpi-value" data-counter="38">0</span>
+                <div class="kpi-foot"><canvas class="spark" data-spark="warn"></canvas></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon rose"><i data-lucide="calendar-x"></i></div>
+                    <span class="kpi-trend down"><i data-lucide="trending-up"></i> +2</span>
+                </div>
+                <span class="kpi-label">Itens Vencendo (30d)</span>
+                <span class="kpi-value" data-counter="17">0</span>
+                <div class="kpi-foot"><canvas class="spark" data-spark="rose"></canvas></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon info"><i data-lucide="repeat"></i></div>
+                    <span class="kpi-trend up"><i data-lucide="trending-up"></i> +0.4</span>
+                </div>
+                <span class="kpi-label">Giro de Estoque</span>
+                <span class="kpi-value">5.8<small>x/ano</small></span>
+                <div class="kpi-foot"><canvas class="spark" data-spark="info"></canvas></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon purple"><i data-lucide="package-x"></i></div>
+                    <span class="kpi-trend up"><i data-lucide="trending-down"></i> -0.8%</span>
+                </div>
+                <span class="kpi-label">Taxa de Ruptura</span>
+                <span class="kpi-value">2.4<small>%</small></span>
+                <div class="kpi-foot"><canvas class="spark" data-spark="purple"></canvas></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon ok"><i data-lucide="check-circle-2"></i></div>
+                    <span class="kpi-trend up"><i data-lucide="trending-up"></i> +1.2%</span>
+                </div>
+                <span class="kpi-label">Acurácia do Inventário</span>
+                <span class="kpi-value">98.6<small>%</small></span>
+                <div class="kpi-foot"><canvas class="spark" data-spark="ok"></canvas></div>
+            </div>
+        </section>
+
+        <!-- INSIGHTS -->
+        <section class="insights-row">
+            <div class="insight">
+                <div class="insight-icon ok"><i data-lucide="lightbulb"></i></div>
+                <div>
+                    <strong>Destaque do período</strong>
+                    <p>Categoria <b>Medicamentos</b> aumentou giro em 18% após renegociação com fornecedor. Economia
+                        projetada: <b>R$ 42k/mês</b>.</p>
+                </div>
+            </div>
+            <div class="insight">
+                <div class="insight-icon warn"><i data-lucide="alert-triangle"></i></div>
+                <div>
+                    <strong>Atenção</strong>
+                    <p><b>Soro fisiológico 0,9% 500ml</b> atinge ruptura em <b>8 dias</b> no ritmo atual. Sugerir compra
+                        de <b>240 unidades</b>.</p>
+                </div>
+            </div>
+            <div class="insight">
+                <div class="insight-icon info"><i data-lucide="rocket"></i></div>
+                <div>
+                    <strong>Oportunidade</strong>
+                    <p><b>17 itens</b> vencem em 30 dias somando R$ 38k. Acionar campanha interna de uso prioritário
+                        pode evitar perda de <b>~R$ 27k</b>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHARTS GRID -->
+        <section class="grid">
+
+            <!-- CHART 1: VALOR POR CATEGORIA -->
+            <div class="card span-2">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="layers"></i> Valor do Estoque por Categoria</h3>
+                        <span class="card-sub">Distribuição financeira do inventário</span>
+                    </div>
+                    <div class="card-actions">
+                        <div class="seg" data-target="chartEstoqueValor">
+                            <button class="active" data-mode="bar-h">Horizontal</button>
+                            <button data-mode="bar">Barras</button>
+                        </div>
+                        <button class="icon-btn sm" title="Exportar"><i data-lucide="download"></i></button>
+                        <button class="icon-btn sm" title="Maximizar"><i data-lucide="maximize-2"></i></button>
+                    </div>
+                </div>
+                <div class="chart-wrap"><canvas id="chartEstoqueValor"></canvas></div>
+            </div>
+
+            <!-- CHART 2: VALIDADE -->
+            <div class="card">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="calendar-clock"></i> Índice de Validade</h3>
+                        <span class="card-sub">Distribuição por janela de vencimento</span>
+                    </div>
+                    <button class="icon-btn sm" title="Mais"><i data-lucide="more-horizontal"></i></button>
+                </div>
+                <div class="chart-wrap doughnut">
+                    <canvas id="chartEstoqueValidade"></canvas>
+                    <div class="dough-center">
+                        <span class="dough-num">11.6%</span>
+                        <span class="dough-lbl">Crítico</span>
+                    </div>
+                </div>
+                <div class="legend" id="legendValidade"></div>
+            </div>
+
+            <!-- CHART 3: BAIXO ESTOQUE -->
+            <div class="card span-2">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="package-search"></i> Top 10 — Produtos com Baixo Estoque</h3>
+                        <span class="card-sub">Itens abaixo do ponto de pedido</span>
+                    </div>
+                    <button class="icon-btn sm" title="Mais"><i data-lucide="more-horizontal"></i></button>
+                </div>
+                <div class="chart-wrap"><canvas id="chartBaixoEstoque"></canvas></div>
+            </div>
+
+            <!-- CHART 4: MOVIMENTAÇÃO -->
+            <div class="card">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="arrow-left-right"></i> Movimentação</h3>
+                        <span class="card-sub">Entradas vs. Saídas (30d)</span>
+                    </div>
+                    <button class="icon-btn sm" title="Mais"><i data-lucide="more-horizontal"></i></button>
+                </div>
+                <div class="chart-wrap"><canvas id="chartMovimentacaoEstoque"></canvas></div>
+            </div>
+
+            <!-- HEATMAP CATEGORIA × MÊS -->
+            <div class="card span-2">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="grid-3x3"></i> Mapa de Calor — Categoria × Mês</h3>
+                        <span class="card-sub">Intensidade de consumo nos últimos 12 meses</span>
+                    </div>
+                    <button class="icon-btn sm" title="Mais"><i data-lucide="more-horizontal"></i></button>
+                </div>
+                <div class="heatmap" id="heatmap"></div>
+                <div class="heatmap-legend">
+                    <span>Baixo</span>
+                    <div class="scale"><span></span><span></span><span></span><span></span><span></span></div>
+                    <span>Alto</span>
+                </div>
+            </div>
+
+            <!-- TOP FORNECEDORES -->
+            <div class="card">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="truck"></i> Top Fornecedores</h3>
+                        <span class="card-sub">Participação por valor</span>
+                    </div>
+                </div>
+                <div class="bar-list" id="topSuppliers"></div>
+            </div>
+
+            <!-- CHART 5: CONSUMO MENSAL -->
+            <div class="card span-3">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="line-chart"></i> Consumo Mensal de Materiais</h3>
+                        <span class="card-sub">Histórico 12 meses por categoria</span>
+                    </div>
+                    <div class="card-actions">
+                        <div class="seg" data-target="chartConsumoMateriais">
+                            <button class="active" data-metric="all">Tudo</button>
+                            <button data-metric="med">Medicamentos</button>
+                            <button data-metric="cir">Cirúrgicos</button>
+                            <button data-metric="epi">EPIs</button>
+                            <button data-metric="desc">Descartáveis</button>
+                        </div>
+                        <button class="icon-btn sm"><i data-lucide="download"></i></button>
+                    </div>
+                </div>
+                <div class="chart-wrap tall"><canvas id="chartConsumoMateriais"></canvas></div>
+            </div>
+
+            <!-- TOP PRODUTOS RANKING -->
+            <div class="card span-3">
+                <div class="card-head">
+                    <div>
+                        <h3><i data-lucide="trophy"></i> Top 15 Produtos Mais Consumidos</h3>
+                        <span class="card-sub">Performance composta — volume, giro e criticidade</span>
+                    </div>
+                    <div class="card-actions">
+                        <div class="seg">
+                            <button class="active">Geral</button>
+                            <button>Volume</button>
+                            <button>Valor</button>
+                            <button>Giro</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table class="rank-table" id="rankTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Código</th>
+                                <th>Produto</th>
+                                <th>Categoria</th>
+                                <th>Qtd consumida</th>
+                                <th>Valor</th>
+                                <th>Giro</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- BREAKDOWN TABLE -->
+        <section class="card">
+            <div class="card-head">
+                <div>
+                    <h3><i data-lucide="table-2"></i> Detalhamento por Categoria</h3>
+                    <span class="card-sub">Métricas consolidadas e variação vs. período anterior</span>
+                </div>
+                <div class="card-actions">
+                    <div class="search-mini"><i data-lucide="search"></i><input id="tblSearch"
+                            placeholder="Buscar categoria..."></div>
+                    <button class="btn ghost sm" id="btnExportCat"><i data-lucide="download"></i> CSV</button>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table class="data-table" id="breakdownTable">
+                    <thead>
+                        <tr>
+                            <th>Categoria</th>
+                            <th class="num">SKUs</th>
+                            <th class="num">Qtd em estoque</th>
+                            <th class="num">Valor</th>
+                            <th class="num">Giro</th>
+                            <th class="num">Ruptura</th>
+                            <th class="num">Variação</th>
+                            <th>Tendência</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <th>TOTAL</th>
+                            <th class="num" id="tFSku">0</th>
+                            <th class="num" id="tFQtd">0</th>
+                            <th class="num" id="tFVal">R$ 0</th>
+                            <th class="num" id="tFGir">0x</th>
+                            <th class="num" id="tFRup">0%</th>
+                            <th class="num">—</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+
+        <footer class="page-footer">
+            <span>© 2026 G4Med · Inteligência Hospitalar · Última atualização: <b id="lastUpdate">agora</b></span>
+            <span>Dados consolidados · Fonte: Data Warehouse v3.2 · SLA 99.98%</span>
+        </footer>
+    </main>
+
+    <div id="toastBox" class="toast-box"></div>
+
+    <script src="relatorio-estoque.js"></script>
+</body>
+
+</html>

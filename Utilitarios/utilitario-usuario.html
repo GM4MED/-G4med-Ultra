@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários · G4Med</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="utilitario-usuarios.css">
+</head>
+
+<body>
+
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="../index.html" class="back-btn"><i data-lucide="arrow-left"></i></a>
+            <div class="brand">
+                <div class="brand-mark"><i data-lucide="users"></i></div>
+                <div>
+                    <div class="brand-name">G4Med <span>Admin</span></div>
+                    <div class="brand-sub">Gerenciamento de Usuários</div>
+                </div>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <button class="icon-btn" id="tTheme"><i data-lucide="moon"></i></button>
+            <div class="user-chip">
+                <div class="avatar">DR</div>
+                <div>
+                    <div class="user-nome">Dr. Rodrigo</div>
+                    <div class="user-role">Administrador</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="page">
+
+        <section class="page-header">
+            <div class="page-title">
+                <div class="breadcrumb"><a href="../index.html">Início</a> · Administrativo · <strong>Usuários</strong>
+                </div>
+                <h1>Gerenciamento de Usuários</h1>
+                <p>Crie, edite e monitore usuários do sistema. Controle de acesso por perfil, status e auditoria.</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn ghost" id="btnExport"><i data-lucide="download"></i> Exportar CSV</button>
+                <button class="btn ghost" id="btnPrint"><i data-lucide="printer"></i> Imprimir</button>
+            </div>
+        </section>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="st-head">
+                    <div class="st-icon all"><i data-lucide="users"></i></div>
+                </div>
+                <div class="st-count" id="totalUsuarios">0</div>
+                <div class="st-label">Total Usuários</div>
+            </div>
+            <div class="stat-card">
+                <div class="st-head">
+                    <div class="st-icon ok"><i data-lucide="user-check"></i></div>
+                </div>
+                <div class="st-count" id="usuariosAtivos">0</div>
+                <div class="st-label">Ativos</div>
+            </div>
+            <div class="stat-card">
+                <div class="st-head">
+                    <div class="st-icon warn"><i data-lucide="user-x"></i></div>
+                </div>
+                <div class="st-count" id="usuariosBloqueados">0</div>
+                <div class="st-label">Bloqueados</div>
+            </div>
+            <div class="stat-card">
+                <div class="st-head">
+                    <div class="st-icon purple"><i data-lucide="shield"></i></div>
+                </div>
+                <div class="st-count" id="administradores">0</div>
+                <div class="st-label">Administradores</div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-head">
+                <div>
+                    <h2><i data-lucide="table-2"></i> Usuários do Sistema</h2>
+                    <p>Clique em uma linha para editar ou use as ações rápidas</p>
+                </div>
+                <div class="card-actions">
+                    <div class="search-mini"><i data-lucide="search"></i><input id="buscarUsuario"
+                            placeholder="Pesquisar usuário..."></div>
+                    <select id="filtroPerfil" class="select-sm">
+                        <option value="">Todos os Perfis</option>
+                        <option>Administrador</option>
+                        <option>Médico</option>
+                        <option>Recepção</option>
+                        <option>Financeiro</option>
+                    </select>
+                    <button class="btn primary" id="btnNovoUsuario"><i data-lucide="plus"></i> Novo Usuário</button>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th width="45"></th>
+                            <th>Nome</th>
+                            <th>Login</th>
+                            <th width="130">Perfil</th>
+                            <th width="110">Status</th>
+                            <th width="120">Último Acesso</th>
+                            <th width="90">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+
+            <div class="table-foot">
+                <span>Mostrando <b id="showing">0</b> de <b id="totalRows">0</b> usuários</span>
+                <span>Última sincronização: <b id="lastSync">—</b></span>
+            </div>
+        </section>
+
+        <footer class="page-footer">
+            © 2026 G4Med · Gerenciamento de Usuários · <b id="syncFooter">—</b>
+        </footer>
+
+    </main>
+
+    <div class="modal-overlay" id="mCadastro" hidden>
+        <div class="modal-card">
+            <div class="m-hd">
+                <div>
+                    <div class="m-tag" id="tTag">NOVO</div>
+                    <h2 id="tTitle">Novo Usuário</h2>
+                </div>
+                <button class="icon-btn" id="bCloseCad"><i data-lucide="x"></i></button>
+            </div>
+            <div class="m-body">
+                <form id="fCadastro" class="m-fm" novalidate>
+                    <div class="m-gr full">
+                        <label>Nome completo <span class="req">*</span></label>
+                        <div class="m-inp"><i data-lucide="user"></i><input id="cNome"
+                                placeholder="Ex: Dr. Ricardo Silva" required></div>
+                    </div>
+                    <div class="m-gr">
+                        <label>Login <span class="req">*</span></label>
+                        <div class="m-inp"><i data-lucide="at-sign"></i><input id="cLogin" placeholder="dr.ricardo"
+                                required></div>
+                        <div class="m-hint">Apenas letras minúsculas, números e pontos</div>
+                    </div>
+                    <div class="m-gr">
+                        <label>E-mail <span class="req">*</span></label>
+                        <div class="m-inp"><i data-lucide="mail"></i><input id="cEmail" type="email"
+                                placeholder="ricardo@g4med.com" required></div>
+                    </div>
+                    <div class="m-gr">
+                        <label>Perfil <span class="req">*</span></label>
+                        <div class="m-inp">
+                            <i data-lucide="shield"></i>
+                            <select id="cPerfil" required>
+                                <option>Administrador</option>
+                                <option>Médico</option>
+                                <option>Recepção</option>
+                                <option>Financeiro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="m-gr">
+                        <label>Senha <span id="reqSenha" class="req">*</span></label>
+                        <div class="m-inp"><i data-lucide="lock"></i><input id="cSenha" type="password"
+                                placeholder="Mínimo 6 caracteres"></div>
+                        <div class="m-hint" id="hintSenha">Força: <b>—</b></div>
+                    </div>
+                    <div class="m-gr">
+                        <label>Status</label>
+                        <div class="m-inp">
+                            <i data-lucide="toggle-left"></i>
+                            <select id="cStatus">
+                                <option>Ativo</option>
+                                <option>Bloqueado</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="m-foot">
+                <button class="btn ghost" type="button" id="bCancelCad">Cancelar</button>
+                <button class="btn primary" id="bSalvar" form="fCadastro"><i data-lucide="save"></i> Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="mExcluir" hidden>
+        <div class="modal-card modal-confirm">
+            <div class="c-icon"><i data-lucide="alert-triangle"></i></div>
+            <h3>Confirmar exclusão</h3>
+            <p>Tem certeza que deseja excluir o usuário <b id="dNome">—</b>?<br>Esta ação não pode ser desfeita.</p>
+            <div class="c-btns">
+                <button class="btn ghost" id="bCancelDel">Cancelar</button>
+                <button class="btn danger" id="bConfirmDel"><i data-lucide="trash-2"></i> Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-box" id="toastBox"></div>
+
+    <script src="utilitario-usuario.js"></script>
+</body>
+
+</html>
