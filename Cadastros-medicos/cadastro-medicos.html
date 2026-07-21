@@ -31,17 +31,19 @@
                 <button id="btnExcluir" class="btn btn-danger" disabled>
                     <i class="fas fa-trash"></i> Excluir
                 </button>
-                <button id="btnSair" class="btn btn-dark" onclick="window.location.href='agenda_enterprise.html'">
-                    <i class="fas fa-sign-out-alt"></i> Sair
-                </button>
+                <div class="toolbar">
+                    <button id="btnSair" class="btn btn-dark" onclick="window.location.href='../Menu-Principal.html'">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </button>
+                </div>
             </div>
         </header>
 
         <main>
-            <!-- ÁREA DE FORMULÁRIO COM ABAS -->
             <section class="form-area">
                 <nav class="tabs-nav">
-                    <button class="tab-link active" onclick="openTab(event, 'dados-pessoais')">1. Dados Básicos</button>
+                    <button class="tab-link active" onclick="openTab(event, 'dados-pessoais')">1. Dados
+                        BÁSICOS</button>
                     <button class="tab-link" onclick="openTab(event, 'especialidades')">2. Especialidades & CRM</button>
                     <button class="tab-link" onclick="openTab(event, 'agenda-config')">3. Config. Agenda</button>
                     <button class="tab-link" onclick="openTab(event, 'financeiro')">4. Financeiro</button>
@@ -49,7 +51,6 @@
 
                 <div class="form-content">
                     <form id="medicoForm">
-                        <!-- ABA 1: DADOS BÁSICOS -->
                         <div id="dados-pessoais" class="tab-content active">
                             <div class="form-grid">
                                 <div class="form-group col-2">
@@ -67,6 +68,10 @@
                                 <div class="form-group col-4">
                                     <label>Data de Nascimento</label>
                                     <input type="date" id="dataNasc" disabled>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Idade / Tempo de vida</label>
+                                    <input type="text" id="idadeTempoVida" readonly placeholder="Auto">
                                 </div>
                                 <div class="form-group col-4">
                                     <label>Sexo</label>
@@ -91,7 +96,6 @@
                             </div>
                         </div>
 
-                        <!-- ABA 2: ESPECIALIDADES -->
                         <div id="especialidades" class="tab-content">
                             <div class="form-grid">
                                 <div class="form-group col-4">
@@ -161,10 +165,8 @@
                             </div>
                         </div>
 
-                        <!-- ABA 3: CONFIGURAÇÃO DE AGENDA -->
                         <div id="agenda-config" class="tab-content">
                             <div class="form-grid">
-                                <!-- DIAS DE ATENDIMENTO -->
                                 <div class="col-12">
                                     <h3 class="section-title">Dias de Atendimento</h3>
                                 </div>
@@ -180,7 +182,6 @@
                                     </div>
                                 </div>
 
-                                <!-- PERÍODOS -->
                                 <div class="col-12">
                                     <h3 class="section-title">Períodos de Atendimento</h3>
                                 </div>
@@ -192,7 +193,22 @@
                                     </div>
                                 </div>
 
-                                <!-- HORÁRIOS -->
+                                <div class="col-12">
+                                    <h3 class="section-title">Hora do Agendamento</h3>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Primeiro Horário</label>
+                                    <input type="time" id="horaAgendamentoInicio">
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Último Horário</label>
+                                    <input type="time" id="horaAgendamentoFim">
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>Intervalo da Grade (min)</label>
+                                    <input type="number" id="intervaloGradeAgendamento" value="30" min="1">
+                                </div>
+
                                 <div class="col-12">
                                     <h3 class="section-title">Horários de Atendimento</h3>
                                 </div>
@@ -227,7 +243,6 @@
                                     </div>
                                 </div>
 
-                                <!-- CONFIGURAÇÕES DA CONSULTA -->
                                 <div class="col-12">
                                     <h3 class="section-title">Configurações da Consulta</h3>
                                 </div>
@@ -244,7 +259,6 @@
                                     <input type="number" id="maxEncaixes" value="0">
                                 </div>
 
-                                <!-- LIMITES E UNIDADE -->
                                 <div class="form-group col-4">
                                     <label>Máximo Pacientes/Dia</label>
                                     <input type="number" id="maxPacientesDia">
@@ -259,7 +273,6 @@
                                     </select>
                                 </div>
 
-                                <!-- BLOQUEIO TOTAL -->
                                 <div class="col-12">
                                     <h3 class="section-title">Bloqueio Total da Agenda</h3>
                                 </div>
@@ -276,7 +289,6 @@
                                     <input type="text" id="motivoBloqueio">
                                 </div>
 
-                                <!-- BLOQUEIO PARCIAL -->
                                 <div class="col-12">
                                     <h3 class="section-title">Bloqueio Parcial da Agenda</h3>
                                 </div>
@@ -297,7 +309,6 @@
                                     <input type="text" id="motivoBloqueioParcial">
                                 </div>
 
-                                <!-- OBSERVAÇÕES -->
                                 <div class="col-12">
                                     <h3 class="section-title">Observações</h3>
                                 </div>
@@ -308,7 +319,6 @@
                             </div>
                         </div>
 
-                        <!-- ABA 4: FINANCEIRO -->
                         <div id="financeiro" class="tab-content">
                             <div class="form-grid">
                                 <div class="form-group col-4">
@@ -328,7 +338,6 @@
                 </div>
             </section>
 
-            <!-- ÁREA DE GRADE (GRID) -->
             <section class="grid-area">
                 <div class="grid-header">
                     <span><i class="fas fa-list"></i> Médicos Cadastrados</span>
@@ -348,7 +357,6 @@
                             </tr>
                         </thead>
                         <tbody id="corpoTabelaMedicos">
-                            <!-- JS -->
                         </tbody>
                     </table>
                 </div>

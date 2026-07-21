@@ -5,13 +5,11 @@
     --warning: #f59e0b;
     --danger: #ef4444;
     --bg-main: #f8fafc;
-    --bg-card: #ffffff;
     --border: #e2e8f0;
     --text-dark: #1e293b;
     --text-muted: #64748b;
 }
 
-/* Reset & Base Styles */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -32,20 +30,21 @@ body {
     height: 100vh;
 }
 
-/* Header & Toolbar */
 header {
-    background: white;
+    background: #fff;
     padding: 15px 30px;
     border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
 }
 
 .header-title {
     display: flex;
     align-items: center;
     gap: 15px;
+    min-width: 260px;
 }
 
 .header-title i {
@@ -60,26 +59,27 @@ header {
 
 .toolbar {
     display: flex;
-    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
 }
 
-/* Buttons */
 .btn {
-    padding: 10px 18px;
+    padding: 10px 16px;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: 700;
     font-size: 0.85rem;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    transition: all 0.2s;
+    transition: opacity 0.2s, transform 0.2s;
 }
 
-.btn-sm {
-    padding: 5px 12px;
-    font-size: 0.75rem;
+.btn:hover:not(:disabled) {
+    transform: translateY(-1px);
 }
 
 .btn:disabled {
@@ -89,7 +89,7 @@ header {
 
 .btn-primary {
     background: var(--accent);
-    color: white;
+    color: #fff;
 }
 
 .btn-success {
@@ -112,10 +112,14 @@ header {
 
 .btn-dark {
     background: var(--primary);
-    color: white;
+    color: #fff;
 }
 
-/* Main Content Area */
+.btn-sm {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+}
+
 main {
     flex: 1;
     display: flex;
@@ -123,9 +127,8 @@ main {
     overflow: hidden;
 }
 
-/* Form Area & Tabs */
 .form-area {
-    background: white;
+    background: #fff;
     border-bottom: 2px solid var(--bg-main);
     display: flex;
     flex-direction: column;
@@ -150,7 +153,7 @@ main {
     color: #475569;
     cursor: pointer;
     border-bottom: 4px solid transparent;
-    transition: all .2s ease;
+    transition: color 0.2s, background 0.2s, border-color 0.2s;
 }
 
 .tab-link:hover {
@@ -161,12 +164,11 @@ main {
 .tab-link.active {
     color: var(--accent);
     border-bottom-color: var(--accent);
-    font-weight: 900;
 }
 
 .form-content {
     padding: 25px 30px;
-    max-height: 42vh;
+    max-height: 45vh;
     overflow-y: auto;
 }
 
@@ -178,7 +180,6 @@ main {
     display: block;
 }
 
-/* Form Grid & Elements */
 .form-grid {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
@@ -207,24 +208,8 @@ main {
     grid-column: span 4;
 }
 
-.col-5 {
-    grid-column: span 5;
-}
-
-.col-6 {
-    grid-column: span 6;
-}
-
 .col-7 {
     grid-column: span 7;
-}
-
-.col-8 {
-    grid-column: span 8;
-}
-
-.col-10 {
-    grid-column: span 10;
 }
 
 .col-12 {
@@ -241,13 +226,14 @@ label {
 input,
 select,
 textarea {
+    width: 100%;
     padding: 10px 15px;
     border: 1px solid var(--border);
     border-radius: 8px;
     font-size: 0.9rem;
     font-family: inherit;
-    transition: border-color 0.2s;
     background-color: #fff;
+    transition: border-color 0.2s;
 }
 
 input:focus,
@@ -268,24 +254,27 @@ textarea:disabled {
     text-transform: uppercase;
 }
 
+textarea {
+    resize: vertical;
+}
+
 .section-title {
     font-size: 0.85rem;
     font-weight: 800;
     color: var(--primary);
-    margin: 10px 0 10px 0;
+    margin: 15px 0 10px;
     padding-bottom: 5px;
     border-bottom: 1px solid var(--border);
     text-transform: uppercase;
 }
 
-/* Checkbox Group for Checklist */
 .checkbox-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
-    padding: 12px 15px;
+    gap: 15px;
+    padding: 10px 15px;
     background: #f8fafc;
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid var(--border);
 }
 
@@ -300,15 +289,14 @@ textarea:disabled {
 }
 
 .checkbox-group input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     cursor: pointer;
 }
 
-/* Grid Area & Table */
 .grid-area {
     flex: 1;
-    background: white;
+    background: #fff;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -321,6 +309,7 @@ textarea:disabled {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
 }
 
 .grid-header span {
@@ -330,15 +319,15 @@ textarea:disabled {
 
 .grid-search {
     display: flex;
+    align-items: center;
     gap: 10px;
 }
 
 .grid-search input {
+    width: 300px;
     padding: 8px 15px;
     font-size: 0.8rem;
-    width: 250px;
     border-radius: 20px;
-    border: 1px solid var(--border);
 }
 
 .table-wrapper {
@@ -379,7 +368,6 @@ tr.selected {
     background: #eff6ff !important;
 }
 
-/* Status Badges for Queue */
 .status-badge {
     padding: 4px 10px;
     border-radius: 20px;
@@ -394,16 +382,15 @@ tr.selected {
 }
 
 .status-attending {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status-completed {
     background: #dcfce7;
     color: #166534;
 }
 
-.status-completed {
-    background: #e2e8f0;
-    color: #475569;
-}
-
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 6px;
 }
@@ -419,4 +406,89 @@ tr.selected {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
+}
+
+@media (max-width: 900px) {
+    body {
+        height: auto;
+        overflow: auto;
+    }
+
+    .container {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    header,
+    .grid-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .toolbar,
+    .grid-search {
+        justify-content: flex-start;
+    }
+
+    .form-content {
+        max-height: none;
+    }
+
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .col-1,
+    .col-2,
+    .col-3,
+    .col-4,
+    .col-7,
+    .col-12 {
+        grid-column: span 2;
+    }
+
+    .grid-search input {
+        width: min(100%, 300px);
+    }
+}
+
+@media print {
+    body {
+        background: #fff !important;
+        overflow: visible !important;
+        height: auto !important;
+    }
+
+    header .toolbar,
+    .tabs-nav,
+    .grid-area {
+        display: none !important;
+    }
+
+    .container,
+    main,
+    .form-area,
+    .form-content {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    header {
+        border-bottom: 1px solid #000 !important;
+        padding: 0 0 12px !important;
+        margin-bottom: 16px !important;
+    }
+
+    .tab-content {
+        display: block !important;
+    }
+
+    input,
+    select,
+    textarea {
+        border: 1px solid #999 !important;
+        background: #fff !important;
+        color: #000 !important;
+    }
 }

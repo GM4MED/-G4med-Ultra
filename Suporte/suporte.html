@@ -4,398 +4,543 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Central de Suporte · G4Med</title>
+    <title>Suporte G4med - Intelligent Health System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
-        rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- <link rel="stylesheet" href="css/style.css"> -->
     <link rel="stylesheet" href="suporte.css">
 </head>
 
 <body>
+    <!-- =====================================================
+         APP CONTAINER
+         ===================================================== -->
+    <div class="app" id="app">
 
-    <!-- TOPBAR -->
-    <header class="topbar">
-        <div class="topbar-left">
-            <a href="../index.html" class="back-btn" title="Voltar"><i data-lucide="arrow-left"></i></a>
-            <div class="brand">
-                <div class="brand-mark"><i data-lucide="life-buoy"></i></div>
-                <div>
-                    <div class="brand-name">G4Med <span>Suporte</span></div>
-                    <div class="brand-sub">Central de Atendimento</div>
+        <!-- =====================================================
+             HEADER
+             ===================================================== -->
+        <header class="header">
+            <div class="header__brand">
+                <i class="fa-solid fa-stethoscope header__logo"></i>
+                <div class="header__title-group">
+                    <span class="header__logo-text">G4med</span>
+                    <span class="header__system-name">Sistema de Suporte</span>
                 </div>
             </div>
-        </div>
-        <div class="topbar-right">
-            <div class="status-pill ok"><span class="dot-live"></span> Todos os sistemas operacionais</div>
-            <button class="icon-btn" id="toggleTheme" title="Tema"><i data-lucide="moon"></i></button>
-            <div class="user-chip">
-                <div class="avatar">DR</div>
-                <div class="user-meta"><span class="user-name">Dr. Rodrigo</span><span class="user-role">Plano
-                        Premium</span></div>
-            </div>
-        </div>
-    </header>
 
-    <main class="page">
-
-        <!-- HERO -->
-        <section class="hero">
-            <div class="hero-text">
-                <span class="badge"><i data-lucide="zap"></i> Resposta média em <b>14 min</b></span>
-                <h1>Como podemos ajudar você hoje?</h1>
-                <p>Suporte humano 24/7, base de conhecimento com 380+ artigos, status em tempo real e SLA garantido por
-                    contrato.</p>
-                <div class="search-hero">
-                    <i data-lucide="search"></i>
-                    <input id="searchKb"
-                        placeholder="Pesquisar na base de conhecimento... (ex: como cadastrar paciente)">
-                    <kbd>⌘ K</kbd>
-                </div>
-                <div class="hero-stats">
-                    <div><strong>14min</strong><span>Resposta média</span></div>
-                    <div><strong>98.6%</strong><span>SLA cumprido</span></div>
-                    <div><strong>9.4/10</strong><span>CSAT</span></div>
-                    <div><strong>380+</strong><span>Artigos</span></div>
+            <div class="header__actions">
+                <button class="header__btn header__btn--theme" id="btn-theme" aria-label="Alternar tema">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <button class="header__btn header__btn--notif" id="btn-notif" aria-label="Notificações">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="header__badge">2</span>
+                </button>
+                <div class="header__profile">
+                    <div class="header__avatar">A</div>
+                    <span class="header__username">admin</span>
                 </div>
             </div>
-            <div class="hero-card">
-                <div class="hero-card-head">
-                    <i data-lucide="headset"></i>
-                    <div>
-                        <strong>Falar com um especialista</strong>
-                        <span>Online agora · Equipe G4Med</span>
-                    </div>
-                </div>
-                <div class="agent-row">
-                    <div class="agent" style="--c:#4f46e5">CL</div>
-                    <div class="agent" style="--c:#06b6d4">FA</div>
-                    <div class="agent" style="--c:#8b5cf6">MS</div>
-                    <div class="agent" style="--c:#f43f5e">RO</div>
-                    <div class="agent more">+12</div>
-                </div>
-                <button class="btn primary block" id="openChat"><i data-lucide="message-circle"></i> Iniciar conversa ao
-                    vivo</button>
-                <div class="hero-card-foot">
-                    <span><i data-lucide="phone"></i> 0800 940 1234</span>
-                    <span><i data-lucide="mail"></i> suporte@g4med.com</span>
-                </div>
-            </div>
-        </section>
 
-        <!-- QUICK CHANNELS -->
-        <section class="channels">
-            <button class="channel" data-channel="chat">
-                <div class="ch-icon brand"><i data-lucide="message-square"></i></div>
-                <strong>Chat ao vivo</strong>
-                <span>Resposta imediata</span>
-                <em class="ch-meta"><span class="dot-live"></span> Online · 4 agentes</em>
+            <button class="header__menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+                <i class="fa-solid fa-bars"></i>
             </button>
-            <button class="channel" data-channel="ticket">
-                <div class="ch-icon ok"><i data-lucide="ticket"></i></div>
-                <strong>Abrir ticket</strong>
-                <span>Resposta em até 2h</span>
-                <em class="ch-meta">SLA garantido</em>
-            </button>
-            <button class="channel" data-channel="phone">
-                <div class="ch-icon info"><i data-lucide="phone"></i></div>
-                <strong>Telefone</strong>
-                <span>0800 940 1234</span>
-                <em class="ch-meta">Seg-Sex 7h-22h</em>
-            </button>
-            <button class="channel" data-channel="whatsapp">
-                <div class="ch-icon green"><i data-lucide="message-circle"></i></div>
-                <strong>WhatsApp</strong>
-                <span>(11) 9 9876-1234</span>
-                <em class="ch-meta">24/7</em>
-            </button>
-            <button class="channel" data-channel="email">
-                <div class="ch-icon purple"><i data-lucide="mail"></i></div>
-                <strong>E-mail</strong>
-                <span>suporte@g4med.com</span>
-                <em class="ch-meta">Resposta em 4h</em>
-            </button>
-            <button class="channel" data-channel="emergency">
-                <div class="ch-icon rose"><i data-lucide="siren"></i></div>
-                <strong>Emergência</strong>
-                <span>Sistema fora do ar</span>
-                <em class="ch-meta urgent">Atendimento imediato</em>
-            </button>
-        </section>
+        </header>
 
+        <!-- =====================================================
+             LAYOUT PRINCIPAL
+             ===================================================== -->
         <div class="layout">
 
-            <!-- LEFT: TICKET FORM -->
-            <section class="card form-card">
-                <div class="card-head">
-                    <div>
-                        <h2><i data-lucide="ticket"></i> Abrir um chamado</h2>
-                        <span class="card-sub">Preencha os detalhes — nossa equipe responde em até 2 horas úteis</span>
+            <!-- =====================================================
+                 SIDEBAR
+                 ===================================================== -->
+            <aside class="sidebar" id="sidebar">
+                <nav class="sidebar__nav">
+                    <a href="#ajuda" class="sidebar__link sidebar__link--active" data-section="ajuda">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Central de Ajuda</span>
+                    </a>
+                    <a href="#suporte" class="sidebar__link" data-section="suporte">
+                        <i class="fa-solid fa-wrench"></i>
+                        <span>Suporte Técnico</span>
+                    </a>
+                    <a href="#sobre" class="sidebar__link" data-section="sobre">
+                        <i class="fa-solid fa-book"></i>
+                        <span>Sobre o Sistema</span>
+                    </a>
+                    <a href="#atualizacoes" class="sidebar__link" data-section="atualizacoes">
+                        <i class="fa-solid fa-rocket"></i>
+                        <span>Atualizações</span>
+                    </a>
+                </nav>
+
+                <div class="sidebar__footer">
+                    <div class="sidebar__version">
+                        <i class="fa-solid fa-code-branch"></i>
+                        <span>Versão 1.0.0</span>
                     </div>
-                    <span class="step-pill">Passo <b id="stepNow">1</b> de 3</span>
                 </div>
-
-                <!-- STEPPER -->
-                <div class="stepper">
-                    <div class="step active" data-step="1"><span>1</span><b>Categoria</b></div>
-                    <div class="step" data-step="2"><span>2</span><b>Detalhes</b></div>
-                    <div class="step" data-step="3"><span>3</span><b>Confirmação</b></div>
-                </div>
-
-                <form id="supportForm" novalidate>
-
-                    <!-- STEP 1 -->
-                    <div class="step-pane active" data-pane="1">
-                        <h3 class="form-h3">Qual o tipo do chamado?</h3>
-                        <div class="cat-grid">
-                            <label class="cat"><input type="radio" name="cat" value="bug">
-                                <div><i data-lucide="bug"></i><strong>Erro / Bug</strong><span>Algo não funciona como
-                                        esperado</span></div>
-                            </label>
-                            <label class="cat"><input type="radio" name="cat" value="feature">
-                                <div><i data-lucide="sparkles"></i><strong>Sugestão</strong><span>Nova funcionalidade ou
-                                        melhoria</span></div>
-                            </label>
-                            <label class="cat"><input type="radio" name="cat" value="question">
-                                <div><i data-lucide="help-circle"></i><strong>Dúvida</strong><span>Como usar uma
-                                        funcionalidade</span></div>
-                            </label>
-                            <label class="cat"><input type="radio" name="cat" value="billing">
-                                <div><i data-lucide="credit-card"></i><strong>Financeiro</strong><span>Cobrança, plano
-                                        ou nota fiscal</span></div>
-                            </label>
-                            <label class="cat"><input type="radio" name="cat" value="integration">
-                                <div><i data-lucide="plug"></i><strong>Integrações</strong><span>API, webhooks,
-                                        conectores</span></div>
-                            </label>
-                            <label class="cat"><input type="radio" name="cat" value="other">
-                                <div><i data-lucide="more-horizontal"></i><strong>Outro</strong><span>Não encontrei na
-                                        lista</span></div>
-                            </label>
-                        </div>
-
-                        <h3 class="form-h3">Qual o nível de prioridade?</h3>
-                        <div class="prio-grid">
-                            <label class="prio low"><input type="radio" name="prio" value="low">
-                                <div><strong>Baixa</strong><span>Sem urgência · resposta em 24h</span></div>
-                            </label>
-                            <label class="prio med"><input type="radio" name="prio" value="med" checked>
-                                <div><strong>Média</strong><span>Impacta rotina · resposta em 4h</span></div>
-                            </label>
-                            <label class="prio high"><input type="radio" name="prio" value="high">
-                                <div><strong>Alta</strong><span>Bloqueia trabalho · resposta em 1h</span></div>
-                            </label>
-                            <label class="prio crit"><input type="radio" name="prio" value="crit">
-                                <div><strong>Crítica</strong><span>Sistema fora do ar · imediato</span></div>
-                            </label>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="button" class="btn primary" data-next="2">Continuar <i
-                                    data-lucide="arrow-right"></i></button>
-                        </div>
-                    </div>
-
-                    <!-- STEP 2 -->
-                    <div class="step-pane" data-pane="2">
-                        <div class="row">
-                            <div class="field">
-                                <label>Nome completo *</label>
-                                <div class="input-wrap"><i data-lucide="user"></i><input type="text" name="name"
-                                        placeholder="Como devemos te chamar?" required></div>
-                            </div>
-                            <div class="field">
-                                <label>E-mail *</label>
-                                <div class="input-wrap"><i data-lucide="mail"></i><input type="email" name="email"
-                                        placeholder="seu@email.com" required></div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="field">
-                                <label>Telefone (opcional)</label>
-                                <div class="input-wrap"><i data-lucide="phone"></i><input type="tel" name="phone"
-                                        placeholder="(11) 9 0000-0000"></div>
-                            </div>
-                            <div class="field">
-                                <label>Unidade</label>
-                                <div class="input-wrap"><i data-lucide="building-2"></i>
-                                    <select name="unit">
-                                        <option>Itaim Bibi · Matriz</option>
-                                        <option>Alphaville</option>
-                                        <option>Jardins</option>
-                                        <option>Outra</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field">
-                            <label>Assunto *</label>
-                            <div class="input-wrap"><i data-lucide="type"></i><input type="text" name="subject"
-                                    placeholder="Resuma em uma frase" maxlength="120" required></div>
-                            <small class="hint"><span id="subjLen">0</span>/120 caracteres</small>
-                        </div>
-
-                        <div class="field">
-                            <label>Descreva sua solicitação *</label>
-                            <textarea name="message" id="msg" rows="6"
-                                placeholder="Conte os detalhes: o que aconteceu, quando ocorreu, quais passos reproduzem o problema..."
-                                required></textarea>
-                            <small class="hint"><span id="msgLen">0</span> caracteres · <span
-                                    id="msgWarn"></span></small>
-                        </div>
-
-                        <div class="field upload" id="dropzone">
-                            <input type="file" id="fileInput" multiple hidden>
-                            <div class="dz-empty">
-                                <i data-lucide="upload-cloud"></i>
-                                <strong>Arraste arquivos ou <span class="link">clique para enviar</span></strong>
-                                <span>PNG, JPG, PDF, MP4 · até 25MB cada</span>
-                            </div>
-                            <div class="dz-files" id="fileList"></div>
-                        </div>
-
-                        <label class="check"><input type="checkbox" name="urgent"><span></span> Marcar como visualização
-                            urgente — eu (cliente Premium) recebo notificação direta no celular do agente.</label>
-                        <label class="check"><input type="checkbox" name="agree" required><span></span> Concordo com a
-                            <a href="#" class="link">Política de Privacidade</a> e autorizo o armazenamento dos dados
-                            desta solicitação.</label>
-
-                        <div class="form-actions split">
-                            <button type="button" class="btn ghost" data-back="1"><i data-lucide="arrow-left"></i>
-                                Voltar</button>
-                            <button type="button" class="btn primary" data-next="3">Revisar <i
-                                    data-lucide="arrow-right"></i></button>
-                        </div>
-                    </div>
-
-                    <!-- STEP 3 -->
-                    <div class="step-pane" data-pane="3">
-                        <h3 class="form-h3">Confirme as informações</h3>
-                        <div class="review" id="review"></div>
-
-                        <div class="form-actions split">
-                            <button type="button" class="btn ghost" data-back="2"><i data-lucide="arrow-left"></i>
-                                Voltar</button>
-                            <button type="submit" class="btn primary"><i data-lucide="send"></i> Enviar chamado</button>
-                        </div>
-                    </div>
-
-                </form>
-
-                <div id="statusMessage"></div>
-            </section>
-
-            <!-- RIGHT: SIDEBAR -->
-            <aside class="side">
-
-                <div class="card">
-                    <div class="card-head">
-                        <div>
-                            <h3><i data-lucide="book-open"></i> Base de Conhecimento</h3>
-                            <span class="card-sub">Artigos mais acessados</span>
-                        </div>
-                    </div>
-                    <ul class="kb-list" id="kbList"></ul>
-                    <a href="#" class="link see-all">Ver todos os 380 artigos <i data-lucide="arrow-right"></i></a>
-                </div>
-
-                <div class="card">
-                    <div class="card-head">
-                        <div>
-                            <h3><i data-lucide="activity"></i> Status do Sistema</h3>
-                            <span class="card-sub">Tempo real · últimos 30 dias</span>
-                        </div>
-                        <span class="status-pill ok"><span class="dot-live"></span> Operacional</span>
-                    </div>
-                    <ul class="status-list" id="statusList"></ul>
-                    <a href="#" class="link see-all">Página de status completo <i data-lucide="external-link"></i></a>
-                </div>
-
-                <div class="card">
-                    <div class="card-head">
-                        <div>
-                            <h3><i data-lucide="history"></i> Meus chamados</h3>
-                            <span class="card-sub">Últimos atendimentos</span>
-                        </div>
-                    </div>
-                    <ul class="ticket-list" id="ticketList"></ul>
-                </div>
-
-                <div class="card faq">
-                    <div class="card-head">
-                        <div>
-                            <h3><i data-lucide="help-circle"></i> Perguntas frequentes</h3>
-                            <span class="card-sub">Talvez sua dúvida já tenha resposta</span>
-                        </div>
-                    </div>
-                    <div class="faq-list" id="faqList"></div>
-                </div>
-
             </aside>
+
+            <!-- =====================================================
+                 CONTEÚDO DINÂMICO
+                 ===================================================== -->
+            <main class="main" id="main">
+
+                <!-- BREADCRUMB -->
+                <nav class="breadcrumb" id="breadcrumb">
+                    <a href="#ajuda">Início</a>
+                    <i class="fa-solid fa-chevron-right"></i>
+                    <span>Central de Ajuda</span>
+                </nav>
+
+                <!-- =====================================================
+                     SEÇÃO: CENTRAL DE AJUDA
+                     ===================================================== -->
+                <section class="section section--active" id="section-ajuda">
+                    <header class="section__header">
+                        <h1 class="section__title"><i class="fa-solid fa-house"></i> Central de Ajuda</h1>
+                        <p class="section__subtitle">Encontre respostas rápidas e tutoriais sobre o G4med</p>
+                    </header>
+
+                    <div class="search">
+                        <i class="fa-solid fa-magnifying-glass search__icon"></i>
+                        <input type="text" class="search__input" id="search-ajuda" placeholder="Pesquisar..."
+                            autocomplete="off">
+                        <button class="search__clear" id="search-clear"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="cards" id="cards-ajuda">
+                        <!-- Card 1 -->
+                        <article class="card" data-keywords="prontuário prontuario paciente histórico médico">
+                            <div class="card__icon"><i class="fa-solid fa-file-medical"></i></div>
+                            <h3 class="card__title">Como acessar o prontuário</h3>
+                            <p class="card__desc">Aprenda como localizar rapidamente um prontuário médico no sistema.
+                            </p>
+                            <button class="card__btn" data-modal="modal-prontuario">Saiba Mais</button>
+                        </article>
+
+                        <!-- Card 2 -->
+                        <article class="card" data-keywords="receituário receituario receita medicamento prescricao">
+                            <div class="card__icon"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
+                            <h3 class="card__title">Configuração do receituário</h3>
+                            <p class="card__desc">Configure modelos personalizados de receituário médico.</p>
+                            <button class="card__btn" data-modal="modal-receituario">Saiba Mais</button>
+                        </article>
+
+                        <!-- Card 3 -->
+                        <article class="card" data-keywords="agenda agendamento consulta horário médico">
+                            <div class="card__icon"><i class="fa-solid fa-calendar-days"></i></div>
+                            <h3 class="card__title">Agendamento</h3>
+                            <p class="card__desc">Criando e gerenciando uma nova agenda médica.</p>
+                            <button class="card__btn" data-modal="modal-agenda">Saiba Mais</button>
+                        </article>
+
+                        <!-- Card 4 -->
+                        <article class="card" data-keywords="paciente cadastro ficha dados pessoal">
+                            <div class="card__icon"><i class="fa-solid fa-user"></i></div>
+                            <h3 class="card__title">Cadastro de Paciente</h3>
+                            <p class="card__desc">Como cadastrar e atualizar dados de pacientes no sistema.</p>
+                            <button class="card__btn" data-modal="modal-paciente">Saiba Mais</button>
+                        </article>
+
+                        <!-- Card 5 -->
+                        <article class="card" data-keywords="convênio convenio plano saúde cobertura">
+                            <div class="card__icon"><i class="fa-solid fa-id-card-clip"></i></div>
+                            <h3 class="card__title">Convênios</h3>
+                            <p class="card__desc">Gerenciamento de convênios e planos de saúde.</p>
+                            <button class="card__btn" data-modal="modal-convenio">Saiba Mais</button>
+                        </article>
+
+                        <!-- Card 6 -->
+                        <article class="card" data-keywords="relatório relatorio estatistica dashboard indicador">
+                            <div class="card__icon"><i class="fa-solid fa-chart-column"></i></div>
+                            <h3 class="card__title">Relatórios</h3>
+                            <p class="card__desc">Geração e exportação de relatórios administrativos e clínicos.</p>
+                            <button class="card__btn" data-modal="modal-relatorio">Saiba Mais</button>
+                        </article>
+                    </div>
+
+                    <div class="empty-state" id="empty-ajuda" style="display:none;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <p>Nenhum resultado encontrado para sua pesquisa.</p>
+                    </div>
+                </section>
+
+                <!-- =====================================================
+                     SEÇÃO: SUPORTE TÉCNICO
+                     ===================================================== -->
+                <section class="section" id="section-suporte">
+                    <header class="section__header">
+                        <h1 class="section__title"><i class="fa-solid fa-wrench"></i> Suporte Técnico</h1>
+                        <p class="section__subtitle">Abra um chamado técnico para relatórios de problemas</p>
+                    </header>
+
+                    <form class="form" id="form-chamado" novalidate>
+                        <div class="form__row">
+                            <div class="form__field">
+                                <label class="form__label" for="chamado-nome">Nome *</label>
+                                <input type="text" id="chamado-nome" class="form__input"
+                                    placeholder="Seu nome completo">
+                                <span class="form__error">Campo obrigatório</span>
+                            </div>
+                            <div class="form__field">
+                                <label class="form__label" for="chamado-crm">CRM *</label>
+                                <input type="text" id="chamado-crm" class="form__input" placeholder="Número do CRM">
+                                <span class="form__error">Campo obrigatório</span>
+                            </div>
+                        </div>
+
+                        <div class="form__row">
+                            <div class="form__field">
+                                <label class="form__label" for="chamado-hospital">Hospital / Clínica *</label>
+                                <input type="text" id="chamado-hospital" class="form__input"
+                                    placeholder="Nome da instituição">
+                                <span class="form__error">Campo obrigatório</span>
+                            </div>
+                            <div class="form__field">
+                                <label class="form__label" for="chamado-urgencia">Urgência *</label>
+                                <select id="chamado-urgencia" class="form__input">
+                                    <option value="" disabled selected>Selecione</option>
+                                    <option value="baixo">Baixo</option>
+                                    <option value="medio">Médio</option>
+                                    <option value="alto">Alto</option>
+                                </select>
+                                <span class="form__error">Campo obrigatório</span>
+                            </div>
+                        </div>
+
+                        <div class="form__field">
+                            <label class="form__label" for="chamado-problema">Descrição do Problema *</label>
+                            <textarea id="chamado-problema" class="form__input form__input--area" rows="5"
+                                placeholder="Descreva o problema com detalhes..."></textarea>
+                            <span class="form__error">Campo obrigatório</span>
+                        </div>
+
+                        <div class="form__actions">
+                            <button type="button" class="btn btn--secondary" id="btn-limpar">Limpar</button>
+                            <button type="submit" class="btn btn--primary">
+                                <i class="fa-solid fa-paper-plane"></i> Abrir Chamado
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- =====================================================
+                     SEÇÃO: SOBRE O SISTEMA
+                     ===================================================== -->
+                <section class="section" id="section-sobre">
+                    <header class="section__header">
+                        <h1 class="section__title"><i class="fa-solid fa-book"></i> Sobre o Sistema</h1>
+                        <p class="section__subtitle">Conheça mais sobre o G4med Intelligent Health System</p>
+                    </header>
+
+                    <div class="about">
+                        <div class="about__card">
+                            <div class="about__icon"><i class="fa-solid fa-heart-pulse"></i></div>
+                            <h2 class="about__title">Sobre o G4med</h2>
+                            <div class="about__text">
+                                <p>O <strong>G4med Intelligent Health System</strong> é uma plataforma desenvolvida para
+                                    clínicas, hospitais e consultórios médicos.</p>
+                                <p>Seu objetivo é simplificar processos administrativos e clínicos, oferecendo maior
+                                    <strong>segurança</strong>, <strong>produtividade</strong> e
+                                    <strong>organização</strong>.
+                                </p>
+                                <p>O sistema contempla módulos como:</p>
+                                <ul class="about__list">
+                                    <li><i class="fa-solid fa-check"></i> Cadastro de Pacientes</li>
+                                    <li><i class="fa-solid fa-check"></i> Agenda Médica</li>
+                                    <li><i class="fa-solid fa-check"></i> Atendimento</li>
+                                    <li><i class="fa-solid fa-check"></i> Financeiro</li>
+                                    <li><i class="fa-solid fa-check"></i> Convênios</li>
+                                    <li><i class="fa-solid fa-check"></i> Prontuário Eletrônico</li>
+                                    <li><i class="fa-solid fa-check"></i> Relatórios</li>
+                                    <li><i class="fa-solid fa-check"></i> Auditoria</li>
+                                    <li><i class="fa-solid fa-check"></i> Gestão Administrativa</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="about__card about__card--lgpd">
+                            <div class="about__icon about__icon--shield"><i class="fa-solid fa-shield-halved"></i></div>
+                            <h2 class="about__title">Privacidade de Dados</h2>
+                            <div class="about__text">
+                                <p>Todos os dados médicos são tratados conforme a <strong>Lei Geral de Proteção de Dados
+                                        (LGPD)</strong>.</p>
+                                <p>As informações são protegidas por mecanismos de <strong>autenticação</strong>,
+                                    <strong>criptografia</strong> e <strong>controle de acesso</strong>.
+                                </p>
+                                <p>O sistema registra <strong>auditoria completa</strong> de alterações para garantir
+                                    rastreabilidade.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- =====================================================
+                     SEÇÃO: ATUALIZAÇÕES
+                     ===================================================== -->
+
+                <section class="section" id="section-atualizacoes">
+                    <header class="section__header">
+                        <h1 class="section__title"><i class="fa-solid fa-rocket"></i> Atualizações</h1>
+                        <p class="section__subtitle">Histórico de versões e novidades do sistema</p>
+                    </header>
+
+                    <div class="timeline" id="timeline">
+                        <!-- Versão 1.0.0 -->
+                        <div class="timeline__item">
+                            <div class="timeline__dot"></div>
+                            <div class="timeline__content">
+                                <div class="timeline__header">
+                                    <h3 class="timeline__title">Versão 1.0.0</h3>
+                                    <span class="timeline__date">20 Abr 2026</span>
+                                </div>
+                                <p class="timeline__desc">Início do projeto e estruturação do sistema base.</p>
+                                <span class="badge badge--new">Novo</span>
+                            </div>
+                        </div>
+
+                        <!-- Versão 1.0.1 -->
+                        <div class="timeline__item">
+                            <div class="timeline__dot"></div>
+                            <div class="timeline__content">
+                                <div class="timeline__header">
+                                    <h3 class="timeline__title">Versão 1.0.1</h3>
+                                    <span class="timeline__date">02 Jun 2026</span>
+                                </div>
+                                <p class="timeline__desc">Correção no fluxo de login e autenticação de dois fatores.
+                                    Melhoria na performance do dashboard.</p>
+                                <span class="badge badge--fix">Correção</span>
+                            </div>
+                        </div>
+
+                        <!-- Versão 1.9.8 -->
+                        <div class="timeline__item">
+                            <div class="timeline__dot"></div>
+                            <div class="timeline__content">
+                                <div class="timeline__header">
+                                    <h3 class="timeline__title">Versão 1.9.8</h3>
+                                    <span class="timeline__date">10 Abr 2026</span>
+                                </div>
+                                <p class="timeline__desc">Novo cadastro de médicos com controle de especialidades,
+                                    horários de atendimento e vinculação a múltiplas unidades.</p>
+                                <span class="badge badge--new">Novo</span>
+                            </div>
+                        </div>
+
+                        <!-- Versão 2.0.0 -->
+                        <div class="timeline__item">
+                            <div class="timeline__dot"></div>
+                            <div class="timeline__content">
+                                <div class="timeline__header">
+                                    <h3 class="timeline__title">Versão 2.0.0</h3>
+                                    <span class="timeline__date">01 Mai 2026</span>
+                                </div>
+                                <p class="timeline__desc">Nova interface completamente redesenhada com design moderno,
+                                    responsivo e acessível. Suporte a tema escuro.</p>
+                                <span class="badge badge--new">Novo</span>
+                            </div>
+                        </div>
+
+                        <!-- Versão 2.0.5 -->
+                        <div class="timeline__item">
+                            <div class="timeline__dot"></div>
+                            <div class="timeline__content">
+                                <div class="timeline__header">
+                                    <h3 class="timeline__title">Versão 2.0.5</h3>
+                                    <span class="timeline__date">20 Mai 2026</span>
+                                </div>
+                                <p class="timeline__desc">Melhorias no módulo financeiro: novos relatórios de receita,
+                                    controle de inadimplência e integração com gateways de pagamento.</p>
+                                <span class="badge badge--improvement">Melhoria</span>
+                            </div>
+                        </div>
+
+                        <!-- Versão atual (Exemplo) -->
+                        <div class="timeline__item">
+                            <div class="timeline__dot"></div>
+                            <div class="timeline__content">
+                                <div class="timeline__header">
+                                    <h3 class="timeline__title">Versão 2.1.0</h3>
+                                    <span class="timeline__date">20 Jul 2026</span>
+                                </div>
+                                <p class="timeline__desc">Novo módulo de Agenda Médica com suporte a múltiplos
+                                    profissionais, filtros por especialidade e status coloridos.</p>
+                                <span class="badge badge--new">Novo</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- =====================================================
+             RODAPÉ
+             ===================================================== -->
+                <footer class="footer">
+                    <div class="footer__content">
+                        <div class="footer__brand">
+                            <i class="fa-solid fa-stethoscope"></i>
+                            <span>G4med Intelligent Health System</span>
+                        </div>
+                        <div class="footer__info">
+                            <span>Versão 2.1.0</span>
+                            <span class="footer__sep">·</span>
+                            <span>© 2026</span>
+                            <span class="footer__sep">·</span>
+                            <span>Todos os direitos reservados.</span>
+                        </div>
+                    </div>
+                </footer>
+
+                <!-- =====================================================
+             BOTÃO VOLTAR AO TOPO
+             ===================================================== -->
+                <button class="back-to-top" id="back-to-top" aria-label="Voltar ao topo">
+                    <i class="fa-solid fa-arrow-up"></i>
+                </button>
+
         </div>
 
-        <footer class="page-footer">
-            <span>© 2026 G4Med · Suporte 24/7 · SLA contratual 99,98%</span>
-            <span><a href="#" class="link">Termos</a> · <a href="#" class="link">Privacidade</a> · <a href="#"
-                    class="link">Status</a></span>
-        </footer>
-    </main>
+        <!-- =====================================================
+         MODAIS
+         ===================================================== -->
 
-    <!-- CHAT WIDGET -->
-    <button class="chat-fab" id="chatFab" title="Conversar agora">
-        <i data-lucide="message-circle"></i>
-        <span class="badge-num">2</span>
-    </button>
-
-    <div class="chat-panel" id="chatPanel" hidden>
-        <div class="chat-head">
-            <div class="agent" style="--c:#4f46e5">CL</div>
-            <div>
-                <strong>Camila Lopes</strong>
-                <span><span class="dot-live"></span> Online · Especialista nível 2</span>
+        <!-- Modal: Prontuário -->
+        <div class="modal" id="modal-prontuario" aria-hidden="true">
+            <div class="modal__overlay"></div>
+            <div class="modal__content">
+                <header class="modal__header">
+                    <h2><i class="fa-solid fa-file-medical"></i> Como acessar o prontuário</h2>
+                    <button class="modal__close" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+                </header>
+                <div class="modal__body">
+                    <p>Para acessar o prontuário de um paciente no G4med, siga os passos:</p>
+                    <ol>
+                        <li>Acesse o menu <strong>Atendimento</strong> na barra lateral.</li>
+                        <li>Clique em <strong>Prontuário Eletrônico</strong>.</li>
+                        <li>Utilize a barra de pesquisa para buscar pelo nome ou CPF do paciente.</li>
+                        <li>Clique no nome do paciente para visualizar o histórico completo.</li>
+                    </ol>
+                    <p>Você também pode acessar o prontuário diretamente pela <strong>Agenda</strong>, clicando no nome
+                        do
+                        paciente no horário agendado.</p>
+                </div>
             </div>
-            <button class="icon-btn sm" id="closeChat"><i data-lucide="x"></i></button>
         </div>
-        <div class="chat-body" id="chatBody">
-            <div class="msg agent">
-                <div class="bubble">Oi! 👋 Sou a Camila, da equipe G4Med. Como posso te ajudar hoje?</div>
-                <span class="time">agora</span>
-            </div>
-            <div class="msg agent">
-                <div class="bubble">Para agilizar, você pode descrever o que está acontecendo ou anexar uma captura de
-                    tela.</div>
-                <span class="time">agora</span>
-            </div>
-        </div>
-        <div class="chat-typing" id="chatTyping" hidden><span></span><span></span><span></span> Camila está digitando...
-        </div>
-        <form class="chat-input" id="chatInput">
-            <button type="button" class="icon-btn sm" title="Anexar"><i data-lucide="paperclip"></i></button>
-            <input type="text" placeholder="Escreva sua mensagem..." required>
-            <button type="submit" class="icon-btn sm primary" title="Enviar"><i data-lucide="send"></i></button>
-        </form>
-    </div>
 
-    <!-- SUCCESS MODAL -->
-    <div class="modal" id="successModal" hidden>
-        <div class="modal-card">
-            <div class="success-anim"><i data-lucide="check"></i></div>
-            <h2>Chamado criado com sucesso!</h2>
-            <p>Recebemos sua solicitação. Você receberá atualizações por e-mail.</p>
-            <div class="ticket-id">Protocolo <b id="newTicketId">#G4M-000000</b></div>
-            <div class="modal-actions">
-                <button class="btn ghost" id="closeModal">Fechar</button>
-                <button class="btn primary" id="trackTicket"><i data-lucide="external-link"></i> Acompanhar
-                    chamado</button>
+        <!-- Modal: Receituário -->
+        <div class="modal" id="modal-receituario" aria-hidden="true">
+            <div class="modal__overlay"></div>
+            <div class="modal__content">
+                <header class="modal__header">
+                    <h2><i class="fa-solid fa-prescription-bottle-medical"></i> Configuração do receituário</h2>
+                    <button class="modal__close" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+                </header>
+                <div class="modal__body">
+                    <p>O G4med permite configurar modelos personalizados de receituário:</p>
+                    <ol>
+                        <li>Acesse <strong>Utilitários > Configurações</strong>.</li>
+                        <li>Selecione a aba <strong>Receituário</strong>.</li>
+                        <li>Clique em <strong>Novo Modelo</strong>.</li>
+                        <li>Defina o cabeçalho, campos e assinatura digital.</li>
+                        <li>Salve e vincule ao perfil do médico.</li>
+                    </ol>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="toastBox" class="toast-box"></div>
+        <!-- Modal: Agenda -->
+        <div class="modal" id="modal-agenda" aria-hidden="true">
+            <div class="modal__overlay"></div>
+            <div class="modal__content">
+                <header class="modal__header">
+                    <h2><i class="fa-solid fa-calendar-days"></i> Agendamento</h2>
+                    <button class="modal__close" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+                </header>
+                <div class="modal__body">
+                    <p>Para criar uma nova agenda médica:</p>
+                    <ol>
+                        <li>Acesse o menu <strong>Agenda</strong>.</li>
+                        <li>Clique no botão <strong>Novo Agendamento</strong>.</li>
+                        <li>Selecione o paciente, médico, data e horário.</li>
+                        <li>Escolha o tipo de atendimento (Presencial, Online, Retorno ou Procedimento).</li>
+                        <li>Confirme e envie lembretes automáticos por WhatsApp/SMS.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
 
-    <script src="suporte.js"></script>
+        <!-- Modal: Paciente -->
+        <div class="modal" id="modal-paciente" aria-hidden="true">
+            <div class="modal__overlay"></div>
+            <div class="modal__content">
+                <header class="modal__header">
+                    <h2><i class="fa-solid fa-user"></i> Cadastro de Paciente</h2>
+                    <button class="modal__close" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+                </header>
+                <div class="modal__body">
+                    <p>Para cadastrar um novo paciente:</p>
+                    <ol>
+                        <li>Acesse <strong>Cadastro > Paciente</strong>.</li>
+                        <li>Clique em <strong>Novo</strong>.</li>
+                        <li>Preencha os dados pessoais, endereço e contato.</li>
+                        <li>Adicione informações de convênio, se houver.</li>
+                        <li>Salve o cadastro.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Convênio -->
+        <div class="modal" id="modal-convenio" aria-hidden="true">
+            <div class="modal__overlay"></div>
+            <div class="modal__content">
+                <header class="modal__header">
+                    <h2><i class="fa-solid fa-id-card-clip"></i> Convênios</h2>
+                    <button class="modal__close" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+                </header>
+                <div class="modal__body">
+                    <p>Gerenciamento de convênios e planos de saúde:</p>
+                    <ol>
+                        <li>Acesse <strong>Utilitários > Convênio</strong>.</li>
+                        <li>Cadastre o plano com nome, CNPJ e dados de contato.</li>
+                        <li>Configure tabelas de procedimentos e valores.</li>
+                        <li>Vincule o convênio aos pacientes no cadastro.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Relatório -->
+        <div class="modal" id="modal-relatorio" aria-hidden="true">
+            <div class="modal__overlay"></div>
+            <div class="modal__content">
+                <header class="modal__header">
+                    <h2><i class="fa-solid fa-chart-column"></i> Relatórios</h2>
+                    <button class="modal__close" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+                </header>
+                <div class="modal__body">
+                    <p>Geração e exportação de relatórios:</p>
+                    <ol>
+                        <li>Acesse <strong>Relatório</strong> no menu lateral.</li>
+                        <li>Escolha o tipo: Atendimentos, Pacientes, Financeiro ou Médico.</li>
+                        <li>Defina o período e filtros desejados.</li>
+                        <li>Visualize na tela ou exporte em PDF/Excel.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+         TOAST CONTAINER
+         ===================================================== -->
+        <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+        <!-- <script src="js/app.js"></script> -->
+        <script src="suporte.js"></script>
 </body>
 
 </html>

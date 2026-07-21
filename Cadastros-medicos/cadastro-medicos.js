@@ -1,228 +1,422 @@
-/**
- * Sistema GM4 - Cadastro de Médicos
- * Lógica de Frontend para gerenciamento de profissionais, abas e persistência simulada.
- */
+const STORAGE_KEY = 'gm4_medicos_cadastrados';
 
-// --- Simulação de Banco de Dados (Mock Data) ---
-let medicos = [
-    {
-        id: 1,
-        nome: "DR. RICARDO SILVA",
-        crm: "12345-SP",
-        especialidade: "Cardiologia",
-        status: "A",
-        cpf: "123.456.789-00",
-        email: "ricardo.silva@hospital.com",
-        celular: "(11) 98888-7777"
-    },
-    {
-        id: 2,
-        nome: "DRA. ANA BEATRIZ",
-        crm: "67890-RJ",
-        especialidade: "Dermatologia",
-        status: "A",
-        cpf: "222.333.444-55",
-        email: "ana.beatriz@clinica.com",
-        celular: "(21) 97777-6666"
-    },
-    {
-        id: 3,
-        nome: "DR. MARCOS PEREIRA",
-        crm: "11223-MG",
-        especialidade: "Ortopedia",
-        status: "I",
-        cpf: "999.888.777-66",
-        email: "marcos.p@med.com",
-        celular: "(31) 96666-5555"
-    }
+const form = document.getElementById('medicoForm');
+const btnNovo = document.getElementById('btnNovo');
+const btnSalvar = document.getElementById('btnSalvar');
+const btnEditar = document.getElementById('btnEditar');
+const btnExcluir = document.getElementById('btnExcluir');
+const corpoTabela = document.getElementById('corpoTabelaMedicos');
+const campoBusca = document.querySelector('.grid-search input');
+
+let medicos = carregarMedicos();
+let medicoSelecionadoId = null;
+let modoFormulario = 'visualizacao';
+
+const campos = [
+    'medicoId',
+    'nome',
+    'cpf',
+    'dataNasc',
+    'idadeTempoVida',
+    'sexo',
+    'email',
+    'celular',
+    'siglaConselho',
+    'numeroConselho',
+    'ufConselho',
+    'especialidadesTexto',
+    'dom',
+    'seg',
+    'ter',
+    'qua',
+    'qui',
+    'sex',
+    'sab',
+    'periodoMatutino',
+    'periodoVespertino',
+    'periodoNoturno',
+    'horaAgendamentoInicio',
+    'horaAgendamentoFim',
+    'intervaloGradeAgendamento',
+    'matInicio',
+    'matFim',
+    'vespInicio',
+    'vespFim',
+    'notInicio',
+    'notFim',
+    'tempoConsulta',
+    'intervaloConsulta',
+    'maxEncaixes',
+    'maxPacientesDia',
+    'unidade',
+    'bloqueioInicio',
+    'bloqueioFim',
+    'motivoBloqueio',
+    'bloqueioParcialData',
+    'bloqueioParcialInicio',
+    'bloqueioParcialFim',
+    'motivoBloqueioParcial',
+    'observacoesAgenda',
+    'valorConsulta',
+    'status'
 ];
 
-// --- Inicialização ---
-window.onload = () => {
-    renderizarGrid();
-    setupEventos();
-};
+const camposSomenteLeitura = ['medicoId', 'idadeTempoVida'];
 
-/**
- * Renderiza a tabela de médicos cadastrados
- */
-function renderizarGrid() {
-    const corpo = document.getElementById('corpoTabelaMedicos');
-    if (!corpo) return;
+function $(id) {
+    return document.getElementById(id);
+}
 
-    corpo.innerHTML = '';
+function openTab(event, tabId) {
+    document.querySelectorAll('.tab-content').forEach(function (tab) {
+        tab.classList.remove('active');
+    });
 
-    medicos.forEach(m => {
-        const tr = document.createElement('tr');
-        tr.onclick = () => selecionarMedico(m, tr);
+    document.querySelectorAll('.tab-link').forEach(function (button) {
+        button.classList.remove('active');
+    });
 
-        const statusClass = m.status === 'A' ? 'status-active' : 'status-inactive';
-        const statusText = m.status === 'A' ? 'Ativo' : 'Inativo';
+    const tabSelecionada = $(tabId);
+    if (tabSelecionada) {
+        tabSelecionada.classList.add('active');
+    }
 
-        tr.innerHTML = `
-            <td>${m.id}</td>
-            <td><strong>${m.nome}</strong></td>
-            <td>${m.crm}</td>
-            <td>${m.especialidade}</td>
-            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+    if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+    }
+}
+
+function carregarMedicos() {
+    const dados = localStorage.getItem(STORAGE_KEY);
+    return dados ? JSON.parse(dados) : [];
+}
+
+function salvarMedicos() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(medicos));
+}
+
+function gerarCodigoAutomatico() {
+    const agora = new Date();
+    const ano = agora.getFullYear();
+    const mes = String(agora.getMonth() + 1).padStart(2, '0');
+    const dia = String(agora.getDate()).padStart(2, '0');
+    const hora = String(agora.getHours()).padStart(2, '0');
+    const minuto = String(agora.getMinutes()).padStart(2, '0');
+    const segundo = String(agora.getSeconds()).padStart(2, '0');
+    const milissegundo = String(agora.getMilliseconds()).padStart(3, '0');
+
+    return `MED-${ano}${mes}${dia}-${hora}${minuto}${segundo}${milissegundo}`;
+}
+
+function calcularIdadeTempoVida() {
+    const campoData = $('dataNasc');
+    const campoIdade = $('idadeTempoVida');
+
+    if (!campoData || !campoIdade || !campoData.value) {
+        if (campoIdade) campoIdade.value = '';
+        return;
+    }
+
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    const nascimento = new Date(campoData.value + 'T00:00:00');
+
+    if (nascimento > hoje) {
+        campoIdade.value = 'Data inválida';
+        return;
+    }
+
+    let anos = hoje.getFullYear() - nascimento.getFullYear();
+    let meses = hoje.getMonth() - nascimento.getMonth();
+    let dias = hoje.getDate() - nascimento.getDate();
+
+    if (dias < 0) {
+        meses--;
+        const ultimoDiaMesAnterior = new Date(hoje.getFullYear(), hoje.getMonth(), 0).getDate();
+        dias += ultimoDiaMesAnterior;
+    }
+
+    if (meses < 0) {
+        anos--;
+        meses += 12;
+    }
+
+    campoIdade.value = `${anos} ${anos === 1 ? 'ano' : 'anos'}, ${meses} ${meses === 1 ? 'mês' : 'meses'} e ${dias} ${dias === 1 ? 'dia' : 'dias'}`;
+}
+
+function habilitarFormulario(habilitado) {
+    campos.forEach(function (id) {
+        const campo = $(id);
+        if (!campo || camposSomenteLeitura.includes(id)) return;
+        campo.disabled = !habilitado;
+    });
+}
+
+function configurarBotoes() {
+    const editando = modoFormulario === 'novo' || modoFormulario === 'edicao';
+    const temSelecionado = Boolean(medicoSelecionadoId);
+
+    btnNovo.disabled = editando;
+    btnSalvar.disabled = !editando;
+    btnEditar.disabled = editando || !temSelecionado;
+    btnExcluir.disabled = editando || !temSelecionado;
+}
+
+function limparFormulario() {
+    form.reset();
+    $('medicoId').value = gerarCodigoAutomatico();
+    $('idadeTempoVida').value = '';
+    $('tempoConsulta').value = '30';
+    $('intervaloConsulta').value = '0';
+    $('intervaloGradeAgendamento').value = '30';
+    $('maxEncaixes').value = '0';
+    $('status').value = 'A';
+}
+
+function valorCampo(id) {
+    const campo = $(id);
+    if (!campo) return '';
+    return campo.type === 'checkbox' ? campo.checked : campo.value.trim();
+}
+
+function preencherCampo(id, valor) {
+    const campo = $(id);
+    if (!campo) return;
+
+    if (campo.type === 'checkbox') {
+        campo.checked = Boolean(valor);
+        return;
+    }
+
+    campo.value = valor ?? '';
+}
+
+function coletarDadosFormulario() {
+    const medico = {};
+
+    campos.forEach(function (id) {
+        if (id === 'idadeTempoVida') return;
+        medico[id] = valorCampo(id);
+    });
+
+    return medico;
+}
+
+function preencherFormulario(medico) {
+    campos.forEach(function (id) {
+        if (id === 'idadeTempoVida') return;
+        preencherCampo(id, medico[id]);
+    });
+
+    calcularIdadeTempoVida();
+}
+
+function validarFormulario() {
+    if (!$('nome').value.trim()) {
+        alert('Informe o nome completo do profissional.');
+        $('nome').focus();
+        return false;
+    }
+
+    if ($('dataNasc').value) {
+        const nascimento = new Date($('dataNasc').value + 'T00:00:00');
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+
+        if (nascimento > hoje) {
+            alert('A data de nascimento não pode ser maior que a data atual.');
+            $('dataNasc').focus();
+            return false;
+        }
+    }
+
+    if ($('horaAgendamentoInicio').value && $('horaAgendamentoFim').value) {
+        if ($('horaAgendamentoFim').value < $('horaAgendamentoInicio').value) {
+            alert('O último horário do agendamento não pode ser menor que o primeiro horário.');
+            $('horaAgendamentoFim').focus();
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function textoConselho(medico) {
+    const partes = [medico.siglaConselho, medico.numeroConselho, medico.ufConselho].filter(Boolean);
+    return partes.length ? partes.join(' / ') : '-';
+}
+
+function textoEspecialidade(medico) {
+    return medico.especialidadesTexto || '-';
+}
+
+function textoStatus(medico) {
+    return medico.status === 'I' ? 'Inativo' : 'Ativo';
+}
+
+function classeStatus(medico) {
+    return medico.status === 'I' ? 'status-inactive' : 'status-active';
+}
+
+function renderizarTabela() {
+    const filtro = campoBusca.value.trim().toLowerCase();
+    const medicosFiltrados = medicos.filter(function (medico) {
+        return [
+            medico.medicoId,
+            medico.nome,
+            medico.siglaConselho,
+            medico.numeroConselho,
+            medico.especialidadesTexto
+        ].join(' ').toLowerCase().includes(filtro);
+    });
+
+    corpoTabela.innerHTML = '';
+
+    medicosFiltrados.forEach(function (medico) {
+        const linha = document.createElement('tr');
+        linha.dataset.id = medico.medicoId;
+
+        if (medico.medicoId === medicoSelecionadoId) {
+            linha.classList.add('selected');
+        }
+
+        linha.innerHTML = `
+            <td>${medico.medicoId}</td>
+            <td>${medico.nome || '-'}</td>
+            <td>${textoConselho(medico)}</td>
+            <td>${textoEspecialidade(medico)}</td>
+            <td><span class="status-badge ${classeStatus(medico)}">${textoStatus(medico)}</span></td>
         `;
-        corpo.appendChild(tr);
+
+        linha.addEventListener('click', function () {
+            selecionarMedico(medico.medicoId);
+        });
+
+        corpoTabela.appendChild(linha);
     });
 }
 
-/**
- * Seleciona um médico da grade e preenche o formulário
- */
-function selecionarMedico(m, elemento) {
-    // UI: Destacar linha selecionada
-    document.querySelectorAll('#tabelaMedicos tr').forEach(tr => tr.classList.remove('selected'));
-    elemento.classList.add('selected');
+function selecionarMedico(id) {
+    const medico = medicos.find(function (item) {
+        return item.medicoId === id;
+    });
 
-    // UI: Preencher Formulário (Mapeando campos do HTML)
-    document.getElementById('medicoId').value = m.id;
-    document.getElementById('nome').value = m.nome;
-    document.getElementById('cpf').value = m.cpf || '';
-    document.getElementById('email').value = m.email || '';
-    document.getElementById('celular').value = m.celular || '';
-    document.getElementById('numeroConselho').value = m.crm;
-    document.getElementById('especialidadesTexto').value = m.especialidade;
-    document.getElementById('status').value = m.status;
+    if (!medico) return;
 
-    // UI: Gerenciar estado dos botões
-    desabilitarCampos();
-    document.getElementById('btnEditar').disabled = false;
-    document.getElementById('btnExcluir').disabled = false;
-    document.getElementById('btnSalvar').disabled = true;
+    medicoSelecionadoId = id;
+    modoFormulario = 'visualizacao';
+    preencherFormulario(medico);
+    habilitarFormulario(false);
+    configurarBotoes();
+    renderizarTabela();
 }
 
-/**
- * Gerenciamento de Abas
- */
-function openTab(evt, tabName) {
-    const tabcontent = document.getElementsByClassName("tab-content");
-    for (let i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].classList.remove("active");
+function iniciarNovoCadastro() {
+    medicoSelecionadoId = null;
+    modoFormulario = 'novo';
+    limparFormulario();
+    habilitarFormulario(true);
+    configurarBotoes();
+    renderizarTabela();
+    $('nome').focus();
+}
+
+function iniciarEdicao() {
+    if (!medicoSelecionadoId) return;
+
+    modoFormulario = 'edicao';
+    habilitarFormulario(true);
+    configurarBotoes();
+    $('nome').focus();
+}
+
+function gravarMedico() {
+    if (!validarFormulario()) return;
+
+    const medico = coletarDadosFormulario();
+
+    if (modoFormulario === 'novo') {
+        medicos.push(medico);
+        medicoSelecionadoId = medico.medicoId;
     }
 
-    const tablinks = document.getElementsByClassName("tab-link");
-    for (let i = 0; i < tablinks.length; i++) {
-        tablinks[i].classList.remove("active");
+    if (modoFormulario === 'edicao') {
+        medicos = medicos.map(function (item) {
+            return item.medicoId === medico.medicoId ? medico : item;
+        });
+        medicoSelecionadoId = medico.medicoId;
     }
 
-    document.getElementById(tabName).classList.add("active");
-    evt.currentTarget.classList.add("active");
+    salvarMedicos();
+    modoFormulario = 'visualizacao';
+    habilitarFormulario(false);
+    configurarBotoes();
+    renderizarTabela();
+    alert('Cadastro gravado com sucesso.');
 }
 
-/**
- * Configuração de Eventos dos Botões
- */
-function setupEventos() {
-    const btnNovo = document.getElementById('btnNovo');
-    const btnSalvar = document.getElementById('btnSalvar');
-    const btnEditar = document.getElementById('btnEditar');
-    const btnExcluir = document.getElementById('btnExcluir');
-    const form = document.getElementById('medicoForm');
+function excluirMedico() {
+    if (!medicoSelecionadoId) return;
 
-    // Botão Novo
-    btnNovo.onclick = () => {
-        form.reset();
-        habilitarCampos();
-        document.getElementById('medicoId').value = 'NOVO';
-        btnSalvar.disabled = false;
-        btnEditar.disabled = true;
-        btnExcluir.disabled = true;
+    const confirma = confirm('Deseja excluir o médico selecionado?');
+    if (!confirma) return;
 
-        // Focar na primeira aba e no primeiro campo
-        document.querySelector('.tab-link').click();
-        document.getElementById('nome').focus();
-    };
+    medicos = medicos.filter(function (medico) {
+        return medico.medicoId !== medicoSelecionadoId;
+    });
 
-    // Botão Editar
-    btnEditar.onclick = () => {
-        habilitarCampos();
-        btnSalvar.disabled = false;
-        btnEditar.disabled = true;
-    };
-
-    // Botão Salvar
-    btnSalvar.onclick = () => {
-        const id = document.getElementById('medicoId').value;
-        const nome = document.getElementById('nome').value.toUpperCase();
-
-        if (!nome) {
-            alert('Por favor, preencha o nome do profissional.');
-            return;
-        }
-
-        const dadosMedico = {
-            nome: nome,
-            cpf: document.getElementById('cpf').value,
-            email: document.getElementById('email').value,
-            celular: document.getElementById('celular').value,
-            crm: document.getElementById('numeroConselho').value,
-            especialidade: document.getElementById('especialidadesTexto').value,
-            status: document.getElementById('status').value
-        };
-
-        if (id === 'NOVO') {
-            dadosMedico.id = medicos.length + 1;
-            medicos.push(dadosMedico);
-            alert('Médico cadastrado com sucesso!');
-        } else {
-            const index = medicos.findIndex(m => m.id == id);
-            if (index !== -1) {
-                medicos[index] = { ...medicos[index], ...dadosMedico };
-                alert('Cadastro atualizado com sucesso!');
-            }
-        }
-
-        renderizarGrid();
-        desabilitarCampos();
-        btnSalvar.disabled = true;
-        btnEditar.disabled = false;
-    };
-
-    // Botão Excluir
-    btnExcluir.onclick = () => {
-        const id = document.getElementById('medicoId').value;
-        if (confirm('Tem certeza que deseja excluir este profissional?')) {
-            medicos = medicos.filter(m => m.id != id);
-            renderizarGrid();
-            form.reset();
-            desabilitarCampos();
-            btnEditar.disabled = true;
-            btnExcluir.disabled = true;
-        }
-    };
+    salvarMedicos();
+    medicoSelecionadoId = null;
+    modoFormulario = 'visualizacao';
+    limparFormulario();
+    habilitarFormulario(false);
+    configurarBotoes();
+    renderizarTabela();
 }
 
-/**
- * Auxiliares de Interface
- */
-function habilitarCampos() {
-    const inputs = document.querySelectorAll('#medicoForm input, #medicoForm select, #medicoForm textarea');
-    inputs.forEach(input => {
-        if (input.id !== 'medicoId') {
-            input.disabled = false;
-        }
+function aplicarMascaras() {
+    $('cpf').addEventListener('input', function () {
+        this.value = this.value
+            .replace(/\D/g, '')
+            .slice(0, 11)
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    });
+
+    $('celular').addEventListener('input', function () {
+        this.value = this.value
+            .replace(/\D/g, '')
+            .slice(0, 11)
+            .replace(/^(\d{2})(\d)/, '($1) $2')
+            .replace(/(\d{5})(\d{1,4})$/, '$1-$2');
+    });
+
+    $('valorConsulta').addEventListener('input', function () {
+        const numero = Number(this.value.replace(/\D/g, '')) / 100;
+        this.value = numero.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
     });
 }
 
-function desabilitarCampos() {
-    const inputs = document.querySelectorAll('#medicoForm input, #medicoForm select, #medicoForm textarea');
-    inputs.forEach(input => {
-        input.disabled = true;
-    });
+function iniciarPagina() {
+    habilitarFormulario(false);
+    limparFormulario();
+    configurarBotoes();
+    renderizarTabela();
+    aplicarMascaras();
+
+    $('dataNasc').addEventListener('input', calcularIdadeTempoVida);
+    $('dataNasc').addEventListener('change', calcularIdadeTempoVida);
+
+    btnNovo.addEventListener('click', iniciarNovoCadastro);
+    btnSalvar.addEventListener('click', gravarMedico);
+    btnEditar.addEventListener('click', iniciarEdicao);
+    btnExcluir.addEventListener('click', excluirMedico);
+    campoBusca.addEventListener('input', renderizarTabela);
 }
 
-// Sair
-document.getElementById("btnSair")
-    .addEventListener("click", sair);
-function sair() {
-
-    if (history.length > 1) {
-        history.back();
-    } else {
-        window.close();
-    }
-}
+document.addEventListener('DOMContentLoaded', iniciarPagina);

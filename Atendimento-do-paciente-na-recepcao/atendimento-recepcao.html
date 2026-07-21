@@ -31,7 +31,7 @@
                 <button id="btnExcluir" class="btn btn-danger" disabled>
                     <i class="fas fa-trash"></i> Excluir
                 </button>
-                <button id="btnImprimir" class="btn btn-dark" disabled>
+                <button id="btnImprimir" class="btn btn-dark" type="button">
                     <i class="fas fa-print"></i> Imprimir Ficha
                 </button>
                 <button id="btnAnterior" class="btn btn-dark" disabled>
@@ -40,12 +40,9 @@
                 <button id="btnProximo" class="btn btn-dark" disabled>
                     <i class="fas fa-chevron-right"></i>
                 </button>
-                <!-- <button id="btnSair" class="btn btn-dark" onclick="window.location.href='index.html'">
-                    <i class="fas fa-sign-out-alt"></i> Sair
-                </button> -->
-                <button type="button" id="btnSair" class="btn btn-dark">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Sair
+
+                <button id="btnSair" class="btn btn-dark" onclick="window.location.href='../Menu-Principal.html'">
+                    <i class="fas fa-arrow-left"></i> Voltar
                 </button>
             </div>
         </header>
@@ -182,7 +179,7 @@
                                     <div class="checkbox-group">
                                         <label><input type="checkbox" id="pacientePresente"> Paciente presente</label>
                                         <label><input type="checkbox" id="docsConferidos"> Documentos conferidos</label>
-                                        <label><input type="checkbox" id="convenioValido"> Convênio válido</label>
+                                        <label><input type="checkbox" id="convenioValido"> Convênio valido</label>
                                         <label><input type="checkbox" id="autorizacaoRealizada"> Autorização
                                             realizada</label>
                                         <label><input type="checkbox" id="lgpdAceita"> LGPD aceita</label>
