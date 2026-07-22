@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Procedimento Médico</title>
+    <link rel="stylesheet" href="procedimento-medico.css" />
+</head>
+
+<body>
+    <main class="page">
+        <section class="hero">
+            <div class="hero__content">
+                <p class="eyebrow">Gestão em Saúde</p>
+                <h1>Procedimento Médico</h1>
+                <p class="subtitle">
+                    Cadastro e organização de procedimentos médicos com interface moderna e profissional.
+                </p>
+            </div>
+
+            <button id="openProcedureBtn" class="btn btn-primary" type="button">
+                Abrir Cadastro
+            </button>
+        </section>
+    </main>
+
+    <section id="procedureScreen" class="screen" hidden aria-labelledby="screenTitle"
+        aria-describedby="screenDescription">
+        <div class="screen__header">
+            <div>
+                <span class="badge">Procedimento Médico</span>
+                <h2 id="screenTitle">Cadastro de procedimento</h2>
+                <p id="screenDescription" class="screen__description">
+                    Preencha os dados abaixo para registrar um novo procedimento médico.
+                </p>
+            </div>
+
+            <button type="button" class="icon-button" data-close-screen aria-label="Fechar tela">
+                ×
+            </button>
+        </div>
+
+        <div class="screen__content">
+            <form id="procedureForm" class="form" novalidate>
+                <div class="grid">
+                    <div class="field">
+                        <label for="procedureName">Nome do procedimento</label>
+                        <input id="procedureName" name="procedureName" type="text"
+                            placeholder="Ex.: Consulta cardiológica" required maxlength="120" />
+                        <small class="hint">Campo obrigatório.</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="procedureCode">Código</label>
+                        <input id="procedureCode" name="procedureCode" type="text" placeholder="Ex.: PROC-1024" required
+                            maxlength="30" />
+                        <small class="hint">Campo obrigatório.</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="procedureCategory">Categoria</label>
+                        <input id="procedureCategory" name="procedureCategory" type="text"
+                            placeholder="Ex.: Diagnóstico, consulta, terapia" required maxlength="80" />
+                        <small class="hint">Campo obrigatório.</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="procedureStatus">Status</label>
+                        <input id="procedureStatus" name="procedureStatus" type="text"
+                            placeholder="Ex.: Ativo, inativo, em análise" required maxlength="60" />
+                        <small class="hint">Campo obrigatório.</small>
+                    </div>
+
+                    <div class="field field--full">
+                        <label for="procedureObs">Observações</label>
+                        <textarea id="procedureObs" name="procedureObs" rows="4"
+                            placeholder="Observações adicionais..."></textarea>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn btn-ghost" data-close-screen>Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar procedimento</button>
+                </div>
+            </form>
+
+            <section class="table-card">
+                <div class="table-card__header">
+                    <h3>Registros recentes</h3>
+                    <span id="recordCount" class="count">0 registros</span>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Procedimento</th>
+                                <th>Código</th>
+                                <th>Categoria</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordsBody">
+                            <tr class="empty-row">
+                                <td colspan="5">Nenhum procedimento cadastrado.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </section>
+
+    <script src="procedimento-medico.js"></script>
+</body>
+
+</html>

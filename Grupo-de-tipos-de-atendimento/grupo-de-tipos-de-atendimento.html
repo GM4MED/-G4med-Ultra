@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grupo de Tipo de Atendimentos</title>
+    <link rel="stylesheet" href="grupo-de-tipos-de-atendimento.css" />
+</head>
+
+<body>
+    <main class="page">
+        <section class="hero">
+            <div class="hero__content">
+                <p class="eyebrow">Gestão em Saúde</p>
+                <h1>Grupo de Tipo de Atendimentos</h1>
+                <p class="subtitle">
+                    Cadastro e organização dos tipos de atendimento com interface moderna e profissional.
+                </p>
+            </div>
+
+            <button id="openTypeBtn" class="btn btn-primary" type="button">
+                Abrir Cadastro
+            </button>
+        </section>
+    </main>
+
+    <section id="typeScreen" class="screen" hidden aria-labelledby="screenTitle" aria-describedby="screenDescription">
+        <div class="screen__header">
+            <div>
+                <span class="badge">Grupo de Tipo de Atendimentos</span>
+                <h2 id="screenTitle">Cadastro de tipo de atendimento</h2>
+                <p id="screenDescription" class="screen__description">
+                    Preencha os dados abaixo para registrar um novo tipo de atendimento.
+                </p>
+            </div>
+
+            <button type="button" class="icon-button" data-close-screen aria-label="Fechar tela">
+                ×
+            </button>
+        </div>
+
+        <div class="screen__content">
+            <form id="typeForm" class="form" novalidate>
+                <div class="grid">
+                    <div class="field">
+                        <label for="attendanceType">Tipo de atendimento</label>
+                        <input id="attendanceType" name="attendanceType" type="text"
+                            placeholder="Ex.: Consulta, triagem, retorno" required maxlength="80" />
+                        <small class="hint">Campo obrigatório.</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="typeCode">Código</label>
+                        <input id="typeCode" name="typeCode" type="text" placeholder="Ex.: TAT-001" required
+                            maxlength="30" />
+                        <small class="hint">Campo obrigatório.</small>
+                    </div>
+
+                    <div class="field field--full">
+                        <label for="typeObs">Observações</label>
+                        <textarea id="typeObs" name="typeObs" rows="4"
+                            placeholder="Observações adicionais..."></textarea>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn btn-ghost" data-close-screen>Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar tipo</button>
+                </div>
+            </form>
+
+            <section class="table-card">
+                <div class="table-card__header">
+                    <h3>Registros recentes</h3>
+                    <span id="recordCount" class="count">0 registros</span>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Código</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordsBody">
+                            <tr class="empty-row">
+                                <td colspan="3">Nenhum tipo de atendimento cadastrado.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </section>
+
+    <script src="grupo-de-tipos-de-atendimento.js"></script>
+</body>
+
+</html>

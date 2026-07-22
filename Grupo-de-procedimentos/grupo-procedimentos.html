@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grupo de Procedimentos</title>
+    <link rel="stylesheet" href="grupo-procedimentos.css" />
+</head>
+
+<body>
+    <main class="page">
+        <section class="hero">
+            <div class="hero__content">
+                <p class="eyebrow">Gestão em Saúde</p>
+                <h1>Grupo de Procedimentos</h1>
+                <p class="subtitle">
+                    Cadastro e organização de procedimentos com visual limpo, seguro e profissional.
+                </p>
+            </div>
+
+            <button id="openProcedureBtn" class="btn btn-primary" type="button">
+                Abrir Cadastro
+            </button>
+        </section>
+    </main>
+
+    <dialog id="procedureDialog" class="dialog" aria-labelledby="dialogTitle" aria-describedby="dialogDescription">
+        <form id="procedureForm" class="dialog__panel" novalidate>
+            <header class="dialog__header">
+                <div>
+                    <span class="badge">Grupo de Procedimentos</span>
+                    <h2 id="dialogTitle">Cadastro de procedimentos</h2>
+                    <p id="dialogDescription" class="dialog__description">
+                        Preencha os dados abaixo para registrar um novo procedimento.
+                    </p>
+                </div>
+
+                <button type="button" class="icon-button" data-close-dialog aria-label="Fechar janela">
+                    ×
+                </button>
+            </header>
+
+            <section class="dialog__content">
+                <div class="grid">
+                    <div class="field">
+                        <label for="procedureName">Nome do procedimento</label>
+                        <input id="procedureName" name="procedureName" type="text"
+                            placeholder="Ex.: Consulta cardiológica" required maxlength="120" />
+                        <small class="hint">Campo obrigatório.</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="procedureCode">Código</label>
+                        <input id="procedureCode" name="procedureCode" type="text" placeholder="Ex.: PROC-1024" required
+                            maxlength="30" />
+                        <small class="hint">Campo obrigatório.</small>
+                    </div>
+
+                    <div class="field field--full">
+                        <label for="procedureObs">Observações</label>
+                        <textarea id="procedureObs" name="procedureObs" rows="4"
+                            placeholder="Observações adicionais..."></textarea>
+                    </div>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-card__header">
+                        <h3>Registros recentes</h3>
+                        <span id="recordCount" class="count">0 registros</span>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Código</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recordsBody">
+                                <tr class="empty-row">
+                                    <td colspan="3">Nenhum procedimento cadastrado.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="dialog__footer">
+                <button type="button" class="btn btn-ghost" data-close-dialog>
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    Salvar procedimento
+                </button>
+            </footer>
+        </form>
+    </dialog>
+
+    <script src="grupo-procedimentos.js"></script>
+</body>
+
+</html>
