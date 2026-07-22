@@ -495,121 +495,102 @@ nav {
 }
 
 /* ==========================================================
-   MEDIA QUERIES (RESPONSIVIDADE)
+   MEDIA QUERIES ESCALÁVEIS (BREAKPOINTS ESTRATÉGICOS)
 ========================================================== */
 
-/* Telas 14" */
-@media (max-width: 1440px) {
-    .sidebar {
-        width: 250px;
+/* 1. Telas Ultra-Amplas / Monitores 4K / Ultrawide / 70K (>= 3000px / 187.5rem) */
+@media (min-width: 187.5rem) {
+    :root {
+        --sidebar-width: 32rem;
+        --content-max-width: 160rem;
+    }
+
+    body {
+        font-size: 1.15rem;
     }
 
     .main-content {
-        margin-left: 250px;
+        max-width: var(--content-max-width);
+        margin: 0 auto;
+        /* Centraliza o conteúdo e evita que estique infinitamente de forma desproporcional */
+        float: none;
     }
 
-    .brand-name {
-        font-size: 28px;
+    .sidebar {
+        width: var(--sidebar-width);
     }
 
-    .menu-item {
+    .main-content {
+        margin-left: var(--sidebar-width);
+        padding: 10px 40px 100px 40px;
+    }
+
+    .footer {
+        left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
         font-size: 15px;
-        padding: 12px 14px;
     }
 
-    .topbar {
-        min-height: 78px;
+    .grid-container {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 32px;
     }
 }
 
-/* Notebooks 13" */
-@media (max-width: 1366px) {
+/* 2. Telas de Alta Resolução / 4K / TVs Ultra-Amplas (>= 125rem / 2000px) */
+@media (min-width: 125rem) and (max-width: 187.49rem) {
+    :root {
+        --sidebar-width: 25rem;
+        --content-max-width: 140rem;
+    }
+
     .sidebar {
-        width: 230px;
-        padding: 15px;
+        width: var(--sidebar-width);
     }
 
     .main-content {
-        margin-left: 230px;
+        margin-left: var(--sidebar-width);
     }
 
-    .brand-name {
-        font-size: 26px;
-    }
-
-    .medical-icon {
-        width: 40px;
-        height: 40px;
-    }
-
-    .menu-item {
-        padding: 11px 12px;
-    }
-
-    .topbar {
-        min-height: 75px;
-        border-radius: 20px;
+    .footer {
+        left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
     }
 }
 
-/* Notebooks 12" */
-@media (max-width: 1280px) {
-    .sidebar {
-        width: 210px;
-        padding: 12px;
-    }
-
-    .main-content {
-        margin-left: 210px;
-    }
-
-    .brand-name {
-        font-size: 24px;
-    }
-
-    .menu-item {
-        font-size: 14px;
-        padding: 10px 12px;
-    }
-
-    .topbar {
-        min-height: 72px;
-        padding: 0 15px;
-    }
-}
-
-/* Tablets e Notebooks Pequenos (Desktop para Mobile) */
-@media (max-width: 991px) {
+/* 3. Tablets em Modo Retrato e Small Desktops (< 992px / 62em) */
+@media (max-width: 62em) {
     body {
         flex-direction: column;
     }
-
-    /* Empilha sidebar e conteúdo */
 
     .sidebar {
         position: relative;
         width: 100%;
         height: auto;
-        transform: none;
-        padding: 15px;
+        padding: 20px;
     }
 
     .main-content,
     .footer {
         margin-left: 0;
-        left: 0;
         width: 100%;
+    }
+
+    .footer {
+        position: relative;
+        left: 0;
+        margin-top: 40px;
+        padding-bottom: 20px;
+    }
+
+    .topbar {
+        flex-wrap: wrap;
     }
 }
 
-/* Tablets Retrato e Celulares Grandes */
-@media (max-width: 768px) {
-    .topbar {
-        flex-wrap: wrap;
-        gap: 10px;
-        padding: 12px;
-        min-height: auto;
-    }
+/* 4. Tablets Pequenos / Phablets (< 768px / 48em) */
+@media (max-width: 48em) {
 
     .topbar-left,
     .topbar-right {
@@ -620,29 +601,22 @@ nav {
         justify-content: space-between;
     }
 
+    /* Oculta informações de baixa prioridade em telas reduzidas */
     .system-info {
         display: none;
     }
 
     .datetime-box {
-        min-width: auto;
         flex: 1;
-    }
-
-    .footer {
-        font-size: 11px;
     }
 }
 
-/* Celulares */
-@media (max-width: 480px) {
+/* 5. Smartphones Compactos (< 480px / 30em) */
+@media (max-width: 30em) {
 
     .topbar,
     .topbar-right {
         flex-direction: column;
-    }
-
-    .topbar {
         align-items: stretch;
     }
 
@@ -655,14 +629,6 @@ nav {
     .logout-btn {
         width: 100%;
         justify-content: center;
-    }
-
-    .sidebar {
-        width: 100%;
-    }
-
-    .sidebar-header {
-        margin-bottom: 15px;
-        padding-bottom: 15px;
+        text-align: center;
     }
 }
