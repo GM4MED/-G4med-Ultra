@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="Sistema de Saúde - Interface moderna para administração e solicitação de exames médicos." />
+    <title>Grupo de Exames | Sistema de Saúde</title>
+    <link rel="stylesheet" href="grupo-exames.css" />
+</head>
+
+<body>
+    <main class="page">
+        <section class="hero">
+            <div>
+                <p class="eyebrow">Sistema de Saúde</p>
+                <h1>Grupo de Exames</h1>
+                <p class="subtitle">
+                    Interface moderna para administrar exames com foco em usabilidade e acessibilidade.
+                </p>
+            </div>
+
+            <button id="openModalBtn" class="btn btn-primary" type="button">
+                Abrir Grupo de Exames
+            </button>
+        </section>
+    </main>
+
+    <dialog id="examDialog" class="modal" aria-labelledby="examDialogTitle" aria-describedby="examDialogDescription">
+        <form id="examForm" class="modal__dialog" method="dialog" novalidate>
+            <header class="modal__header">
+                <div>
+                    <span class="badge">Grupo de Exames</span>
+                    <h2 id="examDialogTitle">Solicitação de exames</h2>
+                    <p id="examDialogDescription" class="modal__description">
+                        Adicione, remova e confirme os exames antes de prosseguir.
+                    </p>
+                </div>
+
+                <button type="button" class="icon-button" aria-label="Fechar modal" data-close-modal>
+                    &times;
+                </button>
+            </header>
+
+            <section class="modal__content">
+                <div class="field">
+                    <label for="examInput">Adicionar exame</label>
+                    <div class="field__group">
+                        <input id="examInput" name="examInput" type="text" placeholder="Ex.: Hemograma completo"
+                            autocomplete="off" maxlength="80" aria-describedby="examHint" />
+                        <button id="addExamBtn" type="button" class="btn btn-secondary">
+                            Adicionar
+                        </button>
+                    </div>
+                    <small id="examHint" class="hint">
+                        Pressione Enter no campo para adicionar rapidamente.
+                    </small>
+                </div>
+
+                <div class="list-panel">
+                    <div class="list-panel__header">
+                        <h3>Exames selecionados</h3>
+                        <span id="examCount" class="count">0 itens</span>
+                    </div>
+
+                    <ul id="examList" class="exam-list" aria-live="polite"></ul>
+
+                    <p id="emptyState" class="empty-state">
+                        Nenhum exame adicionado ainda.
+                    </p>
+                </div>
+            </section>
+
+            <footer class="modal__footer">
+                <button type="button" class="btn btn-ghost" data-close-modal>
+                    Cancelar
+                </button>
+                <button id="confirmBtn" type="button" class="btn btn-primary">
+                    Confirmar seleção
+                </button>
+            </footer>
+        </form>
+    </dialog>
+
+    <script src="grupo-exames.js"></script>
+</body>
+
+</html>
