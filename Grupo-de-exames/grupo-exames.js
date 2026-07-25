@@ -1,172 +1,261 @@
-const openModalBtn = document.getElementById('openModalBtn');
-const dialog = document.getElementById('examDialog');
-const closeButtons = document.querySelectorAll('[data-close-modal]');
-const examInput = document.getElementById('examInput');
-const addExamBtn = document.getElementById('addExamBtn');
-const examList = document.getElementById('examList');
-const emptyState = document.getElementById('emptyState');
-const examCount = document.getElementById('examCount');
-const confirmBtn = document.getElementById('confirmBtn');
+const examInput = document.getElementById("examInput");
+const addExamBtn = document.getElementById("addExamBtn");
+const examList = document.getElementById("examList");
+const examCount = document.getElementById("examCount");
+const emptyState = document.getElementById("emptyState");
+const srFeedback = document.getElementById("srFeedback");
+const frequentList = document.getElementById("frequentList");
+const clearBtn = document.getElementById("clearBtn");
+const cancelBtn = document.getElementById("cancelBtn");
+const confirmBtn = document.getElementById("confirmBtn");
 
-let exams = [
-    'Hemograma completo',
-    'Glicemia em jejum',
-    'Perfil lipídico'
-];
+let exams = [];
+let lastRemoved = null;
+let editIndex = -1;
 
-let lastFocusedElement = null;
-
-function validateExamName(value) {
-    const clean = value.trim();
-    if (!clean) return 'Informe o nome do exame.';
-    if (clean.length < 3) return 'O nome deve ter pelo menos 3 caracteres.';
-    if (clean.length > 80) return 'O nome deve ter no máximo 80 caracteres.';
-    return '';
-}
-
-function updateCount() {
-    examCount.textContent = `${exams.length} item${exams.length === 1 ? '' : 's'}`;
-    emptyState.hidden = exams.length > 0;
+function normalizeText(text) {
+    return text.trim().replace(/\s+/g, " ").toLowerCase();
 }
 
 function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+    return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
 }
 
-function renderExams() {
-    examList.innerHTML = '';
+function setFeedback(message) {
+    srFeedback.textContent = message;
+}
 
-    exams.forEach((exam, index) => {
-        const li = document.createElement('li');
-        li.className = 'exam-item';
-        li.innerHTML = `
-            <div class="exam-item__content">
-                <span class="exam-item__title">${escapeHtml(exam)}</span>
-                <span class="exam-item__meta">Exame ${index + 1}</span>
-            </div>
-            <div class="exam-item__actions">
-                <button type="button" class="small-btn" data-action="edit" data-index="${index}">
-                    Editar
-                </button>
-                <button type="button" class="small-btn small-btn--danger" data-action="remove" data-index="${index}">
-                    Remover
-                </button>
-            </div>
-        `;
-        examList.appendChild(li);
-    });
+function updateCount() {
+    examCount.textContent = `${exams.length} ${exams.length === 1 ? "item" : "itens"}`;
+}
+
+function setEmptyStateVisible(visible) {
+    emptyState.style.display = visible ? "grid" : "none";
+}
+
+function syncInputMode() {
+    addExamBtn.textContent = editIndex >= 0 ? "Salvar" : "Adicionar";
+    cancelBtn.textContent = editIndex >= 0 ? "Cancelar edição" : "Cancelar";
+}
+
+function renderList() {
+    examList.innerHTML = "";
+
+    if (exams.length === 0) {
+        setEmptyStateVisible(true);
+    } else {
+        setEmptyStateVisible(false);
+
+        exams.forEach((label, index) => {
+            const li = document.createElement("li");
+            li.className = "exam-item";
+            li.innerHTML = `
+        <span class="label">${escapeHtml(label)}</span>
+        <div class="exam-item__actions">
+          <button type="button" class="edit-btn" data-index="${index}">Editar</button>
+          <button type="button" class="remove-btn" data-index="${index}" aria-label="Remover ${escapeHtml(label)}">
+            Remover
+          </button>
+        </div>
+      `;
+            examList.appendChild(li);
+        });
+    }
 
     updateCount();
+    syncInputMode();
 }
 
-function openModal() {
-    lastFocusedElement = document.activeElement;
-    dialog.showModal();
-    document.body.classList.add('modal-open');
-    renderExams();
-    requestAnimationFrame(() => examInput.focus());
+function resetInput() {
+    examInput.value = "";
+    editIndex = -1;
+    syncInputMode();
 }
 
-function closeModal() {
-    if (dialog.open) {
-        dialog.close();
-    }
-    document.body.classList.remove('modal-open');
-    if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
-        lastFocusedElement.focus();
-    }
+function findDuplicate(value, ignoreIndex = -1) {
+    const target = normalizeText(value);
+    return exams.findIndex((item, index) => index !== ignoreIndex && normalizeText(item) === target) !== -1;
 }
 
-function addExam() {
-    const error = validateExamName(examInput.value);
+function addOrUpdateExam(value) {
+    const exam = value.trim();
 
-    if (error) {
-        examInput.setCustomValidity(error);
-        examInput.reportValidity();
+    if (!exam) {
+        setFeedback("Digite o nome do exame.");
+        examInput.focus();
         return;
     }
 
-    examInput.setCustomValidity('');
-    exams.push(examInput.value.trim());
-    examInput.value = '';
-    renderExams();
-    examInput.focus();
-}
-
-openModalBtn.addEventListener('click', openModal);
-
-closeButtons.forEach((button) => {
-    button.addEventListener('click', closeModal);
-});
-
-dialog.addEventListener('cancel', (event) => {
-    event.preventDefault();
-    closeModal();
-});
-
-dialog.addEventListener('click', (event) => {
-    const rect = dialog.getBoundingClientRect();
-    const clickedInside =
-        rect.top <= event.clientY &&
-        event.clientY <= rect.top + rect.height &&
-        rect.left <= event.clientX &&
-        event.clientX <= rect.left + rect.width;
-
-    if (!clickedInside) {
-        closeModal();
-    }
-});
-
-addExamBtn.addEventListener('click', addExam);
-
-examInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        addExam();
-    }
-});
-
-examList.addEventListener('click', (event) => {
-    const button = event.target.closest('button[data-action]');
-    if (!button) return;
-
-    const index = Number(button.dataset.index);
-    const action = button.dataset.action;
-
-    if (action === 'remove') {
-        const confirmed = window.confirm(`Remover "${exams[index]}" do grupo?`);
-        if (!confirmed) return;
-
-        exams.splice(index, 1);
-        renderExams();
-        return;
-    }
-
-    if (action === 'edit') {
-        const nextValue = window.prompt('Editar nome do exame:', exams[index]);
-        if (nextValue === null) return;
-
-        const error = validateExamName(nextValue);
-        if (error) {
-            window.alert(error);
+    if (editIndex >= 0) {
+        if (findDuplicate(exam, editIndex)) {
+            setFeedback(`${exam} já está na lista.`);
+            examInput.focus();
             return;
         }
 
-        exams[index] = nextValue.trim();
-        renderExams();
-    }
-});
-
-confirmBtn.addEventListener('click', () => {
-    if (exams.length === 0) {
-        window.alert('Adicione pelo menos um exame antes de confirmar.');
+        exams[editIndex] = exam;
+        editIndex = -1;
+        renderList();
+        setFeedback(`${exam} atualizado.`);
+        resetInput();
+        examInput.focus();
         return;
     }
 
-    window.alert(`Grupo confirmado com ${exams.length} exame${exams.length === 1 ? '' : 's'}.`);
-    closeModal();
+    if (findDuplicate(exam)) {
+        setFeedback(`${exam} já está na lista.`);
+        examInput.value = "";
+        examInput.focus();
+        return;
+    }
+
+    exams.push(exam);
+    renderList();
+    setFeedback(`${exam} adicionado.`);
+    resetInput();
+    examInput.focus();
+}
+
+function startEdit(index) {
+    if (index < 0 || index >= exams.length) return;
+    editIndex = index;
+    examInput.value = exams[index];
+    examInput.focus();
+    examInput.select();
+    syncInputMode();
+    setFeedback(`Editando ${exams[index]}.`);
+}
+
+function removeExam(index) {
+    if (index < 0 || index >= exams.length) return;
+
+    const removed = exams.splice(index, 1)[0];
+    lastRemoved = { value: removed, index };
+
+    if (editIndex === index) {
+        resetInput();
+    } else if (editIndex > index) {
+        editIndex -= 1;
+    }
+
+    renderList();
+    setFeedback(`${removed} removido. Pressione desfazer para recuperar.`);
+}
+
+function restoreLastRemoved() {
+    if (!lastRemoved) {
+        setFeedback("Não há item para desfazer.");
+        return;
+    }
+
+    const { value, index } = lastRemoved;
+    const safeIndex = Math.min(index, exams.length);
+    exams.splice(safeIndex, 0, value);
+    lastRemoved = null;
+    renderList();
+    setFeedback(`${value} restaurado.`);
+}
+
+function filterFrequentTags(query) {
+    const normalized = normalizeText(query);
+    document.querySelectorAll(".tag").forEach((tag) => {
+        const match = normalizeText(tag.textContent).includes(normalized);
+        tag.style.display = match ? "" : "none";
+    });
+}
+
+addExamBtn.addEventListener("click", () => {
+    addOrUpdateExam(examInput.value);
 });
 
-renderExams();
+examInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        addOrUpdateExam(examInput.value);
+    }
+
+    if (event.key === "Escape") {
+        event.preventDefault();
+        resetInput();
+        examInput.blur();
+        setFeedback("Entrada limpa.");
+    }
+});
+
+examInput.addEventListener("input", () => {
+    filterFrequentTags(examInput.value);
+});
+
+examList.addEventListener("click", (event) => {
+    const removeBtn = event.target.closest(".remove-btn");
+    const editBtn = event.target.closest(".edit-btn");
+
+    if (removeBtn) {
+        const index = Number(removeBtn.dataset.index);
+        if (!Number.isNaN(index)) removeExam(index);
+        return;
+    }
+
+    if (editBtn) {
+        const index = Number(editBtn.dataset.index);
+        if (!Number.isNaN(index)) startEdit(index);
+    }
+});
+
+frequentList.addEventListener("click", (event) => {
+    const tag = event.target.closest(".tag");
+    if (!tag) return;
+    addOrUpdateExam(tag.textContent);
+});
+
+clearBtn.addEventListener("click", () => {
+    exams = [];
+    lastRemoved = null;
+    editIndex = -1;
+    resetInput();
+    renderList();
+    setFeedback("Seleção limpa.");
+    examInput.focus();
+});
+
+cancelBtn.addEventListener("click", () => {
+    if (editIndex >= 0) {
+        editIndex = -1;
+        resetInput();
+        renderList();
+        setFeedback("Edição cancelada.");
+    } else {
+        examInput.value = "";
+        setFeedback("Entrada cancelada.");
+    }
+    examInput.focus();
+});
+
+confirmBtn.addEventListener("click", () => {
+    if (editIndex >= 0) {
+        setFeedback("Finalize ou cancele a edição antes de confirmar.");
+        examInput.focus();
+        return;
+    }
+
+    if (exams.length === 0) {
+        setFeedback("Nenhum exame selecionado para confirmar.");
+        return;
+    }
+
+    const summary = exams.join(", ");
+    setFeedback(`${exams.length} exames confirmados: ${summary}.`);
+});
+
+document.addEventListener("keydown", (event) => {
+    if (event.ctrlKey && event.key.toLowerCase() === "z") {
+        event.preventDefault();
+        restoreLastRemoved();
+    }
+});
+
+renderList();
+filterFrequentTags("");
