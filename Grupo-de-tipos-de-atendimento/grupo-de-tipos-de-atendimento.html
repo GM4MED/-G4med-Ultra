@@ -4,97 +4,300 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Grupo de Tipo de Atendimentos</title>
+    <title>Grupo de Tipos de Atendimento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="grupo-de-tipos-de-atendimento.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 
-<body>
-    <main class="page">
-        <section class="hero">
-            <div class="hero__content">
-                <p class="eyebrow">Gestão em Saúde</p>
-                <h1>Grupo de Tipo de Atendimentos</h1>
-                <p class="subtitle">
-                    Cadastro e organização dos tipos de atendimento com interface moderna e profissional.
+<body class="bg-slate-50 text-gray-900 font-sans">
+    <header class="bg-white border-b border-slate-200 shadow-sm">
+        <div class="page-wrap px-6 py-4 flex items-center justify-between">
+            <button id="backBtn" class="back-btn" type="button" aria-label="Voltar">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+
+            <div class="flex items-center gap-6 text-gray-600">
+                <button class="relative icon-btn w-10 h-10 rounded-full" type="button">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="badge">3</span>
+                </button>
+                <button class="icon-btn w-10 h-10 rounded-full" type="button">
+                    <i class="fas fa-question-circle text-lg"></i>
+                </button>
+                <div class="user-pill">
+                    <div class="avatar">AD</div>
+                    <span class="font-medium text-gray-700">Administrador</span>
+                    <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-wrap px-6 md:px-12 py-8">
+        <div class="toolbar">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-950 mb-2">Grupo de Tipos de Atendimento</h1>
+                <p class="text-gray-600">
+                    Organize e categorize os atendimentos para facilitar o agendamento e o controle.
                 </p>
             </div>
 
-            <button id="openTypeBtn" class="btn btn-primary" type="button">
-                Abrir Cadastro
-            </button>
-        </section>
+            <div class="toolbar-actions">
+                <button class="btn btn-secondary" type="button">
+                    <i class="fas fa-file-import"></i>
+                    Importar Catálogo
+                </button>
+                <button class="btn btn-primary" type="button">
+                    <i class="fas fa-plus"></i>
+                    Novo Grupo
+                </button>
+            </div>
+        </div>
+
+        <div class="search-wrap">
+            <i class="fas fa-search search-icon"></i>
+            <input id="searchInput" type="text" placeholder="Pesquisar grupos (ex: Consultas, Exames, Procedimentos...)"
+                class="search-input" />
+        </div>
+
+        <div class="table-card">
+            <div class="table-shell">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-4 font-medium">Status</th>
+                            <th class="px-6 py-4 font-medium">
+                                <span class="inline-flex items-center gap-2">
+                                    Nome do Grupo <i class="fas fa-sort sort-icon"></i>
+                                </span>
+                            </th>
+                            <th class="px-6 py-4 font-medium">Descrição</th>
+                            <th class="px-6 py-4 font-medium text-right">Nº de Tipos de Atendimento</th>
+                            <th class="px-6 py-4 font-medium text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-search="consultas médicas consultas em diversas especialidades">
+                            <td class="px-6 py-5"><span class="status-dot status-active"></span></td>
+                            <td class="px-6 py-5 font-medium text-gray-900">Consultas Médicas</td>
+                            <td class="px-6 py-5 text-gray-700">Consultas em diversas especialidades</td>
+                            <td class="px-6 py-5 num-cell">24</td>
+                            <td class="px-6 py-5 actions">
+                                <button class="action-btn" title="Editar" type="button"><i
+                                        class="fas fa-pencil-alt"></i></button>
+                                <button class="action-btn" title="Visualizar" type="button"><i
+                                        class="fas fa-eye"></i></button>
+                                <button class="action-btn delete" title="Desativar" type="button"><i
+                                        class="fas fa-ban"></i></button>
+                            </td>
+                        </tr>
+                        <tr data-search="exames laboratoriais coleta e análise de exames">
+                            <td class="px-6 py-5"><span class="status-dot status-active"></span></td>
+                            <td class="px-6 py-5 font-medium text-gray-900">Exames Laboratoriais</td>
+                            <td class="px-6 py-5 text-gray-700">Coleta e análise de exames</td>
+                            <td class="px-6 py-5 num-cell">18</td>
+                            <td class="px-6 py-5 actions">
+                                <button class="action-btn" title="Editar" type="button"><i
+                                        class="fas fa-pencil-alt"></i></button>
+                                <button class="action-btn" title="Visualizar" type="button"><i
+                                        class="fas fa-eye"></i></button>
+                                <button class="action-btn delete" title="Desativar" type="button"><i
+                                        class="fas fa-ban"></i></button>
+                            </td>
+                        </tr>
+                        <tr data-search="procedimentos procedimentos ambulatoriais">
+                            <td class="px-6 py-5"><span class="status-dot status-inactive"></span></td>
+                            <td class="px-6 py-5 font-medium text-gray-900">Procedimentos</td>
+                            <td class="px-6 py-5 text-gray-700">Procedimentos ambulatoriais</td>
+                            <td class="px-6 py-5 num-cell">31</td>
+                            <td class="px-6 py-5 actions">
+                                <button class="action-btn" title="Editar" type="button"><i
+                                        class="fas fa-pencil-alt"></i></button>
+                                <button class="action-btn" title="Visualizar" type="button"><i
+                                        class="fas fa-eye"></i></button>
+                                <button class="action-btn delete" title="Desativar" type="button"><i
+                                        class="fas fa-ban"></i></button>
+                            </td>
+                        </tr>
+                        <tr data-search="telemedicina atendimentos remotos">
+                            <td class="px-6 py-5"><span class="status-dot status-active"></span></td>
+                            <td class="px-6 py-5 font-medium text-gray-900">Telemedicina</td>
+                            <td class="px-6 py-5 text-gray-700">Atendimentos remotos</td>
+                            <td class="px-6 py-5 num-cell">12</td>
+                            <td class="px-6 py-5 actions">
+                                <button class="action-btn" title="Editar" type="button"><i
+                                        class="fas fa-pencil-alt"></i></button>
+                                <button class="action-btn" title="Visualizar" type="button"><i
+                                        class="fas fa-eye"></i></button>
+                                <button class="action-btn delete" title="Desativar" type="button"><i
+                                        class="fas fa-ban"></i></button>
+                            </td>
+                        </tr>
+                        <tr data-search="vacinação campanhas e imunização">
+                            <td class="px-6 py-5"><span class="status-dot status-active"></span></td>
+                            <td class="px-6 py-5 font-medium text-gray-900">Vacinação</td>
+                            <td class="px-6 py-5 text-gray-700">Campanhas e imunização</td>
+                            <td class="px-6 py-5 num-cell">9</td>
+                            <td class="px-6 py-5 actions">
+                                <button class="action-btn" title="Editar" type="button"><i
+                                        class="fas fa-pencil-alt"></i></button>
+                                <button class="action-btn" title="Visualizar" type="button"><i
+                                        class="fas fa-eye"></i></button>
+                                <button class="action-btn delete" title="Desativar" type="button"><i
+                                        class="fas fa-ban"></i></button>
+                            </td>
+                        </tr>
+                        <tr data-search="triagem classificação inicial de pacientes">
+                            <td class="px-6 py-5"><span class="status-dot status-inactive"></span></td>
+                            <td class="px-6 py-5 font-medium text-gray-900">Triagem</td>
+                            <td class="px-6 py-5 text-gray-700">Classificação inicial de pacientes</td>
+                            <td class="px-6 py-5 num-cell">15</td>
+                            <td class="px-6 py-5 actions">
+                                <button class="action-btn" title="Editar" type="button"><i
+                                        class="fas fa-pencil-alt"></i></button>
+                                <button class="action-btn" title="Visualizar" type="button"><i
+                                        class="fas fa-eye"></i></button>
+                                <button class="action-btn delete" title="Desativar" type="button"><i
+                                        class="fas fa-ban"></i></button>
+                            </td>
+                        </tr>
+                        <tr data-search="urgência atendimento emergencial">
+                            <td class="px-6 py-5"><span class="status-dot status-active"></span></td>
+                            <td class="px-6 py-5 font-medium text-gray-900">Urgência</td>
+                            <td class="px-6 py-5 text-gray-700">Atendimento emergencial</td>
+                            <td class="px-6 py-5 num-cell">22</td>
+                            <td class="px-6 py-5 actions">
+                                <button class="action-btn" title="Editar" type="button"><i
+                                        class="fas fa-pencil-alt"></i></button>
+                                <button class="action-btn" title="Visualizar" type="button"><i
+                                        class="fas fa-eye"></i></button>
+                                <button class="action-btn delete" title="Desativar" type="button"><i
+                                        class="fas fa-ban"></i></button>
+                            </td>
+                        </tr>
+                        <tr data-search="retorno reavaliação de pacientes">
+                            <td class="px-6 py-5"><span class="status-dot status-active"></span></td>
+                            <td class="px-6 py-5 font-medium text-gray-900">Retorno</td>
+                            <td class="px-6 py-5 text-gray-700">Reavaliação de pacientes</td>
+                            <td class="px-6 py-5 num-cell">14</td>
+                            <td class="px-6 py-5 actions">
+                                <button class="action-btn" title="Editar" type="button"><i
+                                        class="fas fa-pencil-alt"></i></button>
+                                <button class="action-btn" title="Visualizar" type="button"><i
+                                        class="fas fa-eye"></i></button>
+                                <button class="action-btn delete" title="Desativar" type="button"><i
+                                        class="fas fa-ban"></i></button>
+                            </td>
+                        </tr>
+                        <tr data-search="plantão cobertura 24 horas">
+                            <td class="px-6 py-5"><span class="status-dot status-inactive"></span></td>
+                            <td class="px-6 py-5 font-medium text-gray-900">Plantão</td>
+                            <td class="px-6 py-5 text-gray-700">Cobertura 24 horas</td>
+                            <td class="px-6 py-5 num-cell">8</td>
+                            <td class="px-6 py-5 actions">
+                                <button class="action-btn" title="Editar" type="button"><i
+                                        class="fas fa-pencil-alt"></i></button>
+                                <button class="action-btn" title="Visualizar" type="button"><i
+                                        class="fas fa-eye"></i></button>
+                                <button class="action-btn delete" title="Desativar" type="button"><i
+                                        class="fas fa-ban"></i></button>
+                            </td>
+                        </tr>
+                        <tr data-search="fisioterapia sessões e reabilitação">
+                            <td class="px-6 py-5"><span class="status-dot status-active"></span></td>
+                            <td class="px-6 py-5 font-medium text-gray-900">Fisioterapia</td>
+                            <td class="px-6 py-5 text-gray-700">Sessões e reabilitação</td>
+                            <td class="px-6 py-5 num-cell">19</td>
+                            <td class="px-6 py-5 actions">
+                                <button class="action-btn" title="Editar" type="button"><i
+                                        class="fas fa-pencil-alt"></i></button>
+                                <button class="action-btn" title="Visualizar" type="button"><i
+                                        class="fas fa-eye"></i></button>
+                                <button class="action-btn delete" title="Desativar" type="button"><i
+                                        class="fas fa-ban"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <div class="pagination-info">Mostrando 1-10 de 45 grupos</div>
+                <div class="pagination-controls">
+                    <button class="page-btn icon" data-page="1" type="button"><i
+                            class="fas fa-angle-double-left"></i></button>
+                    <button class="page-btn icon" data-page="1" type="button"><i class="fas fa-angle-left"></i></button>
+                    <button class="page-btn active" data-page="1" type="button">1</button>
+                    <button class="page-btn" data-page="2" type="button">2</button>
+                    <button class="page-btn" data-page="3" type="button">3</button>
+                    <span class="page-ellipsis">...</span>
+                    <button class="page-btn" data-page="5" type="button">5</button>
+                    <button class="page-btn icon" data-page="2" type="button"><i
+                            class="fas fa-angle-right"></i></button>
+                    <button class="page-btn icon" data-page="5" type="button"><i
+                            class="fas fa-angle-double-right"></i></button>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <section id="typeScreen" class="screen" hidden aria-labelledby="screenTitle" aria-describedby="screenDescription">
-        <div class="screen__header">
-            <div>
-                <span class="badge">Grupo de Tipo de Atendimentos</span>
-                <h2 id="screenTitle">Cadastro de tipo de atendimento</h2>
-                <p id="screenDescription" class="screen__description">
-                    Preencha os dados abaixo para registrar um novo tipo de atendimento.
-                </p>
+    <div id="newGroupModal" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-200">
+        <div id="newGroupBackdrop" class="absolute inset-0 bg-slate-900/50"></div>
+        <div class="relative z-10 min-h-full flex items-center justify-center p-4">
+            <div data-modal-panel
+                class="w-full max-w-lg mx-4 rounded-xl bg-white shadow-2xl transform transition-all duration-200 scale-95 translate-y-2">
+                <div class="flex items-center justify-between px-6 py-5 border-b border-slate-200">
+                    <h2 class="text-lg font-bold text-slate-900">Adicionar Novo Grupo de Atendimento</h2>
+                    <button id="closeNewGroupModal" type="button"
+                        class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+                        aria-label="Fechar modal">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                </div>
+
+                <form id="newGroupForm" class="px-6 py-5 space-y-4">
+                    <div>
+                        <label for="groupName" class="block text-sm font-medium text-slate-700 mb-2">Nome do
+                            Grupo</label>
+                        <input id="groupName" type="text" placeholder="Ex: Consultas Especializadas"
+                            class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" />
+                    </div>
+
+                    <div>
+                        <label for="groupDescription"
+                            class="block text-sm font-medium text-slate-700 mb-2">Descrição</label>
+                        <textarea id="groupDescription" rows="4" placeholder="Descreva o propósito deste grupo..."
+                            class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm outline-none resize-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"></textarea>
+                    </div>
+
+                    <div>
+                        <label for="groupStatus" class="block text-sm font-medium text-slate-700 mb-2">Status
+                            Inicial</label>
+                        <select id="groupStatus"
+                            class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
+                            <option value="Ativo">Ativo</option>
+                            <option value="Inativo">Inativo</option>
+                        </select>
+                    </div>
+
+                    <div class="pt-2 flex items-center justify-end gap-3">
+                        <button id="cancelNewGroupBtn" type="button"
+                            class="px-4 py-2.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition">
+                            Cancelar
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition">
+                            Salvar Grupo
+                        </button>
+                    </div>
+                </form>
             </div>
-
-            <button type="button" class="icon-button" data-close-screen aria-label="Fechar tela">
-                ×
-            </button>
         </div>
-
-        <div class="screen__content">
-            <form id="typeForm" class="form" novalidate>
-                <div class="grid">
-                    <div class="field">
-                        <label for="attendanceType">Tipo de atendimento</label>
-                        <input id="attendanceType" name="attendanceType" type="text"
-                            placeholder="Ex.: Consulta, triagem, retorno" required maxlength="80" />
-                        <small class="hint">Campo obrigatório.</small>
-                    </div>
-
-                    <div class="field">
-                        <label for="typeCode">Código</label>
-                        <input id="typeCode" name="typeCode" type="text" placeholder="Ex.: TAT-001" required
-                            maxlength="30" />
-                        <small class="hint">Campo obrigatório.</small>
-                    </div>
-
-                    <div class="field field--full">
-                        <label for="typeObs">Observações</label>
-                        <textarea id="typeObs" name="typeObs" rows="4"
-                            placeholder="Observações adicionais..."></textarea>
-                    </div>
-                </div>
-
-                <div class="actions">
-                    <button type="button" class="btn btn-ghost" data-close-screen>Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar tipo</button>
-                </div>
-            </form>
-
-            <section class="table-card">
-                <div class="table-card__header">
-                    <h3>Registros recentes</h3>
-                    <span id="recordCount" class="count">0 registros</span>
-                </div>
-
-                <div class="table-wrap">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Tipo</th>
-                                <th>Código</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recordsBody">
-                            <tr class="empty-row">
-                                <td colspan="3">Nenhum tipo de atendimento cadastrado.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </div>
-    </section>
+    </div>
 
     <script src="grupo-de-tipos-de-atendimento.js"></script>
 </body>

@@ -4,218 +4,292 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Médico</title>
+    <title>Grupo de Exames</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="grupo-exames.css" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        teal: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e'
+                        },
+                        slate: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a'
+                        },
+                        blue: {
+                            600: '#2563eb',
+                            700: '#1d4ed8'
+                        }
+                    }
+                }
+            }
+        };
+    </script>
 </head>
 
-<body>
-    <header class="topbar">
-        <div class="topbar__inner">
-            <div class="topbar__brand">
-                <div class="topbar__brand-logo" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2v20" />
-                        <path d="M2 12h20" />
-                    </svg>
+<body class="bg-slate-50 text-slate-900">
+    <div class="w-screen min-h-screen flex flex-col">
+        <header class="border-b border-slate-200 bg-white">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <a href="../Menu-Principal.html" aria-label="Voltar para o menu principal">
+                        <button class="icon-btn" aria-label="Voltar">
+                            <svg viewBox="0 0 24 24" class="icon-sm" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M15 18l-6-6 6-6"></path>
+                            </svg>
+                        </button>
+                    </a>
+                    <span class="text-lg font-semibold text-slate-900">Exames</span>
                 </div>
-                <span>MedDashboard</span>
+
+                <div class="flex items-center gap-3">
+                    <button class="help-btn">
+                        <svg viewBox="0 0 24 24" class="icon-xs" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.5 9a3 3 0 1 1 4.9 2.3c-.9.7-1.4 1.2-1.4 2.7"></path>
+                            <path d="M12 17h.01"></path>
+                        </svg>
+                        <span>Ajuda</span>
+                    </button>
+                    <button class="icon-btn" aria-label="Notificações">
+                        <svg viewBox="0 0 24 24" class="icon-sm" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5">
+                            </path>
+                            <path d="M9 17a3 3 0 0 0 6 0"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
+        </header>
 
-            <div class="topbar__actions">
-                <button class="btn-secondary" type="button" id="btnAjuda">Ajuda</button>
-                <button class="btn-primary" type="button" id="btnNovoRegistro">Novo registro</button>
-            </div>
-        </div>
-    </header>
-
-    <main class="container">
-        <section class="hero">
-            <div class="hero__content">
-                <h1>Sistema médico moderno para gestão eficiente</h1>
-                <p class="subtitle">
-                    Organize atendimentos, acompanhe pacientes e centralize informações com uma interface limpa, rápida
-                    e responsiva.
-                </p>
-
-                <div class="hero__actions">
-                    <button class="btn-primary" type="button" id="btnComecarAgora">Começar agora</button>
-                    <button class="btn-secondary" type="button" id="btnDemonstracao">Ver demonstração</button>
+        <main class="flex-1 max-w-7xl mx-auto w-full px-6 lg:px-8 py-6 lg:py-8 pb-28">
+            <section class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
+                <div class="flex items-start gap-6">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600 shrink-0 shadow-sm">
+                        <svg viewBox="0 0 24 24" class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M3 8.5A2.5 2.5 0 0 1 5.5 6H9l2 2h7.5A2.5 2.5 0 0 1 21 10.5v6A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5v-8Z">
+                            </path>
+                            <path d="M7 13h4"></path>
+                            <path d="M9 11v4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-slate-900">Grupo de Exames</h1>
+                        <p class="text-slate-600 mt-1 max-w-2xl">Interface moderna para administrar exames com foco em
+                            usabilidade e acessibilidade.</p>
+                    </div>
                 </div>
-            </div>
 
-            <div class="hero__illustration" aria-hidden="true">
-                <svg viewBox="0 0 240 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="20" y="20" width="200" height="120" rx="28" stroke="#10B981" stroke-width="2"
-                        opacity=".22" />
-                    <rect x="38" y="38" width="84" height="14" rx="7" stroke="#10B981" stroke-width="2" />
-                    <rect x="38" y="62" width="164" height="10" rx="5" stroke="#10B981" stroke-width="2" opacity=".7" />
-                    <rect x="38" y="82" width="128" height="10" rx="5" stroke="#10B981" stroke-width="2" opacity=".7" />
-                    <rect x="38" y="102" width="148" height="10" rx="5" stroke="#10B981" stroke-width="2"
-                        opacity=".7" />
-                    <circle cx="178" cy="48" r="18" stroke="#10B981" stroke-width="2" />
-                    <path d="M178 38v20M168 48h20" stroke="#10B981" stroke-width="2" stroke-linecap="round" />
-                </svg>
-            </div>
-        </section>
-
-        <section class="features" aria-label="Vantagens da plataforma">
-            <article class="feature-card">
-                <div class="feature-card__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2v20" />
-                        <path d="M2 12h20" />
+                <div class="bg-teal-50 p-4 rounded-full self-start">
+                    <svg viewBox="0 0 128 128" class="w-24 h-24 text-teal-600" fill="none" stroke="currentColor"
+                        stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="34" y="18" width="60" height="92" rx="10" fill="#f0fdfa" stroke="currentColor"></rect>
+                        <path d="M46 40h36"></path>
+                        <path d="M46 52h22"></path>
+                        <path
+                            d="M67 73c0-6.5 5.5-11 12-11 4.8 0 8.7 2.6 10.4 6.5C91 64.6 94.9 62 99.7 62c6.5 0 12 4.5 12 11 0 10-18.7 22-18.7 22S67 83 67 73Z"
+                            fill="#ccfbf1" stroke="currentColor"></path>
+                        <rect x="72" y="85" width="28" height="22" rx="6" fill="#e6fffb" stroke="currentColor"></rect>
+                        <path d="M78 96h16"></path>
+                        <path d="M84 90v12"></path>
+                        <rect x="20" y="76" width="18" height="30" rx="4" fill="#d9f99d" stroke="currentColor"></rect>
+                        <path d="M24 82h10"></path>
+                        <path d="M24 88h10"></path>
+                        <path d="M24 94h10"></path>
                     </svg>
                 </div>
-                <h3 class="feature-card__title">Pronto para uso</h3>
-                <p class="feature-card__text">Estrutura organizada para começar rapidamente sem complexidade
-                    desnecessária.</p>
-            </article>
+            </section>
 
-            <article class="feature-card">
-                <div class="feature-card__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 19V5" />
-                        <path d="M8 19V11" />
-                        <path d="M12 19V8" />
-                        <path d="M16 19V13" />
-                        <path d="M20 19V6" />
-                    </svg>
+            <section class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="card">
+                    <div class="badge">
+                        <svg viewBox="0 0 24 24" class="icon-xs" fill="currentColor">
+                            <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8Z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-slate-900">Mais agilidade</h3>
+                        <p class="text-sm text-slate-600">Fluxo rápido para selecionar exames.</p>
+                    </div>
                 </div>
-                <h3 class="feature-card__title">Painéis inteligentes</h3>
-                <p class="feature-card__text">Visualização clara dos dados importantes com foco em produtividade e
-                    leitura rápida.</p>
-            </article>
 
-            <article class="feature-card">
-                <div class="feature-card__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 1l3 7h7l-5.5 4.5L18 20l-6-4-6 4 1.5-7.5L2 8h7z" />
-                    </svg>
+                <div class="card">
+                    <div class="badge">
+                        <svg viewBox="0 0 24 24" class="icon-xs" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-slate-900">Mais segurança</h3>
+                        <p class="text-sm text-slate-600">Acompanhamento confiável e protegido.</p>
+                    </div>
                 </div>
-                <h3 class="feature-card__title">Experiência limpa</h3>
-                <p class="feature-card__text">Tipografia consistente, espaçamento confortável e elementos visuais bem
-                    equilibrados.</p>
-            </article>
 
-            <article class="feature-card">
-                <div class="feature-card__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="4" width="18" height="16" rx="3" />
-                        <path d="M7 8h10M7 12h10M7 16h6" />
-                    </svg>
+                <div class="card">
+                    <div class="badge">
+                        <svg viewBox="0 0 24 24" class="icon-xs" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 7h16"></path>
+                            <path d="M4 12h16"></path>
+                            <path d="M4 17h16"></path>
+                            <path d="M8 7v10"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-slate-900">Mais organização</h3>
+                        <p class="text-sm text-slate-600">Lista clara e fácil de revisar.</p>
+                    </div>
                 </div>
-                <h3 class="feature-card__title">Responsivo</h3>
-                <p class="feature-card__text">Funciona muito bem no desktop e também se adapta ao celular com fluidez.
-                </p>
-            </article>
-        </section>
 
-        <section class="screen">
-            <div class="screen__content">
-                <article class="panel">
-                    <div class="panel__header">
-                        <div>
-                            <h2 class="panel__title">Cadastro de paciente</h2>
-                            <p class="panel__subtitle">Preencha os campos abaixo para criar um novo registro.</p>
+                <div class="card">
+                    <div class="badge">
+                        <svg viewBox="0 0 24 24" class="icon-xs" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19V5"></path>
+                            <path d="M4 19h16"></path>
+                            <path d="M7 15l4-4 3 3 5-6"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-slate-900">Mais controle</h3>
+                        <p class="text-sm text-slate-600">Visualize a seleção em tempo real.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mt-10">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Solicitação de exames</h2>
+                        <p class="text-slate-600 mt-1">Adicione, remova e confirme os exames antes de prosseguir.</p>
+                    </div>
+                    <button id="clearBtn" class="action-secondary">
+                        <svg viewBox="0 0 24 24" class="icon-xs" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M8 6V4h8v2"></path>
+                            <path d="M19 6l-1 14H6L5 6"></path>
+                        </svg>
+                        <span>Limpar seleção</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                    <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-sm">
+                        <div class="flex flex-col md:flex-row md:items-end gap-4">
+                            <div class="flex-1">
+                                <label for="examInput" class="block text-sm font-medium text-slate-700 mb-2">Adicionar
+                                    exame</label>
+                                <div class="relative">
+                                    <input id="examInput" type="text" placeholder="Digite o nome do exame"
+                                        class="input-search" />
+                                    <button id="addBtn" class="add-btn">Adicionar</button>
+                                </div>
+                                <p class="text-xs text-slate-500 mt-1">Digite para buscar ou selecione um exame da
+                                    lista.</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="panel__body">
-                        <form class="form" id="formPaciente">
-                            <div>
-                                <label for="nome">Nome completo</label>
-                                <input id="nome" name="nome" type="text" placeholder="Digite o nome do paciente" />
+                        <div class="mt-6">
+                            <h3 class="text-sm font-semibold text-slate-900 mb-3">Exames frequentes</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <button class="exam-chip" data-exam="Hemograma completo">Hemograma completo</button>
+                                <button class="exam-chip" data-exam="Glicemia em jejum">Glicemia em jejum</button>
+                                <button class="exam-chip" data-exam="Colesterol total">Colesterol total</button>
+                                <button class="exam-chip" data-exam="TSH">TSH</button>
+                                <button class="exam-chip" data-exam="Urina tipo I">Urina tipo I</button>
+                                <button class="exam-chip" data-exam="Creatinina">Creatinina</button>
+                                <button class="exam-chip" data-exam="TGO">TGO</button>
+                                <button class="exam-chip" data-exam="TGP">TGP</button>
                             </div>
-
-                            <div>
-                                <label for="email">E-mail</label>
-                                <input id="email" name="email" type="email" placeholder="exemplo@email.com" />
-                            </div>
-
-                            <div>
-                                <label for="telefone">Telefone</label>
-                                <input id="telefone" name="telefone" type="tel" placeholder="(00) 00000-0000" />
-                            </div>
-
-                            <div>
-                                <label for="especialidade">Especialidade</label>
-                                <select id="especialidade" name="especialidade">
-                                    <option selected>Selecione uma especialidade</option>
-                                    <option>Clínica geral</option>
-                                    <option>Cardiologia</option>
-                                    <option>Pediatria</option>
-                                    <option>Dermatologia</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label for="observacoes">Observações</label>
-                                <textarea id="observacoes" name="observacoes"
-                                    placeholder="Observações adicionais"></textarea>
-                            </div>
-
-                            <div class="hero__actions">
-                                <button class="btn-primary" type="submit" id="btnSalvarPaciente">Salvar
-                                    paciente</button>
-                                <button class="btn-secondary" type="reset" id="btnLimpar">Limpar</button>
-                            </div>
-                        </form>
-                    </div>
-                </article>
-
-                <article class="panel">
-                    <div class="panel__header">
-                        <div>
-                            <h2 class="panel__title">Próximos atendimentos</h2>
-                            <p class="panel__subtitle">Acompanhe a agenda do dia e os status dos pacientes.</p>
                         </div>
-                    </div>
 
-                    <div class="panel__body">
-                        <div class="empty-state" id="emptyState">
-                            <div class="empty-state__icon" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M3 8h18" />
-                                    <path d="M8 2v4" />
-                                    <path d="M16 2v4" />
-                                    <rect x="3" y="5" width="18" height="17" rx="3" />
-                                    <path d="M8 11h8M8 15h5" />
+                        <div class="flex justify-end gap-3 mt-6">
+                            <button class="action-secondary">Cancelar</button>
+                            <button id="confirmBtn" class="action-primary">
+                                <svg viewBox="0 0 24 24" class="icon-xs" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 6L9 17l-5-5"></path>
                                 </svg>
-                            </div>
-
-                            <h3 class="empty-state__title">Nenhum atendimento agendado</h3>
-                            <p class="empty-state__text">
-                                Quando houver registros, eles aparecerão aqui com data, horário e status.
-                            </p>
-                        </div>
-
-                        <div id="listaAtendimentos" style="display:none;">
-                            <!-- JS pode preencher aqui -->
+                                <span>Confirmar seleção</span>
+                            </button>
                         </div>
                     </div>
 
-                    <div class="screen__footer">
-                        <div>
-                            <p class="screen__footer-title">Status do sistema</p>
-                            <p class="screen__footer-text" id="statusSistema">Tudo funcionando normalmente.</p>
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm">
+                        <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+                            <h3 class="font-semibold text-slate-900">Exames selecionados</h3>
+                            <span id="countLabel" class="text-sm text-slate-400">0 itens</span>
                         </div>
-                        <button class="btn-confirm" type="button" id="btnAtualizarDados">Atualizar dados</button>
+
+                        <div id="emptyState" class="flex flex-col items-center justify-center h-64 text-center">
+                            <svg viewBox="0 0 24 24" class="w-16 h-16 text-slate-400 mb-4" fill="none"
+                                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="4" y="3" width="16" height="18" rx="2"></rect>
+                                <path d="M8 7h8"></path>
+                                <path d="M8 11h8"></path>
+                                <path d="M8 15h5"></path>
+                            </svg>
+                            <p class="text-slate-800 font-medium">Nenhum exame adicionado ainda</p>
+                            <p class="text-slate-500 text-sm mt-1 max-w-xs">Adicione exames ao lado para vê-los nesta
+                                lista.</p>
+                        </div>
+
+                        <div id="selectedList" class="mt-4 space-y-2 hidden"></div>
                     </div>
-                </article>
+                </div>
+            </section>
+        </main>
+
+        <footer class="fixed bottom-0 left-0 right-0 border-t border-slate-200 bg-white/95 backdrop-blur">
+            <div
+                class="max-w-7xl mx-auto px-6 lg:px-8 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-sm text-slate-600">
+                <div class="flex items-center gap-2">
+                    <svg viewBox="0 0 24 24" class="icon-xs text-slate-500" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                    </svg>
+                    <span>Dica: Você pode adicionar múltiplos exames antes de confirmar a seleção.</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg viewBox="0 0 24 24" class="icon-xs text-slate-500" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                        <path d="M7 11V8a5 5 0 0 1 10 0v3"></path>
+                    </svg>
+                    <span>Dados protegidos com segurança</span>
+                </div>
             </div>
-        </section>
-    </main>
+        </footer>
+    </div>
 
-    <script src="grupo-exames.js" defer></script>
+    <script src="grupo-exames.js"></script>
 </body>
 
 </html>

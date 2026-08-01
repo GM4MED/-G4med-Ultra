@@ -268,29 +268,25 @@ body {
 }
 
 .sidebar__footer {
-    padding: 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
     margin-top: auto;
+    padding: 20px 18px;
+    border: none;
+    background: transparent;
 }
 
 .sidebar__version {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, .45);
     font-size: 12px;
-    font-weight: 500;
 }
 
 /* ----------------------------------------------------------
    MAIN
    ---------------------------------------------------------- */
 .main {
-    flex: 1;
     margin-left: 260px;
-    padding: 24px 32px;
-    overflow-y: auto;
-    min-height: calc(100vh - 70px - 60px);
+    width: calc(100% - 260px);
+    min-height: calc(100vh - 132px);
+    padding: 20px 30px 90px;
 }
 
 /* ----------------------------------------------------------
@@ -571,6 +567,72 @@ body {
     display: flex;
     gap: 12px;
     margin-top: 24px;
+}
+
+/* ----------------------------------------------------------
+   BOTÃO VOLTAR (SEÇÕES INTERNAS)
+   ---------------------------------------------------------- */
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.btn-back:hover {
+    background: var(--border);
+    color: var(--text);
+    transform: translateX(-2px);
+}
+
+.btn-back i {
+    font-size: 12px;
+}
+
+/* ----------------------------------------------------------
+   BOTÃO VOLTAR (HEADER REESTILIZADO)
+   ---------------------------------------------------------- */
+.header__actions .btn-back,
+.header__btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 14px;
+    border: 1px solid rgba(0, 184, 169, 0.3);
+    border-radius: 10px;
+    background: rgba(0, 184, 169, 0.1);
+    color: var(--turquesa, #00B8A9);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.header__actions .btn-back:hover,
+.header__btn-back:hover {
+    background: var(--turquesa, #00B8A9);
+    color: var(--white, #FFFFFF);
+    border-color: var(--turquesa, #00B8A9);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 184, 169, 0.25);
+}
+
+.header__actions .btn-back i,
+.header__btn-back i {
+    font-size: 12px;
 }
 
 /* ----------------------------------------------------------
@@ -950,33 +1012,45 @@ body {
     border-left-color: #f59e0b;
 }
 
-/* ----------------------------------------------------------
-   RODAPÉ
-   ---------------------------------------------------------- */
+/* ==========================================================
+   FOOTER G4MED
+========================================================== */
+
 .footer {
-    height: 60px;
-    background: var(--navy);
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 62px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    margin-left: 260px;
+    align-items: center;
+    z-index: 999;
+    background: linear-gradient(180deg, rgba(18, 31, 58, .98), rgba(11, 31, 58, 1));
+    border-top: 1px solid rgba(0, 184, 169, .20);
+    box-shadow: 0 -8px 25px rgba(0, 0, 0, .18);
+    padding-left: 260px;
 }
 
 .footer__content {
+    width: 100%;
+    max-width: 1600px;
+    padding: 0 30px;
     display: flex;
     align-items: center;
-    gap: 24px;
-    flex-wrap: wrap;
     justify-content: center;
+    gap: 26px;
+    color: #fff;
+    font-size: 13px;
 }
 
 .footer__brand {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: var(--white);
-    font-size: 14px;
-    font-weight: 600;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 700;
 }
 
 .footer__brand i {
@@ -986,13 +1060,13 @@ body {
 .footer__info {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 12px;
+    gap: 10px;
+    color: rgba(255, 255, 255, .65);
+    font-size: 13px;
 }
 
 .footer__sep {
-    color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, .18);
 }
 
 /* ----------------------------------------------------------
@@ -1000,22 +1074,40 @@ body {
    ---------------------------------------------------------- */
 .back-to-top {
     position: fixed;
-    bottom: 24px;
+    bottom: 80px;
+    /* Elevado para ficar bem acima do rodapé fixo */
     right: 24px;
-    width: 44px;
-    height: 44px;
-    border: none;
+    width: 48px;
+    /* Levemente maior para destaque */
+    height: 48px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    /* Borda para contraste */
     border-radius: 50%;
     background: var(--orange);
     color: var(--white);
-    font-size: 16px;
+    font-size: 18px;
+    /* Ícone/Seta maior */
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+    box-shadow: 0 6px 20px rgba(255, 107, 0, 0.45);
+    /* Sombra mais forte */
     opacity: 0;
     visibility: hidden;
     transform: translateY(10px);
     transition: opacity var(--transition), visibility var(--transition), transform var(--transition);
-    z-index: 500;
+    z-index: 1001;
+    /* Garante que fique acima do rodapé (z-index 999) */
+}
+
+.back-to-top--visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.back-to-top:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(255, 107, 0, 0.6);
+    background: var(--orange-600);
 }
 
 .back-to-top--visible {
@@ -1085,16 +1177,64 @@ body {
     }
 }
 
-/* ----------------------------------------------------------
+/* ==========================================================
    RESPONSIVIDADE
-   ---------------------------------------------------------- */
-@media (max-width: 1024px) {
+========================================================== */
+
+/* ----------------------------------------------------------
+   Telas até 1200px
+---------------------------------------------------------- */
+@media (max-width: 1200px) {
     .cards {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .search {
+        max-width: 100%;
+    }
+
+    .footer__content {
+        gap: 16px;
+        padding: 0 20px;
+    }
 }
 
+/* ----------------------------------------------------------
+   Tablets
+---------------------------------------------------------- */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 230px;
+    }
+
+    .main {
+        margin-left: 230px;
+        width: calc(100% - 230px);
+        padding: 20px;
+    }
+
+    .footer {
+        padding-left: 230px;
+    }
+
+    .cards {
+        gap: 18px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+}
+
+/* ----------------------------------------------------------
+   Mobile
+---------------------------------------------------------- */
 @media (max-width: 768px) {
+
+    /* HEADER */
+    .header {
+        padding: 0 16px;
+    }
 
     .header__username,
     .header__system-name {
@@ -1105,54 +1245,64 @@ body {
         display: flex;
     }
 
+    .header__actions {
+        gap: 8px;
+    }
+
+    /* SIDEBAR */
     .sidebar {
-        transform: translateX(-100%);
+        width: 260px;
         top: 0;
-        z-index: 1100;
+        left: 0;
+        bottom: 0;
+        transform: translateX(-100%);
         padding-top: 80px;
+        z-index: 2000;
+        box-shadow: 8px 0 30px rgba(0, 0, 0, .25);
     }
 
     .sidebar--open {
         transform: translateX(0);
     }
 
+    /* MAIN */
     .main {
+        width: 100%;
         margin-left: 0;
-        padding: 20px;
+        padding: 20px 16px 90px;
     }
 
+    /* FOOTER */
     .footer {
-        margin-left: 0;
+        padding-left: 0;
+        height: auto;
+        min-height: 60px;
     }
 
+    .footer__content {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px 16px;
+        text-align: center;
+    }
+
+    .footer__sep {
+        display: none;
+    }
+
+    /* GRID */
     .cards {
         grid-template-columns: 1fr;
+        gap: 16px;
     }
 
+    .search {
+        max-width: 100%;
+    }
+
+    /* FORMULÁRIOS */
     .form__row {
         grid-template-columns: 1fr;
-    }
-
-    .about__list {
-        grid-template-columns: 1fr;
-    }
-
-    .timeline {
-        padding-left: 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    .header {
-        padding: 0 16px;
-    }
-
-    .header__logo-text {
-        font-size: 16px;
-    }
-
-    .section__title {
-        font-size: 18px;
     }
 
     .form__actions {
@@ -1161,5 +1311,79 @@ body {
 
     .btn {
         width: 100%;
+    }
+
+    /* ABOUT */
+    .about__list {
+        grid-template-columns: 1fr;
+    }
+
+    /* TIMELINE */
+    .timeline {
+        padding-left: 18px;
+    }
+
+    .timeline__content {
+        padding: 18px;
+    }
+}
+
+/* ----------------------------------------------------------
+   Smartphones
+---------------------------------------------------------- */
+@media (max-width: 480px) {
+    html {
+        font-size: 15px;
+    }
+
+    .header {
+        height: 64px;
+    }
+
+    .header__logo-text {
+        font-size: 18px;
+    }
+
+    .header__brand {
+        gap: 8px;
+    }
+
+    .section__title {
+        font-size: 20px;
+    }
+
+    .section__subtitle {
+        font-size: 13px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+
+    .card__icon {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+    }
+
+    .card__title {
+        font-size: 15px;
+    }
+
+    .card__desc {
+        font-size: 13px;
+    }
+
+    .footer__brand {
+        font-size: 14px;
+    }
+
+    .footer__info {
+        font-size: 12px;
+    }
+
+    .back-to-top {
+        right: 16px;
+        bottom: 80px;
     }
 }

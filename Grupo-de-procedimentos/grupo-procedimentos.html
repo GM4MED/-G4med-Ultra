@@ -1,105 +1,261 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Grupo de Procedimentos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="grupo-procedimentos.css" />
 </head>
 
-<body>
-    <main class="page">
-        <section class="hero">
-            <div class="hero__content">
-                <p class="eyebrow">Gestão em Saúde</p>
-                <h1>Grupo de Procedimentos</h1>
-                <p class="subtitle">
-                    Cadastro e organização de procedimentos com visual limpo, seguro e profissional.
+<body class="bg-[#f3f7f6] text-slate-700">
+    <header class="bg-white border-b border-slate-200/80 sticky top-0 z-40">
+        <div class="max-w-[1400px] mx-auto px-6 py-4 flex items-center gap-6">
+            <div class="flex items-center gap-3 min-w-[220px]">
+                <div class="w-10 h-10 rounded-xl bg-[#e8f5f1] flex items-center justify-center text-[#1b9a84]">
+                    <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round">
+                        <path d="M12 5v14M5 12h14" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="font-semibold text-slate-800 leading-none">G4Med</div>
+                    <div class="text-[11px] text-slate-400 leading-none mt-1">Intelligent Health System</div>
+                </div>
+            </div>
+
+            <div class="flex-1 max-w-[760px] mx-auto">
+                <div class="relative">
+                    <svg viewBox="0 0 24 24" class="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"
+                        fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="7" />
+                        <path d="m20 20-3.5-3.5" />
+                    </svg>
+                    <input id="topSearch"
+                        class="w-full h-12 rounded-2xl bg-slate-100/90 border border-slate-200 pl-12 pr-4 outline-none focus:ring-2 focus:ring-[#1b9a84]/20 focus:border-[#1b9a84]"
+                        placeholder="Buscar pacientes, exames, médicos..." />
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 ml-auto">
+                <button
+                    class="relative w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 transition flex items-center justify-center text-slate-600">
+                    <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5" />
+                        <path d="M9 17a3 3 0 0 0 6 0" />
+                    </svg>
+                    <span
+                        class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-rose-500 text-white text-[11px] leading-5 font-semibold">3</span>
+                </button>
+
+                <button
+                    class="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 transition flex items-center justify-center text-slate-600">
+                    <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 17v-.5M12 13.5a2 2 0 1 0-2-2" />
+                    </svg>
+                </button>
+
+                <div class="flex items-center gap-3 pl-2">
+                    <div
+                        class="w-11 h-11 rounded-full bg-gradient-to-br from-[#1b9a84] to-[#83d6c5] flex items-center justify-center text-white font-semibold">
+                        CM</div>
+                    <div class="leading-tight">
+                        <div class="text-sm font-semibold text-slate-800">Dr. Carlos Mendes</div>
+                        <div class="text-xs text-slate-400 flex items-center gap-1">
+                            Administrador
+                            <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m6 9 6 6 6-6" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-[1400px] mx-auto px-6 py-8 pb-28">
+        <div class="mb-6">
+            <a href="../Menu-Principal.html" id="backBtn" class="back-btn" aria-label="Voltar para o menu principal">
+                <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M15 18 9 12l6-6" />
+                </svg>
+                <span>Voltar</span>
+            </a>
+        </div>
+
+        <section class="grid lg:grid-cols-2 gap-8 items-center mb-8">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-semibold text-[#153e49] tracking-tight">Grupo de Procedimentos</h1>
+                <p class="mt-4 max-w-2xl text-lg text-slate-500 leading-8">
+                    Organize e gerencie grupos de procedimentos médicos de forma eficiente. Agilize atendimentos e
+                    padronize seus passos com mais segurança e controle.
                 </p>
             </div>
 
-            <button id="openProcedureBtn" class="btn btn-primary" type="button">
-                Abrir Cadastro
-            </button>
+            <div class="justify-self-end w-full max-w-[520px]">
+                <svg viewBox="0 0 600 380" class="w-full h-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="120" y="70" width="260" height="220" rx="26" fill="#D8F0EA" />
+                    <rect x="150" y="105" width="200" height="145" rx="18" fill="white" stroke="#A7D9CF"
+                        stroke-width="4" />
+                    <rect x="175" y="135" width="150" height="12" rx="6" fill="#9BD7CC" />
+                    <rect x="175" y="160" width="120" height="10" rx="5" fill="#D1ECE6" />
+                    <rect x="175" y="182" width="135" height="10" rx="5" fill="#D1ECE6" />
+                    <rect x="175" y="204" width="102" height="10" rx="5" fill="#D1ECE6" />
+                    <circle cx="400" cy="155" r="46" fill="#CBE9E2" />
+                    <path d="M400 109c28 0 50 22 50 50s-22 50-50 50-50-22-50-50 22-50 50-50Z" stroke="#7FBFB2"
+                        stroke-width="4" />
+                    <path d="M382 155h36M400 137v36" stroke="#1B9A84" stroke-width="6" stroke-linecap="round" />
+                    <path d="M448 178c30 34 45 62 41 86-4 27-25 46-48 46-29 0-50-26-48-57 1-21 11-45 29-75"
+                        stroke="#1B9A84" stroke-width="7" stroke-linecap="round" />
+                    <path d="M470 286c34-14 53-8 71 10" stroke="#8CCFBE" stroke-width="7" stroke-linecap="round" />
+                    <circle cx="548" cy="301" r="12" fill="#1B9A84" />
+                    <path d="M530 295c-18-24-38-41-63-48" stroke="#6DB9A9" stroke-width="6" stroke-linecap="round" />
+                </svg>
+            </div>
+        </section>
+
+        <section class="grid md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+            <div class="card-benefit">
+                <div class="benefit-icon bg-[#edf8f5] text-[#1b9a84]">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="13" r="8" />
+                        <path d="M12 9v4l3 2" />
+                    </svg>
+                </div>
+                <h3>Mais Agilidade</h3>
+                <p>Monte grupos rapidamente e otimize o tempo da sua equipe.</p>
+            </div>
+
+            <div class="card-benefit">
+                <div class="benefit-icon bg-[#eef7ff] text-[#4b8fd6]">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 11.5V12a8 8 0 1 1-4.7-7.3" />
+                        <path d="m9 12 2 2 4-4" />
+                    </svg>
+                </div>
+                <h3>Segurança</h3>
+                <p>Padronize procedimentos com segurança e confiabilidade.</p>
+            </div>
+
+            <div class="card-benefit">
+                <div class="benefit-icon bg-[#f1f2ff] text-[#7a7be7]">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 6h7l2 2h7v10a2 2 0 0 1-2 2H4z" />
+                        <path d="M8 13h8" />
+                    </svg>
+                </div>
+                <h3>Organização</h3>
+                <p>Mantenha seus procedimentos organizados e sempre à mão.</p>
+            </div>
+
+            <div class="card-benefit">
+                <div class="benefit-icon bg-[#fff4ea] text-[#f29c4e]">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19V5" />
+                        <path d="M4 17h16" />
+                        <path d="M8 17V9" />
+                        <path d="M13 17V7" />
+                        <path d="M18 17v-5" />
+                    </svg>
+                </div>
+                <h3>Controle Total</h3>
+                <p>Tenha total controle sobre os grupos e seus procedimentos.</p>
+            </div>
+        </section>
+
+        <section class="grid xl:grid-cols-[1.1fr_0.9fr] gap-6 items-start">
+            <div class="panel p-6">
+                <div class="flex items-center justify-between gap-4 mb-5">
+                    <h2 class="text-xl font-semibold text-slate-800">Buscar procedimentos</h2>
+                </div>
+
+                <div class="relative mb-6">
+                    <input id="procedureSearch"
+                        class="w-full h-13 rounded-2xl border border-slate-200 bg-white px-5 pr-12 outline-none focus:ring-2 focus:ring-[#1b9a84]/15 focus:border-[#1b9a84]"
+                        placeholder="Digite o nome do procedimento..." />
+                    <svg viewBox="0 0 24 24" class="w-5 h-5 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2"
+                        fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="7" />
+                        <path d="m20 20-3.5-3.5" />
+                    </svg>
+                </div>
+
+                <div id="frequentGrid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+
+                <button id="addSelectedBtn"
+                    class="mt-6 w-full h-14 rounded-2xl bg-[#1b9a84] text-white font-semibold shadow-lg shadow-[#1b9a84]/20 hover:bg-[#178a77] transition flex items-center justify-center gap-2">
+                    <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    <span>Adicionar ao grupo selecionado</span>
+                </button>
+            </div>
+
+            <div class="panel p-0 overflow-hidden flex flex-col min-h-[620px]">
+                <div class="p-6 border-b border-slate-200 flex items-center justify-between gap-4">
+                    <h2 class="text-xl font-semibold text-slate-800">Procedimentos selecionados</h2>
+                    <span id="countBadge"
+                        class="px-3 py-1 rounded-full bg-[#e8f5f1] text-[#1b9a84] text-sm font-semibold">0 itens</span>
+                </div>
+
+                <div id="selectedState" class="flex-1 flex items-center justify-center p-8 text-center">
+                    <div class="max-w-xs">
+                        <div
+                            class="w-20 h-20 mx-auto rounded-3xl bg-[#eef8f5] flex items-center justify-center text-[#1b9a84] mb-4">
+                            <svg viewBox="0 0 24 24" class="w-10 h-10" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="4" y="3" width="14" height="18" rx="2" />
+                                <path d="M9 3v18" />
+                                <path d="M11 12h6" />
+                                <path d="M14 9v6" />
+                            </svg>
+                        </div>
+                        <div class="text-lg font-semibold text-slate-800">Nenhum procedimento selecionado</div>
+                        <p class="mt-2 text-slate-500 leading-7">Busque e adicione procedimentos para montar o grupo
+                            desejado.</p>
+                    </div>
+                </div>
+
+                <div id="selectedList" class="hidden p-6 pt-2 space-y-3"></div>
+
+                <div class="p-6 border-t border-slate-200">
+                    <button id="removeSelectedBtn"
+                        class="w-full h-12 rounded-2xl border border-slate-200 text-slate-400 bg-slate-50 font-medium flex items-center justify-center gap-2 cursor-not-allowed"
+                        disabled>
+                        <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18" />
+                            <path d="M8 6V4h8v2" />
+                            <path d="M19 6l-1 14H6L5 6" />
+                            <path d="M10 11v6M14 11v6" />
+                        </svg>
+                        <span>Remover selecionados</span>
+                    </button>
+                </div>
+            </div>
         </section>
     </main>
 
-    <dialog id="procedureDialog" class="dialog" aria-labelledby="dialogTitle" aria-describedby="dialogDescription">
-        <form id="procedureForm" class="dialog__panel" novalidate>
-            <header class="dialog__header">
-                <div>
-                    <span class="badge">Grupo de Procedimentos</span>
-                    <h2 id="dialogTitle">Cadastro de procedimentos</h2>
-                    <p id="dialogDescription" class="dialog__description">
-                        Preencha os dados abaixo para registrar um novo procedimento.
-                    </p>
-                </div>
+    <div class="fixed bottom-6 right-6 z-50 flex gap-3">
+        <button id="cancelBtn"
+            class="h-12 px-5 rounded-2xl bg-white border border-slate-200 text-slate-700 font-semibold shadow-sm hover:bg-slate-50 transition flex items-center gap-2">
+            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+            <span>Cancelar</span>
+        </button>
 
-                <button type="button" class="icon-button" data-close-dialog aria-label="Fechar janela">
-                    ×
-                </button>
-            </header>
+        <button id="confirmBtn"
+            class="h-12 px-5 rounded-2xl bg-[#1b9a84] text-white font-semibold shadow-lg shadow-[#1b9a84]/20 hover:bg-[#178a77] transition flex items-center gap-2">
+            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="m5 13 4 4L19 7" />
+            </svg>
+            <span>Confirmar grupo</span>
+        </button>
+    </div>
 
-            <section class="dialog__content">
-                <div class="grid">
-                    <div class="field">
-                        <label for="procedureName">Nome do procedimento</label>
-                        <input id="procedureName" name="procedureName" type="text"
-                            placeholder="Ex.: Consulta cardiológica" required maxlength="120" />
-                        <small class="hint">Campo obrigatório.</small>
-                    </div>
-
-                    <div class="field">
-                        <label for="procedureCode">Código</label>
-                        <input id="procedureCode" name="procedureCode" type="text" placeholder="Ex.: PROC-1024" required
-                            maxlength="30" />
-                        <small class="hint">Campo obrigatório.</small>
-                    </div>
-
-                    <div class="field field--full">
-                        <label for="procedureObs">Observações</label>
-                        <textarea id="procedureObs" name="procedureObs" rows="4"
-                            placeholder="Observações adicionais..."></textarea>
-                    </div>
-                </div>
-
-                <div class="table-card">
-                    <div class="table-card__header">
-                        <h3>Registros recentes</h3>
-                        <span id="recordCount" class="count">0 registros</span>
-                    </div>
-
-                    <div class="table-wrap">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Nome</th>
-                                    <th>Código</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recordsBody">
-                                <tr class="empty-row">
-                                    <td colspan="3">Nenhum procedimento cadastrado.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <footer class="dialog__footer">
-                <button type="button" class="btn btn-ghost" data-close-dialog>
-                    Cancelar
-                </button>
-                <button type="submit" class="btn btn-primary">
-                    Salvar procedimento
-                </button>
-            </footer>
-        </form>
-    </dialog>
-
+    <div id="toast" class="toast hidden"></div>
     <script src="grupo-procedimentos.js"></script>
 </body>
 

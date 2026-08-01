@@ -10,7 +10,7 @@
   /* ==========================================================
      UTILITÁRIOS
      ========================================================== */
-  const $  = (sel, ctx = document) => ctx.querySelector(sel);
+  const $ = (sel, ctx = document) => ctx.querySelector(sel);
   const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
   /* ==========================================================
@@ -27,20 +27,36 @@
   function init() {
     aplicarTema(state.tema);
     bindEvents();
-    renderBreadcrumb('ajuda');
+
+    // Verifica se há hash na URL ao carregar (ex: #suporte)
+    const hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById(`section-${hash}`)) {
+      navegarPara(hash);
+    } else {
+      renderBreadcrumb('ajuda');
+    }
   }
 
   /* ==========================================================
      EVENT LISTENERS
      ========================================================== */
   function bindEvents() {
-    // Navegação do menu
+    // Navegação do menu lateral
     $$('.sidebar__link').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const sec = link.dataset.section;
         navegarPara(sec);
         fecharMenuMobile();
+      });
+    });
+
+    // Botões "Voltar" nas seções internas
+    $$('.btn-back').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const sec = btn.dataset.section;
+        navegarPara(sec);
       });
     });
 
@@ -52,8 +68,8 @@
       const sidebar = $('#sidebar');
       const toggle = $('#menu-toggle');
       if (sidebar.classList.contains('sidebar--open') &&
-          !sidebar.contains(e.target) &&
-          !toggle.contains(e.target)) {
+        !sidebar.contains(e.target) &&
+        !toggle.contains(e.target)) {
         fecharMenuMobile();
       }
     });
@@ -129,18 +145,21 @@
   function navegarPara(sec) {
     state.sectionAtiva = sec;
 
-    // Atualiza menu
+    // Atualiza menu lateral
     $$('.sidebar__link').forEach(link => {
       link.classList.toggle('sidebar__link--active', link.dataset.section === sec);
     });
 
-    // Atualiza seções
+    // Atualiza seções visíveis
     $$('.section').forEach(section => {
       section.classList.toggle('section--active', section.id === `section-${sec}`);
     });
 
     // Atualiza breadcrumb
     renderBreadcrumb(sec);
+
+    // Atualiza o hash da URL sem recarregar a página
+    history.pushState(null, null, `#${sec}`);
 
     // Scroll ao topo
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -184,11 +203,11 @@
 
     cards.forEach(card => {
       const keywords = (card.dataset.keywords || '').toLowerCase();
-      const titulo   = card.querySelector('.card__title').textContent.toLowerCase();
-      const desc     = card.querySelector('.card__desc').textContent.toLowerCase();
-      const match    = keywords.includes(normalizado) ||
-                       titulo.includes(normalizado) ||
-                       desc.includes(normalizado);
+      const titulo = card.querySelector('.card__title').textContent.toLowerCase();
+      const desc = card.querySelector('.card__desc').textContent.toLowerCase();
+      const match = keywords.includes(normalizado) ||
+        titulo.includes(normalizado) ||
+        desc.includes(normalizado);
 
       card.style.display = match ? '' : 'none';
       if (match) visiveis++;
@@ -217,11 +236,11 @@
      ========================================================== */
   function validarEEnviarChamado() {
     const campos = [
-      { id: 'chamado-nome',      nome: 'Nome' },
-      { id: 'chamado-crm',       nome: 'CRM' },
-      { id: 'chamado-hospital',  nome: 'Hospital' },
-      { id: 'chamado-urgencia',  nome: 'Urgência' },
-      { id: 'chamado-problema',  nome: 'Descrição' }
+      { id: 'chamado-nome', nome: 'Nome' },
+      { id: 'chamado-crm', nome: 'CRM' },
+      { id: 'chamado-hospital', nome: 'Hospital' },
+      { id: 'chamado-urgencia', nome: 'Urgência' },
+      { id: 'chamado-problema', nome: 'Descrição' }
     ];
 
     let valido = true;
@@ -284,7 +303,7 @@
 
     const icons = {
       success: 'fa-circle-check',
-      error:   'fa-circle-xmark',
+      error: 'fa-circle-xmark',
       warning: 'fa-triangle-exclamation'
     };
 

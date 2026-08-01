@@ -1,162 +1,169 @@
-const openAttendanceBtn = document.getElementById('openAttendanceBtn');
-const attendanceScreen = document.getElementById('attendanceScreen');
-const attendanceForm = document.getElementById('attendanceForm');
-const closeButtons = document.querySelectorAll('[data-close-screen]');
-const patientName = document.getElementById('patientName');
-const attendanceType = document.getElementById('attendanceType');
-const attendanceDate = document.getElementById('attendanceDate');
-const attendanceStatus = document.getElementById('attendanceStatus');
-const recordsBody = document.getElementById('recordsBody');
-const recordCount = document.getElementById('recordCount');
+document.addEventListener('DOMContentLoaded', () => {
+    const groupButtons = document.querySelectorAll('.group-btn');
+    const addGroupBtn = document.getElementById('addGroupBtn');
+    const selectedEmpty = document.getElementById('selectedEmpty');
+    const selectedList = document.getElementById('selectedList');
+    const selectedCount = document.getElementById('selectedCount');
+    const removeAllBtn = document.getElementById('removeAllBtn');
+    const backBtn = document.getElementById('backBtn');
 
-let records = [
-    { patient: 'Maria da Silva', type: 'Consulta', date: '2026-07-22', status: 'Em andamento' },
-    { patient: 'João Pereira', type: 'Triagem', date: '2026-07-21', status: 'Concluído' }
-];
+    let selectedGroup = 'Consulta';
+    let selectedItems = [];
 
-let lastFocusedElement = null;
+    const icons = {
+        'Consulta': `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 4v16M4 12h16" />
+      </svg>
+    `,
+        'Retorno': `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 11H5l4-4" />
+        <path d="M5 11a8 8 0 1 0 2-5.3" />
+      </svg>
+    `,
+        'Triagem': `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 12l5 5L20 6" />
+      </svg>
+    `,
+        'Plantão': `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v20" />
+        <path d="M5 7h14" />
+        <path d="M7 17h10" />
+      </svg>
+    `,
+        'Emergência': `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v5" />
+        <path d="M12 17v5" />
+        <path d="M5 12h5" />
+        <path d="M14 12h5" />
+        <circle cx="12" cy="12" r="4" />
+      </svg>
+    `,
+        'Telemedicina': `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 6h16v10H7l-3 3z" />
+      </svg>
+    `,
+        'Exame': `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 4h14v16H5z" />
+        <path d="M8 8h8M8 12h8M8 16h5" />
+      </svg>
+    `,
+        'Mais grupos': `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h.01M12 12h.01M19 12h.01" />
+      </svg>
+    `
+    };
 
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-function validateField(input) {
-    if (!input.value.trim()) {
-        input.setCustomValidity('Campo obrigatório.');
-        input.reportValidity();
-        return false;
+    function renderIcons() {
+        groupButtons.forEach((button) => {
+            const name = button.dataset.name;
+            const slot = button.querySelector('.icon-slot');
+            if (slot && icons[name]) {
+                slot.innerHTML = icons[name];
+            }
+        });
     }
-    input.setCustomValidity('');
-    return true;
-}
 
-function updateCounter() {
-    recordCount.textContent = `${records.length} registro${records.length === 1 ? '' : 's'}`;
-}
+    function setActiveButton(name) {
+        selectedGroup = name;
 
-function renderTable() {
-    if (!records.length) {
-        recordsBody.innerHTML = `
-      <tr class="empty-row">
-        <td colspan="5">Nenhum atendimento cadastrado.</td>
-      </tr>
-    `;
-        updateCounter();
-        return;
+        groupButtons.forEach((button) => {
+            button.classList.toggle('active-group', button.dataset.name === name);
+        });
     }
 
-    recordsBody.innerHTML = records.map((record, index) => `
-    <tr>
-      <td>${escapeHtml(record.patient)}</td>
-      <td>${escapeHtml(record.type)}</td>
-      <td>${escapeHtml(record.date)}</td>
-      <td>${escapeHtml(record.status)}</td>
-      <td>
-        <div class="row-actions">
-          <button type="button" class="small-btn" data-action="edit" data-index="${index}">Editar</button>
-          <button type="button" class="small-btn small-btn--danger" data-action="remove" data-index="${index}">Remover</button>
+    function updateCounter() {
+        const count = selectedItems.length;
+        selectedCount.textContent = `${count} item${count === 1 ? '' : 's'}`;
+        removeAllBtn.disabled = count === 0;
+    }
+
+    function updateEmptyState() {
+        const hasItems = selectedItems.length > 0;
+        selectedEmpty.classList.toggle('hidden', hasItems);
+        selectedList.classList.toggle('hidden', !hasItems);
+
+        if (!hasItems) {
+            selectedList.innerHTML = '';
+        }
+    }
+
+    function renderSelectedItems() {
+        selectedList.innerHTML = selectedItems.map((item, index) => `
+      <div class="selected-item">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 4v16M4 12h16" />
+            </svg>
+          </div>
+          <div>
+            <div class="selected-item-title">${item}</div>
+            <div class="selected-item-subtitle">Grupo selecionado</div>
+          </div>
         </div>
-      </td>
-    </tr>
-  `).join('');
 
-    updateCounter();
-}
+        <button class="selected-remove" type="button" data-remove-index="${index}" aria-label="Remover grupo">
+          <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18" />
+            <path d="M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    `).join('');
 
-function openScreen() {
-    lastFocusedElement = document.activeElement;
-    attendanceScreen.hidden = false;
-    document.body.classList.add('screen-open');
-    renderTable();
-    setTimeout(() => patientName.focus(), 0);
-}
-
-function closeScreen() {
-    attendanceScreen.hidden = true;
-    document.body.classList.remove('screen-open');
-    if (lastFocusedElement) lastFocusedElement.focus();
-}
-
-openAttendanceBtn.addEventListener('click', openScreen);
-
-closeButtons.forEach((button) => {
-    button.addEventListener('click', closeScreen);
-});
-
-document.addEventListener('keydown', (event) => {
-    if (!attendanceScreen.hidden && event.key === 'Escape') {
-        closeScreen();
+        document.querySelectorAll('[data-remove-index]').forEach((button) => {
+            button.addEventListener('click', (event) => {
+                const index = Number(event.currentTarget.dataset.removeIndex);
+                selectedItems.splice(index, 1);
+                renderSelectedItems();
+                updateEmptyState();
+                updateCounter();
+            });
+        });
     }
-});
 
-attendanceForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    const isValidName = validateField(patientName);
-    const isValidType = validateField(attendanceType);
-    const isValidDate = validateField(attendanceDate);
-    const isValidStatus = validateField(attendanceStatus);
-
-    if (!isValidName || !isValidType || !isValidDate || !isValidStatus) return;
-
-    records.unshift({
-        patient: patientName.value.trim(),
-        type: attendanceType.value.trim(),
-        date: attendanceDate.value,
-        status: attendanceStatus.value.trim()
+    groupButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            setActiveButton(button.dataset.name);
+        });
     });
 
-    attendanceForm.reset();
-    renderTable();
-    patientName.focus();
-    alert('Atendimento salvo com sucesso.');
-});
+    addGroupBtn.addEventListener('click', () => {
+        if (!selectedGroup) return;
 
-recordsBody.addEventListener('click', (event) => {
-    const button = event.target.closest('button[data-action]');
-    if (!button) return;
-
-    const index = Number(button.dataset.index);
-    const action = button.dataset.action;
-
-    if (action === 'remove') {
-        const confirmed = confirm(`Remover o atendimento de "${records[index].patient}"?`);
-        if (!confirmed) return;
-
-        records.splice(index, 1);
-        renderTable();
-        return;
-    }
-
-    if (action === 'edit') {
-        const nextPatient = prompt('Editar nome do paciente:', records[index].patient);
-        if (nextPatient === null) return;
-
-        const nextType = prompt('Editar tipo de atendimento:', records[index].type);
-        if (nextType === null) return;
-
-        const nextDate = prompt('Editar data (YYYY-MM-DD):', records[index].date);
-        if (nextDate === null) return;
-
-        const nextStatus = prompt('Editar status:', records[index].status);
-        if (nextStatus === null) return;
-
-        if (!nextPatient.trim() || !nextType.trim() || !nextDate.trim() || !nextStatus.trim()) {
-            alert('Todos os campos são obrigatórios.');
-            return;
+        if (!selectedItems.includes(selectedGroup)) {
+            selectedItems.push(selectedGroup);
+            renderSelectedItems();
+            updateEmptyState();
+            updateCounter();
         }
+    });
 
-        records[index] = {
-            patient: nextPatient.trim(),
-            type: nextType.trim(),
-            date: nextDate.trim(),
-            status: nextStatus.trim()
-        };
+    removeAllBtn.addEventListener('click', () => {
+        if (removeAllBtn.disabled) return;
 
-        renderTable();
+        selectedItems = [];
+        renderSelectedItems();
+        updateEmptyState();
+        updateCounter();
+    });
+
+    if (backBtn) {
+        backBtn.addEventListener('click', () => {
+            window.history.back();
+        });
     }
-});
 
-renderTable();
+    renderIcons();
+    setActiveButton('Consulta');
+    updateEmptyState();
+    updateCounter();
+});

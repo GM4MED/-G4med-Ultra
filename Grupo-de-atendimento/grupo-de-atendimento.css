@@ -1,0 +1,140 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #0f172a;
+    background: #f8fafc;
+}
+
+/* Botões dos grupos frequentes */
+.group-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #334155;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    cursor: pointer;
+}
+
+.group-btn:hover {
+    border-color: #008080;
+    background-color: #f0fdfa;
+}
+
+.group-btn.active-group {
+    border-color: #008080;
+    background-color: #ffffff;
+    color: #008080;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.group-btn .icon-slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.1rem;
+    height: 1.1rem;
+    flex: 0 0 auto;
+}
+
+.group-btn .icon-slot svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    stroke: currentColor;
+}
+
+/* Lista de selecionados */
+.selected-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 1rem;
+    background: #f8fafc;
+}
+
+.selected-item-title {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.selected-item-subtitle {
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+/* Botão de remover item */
+.selected-remove {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+.selected-remove:hover {
+    color: #dc2626;
+    border-color: #fecaca;
+    background: #fff;
+}
+
+/* Botão remover selecionados */
+#removeAllBtn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* Ajustes gerais */
+input::placeholder {
+    color: #94a3b8;
+}
+
+button {
+    user-select: none;
+}
+
+svg {
+    flex-shrink: 0;
+}
+
+/* Espaçamento para footer fixo */
+main {
+    min-height: calc(100vh - 88px);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .group-btn {
+        padding: 0.7rem 0.85rem;
+        font-size: 0.82rem;
+    }
+
+    .selected-item {
+        padding: 0.875rem;
+    }
+}
