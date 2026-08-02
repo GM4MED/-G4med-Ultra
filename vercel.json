@@ -1,3 +1,5 @@
 {
-  "cleanUrls": true
+  "routes": [
+    { "src": "/", "dest": "/Menu-Principal.html" }
+  ]
 }
