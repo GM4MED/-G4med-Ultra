@@ -24,6 +24,11 @@
              ===================================================== -->
         <header class="header">
             <div class="header__brand">
+                <a href="../Menu-Principal.html" class="header__btn header__btn--voltar"
+                    aria-label="Voltar para o Menu Principal"
+                    style="text-decoration: none; display: inline-flex; align-items: center; margin-right: 12px; font-size: 1.1rem;">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
                 <i class="fa-solid fa-stethoscope header__logo"></i>
                 <div class="header__title-group">
                     <span class="header__logo-text">G4med</span>
@@ -42,11 +47,6 @@
                 <div class="header__profile">
                     <div class="header__avatar">A</div>
                     <span class="header__username">admin</span>
-                </div>
-                <div class="section__header-top">
-                    <a href="../Menu-Principal.html" class="btn-back">
-                        <i class="fa-solid fa-arrow-left"></i> Voltar
-                    </a>
                 </div>
             </div>
 
@@ -233,18 +233,6 @@
                             </button>
                         </div>
                     </form>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
                 </section>
 
                 <!-- =====================================================
@@ -305,7 +293,6 @@
                 <!-- =====================================================
                      SEÇÃO: ATUALIZAÇÕES
                      ===================================================== -->
-
                 <section class="section" id="section-atualizacoes">
                     <header class="section__header">
                         <div class="section__header-top">
@@ -386,7 +373,7 @@
                             </div>
                         </div>
 
-                        <!-- Versão atual (Exemplo) -->
+                        <!-- Versão 2.1.0 -->
                         <div class="timeline__item">
                             <div class="timeline__dot"></div>
                             <div class="timeline__content">
@@ -401,9 +388,10 @@
                         </div>
                     </div>
                 </section>
+
                 <!-- =====================================================
-                RODAPÉ
-                ===================================================== -->
+                     RODAPÉ
+                     ===================================================== -->
                 <footer class="footer">
                     <div class="footer__content">
                         <div class="footer__brand">
@@ -421,17 +409,18 @@
                 </footer>
 
                 <!-- =====================================================
-                BOTÃO VOLTAR AO TOPO
-                ===================================================== -->
+                     BOTÃO VOLTAR AO TOPO
+                     ===================================================== -->
                 <button class="back-to-top" id="back-to-top" aria-label="Voltar ao topo">
                     <i class="fa-solid fa-arrow-up"></i>
                 </button>
 
+            </main>
         </div>
 
         <!-- =====================================================
-         MODAIS
-         ===================================================== -->
+             MODAIS
+             ===================================================== -->
 
         <!-- Modal: Prontuário -->
         <div class="modal" id="modal-prontuario" aria-hidden="true">
@@ -450,8 +439,7 @@
                         <li>Clique no nome do paciente para visualizar o histórico completo.</li>
                     </ol>
                     <p>Você também pode acessar o prontuário diretamente pela <strong>Agenda</strong>, clicando no nome
-                        do
-                        paciente no horário agendado.</p>
+                        do paciente no horário agendado.</p>
                 </div>
             </div>
         </div>
@@ -564,8 +552,10 @@
         ===================================================== -->
         <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
-        <!-- <script src="js/app.js"></script> -->
-        <script src="suporte.js"></script>
+    </div>
+
+    <!-- <script src="js/app.js"></script> -->
+    <script src="suporte.js"></script>
 </body>
 
 </html>
