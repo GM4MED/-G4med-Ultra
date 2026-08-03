@@ -1,160 +1,188 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('searchInput');
-    const tableBody = document.querySelector('.data-table tbody');
-    const paginationInfo = document.querySelector('.pagination-info');
-    const paginationControls = document.querySelector('.pagination-controls');
-    const newGroupBtn = document.querySelector('.btn-primary');
-    const importBtn = document.querySelector('.btn-secondary');
-    const backBtn = document.getElementById('backBtn');
+const modal = document.getElementById('newGroupModal');
+const openModalBtn = document.getElementById('openNewGroupModal');
+const closeModalBtn = document.getElementById('closeNewGroupModal');
+const cancelModalBtn = document.getElementById('cancelNewGroupBtn');
+const backdrop = document.getElementById('newGroupBackdrop');
+const form = document.getElementById('newGroupForm');
+const searchInput = document.getElementById('searchInput');
+const tableBody = document.getElementById('tableBody');
+const tableRows = Array.from(document.querySelectorAll('#tableBody tr'));
+const emptyState = document.getElementById('emptyState');
+const resultsCount = document.getElementById('resultsCount');
+const paginationInfo = document.getElementById('paginationInfo');
+const nameInput = document.getElementById('groupName');
+const nameError = document.getElementById('groupNameError');
+let lastFocus = null;
+let currentPage = 1;
+const rowsPerPage = 5;
+let filteredRows = [...tableRows];
 
-    const modal = document.getElementById('newGroupModal');
-    const modalBackdrop = document.getElementById('newGroupBackdrop');
-    const closeModalBtn = document.getElementById('closeNewGroupModal');
-    const cancelModalBtn = document.getElementById('cancelNewGroupBtn');
-    const form = document.getElementById('newGroupForm');
-    const nameInput = document.getElementById('groupName');
-    const descInput = document.getElementById('groupDescription');
-    const statusInput = document.getElementById('groupStatus');
+function openModal() {
+    lastFocus = document.activeElement;
+    modal.classList.remove('hidden');
+    document.body.classList.add('modal-open');
+    modal.setAttribute('aria-hidden', 'false');
+    requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+        const panel = modal.querySelector('[data-modal-panel]');
+        if (panel) panel.classList.add('scale-100', 'translate-y-0');
+        if (nameInput) nameInput.focus();
+    });
+}
 
-    const pageData = {
-        1: [
-            ['Ativo', 'Consultas Médicas', 'Consultas em diversas especialidades', 24],
-            ['Ativo', 'Exames Laboratoriais', 'Coleta e análise de exames', 18],
-            ['Inativo', 'Procedimentos', 'Procedimentos ambulatoriais', 31],
-            ['Ativo', 'Telemedicina', 'Atendimentos remotos', 12],
-            ['Ativo', 'Vacinação', 'Campanhas e imunização', 9],
-            ['Inativo', 'Triagem', 'Classificação inicial de pacientes', 15],
-            ['Ativo', 'Urgência', 'Atendimento emergencial', 22],
-            ['Ativo', 'Retorno', 'Reavaliação de pacientes', 14],
-            ['Inativo', 'Plantão', 'Cobertura 24 horas', 8],
-            ['Ativo', 'Fisioterapia', 'Sessões e reabilitação', 19]
-        ],
-        2: [
-            ['Ativo', 'Cardiologia', 'Atendimentos cardiológicos', 16],
-            ['Ativo', 'Pediatria', 'Atendimento infantil', 21],
-            ['Inativo', 'Dermatologia', 'Cuidados dermatológicos', 11],
-            ['Ativo', 'Ortopedia', 'Atendimentos ortopédicos', 25],
-            ['Ativo', 'Neurologia', 'Avaliações neurológicas', 13],
-            ['Inativo', 'Oftalmologia', 'Exames e consultas oftalmológicas', 17],
-            ['Ativo', 'Ginecologia', 'Saúde da mulher', 20],
-            ['Ativo', 'Urologia', 'Atendimento urológico', 10],
-            ['Inativo', 'Endocrinologia', 'Controle hormonal', 7],
-            ['Ativo', 'Psiquiatria', 'Apoio em saúde mental', 23]
-        ],
-        3: [
-            ['Ativo', 'Oncologia', 'Tratamentos e acompanhamento', 14],
-            ['Ativo', 'Nefrologia', 'Cuidados renais', 9],
-            ['Inativo', 'Otorrinolaringologia', 'Atendimento ORL', 12],
-            ['Ativo', 'Reumatologia', 'Doenças autoimunes', 8],
-            ['Ativo', 'Gastroenterologia', 'Sistema digestivo', 18],
-            ['Inativo', 'Hematologia', 'Análises sanguíneas', 6],
-            ['Ativo', 'Alergologia', 'Tratamento de alergias', 5],
-            ['Ativo', 'Infectologia', 'Doenças infecciosas', 11],
-            ['Inativo', 'Nutrição', 'Acompanhamento nutricional', 4],
-            ['Ativo', 'Fonoaudiologia', 'Saúde da comunicação', 7]
-        ]
-    };
+function closeModal() {
+    modal.classList.add('opacity-0');
+    const panel = modal.querySelector('[data-modal-panel]');
+    if (panel) panel.classList.remove('scale-100', 'translate-y-0');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+        if (lastFocus) lastFocus.focus();
+    }, 200);
+}
 
-    let currentPage = 1;
+function updateSearchFeedback() {
+    const total = filteredRows.length;
+    const start = total === 0 ? 0 : ((currentPage - 1) * rowsPerPage) + 1;
+    const end = Math.min(currentPage * rowsPerPage, total);
+    if (resultsCount) resultsCount.textContent = `${total} de ${tableRows.length} grupos exibidos`;
+    if (paginationInfo) paginationInfo.textContent = total > 0 ? `Mostrando ${start}-${end} de ${tableRows.length} grupos` : 'Nenhum grupo encontrado';
+    if (emptyState) emptyState.style.display = total === 0 ? 'block' : 'none';
+}
 
-    function statusIcon(status) {
-        return status === 'Ativo'
-            ? '<span class="status-dot status-active"></span>'
-            : '<span class="status-dot status-inactive"></span>';
-    }
-
-    function rowHTML(item) {
-        const [status, name, description, count] = item;
-        return `
-      <tr data-search="${(name + ' ' + description).toLowerCase()}">
-        <td class="px-6 py-5">${statusIcon(status)}</td>
-        <td class="px-6 py-5 font-medium text-gray-900">${name}</td>
-        <td class="px-6 py-5 text-gray-700">${description}</td>
-        <td class="px-6 py-5 num-cell">${count}</td>
-        <td class="px-6 py-5 actions">
-          <button class="action-btn" title="Editar" type="button"><i class="fas fa-pencil-alt"></i></button>
-          <button class="action-btn" title="Visualizar" type="button"><i class="fas fa-eye"></i></button>
-          <button class="action-btn delete" title="Desativar" type="button"><i class="fas fa-ban"></i></button>
-        </td>
-      </tr>
-    `;
-    }
-
-    function renderPage(page) {
-        currentPage = page;
-        tableBody.innerHTML = pageData[page].map(rowHTML).join('');
-        paginationInfo.textContent = `Mostrando ${(page - 1) * 10 + 1}-${page * 10} de 45 grupos`;
-
-        paginationControls.querySelectorAll('.page-btn').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = paginationControls.querySelector(`.page-btn[data-page="${page}"]`);
-        if (activeBtn) activeBtn.classList.add('active');
-
-        if (searchInput.value.trim()) filterRows();
-    }
-
-    function filterRows() {
-        const term = searchInput.value.trim().toLowerCase();
-        Array.from(tableBody.querySelectorAll('tr')).forEach(row => {
-            const haystack = row.dataset.search || row.textContent.toLowerCase();
-            row.style.display = haystack.includes(term) ? '' : 'none';
-        });
-    }
-
-    function openModal() {
-        modal.classList.remove('hidden');
-        requestAnimationFrame(() => {
-            modal.classList.remove('opacity-0');
-            modal.querySelector('[data-modal-panel]').classList.remove('scale-95', 'translate-y-2');
-        });
-        nameInput.focus();
-    }
-
-    function closeModal() {
-        modal.classList.add('opacity-0');
-        modal.querySelector('[data-modal-panel]').classList.add('scale-95', 'translate-y-2');
-        setTimeout(() => modal.classList.add('hidden'), 180);
-    }
-
-    function addNewGroupRow(name, description, status) {
-        const row = [status, name, description, 0];
-        pageData[1].unshift(row);
-
-        if (currentPage === 1) {
-            tableBody.insertAdjacentHTML('afterbegin', rowHTML(row));
-            if (searchInput.value.trim()) filterRows();
+function renderPagination(totalPages) {
+    const controls = document.querySelector('.pagination-controls');
+    if (!controls) return;
+    const prevButtons = controls.querySelectorAll('[aria-label="Página anterior"], [aria-label="Primeira página"]');
+    const nextButtons = controls.querySelectorAll('[aria-label="Próxima página"], [aria-label="Última página"]');
+    const numericButtons = controls.querySelectorAll('.page-btn:not(.icon)');
+    const ellipsis = controls.querySelector('.page-ellipsis');
+    numericButtons.forEach(btn => btn.remove());
+    if (ellipsis) ellipsis.remove();
+    const leftDouble = prevButtons[0];
+    const leftIcon = prevButtons[1];
+    const rightIcon = nextButtons[0];
+    const rightDouble = nextButtons[1];
+    const fragment = document.createDocumentFragment();
+    let visiblePages;
+    if (totalPages <= 5) visiblePages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    else if (currentPage <= 3) visiblePages = [1, 2, 3, 4, 'ellipsis', totalPages];
+    else if (currentPage >= totalPages - 2) visiblePages = [1, 'ellipsis', totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    else visiblePages = [1, 'ellipsis', currentPage - 1, currentPage, currentPage + 1, 'ellipsis', totalPages];
+    visiblePages.forEach(item => {
+        if (item === 'ellipsis') {
+            const span = document.createElement('span');
+            span.className = 'page-ellipsis';
+            span.textContent = '...';
+            fragment.appendChild(span);
+            return;
         }
-    }
-
-    searchInput.addEventListener('input', filterRows);
-
-    paginationControls.addEventListener('click', (e) => {
-        const btn = e.target.closest('.page-btn');
-        if (!btn || !btn.dataset.page) return;
-        renderPage(Number(btn.dataset.page));
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `page-btn focus-ring ${item === currentPage ? 'active' : ''}`;
+        btn.textContent = item;
+        btn.dataset.page = String(item);
+        btn.addEventListener('click', () => goToPage(item));
+        fragment.appendChild(btn);
     });
+    controls.insertBefore(fragment, rightIcon);
+    const firstDisabled = currentPage === 1;
+    const lastDisabled = currentPage === totalPages;
+    if (leftDouble) leftDouble.disabled = firstDisabled;
+    if (leftIcon) leftIcon.disabled = firstDisabled;
+    if (rightIcon) rightIcon.disabled = lastDisabled;
+    if (rightDouble) rightDouble.disabled = lastDisabled;
+}
 
-    newGroupBtn.addEventListener('click', openModal);
-    importBtn.addEventListener('click', () => alert('Abrir modal de importação de catálogo.'));
-    backBtn.addEventListener('click', () => window.history.back());
+function renderTable() {
+    const totalPages = Math.max(1, Math.ceil(filteredRows.length / rowsPerPage));
+    if (currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const pageRows = filteredRows.slice(start, end);
+    tableRows.forEach(row => row.remove());
+    pageRows.forEach(row => tableBody.appendChild(row));
+    updateSearchFeedback();
+    renderPagination(totalPages);
+}
 
-    modalBackdrop.addEventListener('click', closeModal);
-    closeModalBtn.addEventListener('click', closeModal);
-    cancelModalBtn.addEventListener('click', closeModal);
+function goToPage(page) {
+    const totalPages = Math.max(1, Math.ceil(filteredRows.length / rowsPerPage));
+    currentPage = Math.min(Math.max(1, page), totalPages);
+    renderTable();
+}
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
+function applyFilter() {
+    const term = searchInput.value.toLowerCase().trim();
+    filteredRows = tableRows.filter(row => (row.getAttribute('data-search') || '').toLowerCase().includes(term));
+    currentPage = 1;
+    renderTable();
+}
 
-        const name = nameInput.value.trim();
-        const description = descInput.value.trim();
-        const status = statusInput.value;
-
-        if (!name || !description) return;
-
-        addNewGroupRow(name, description, status);
-        form.reset();
-        statusInput.value = 'Ativo';
-        closeModal();
-    });
-
-    renderPage(1);
+openModalBtn?.addEventListener('click', openModal);
+closeModalBtn?.addEventListener('click', closeModal);
+cancelModalBtn?.addEventListener('click', closeModal);
+backdrop?.addEventListener('click', closeModal);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
+form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const valid = nameInput && nameInput.value.trim().length > 0;
+    if (nameError) nameError.style.display = valid ? 'none' : 'block';
+    if (!valid) { nameInput?.focus(); return; }
+    alert('Grupo salvo com sucesso!');
+    form.reset();
+    closeModal();
 });
+searchInput?.addEventListener('input', applyFilter);
+document.getElementById('backBtn')?.addEventListener('click', () => history.back());
+
+function bindActionButtons() {
+    document.querySelectorAll('.js-edit').forEach((btn) => {
+        btn.onclick = () => {
+            document.getElementById('newGroupTitle').textContent = 'Editar Grupo de Atendimento';
+            nameInput.value = btn.dataset.group || '';
+            document.getElementById('groupDescription').value = btn.dataset.description || '';
+            document.getElementById('groupStatus').value = btn.dataset.status || 'Ativo';
+            nameError.style.display = 'none';
+            openModal();
+        };
+    });
+
+    document.querySelectorAll('.js-view').forEach((btn) => {
+        btn.onclick = () => {
+            alert(`Grupo: ${btn.dataset.group || ''}
+Descrição: ${btn.dataset.description || ''}
+Status: ${btn.dataset.status || 'Ativo'}
+Nº de Tipos de Atendimento: ${btn.dataset.count || '-'}`);
+        };
+    });
+
+    document.querySelectorAll('.js-delete').forEach((btn) => {
+        btn.onclick = () => {
+            const group = btn.dataset.group || 'este grupo';
+            if (confirm(`Tem certeza que deseja desativar ${group}?`)) {
+                alert('Grupo desativado com sucesso!');
+            }
+        };
+    });
+}
+
+const paginationContainer = document.querySelector('.pagination-controls');
+if (paginationContainer) {
+    paginationContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.page-btn');
+        if (!btn || btn.disabled) return;
+        const totalPages = Math.max(1, Math.ceil(filteredRows.length / rowsPerPage));
+        const label = btn.getAttribute('aria-label');
+        const page = btn.dataset.page ? Number(btn.dataset.page) : null;
+        if (label === 'Primeira página') return goToPage(1);
+        if (label === 'Página anterior') return goToPage(currentPage - 1);
+        if (label === 'Próxima página') return goToPage(currentPage + 1);
+        if (label === 'Última página') return goToPage(totalPages);
+        if (page) return goToPage(page);
+    });
+}
+
+bindActionButtons();
+applyFilter();
