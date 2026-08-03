@@ -1,169 +1,131 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const groupButtons = document.querySelectorAll('.group-btn');
-    const addGroupBtn = document.getElementById('addGroupBtn');
-    const selectedEmpty = document.getElementById('selectedEmpty');
-    const selectedList = document.getElementById('selectedList');
-    const selectedCount = document.getElementById('selectedCount');
-    const removeAllBtn = document.getElementById('removeAllBtn');
-    const backBtn = document.getElementById('backBtn');
+const allGroups = ['Consulta', 'Retorno', 'Triagem', 'Plantão', 'Emergência', 'Telemedicina', 'Exame', 'Pediatria', 'Cardiologia', 'Ortopedia', 'Clínica geral', 'Vacinação'];
+const frequentNames = ['Consulta', 'Retorno', 'Triagem', 'Plantão', 'Emergência', 'Telemedicina', 'Exame'];
+const selected = new Set();
 
-    let selectedGroup = 'Consulta';
-    let selectedItems = [];
+const searchInput = document.getElementById('groupSearch');
+const searchResults = document.getElementById('searchResults');
+const noResults = document.getElementById('noResults');
+const frequentGroups = document.getElementById('frequentGroups');
+const selectedList = document.getElementById('selectedList');
+const selectedEmpty = document.getElementById('selectedEmpty');
+const selectedCount = document.getElementById('selectedCount');
+const saveButton = document.getElementById('saveButton');
+const statusMessage = document.getElementById('statusMessage');
 
-    const icons = {
-        'Consulta': `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 4v16M4 12h16" />
-      </svg>
-    `,
-        'Retorno': `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 11H5l4-4" />
-        <path d="M5 11a8 8 0 1 0 2-5.3" />
-      </svg>
-    `,
-        'Triagem': `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 12l5 5L20 6" />
-      </svg>
-    `,
-        'Plantão': `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2v20" />
-        <path d="M5 7h14" />
-        <path d="M7 17h10" />
-      </svg>
-    `,
-        'Emergência': `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2v5" />
-        <path d="M12 17v5" />
-        <path d="M5 12h5" />
-        <path d="M14 12h5" />
-        <circle cx="12" cy="12" r="4" />
-      </svg>
-    `,
-        'Telemedicina': `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 6h16v10H7l-3 3z" />
-      </svg>
-    `,
-        'Exame': `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 4h14v16H5z" />
-        <path d="M8 8h8M8 12h8M8 16h5" />
-      </svg>
-    `,
-        'Mais grupos': `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 12h.01M12 12h.01M19 12h.01" />
-      </svg>
-    `
-    };
+function normalize(value) {
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
 
-    function renderIcons() {
-        groupButtons.forEach((button) => {
-            const name = button.dataset.name;
-            const slot = button.querySelector('.icon-slot');
-            if (slot && icons[name]) {
-                slot.innerHTML = icons[name];
-            }
-        });
-    }
+function announce(message) {
+  statusMessage.textContent = '';
+  window.setTimeout(() => { statusMessage.textContent = message; }, 30);
+}
 
-    function setActiveButton(name) {
-        selectedGroup = name;
+function createChip(name) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'chip';
+  button.dataset.name = name;
+  button.disabled = selected.has(name);
+  button.setAttribute('aria-label', button.disabled ? name + ' já selecionado' : 'Adicionar ' + name);
+  button.innerHTML = '<span>' + name + '</span><span class="chip-plus" aria-hidden="true">+</span>';
+  button.addEventListener('click', () => addGroup(name));
+  return button;
+}
 
-        groupButtons.forEach((button) => {
-            button.classList.toggle('active-group', button.dataset.name === name);
-        });
-    }
+function renderFrequentGroups() {
+  frequentGroups.replaceChildren(...frequentNames.map(createChip));
+}
 
-    function updateCounter() {
-        const count = selectedItems.length;
-        selectedCount.textContent = `${count} item${count === 1 ? '' : 's'}`;
-        removeAllBtn.disabled = count === 0;
-    }
+function renderSearchResults() {
+  const query = normalize(searchInput.value);
+  if (!query) {
+    searchResults.classList.add('hidden');
+    noResults.classList.add('hidden');
+    searchResults.replaceChildren();
+    searchInput.setAttribute('aria-expanded', 'false');
+    return;
+  }
 
-    function updateEmptyState() {
-        const hasItems = selectedItems.length > 0;
-        selectedEmpty.classList.toggle('hidden', hasItems);
-        selectedList.classList.toggle('hidden', !hasItems);
+  const matches = allGroups.filter(name => normalize(name).includes(query));
+  searchResults.replaceChildren();
+  noResults.classList.toggle('hidden', matches.length > 0);
+  searchResults.classList.toggle('hidden', matches.length === 0);
+  searchInput.setAttribute('aria-expanded', matches.length ? 'true' : 'false');
 
-        if (!hasItems) {
-            selectedList.innerHTML = '';
-        }
-    }
+  matches.forEach((name, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.role = 'option';
+    button.disabled = selected.has(name);
+    button.className = 'focusable result-enter flex min-h-12 w-full items-center justify-between gap-4 border-b border-slate-100 px-4 py-3 text-left text-sm font-semibold text-slate-800 transition last:border-0 hover:bg-teal-50 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500';
+    button.style.animationDelay = (index * 25) + 'ms';
+    button.setAttribute('aria-label', button.disabled ? name + ' já selecionado' : 'Adicionar ' + name);
+    button.innerHTML = '<span>' + name + '</span><span class="text-teal-700" aria-hidden="true">' + (button.disabled ? 'Adicionado' : '+ Adicionar') + '</span>';
+    button.addEventListener('click', () => addGroup(name));
+    searchResults.appendChild(button);
+  });
+}
 
-    function renderSelectedItems() {
-        selectedList.innerHTML = selectedItems.map((item, index) => `
-      <div class="selected-item">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">
-            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 4v16M4 12h16" />
-            </svg>
-          </div>
-          <div>
-            <div class="selected-item-title">${item}</div>
-            <div class="selected-item-subtitle">Grupo selecionado</div>
-          </div>
-        </div>
+function createSelectedItem(name) {
+  const li = document.createElement('li');
+  li.className = 'item-enter flex min-h-[56px] items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-2 pl-4 shadow-sm';
+  li.dataset.name = name;
+  li.innerHTML = '<span class="min-w-0 truncate text-sm font-semibold text-slate-900">' + name + '</span>';
 
-        <button class="selected-remove" type="button" data-remove-index="${index}" aria-label="Remover grupo">
-          <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 6 6 18" />
-            <path d="M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-    `).join('');
+  const remove = document.createElement('button');
+  remove.type = 'button';
+  remove.className = 'remove-button grid h-11 w-11 shrink-0 place-items-center rounded-lg text-slate-600 transition hover:bg-red-50 hover:text-red-700';
+  remove.setAttribute('aria-label', 'Remover ' + name);
+  remove.innerHTML = '<svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6m4-6v6"/></svg>';
+  remove.addEventListener('click', () => removeGroup(name, li));
+  li.appendChild(remove);
+  return li;
+}
 
-        document.querySelectorAll('[data-remove-index]').forEach((button) => {
-            button.addEventListener('click', (event) => {
-                const index = Number(event.currentTarget.dataset.removeIndex);
-                selectedItems.splice(index, 1);
-                renderSelectedItems();
-                updateEmptyState();
-                updateCounter();
-            });
-        });
-    }
+function addGroup(name) {
+  if (selected.has(name)) return;
+  selected.add(name);
+  selectedList.appendChild(createSelectedItem(name));
+  updateUI();
+  announce(name + ' adicionado aos grupos selecionados.');
+}
 
-    groupButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-            setActiveButton(button.dataset.name);
-        });
-    });
+function removeGroup(name, element) {
+  element.classList.remove('item-enter');
+  element.classList.add('item-leave');
+  window.setTimeout(() => {
+    selected.delete(name);
+    element.remove();
+    updateUI();
+    announce(name + ' removido dos grupos selecionados.');
+  }, 190);
+}
 
-    addGroupBtn.addEventListener('click', () => {
-        if (!selectedGroup) return;
+function updateUI() {
+  const count = selected.size;
+  selectedCount.textContent = count + (count === 1 ? ' item' : ' itens');
+  selectedEmpty.classList.toggle('hidden', count > 0);
+  selectedList.classList.toggle('hidden', count === 0);
+  saveButton.disabled = count === 0;
+  renderFrequentGroups();
+  renderSearchResults();
+}
 
-        if (!selectedItems.includes(selectedGroup)) {
-            selectedItems.push(selectedGroup);
-            renderSelectedItems();
-            updateEmptyState();
-            updateCounter();
-        }
-    });
-
-    removeAllBtn.addEventListener('click', () => {
-        if (removeAllBtn.disabled) return;
-
-        selectedItems = [];
-        renderSelectedItems();
-        updateEmptyState();
-        updateCounter();
-    });
-
-    if (backBtn) {
-        backBtn.addEventListener('click', () => {
-            window.history.back();
-        });
-    }
-
-    renderIcons();
-    setActiveButton('Consulta');
-    updateEmptyState();
-    updateCounter();
+searchInput.addEventListener('input', renderSearchResults);
+searchInput.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    searchInput.value = '';
+    renderSearchResults();
+  }
 });
+
+saveButton.addEventListener('click', () => {
+  const groups = Array.from(selected);
+  console.log('Grupos salvos:', groups);
+  announce('Grupo salvo com ' + groups.length + (groups.length === 1 ? ' item.' : ' itens.'));
+  alert('Grupo salvo com sucesso!');
+});
+
+renderFrequentGroups();
+updateUI();

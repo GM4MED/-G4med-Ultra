@@ -1,140 +1,128 @@
+:root {
+    color-scheme: light;
+}
+
 * {
     box-sizing: border-box;
 }
 
-html,
-body {
-    margin: 0;
-    padding: 0;
+html {
+    scroll-behavior: smooth;
 }
 
 body {
-    min-height: 100vh;
-    font-family: 'Inter', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    color: #0f172a;
-    background: #f8fafc;
+    font-family: Inter, sans-serif;
 }
 
-/* Botões dos grupos frequentes */
-.group-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
-    border: 1px solid #e2e8f0;
-    background-color: #ffffff;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #334155;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
-    cursor: pointer;
+button,
+input {
+    font: inherit;
 }
 
-.group-btn:hover {
-    border-color: #008080;
-    background-color: #f0fdfa;
+.focusable:focus-visible,
+.chip:focus-visible,
+.remove-button:focus-visible {
+    outline: 3px solid rgba(13, 148, 136, .35);
+    outline-offset: 3px;
 }
 
-.group-btn.active-group {
-    border-color: #008080;
-    background-color: #ffffff;
-    color: #008080;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+.feature-card {
+    min-height: 88px;
 }
 
-.group-btn .icon-slot {
+.chip {
+    min-height: 44px;
     display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.1rem;
-    height: 1.1rem;
-    flex: 0 0 auto;
-}
-
-.group-btn .icon-slot svg {
-    width: 1.1rem;
-    height: 1.1rem;
-    stroke: currentColor;
-}
-
-/* Lista de selecionados */
-.selected-item {
-    display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    padding: 1rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 1rem;
-    background: #f8fafc;
-}
-
-.selected-item-title {
-    font-weight: 600;
-    color: #0f172a;
-}
-
-.selected-item-subtitle {
-    font-size: 0.875rem;
-    color: #64748b;
-}
-
-/* Botão de remover item */
-.selected-remove {
-    width: 2rem;
-    height: 2rem;
+    gap: .65rem;
+    border: 1px solid #cbd5e1;
     border-radius: 9999px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    padding: .55rem .65rem .55rem 1rem;
+    background: #fff;
+    color: #334155;
+    font-size: .875rem;
+    font-weight: 600;
+    transition: border-color .18s ease, background-color .18s ease, color .18s ease, transform .18s ease, opacity .18s ease;
+}
+
+.chip:hover:not(:disabled) {
+    border-color: #0d9488;
+    background: #f0fdfa;
+    color: #0f766e;
+    transform: translateY(-1px);
+}
+
+.chip:disabled {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
     color: #64748b;
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    transition: all 0.2s ease;
-}
-
-.selected-remove:hover {
-    color: #dc2626;
-    border-color: #fecaca;
-    background: #fff;
-}
-
-/* Botão remover selecionados */
-#removeAllBtn:disabled {
-    opacity: 0.55;
     cursor: not-allowed;
+    opacity: .72;
 }
 
-/* Ajustes gerais */
-input::placeholder {
-    color: #94a3b8;
+.chip-plus {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 auto;
+    border-radius: 9999px;
+    display: grid;
+    place-items: center;
+    background: #ccfbf1;
+    color: #0f766e;
+    font-size: 1.15rem;
+    line-height: 1;
 }
 
-button {
-    user-select: none;
+.chip:disabled .chip-plus {
+    background: #e2e8f0;
+    color: #64748b;
 }
 
-svg {
-    flex-shrink: 0;
+.result-enter {
+    animation: fadeSlideIn .22s ease both;
 }
 
-/* Espaçamento para footer fixo */
-main {
-    min-height: calc(100vh - 88px);
+.item-enter {
+    animation: fadeSlideIn .25s ease both;
 }
 
-/* Responsivo */
-@media (max-width: 768px) {
-    .group-btn {
-        padding: 0.7rem 0.85rem;
-        font-size: 0.82rem;
+.item-leave {
+    animation: fadeSlideOut .2s ease both;
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
     }
 
-    .selected-item {
-        padding: 0.875rem;
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(18px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
     }
 }

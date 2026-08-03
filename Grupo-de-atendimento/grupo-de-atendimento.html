@@ -4,331 +4,506 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>G4Med Dashboard</title>
+    <title>Grupo de Atendimento | G4Med</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="grupo-de-atendimento.css" />
-    <style>
-        .group-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid #e2e8f0;
-            background-color: #ffffff;
-            font-size: 0.875rem;
+
+
+    <style type="text/css">
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            src: url(/cf-fonts/v/inter/5.2.8/latin/wght/normal.woff2);
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            src: url(/cf-fonts/v/inter/5.2.8/cyrillic/wght/normal.woff2);
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            src: url(/cf-fonts/v/inter/5.2.8/cyrillic-ext/wght/normal.woff2);
+            unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            src: url(/cf-fonts/v/inter/5.2.8/latin-ext/wght/normal.woff2);
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            src: url(/cf-fonts/v/inter/5.2.8/greek/wght/normal.woff2);
+            unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            src: url(/cf-fonts/v/inter/5.2.8/greek-ext/wght/normal.woff2);
+            unicode-range: U+1F00-1FFF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            src: url(/cf-fonts/v/inter/5.2.8/vietnamese/wght/normal.woff2);
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
             font-weight: 500;
-            color: #334155;
-            transition: all 0.2s ease;
+            src: url(/cf-fonts/v/inter/5.2.8/cyrillic-ext/wght/normal.woff2);
+            unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+            font-display: swap;
         }
 
-        .group-btn:hover {
-            border-color: #0d9488;
-            background-color: #f0fdfa;
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 500;
+            src: url(/cf-fonts/v/inter/5.2.8/latin/wght/normal.woff2);
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            font-display: swap;
         }
 
-        .group-btn.active-group {
-            border-color: #0d9488;
-            background-color: #f0fdfa;
-            color: #0f766e;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 500;
+            src: url(/cf-fonts/v/inter/5.2.8/vietnamese/wght/normal.woff2);
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 500;
+            src: url(/cf-fonts/v/inter/5.2.8/latin-ext/wght/normal.woff2);
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 500;
+            src: url(/cf-fonts/v/inter/5.2.8/cyrillic/wght/normal.woff2);
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 500;
+            src: url(/cf-fonts/v/inter/5.2.8/greek/wght/normal.woff2);
+            unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 500;
+            src: url(/cf-fonts/v/inter/5.2.8/greek-ext/wght/normal.woff2);
+            unicode-range: U+1F00-1FFF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 600;
+            src: url(/cf-fonts/v/inter/5.2.8/latin-ext/wght/normal.woff2);
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 600;
+            src: url(/cf-fonts/v/inter/5.2.8/cyrillic-ext/wght/normal.woff2);
+            unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 600;
+            src: url(/cf-fonts/v/inter/5.2.8/vietnamese/wght/normal.woff2);
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 600;
+            src: url(/cf-fonts/v/inter/5.2.8/greek/wght/normal.woff2);
+            unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 600;
+            src: url(/cf-fonts/v/inter/5.2.8/cyrillic/wght/normal.woff2);
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 600;
+            src: url(/cf-fonts/v/inter/5.2.8/latin/wght/normal.woff2);
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 600;
+            src: url(/cf-fonts/v/inter/5.2.8/greek-ext/wght/normal.woff2);
+            unicode-range: U+1F00-1FFF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 700;
+            src: url(/cf-fonts/v/inter/5.2.8/cyrillic-ext/wght/normal.woff2);
+            unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 700;
+            src: url(/cf-fonts/v/inter/5.2.8/greek-ext/wght/normal.woff2);
+            unicode-range: U+1F00-1FFF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 700;
+            src: url(/cf-fonts/v/inter/5.2.8/vietnamese/wght/normal.woff2);
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 700;
+            src: url(/cf-fonts/v/inter/5.2.8/latin/wght/normal.woff2);
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 700;
+            src: url(/cf-fonts/v/inter/5.2.8/cyrillic/wght/normal.woff2);
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 700;
+            src: url(/cf-fonts/v/inter/5.2.8/latin-ext/wght/normal.woff2);
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 700;
+            src: url(/cf-fonts/v/inter/5.2.8/greek/wght/normal.woff2);
+            unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 800;
+            src: url(/cf-fonts/v/inter/5.2.8/greek/wght/normal.woff2);
+            unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 800;
+            src: url(/cf-fonts/v/inter/5.2.8/cyrillic/wght/normal.woff2);
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 800;
+            src: url(/cf-fonts/v/inter/5.2.8/latin/wght/normal.woff2);
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 800;
+            src: url(/cf-fonts/v/inter/5.2.8/greek-ext/wght/normal.woff2);
+            unicode-range: U+1F00-1FFF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 800;
+            src: url(/cf-fonts/v/inter/5.2.8/vietnamese/wght/normal.woff2);
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 800;
+            src: url(/cf-fonts/v/inter/5.2.8/cyrillic-ext/wght/normal.woff2);
+            unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 800;
+            src: url(/cf-fonts/v/inter/5.2.8/latin-ext/wght/normal.woff2);
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+            font-display: swap;
         }
     </style>
+    <link rel="stylesheet" href="grupo-de-atendimento.css" />
 </head>
 
-<body class="bg-slate-50 text-slate-900 font-['Inter',sans-serif]">
-    <header class="fixed top-0 inset-x-0 z-50 bg-white border-b border-slate-200">
-        <div class="max-w-[1440px] mx-auto px-6 py-4 flex items-center justify-between gap-6">
-
-            <div class="flex items-center gap-3 shrink-0">
-                <button id="backBtn" type="button" onclick="window.location.href='../Menu-Principal.html'"
-                    class="w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-100 flex items-center justify-center text-slate-600 transition"
+<body class="bg-slate-50 text-slate-900 antialiased">
+    <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
+        <div
+            class="mx-auto flex min-h-[72px] max-w-[1440px] items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+            <div class="flex min-w-0 items-center gap-3">
+                <button type="button" onclick="history.back()"
+                    class="focusable grid h-11 w-11 shrink-0 place-items-center rounded-full border border-slate-300 text-slate-700 transition hover:bg-slate-100"
                     aria-label="Voltar">
-                    <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M15 18l-6-6 6-6" />
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2"
+                        aria-hidden="true">
+                        <path d="m15 18-6-6 6-6" />
                     </svg>
                 </button>
-
-                <div
-                    class="w-11 h-11 rounded-full bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-600">
-                    <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.2"
-                        stroke-linecap="round" stroke-linejoin="round">
+                <div class="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-teal-200 bg-teal-50 text-teal-700"
+                    aria-hidden="true">
+                    <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.2">
                         <path d="M12 3v18M3 12h18" />
-                        <path d="M8 7h8M8 17h8" opacity="0.35" />
                     </svg>
                 </div>
-
-                <div class="flex items-baseline gap-2">
-                    <span class="text-xl font-extrabold tracking-tight text-slate-900">G4Med</span>
-                    <span class="text-sm text-slate-500">Intelligent Health System</span>
+                <div class="min-w-0">
+                    <div class="truncate text-lg font-extrabold tracking-tight">G4Med</div>
+                    <div class="hidden truncate text-xs font-medium text-slate-600 sm:block">Intelligent Health System
+                    </div>
                 </div>
             </div>
-
-            <div class="flex-1 max-w-[540px] relative hidden md:block">
-                <input type="text" placeholder="Buscar pacientes, exames, médicos..."
-                    class="w-full h-12 rounded-full border border-slate-200 bg-slate-50 pl-5 pr-12 text-sm outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500" />
-                <svg viewBox="0 0 24 24" class="w-5 h-5 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2"
-                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="7" />
-                    <path d="M20 20l-3.5-3.5" />
-                </svg>
-            </div>
-
-            <div class="flex items-center gap-4 shrink-0">
-                <button
-                    class="relative w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-600">
-                    <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <button type="button"
+                    class="focusable relative grid h-11 w-11 place-items-center rounded-full text-slate-700 transition hover:bg-slate-100"
+                    aria-label="Notificações, 3 não lidas">
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                        aria-hidden="true">
                         <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5" />
                         <path d="M9 17a3 3 0 0 0 6 0" />
                     </svg>
                     <span
-                        class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">3</span>
+                        class="absolute right-0 top-0 grid h-5 min-w-5 place-items-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">3</span>
                 </button>
-
-                <button
-                    class="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-600">
-                    <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="9" />
-                        <path d="M12 16v-1" />
-                        <path d="M12 12a2 2 0 1 0-2-2" />
-                    </svg>
-                </button>
-
-                <div class="flex items-center gap-3 pl-2">
-                    <div
-                        class="w-11 h-11 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold">
-                        CM</div>
-                    <div class="hidden sm:block leading-tight">
-                        <div class="font-semibold text-slate-900">Dr. Carlos Mendes</div>
-                        <div class="text-sm text-slate-500">Administrador</div>
-                    </div>
-                    <svg viewBox="0 0 24 24" class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m6 9 6 6 6-6" />
-                    </svg>
+                <div class="grid h-11 w-11 place-items-center rounded-full bg-teal-700 font-bold text-white"
+                    aria-label="Usuário Carlos Mendes">CM</div>
+                <div class="hidden leading-tight md:block">
+                    <div class="text-sm font-semibold">Dr. Carlos Mendes</div>
+                    <div class="text-xs font-medium text-slate-600">Administrador</div>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="pt-24 pb-24">
-        <section class="max-w-[1440px] mx-auto px-6 lg:px-8 py-8">
-            <div class="grid lg:grid-cols-[1.3fr_0.9fr] gap-10 items-center">
-                <div>
-                    <h1 class="text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900">Grupo de Atendimento
-                    </h1>
-                    <p class="mt-4 text-slate-500 max-w-2xl text-lg">Organize e gerencie grupos de atendimentos para
-                        montar fluxos clínicos com mais agilidade e clareza.</p>
-                </div>
+    <main>
+        <section class="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+            <div class="max-w-3xl">
+                <p class="mb-2 text-sm font-bold uppercase tracking-[.12em] text-teal-700">Configuração de atendimento
+                </p>
+                <h1 class="text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">Grupo de Atendimento</h1>
+                <p class="mt-3 max-w-2xl text-base leading-7 text-slate-700">Pesquise e selecione os grupos que farão
+                    parte do fluxo clínico.</p>
+            </div>
 
-                <div class="relative h-[220px] lg:h-[260px] flex items-center justify-center">
-                    <div
-                        class="absolute left-10 top-10 w-10 h-10 rounded-full border border-teal-200 bg-teal-50/50 opacity-40">
-                    </div>
-                    <div class="absolute right-12 top-8 w-3 h-3 rounded-full bg-teal-300 opacity-50"></div>
-                    <div class="absolute right-24 bottom-14 w-5 h-5 rounded-full border-2 border-teal-200 opacity-30">
-                    </div>
-
-                    <svg viewBox="0 0 420 260" class="w-full h-full max-w-[420px]">
-                        <rect x="118" y="28" rx="28" ry="28" width="200" height="190" fill="#ffffff" stroke="#d1d5db" />
-                        <rect x="146" y="58" rx="8" ry="8" width="120" height="18" fill="#e6fffb" stroke="#99f6e4" />
-                        <rect x="146" y="88" rx="8" ry="8" width="140" height="18" fill="#f8fafc" stroke="#e5e7eb" />
-                        <rect x="146" y="118" rx="8" ry="8" width="132" height="18" fill="#f8fafc" stroke="#e5e7eb" />
-                        <rect x="146" y="148" rx="8" ry="8" width="110" height="18" fill="#f8fafc" stroke="#e5e7eb" />
-                        <path d="M188 43c0-14 12-25 26-25s26 11 26 25" fill="#008080" opacity="0.95" />
-                        <path d="M198 38h10v10h10v10h-10v10h-10v-10h-10v-10h10z" fill="#ffffff" />
-                        <path d="M308 54l48 26-20 36-48-26z" fill="#f8fafc" stroke="#d1d5db" />
-                        <path d="M296 78l-16 28" stroke="#008080" stroke-width="8" stroke-linecap="round" />
-                        <path d="M284 90l28 16" stroke="#008080" stroke-width="8" stroke-linecap="round" />
-                        <path d="M62 178c28-26 60-34 90-30" stroke="#008080" stroke-width="5" opacity="0.2"
-                            fill="none" />
-                        <path d="M73 196c34-18 64-22 102-13" stroke="#008080" stroke-width="5" opacity="0.18"
-                            fill="none" />
-                        <circle cx="100" cy="54" r="10" fill="#008080" opacity="0.12" />
-                        <circle cx="336" cy="170" r="14" fill="#008080" opacity="0.1" />
+            <div class="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+                <article class="feature-card flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
+                    <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-slate-500" fill="none" stroke="currentColor"
+                        stroke-width="2" aria-hidden="true">
+                        <path d="M3 13h3l2-5 4 10 2-5h7" />
                     </svg>
-                </div>
+                    <div>
+                        <h2 class="text-sm font-semibold text-slate-800">Monitoramento</h2>
+                        <p class="mt-1 text-xs leading-5 text-slate-600">Indicadores em tempo real</p>
+                    </div>
+                </article>
+                <article class="feature-card flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
+                    <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-slate-500" fill="none" stroke="currentColor"
+                        stroke-width="2" aria-hidden="true">
+                        <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z" />
+                    </svg>
+                    <div>
+                        <h2 class="text-sm font-semibold text-slate-800">Segurança</h2>
+                        <p class="mt-1 text-xs leading-5 text-slate-600">Controle de acesso</p>
+                    </div>
+                </article>
+                <article class="feature-card flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
+                    <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-slate-500" fill="none" stroke="currentColor"
+                        stroke-width="2" aria-hidden="true">
+                        <path d="M4 5h6l2 3h8v11H4z" />
+                    </svg>
+                    <div>
+                        <h2 class="text-sm font-semibold text-slate-800">Arquivos</h2>
+                        <p class="mt-1 text-xs leading-5 text-slate-600">Documentos centralizados</p>
+                    </div>
+                </article>
+                <article class="feature-card flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
+                    <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-slate-500" fill="none" stroke="currentColor"
+                        stroke-width="2" aria-hidden="true">
+                        <path d="M4 19V5M8 19v-8m4 8V8m4 11v-5m4 5V6" />
+                    </svg>
+                    <div>
+                        <h2 class="text-sm font-semibold text-slate-800">Relatórios</h2>
+                        <p class="mt-1 text-xs leading-5 text-slate-600">Desempenho e volume</p>
+                    </div>
+                </article>
             </div>
 
-            <div class="mt-10 grid md:grid-cols-2 xl:grid-cols-4 gap-4">
-                <div class="rounded-2xl border border-teal-600 bg-white p-6 flex items-start gap-4 shadow-sm">
-                    <div class="text-teal-600">
-                        <svg viewBox="0 0 24 24" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 13h3l2-5 4 10 2-5h7" />
-                            <path d="M3 6h18" opacity="0.35" />
+            <div class="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,.85fr)] lg:gap-8">
+                <section aria-labelledby="searchHeading"
+                    class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                    <h2 id="searchHeading" class="text-xl font-bold text-slate-950">Buscar grupos de atendimento</h2>
+                    <p class="mt-2 text-sm leading-6 text-slate-700">Digite um nome ou escolha uma opção frequente.</p>
+
+                    <div class="relative mt-5">
+                        <label for="groupSearch" class="sr-only">Pesquisar grupos</label>
+                        <svg viewBox="0 0 24 24"
+                            class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500"
+                            fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="11" cy="11" r="7" />
+                            <path d="m20 20-3.5-3.5" />
                         </svg>
+                        <input id="groupSearch" type="search" autocomplete="off" placeholder="Pesquisar grupos..."
+                            aria-controls="searchResults" aria-describedby="searchHint"
+                            class="focusable h-12 w-full rounded-xl border border-slate-300 bg-white pl-12 pr-4 text-base text-slate-900 placeholder:text-slate-500 hover:border-slate-400 focus:border-teal-600 focus:outline-none" />
                     </div>
-                    <div>
-                        <div class="font-bold text-teal-700">Monitoramento</div>
-                        <p class="mt-1 text-sm text-slate-500">Acompanhe indicadores e status em tempo real.</p>
-                    </div>
-                </div>
+                    <p id="searchHint" class="mt-2 text-xs text-slate-600">Os resultados são atualizados enquanto você
+                        digita.</p>
+                    <div id="searchResults"
+                        class="mt-3 hidden overflow-hidden rounded-xl border border-slate-200 bg-white" role="listbox"
+                        aria-label="Resultados da busca"></div>
+                    <p id="noResults" class="mt-3 hidden rounded-xl bg-slate-50 p-4 text-sm text-slate-700">Nenhum grupo
+                        encontrado.</p>
 
-                <div class="rounded-2xl border border-teal-600 bg-white p-6 flex items-start gap-4 shadow-sm">
-                    <div class="text-teal-600">
-                        <svg viewBox="0 0 24 24" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z" />
-                        </svg>
+                    <div class="mt-8 border-t border-slate-200 pt-6">
+                        <h3 class="text-base font-bold text-slate-900">Grupos de atendimento frequentes</h3>
+                        <div id="frequentGroups" class="mt-4 flex flex-wrap gap-3"></div>
                     </div>
-                    <div>
-                        <div class="font-bold text-teal-700">Segurança</div>
-                        <p class="mt-1 text-sm text-slate-500">Proteja dados e mantenha controle de acesso.</p>
-                    </div>
-                </div>
+                </section>
 
-                <div class="rounded-2xl border border-teal-600 bg-white p-6 flex items-start gap-4 shadow-sm">
-                    <div class="text-teal-600">
-                        <svg viewBox="0 0 24 24" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 5h6l2 3h8v11H4z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="font-bold text-teal-700">Arquivos</div>
-                        <p class="mt-1 text-sm text-slate-500">Centralize documentos e históricos clínicos.</p>
-                    </div>
-                </div>
-
-                <div class="rounded-2xl border border-teal-600 bg-white p-6 flex items-start gap-4 shadow-sm">
-                    <div class="text-teal-600">
-                        <svg viewBox="0 0 24 24" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 19V5" />
-                            <path d="M8 19V11" />
-                            <path d="M12 19V8" />
-                            <path d="M16 19V14" />
-                            <path d="M20 19V6" />
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="font-bold text-teal-700">Relatórios</div>
-                        <p class="mt-1 text-sm text-slate-500">Visualize desempenho e volume de atendimentos.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-10 grid xl:grid-cols-[1.1fr_0.9fr] gap-8 items-start">
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="text-2xl font-bold text-slate-900">Buscar grupos de atendimento</h3>
-                        <div class="mt-4 relative max-w-xl">
-                            <input id="groupSearch" type="text" placeholder="Digite o nome do grupo de atendimento..."
-                                class="w-full h-12 rounded-full border border-slate-200 bg-white pl-5 pr-12 text-sm outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500" />
-                            <svg viewBox="0 0 24 24"
-                                class="w-5 h-5 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="11" cy="11" r="7" />
-                                <path d="M20 20l-3.5-3.5" />
-                            </svg>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h4 class="text-lg font-bold text-slate-700">Grupos de atendimento frequentes</h4>
-                        <div id="frequentGroups" class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                            <button class="group-btn active-group" data-name="Consulta" type="button"><span
-                                    class="icon-slot"></span><span>Consulta</span></button>
-                            <button class="group-btn" data-name="Retorno" type="button"><span
-                                    class="icon-slot"></span><span>Retorno</span></button>
-                            <button class="group-btn" data-name="Triagem" type="button"><span
-                                    class="icon-slot"></span><span>Triagem</span></button>
-                            <button class="group-btn" data-name="Plantão" type="button"><span
-                                    class="icon-slot"></span><span>Plantão</span></button>
-                            <button class="group-btn" data-name="Emergência" type="button"><span
-                                    class="icon-slot"></span><span>Emergência</span></button>
-                            <button class="group-btn" data-name="Telemedicina" type="button"><span
-                                    class="icon-slot"></span><span>Telemedicina</span></button>
-                            <button class="group-btn" data-name="Exame" type="button"><span
-                                    class="icon-slot"></span><span>Exame</span></button>
-                            <button class="group-btn" data-name="Mais grupos" type="button"><span
-                                    class="icon-slot"></span><span>Mais grupos</span></button>
-                        </div>
-                        <button id="addGroupBtn" type="button"
-                            class="mt-5 inline-flex items-center gap-2 rounded-xl bg-teal-600 px-5 py-3 text-white font-semibold shadow-sm hover:bg-teal-700 transition">
-                            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor"
-                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 5v14M5 12h14" />
-                            </svg>
-                            Adicionar ao grupo selecionado
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <div class="flex items-center justify-between gap-3">
-                        <h3 class="text-xl font-bold text-slate-900">Grupos selecionados</h3>
-                        <span id="selectedCount"
-                            class="bg-teal-100 text-teal-800 rounded-full px-3 py-1 text-xs font-semibold">0
+                <aside aria-labelledby="selectedHeading"
+                    class="flex min-h-[460px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:sticky lg:top-24">
+                    <div class="flex items-center justify-between gap-4 border-b border-slate-200 px-6 py-5">
+                        <h2 id="selectedHeading" class="text-xl font-bold text-slate-950">Grupos selecionados</h2>
+                        <span id="selectedCount" aria-live="polite" aria-atomic="true"
+                            class="shrink-0 rounded-full bg-teal-100 px-3 py-1 text-xs font-bold text-teal-900">0
                             itens</span>
                     </div>
 
-                    <div id="selectedEmpty"
-                        class="mt-6 flex flex-col items-center justify-center py-16 border-2 border-dashed border-slate-300 rounded-xl text-center">
-                        <div
-                            class="w-20 h-20 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-200 mb-4">
-                            <svg viewBox="0 0 24 24" class="w-10 h-10" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M8 4h8l2 2v14H6V6z" />
-                                <path d="M9 12h6M12 9v6" />
-                            </svg>
+                    <div class="flex-1 p-6">
+                        <div id="selectedEmpty"
+                            class="flex min-h-[270px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center">
+                            <div class="mb-4 grid h-20 w-20 place-items-center rounded-full bg-teal-50 text-teal-700"
+                                aria-hidden="true">
+                                <svg viewBox="0 0 24 24" class="h-10 w-10" fill="none" stroke="currentColor"
+                                    stroke-width="1.8">
+                                    <path d="M8 4h8l2 2v14H6V6z" />
+                                    <path d="M9 12h6m-3-3v6" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900">Nenhum grupo selecionado</h3>
+                            <p class="mt-2 max-w-xs text-sm leading-6 text-slate-700">Use a busca ou selecione um grupo
+                                frequente para adicioná-lo aqui.</p>
                         </div>
-                        <div class="text-lg font-bold text-slate-900">Nenhum grupo selecionado.</div>
-                        <p class="mt-2 text-slate-500 max-w-sm">Busque e adicione grupos de atendimento para montar o
-                            grupo desejado.</p>
+                        <ul id="selectedList" class="hidden space-y-3" aria-label="Lista de grupos selecionados"></ul>
                     </div>
 
-                    <div id="selectedList" class="mt-6 space-y-3 hidden"></div>
-
-                    <div class="mt-6 pt-4 border-t border-slate-200 flex justify-end">
-                        <button id="removeAllBtn" type="button" disabled
-                            class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-slate-400 bg-slate-50 cursor-not-allowed">
-                            <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 6h18" />
-                                <path d="M8 6V4h8v2" />
-                                <path d="M6 6l1 14h10l1-14" />
-                                <path d="M10 11v6M14 11v6" />
+                    <div class="border-t border-slate-200 bg-white p-6">
+                        <button id="saveButton" type="button" disabled
+                            class="focusable flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-teal-700 px-5 py-3 font-bold text-white shadow-sm transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-600 disabled:shadow-none">
+                            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor"
+                                stroke-width="2.2" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5" />
                             </svg>
-                            Remover selecionados
+                            Salvar grupo
                         </button>
                     </div>
-                </div>
+                </aside>
             </div>
         </section>
     </main>
 
-    <footer class="fixed inset-x-0 bottom-0 z-40 bg-white p-4 border-t border-slate-200">
-        <div class="max-w-[1440px] mx-auto flex items-center justify-end gap-3">
-            <button type="button"
-                class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-5 py-3 text-slate-700 font-semibold hover:bg-slate-200 transition">
-                <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M18 6 6 18" />
-                    <path d="M6 6l12 12" />
-                </svg>
-                Cancelar
-            </button>
+    <div id="statusMessage" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
-            <button type="button"
-                class="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-5 py-3 text-white font-semibold hover:bg-teal-700 transition">
-                <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 6 9 17l-5-5" />
-                </svg>
-                Confirmar grupo
-            </button>
-        </div>
-    </footer>
-
-    <script src="grupo-de-atendimento.js"></script>
+    <script src="grupo-de-atendimento.js" defer></script>
 </body>
 
 </html>
