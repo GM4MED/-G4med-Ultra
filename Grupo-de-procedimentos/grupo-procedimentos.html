@@ -10,48 +10,50 @@
 </head>
 
 <body class="bg-[#f3f7f6] text-slate-700">
-    <header class="bg-white border-b border-slate-200/80 sticky top-0 z-40">
-        <div class="max-w-[1400px] mx-auto px-6 py-4 flex items-center gap-6">
-            <div class="flex items-center gap-3 min-w-[220px]">
-                <div class="w-10 h-10 rounded-xl bg-[#e8f5f1] flex items-center justify-center text-[#1b9a84]">
-                    <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5"
+    <header class="sticky top-0 z-40 border-b border-slate-200/80 bg-white">
+        <div class="mx-auto flex max-w-[1400px] items-center gap-6 px-6 py-4">
+            <div class="flex min-w-[220px] items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e8f5f1] text-[#1b9a84]">
+                    <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.5"
                         stroke-linecap="round">
                         <path d="M12 5v14M5 12h14" />
                     </svg>
                 </div>
                 <div>
-                    <div class="font-semibold text-slate-800 leading-none">G4Med</div>
-                    <div class="text-[11px] text-slate-400 leading-none mt-1">Intelligent Health System</div>
+                    <div class="font-semibold leading-none text-slate-800">G4Med</div>
+                    <div class="mt-1 text-[11px] leading-none text-slate-400">Intelligent Health System</div>
                 </div>
             </div>
 
-            <div class="flex-1 max-w-[760px] mx-auto">
+            <div class="mx-auto max-w-[760px] flex-1">
                 <div class="relative">
-                    <svg viewBox="0 0 24 24" class="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"
+                    <svg viewBox="0 0 24 24" class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
                         fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="7" />
                         <path d="m20 20-3.5-3.5" />
                     </svg>
                     <input id="topSearch"
-                        class="w-full h-12 rounded-2xl bg-slate-100/90 border border-slate-200 pl-12 pr-4 outline-none focus:ring-2 focus:ring-[#1b9a84]/20 focus:border-[#1b9a84]"
-                        placeholder="Buscar pacientes, exames, médicos..." />
+                        class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-100/90 pl-12 pr-4 outline-none focus:border-[#1b9a84] focus:ring-2 focus:ring-[#1b9a84]/20"
+                        placeholder="Buscar grupos de procedimentos..." aria-label="Buscar grupos de procedimentos" />
                 </div>
             </div>
 
-            <div class="flex items-center gap-4 ml-auto">
+            <div class="ml-auto flex items-center gap-4">
                 <button
-                    class="relative w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 transition flex items-center justify-center text-slate-600">
-                    <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
+                    class="relative flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
+                    aria-label="Notificações" title="Notificações">
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5" />
                         <path d="M9 17a3 3 0 0 0 6 0" />
                     </svg>
                     <span
-                        class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-rose-500 text-white text-[11px] leading-5 font-semibold">3</span>
+                        class="absolute -top-1 -right-1 min-w-5 rounded-full bg-rose-500 px-1 text-[11px] font-semibold leading-5 text-white">3</span>
                 </button>
 
                 <button
-                    class="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 transition flex items-center justify-center text-slate-600">
-                    <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
+                    class="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
+                    aria-label="Ajuda" title="Ajuda">
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="9" />
                         <path d="M12 17v-.5M12 13.5a2 2 0 1 0-2-2" />
                     </svg>
@@ -59,13 +61,13 @@
 
                 <div class="flex items-center gap-3 pl-2">
                     <div
-                        class="w-11 h-11 rounded-full bg-gradient-to-br from-[#1b9a84] to-[#83d6c5] flex items-center justify-center text-white font-semibold">
+                        class="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#1b9a84] to-[#83d6c5] font-semibold text-white">
                         CM</div>
                     <div class="leading-tight">
                         <div class="text-sm font-semibold text-slate-800">Dr. Carlos Mendes</div>
-                        <div class="text-xs text-slate-400 flex items-center gap-1">
+                        <div class="flex items-center gap-1 text-xs text-slate-400">
                             Administrador
-                            <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="m6 9 6 6 6-6" />
                             </svg>
                         </div>
@@ -75,27 +77,29 @@
         </div>
     </header>
 
-    <main class="max-w-[1400px] mx-auto px-6 py-8 pb-28">
+    <main class="mx-auto max-w-[1400px] px-6 py-8 pb-28">
         <div class="mb-6">
-            <a href="../Menu-Principal.html" id="backBtn" class="back-btn" aria-label="Voltar para o menu principal">
-                <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2">
+            <a href="../Menu-Principal.html" id="backBtn"
+                class="back-btn inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
+                aria-label="Voltar para o menu principal">
+                <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2">
                     <path d="M15 18 9 12l6-6" />
                 </svg>
                 <span>Voltar</span>
             </a>
         </div>
 
-        <section class="grid lg:grid-cols-2 gap-8 items-center mb-8">
+        <section class="mb-8 grid items-center gap-8 lg:grid-cols-2">
             <div>
-                <h1 class="text-4xl md:text-5xl font-semibold text-[#153e49] tracking-tight">Grupo de Procedimentos</h1>
-                <p class="mt-4 max-w-2xl text-lg text-slate-500 leading-8">
+                <h1 class="text-4xl font-semibold tracking-tight text-[#153e49] md:text-5xl">Grupo de Procedimentos</h1>
+                <p class="mt-4 max-w-2xl text-lg leading-8 text-slate-500">
                     Organize e gerencie grupos de procedimentos médicos de forma eficiente. Agilize atendimentos e
                     padronize seus passos com mais segurança e controle.
                 </p>
             </div>
 
             <div class="justify-self-end w-full max-w-[520px]">
-                <svg viewBox="0 0 600 380" class="w-full h-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 600 380" class="h-auto w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="120" y="70" width="260" height="220" rx="26" fill="#D8F0EA" />
                     <rect x="150" y="105" width="200" height="145" rx="18" fill="white" stroke="#A7D9CF"
                         stroke-width="4" />
@@ -116,7 +120,7 @@
             </div>
         </section>
 
-        <section class="grid md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+        <section class="mb-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             <div class="card-benefit">
                 <div class="benefit-icon bg-[#edf8f5] text-[#1b9a84]">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -165,46 +169,72 @@
             </div>
         </section>
 
-        <section class="grid xl:grid-cols-[1.1fr_0.9fr] gap-6 items-start">
+        <section class="grid gap-6 xl:grid-cols-[1fr_1.05fr]">
             <div class="panel p-6">
-                <div class="flex items-center justify-between gap-4 mb-5">
-                    <h2 class="text-xl font-semibold text-slate-800">Buscar procedimentos</h2>
+                <div class="mb-5 flex items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-semibold text-slate-800">Buscar e adicionar procedimentos</h2>
+                        <p class="text-sm text-slate-500">Filtre os procedimentos e monte o grupo com rapidez.</p>
+                    </div>
                 </div>
 
-                <div class="relative mb-6">
+                <div class="relative mb-5">
                     <input id="procedureSearch"
-                        class="w-full h-13 rounded-2xl border border-slate-200 bg-white px-5 pr-12 outline-none focus:ring-2 focus:ring-[#1b9a84]/15 focus:border-[#1b9a84]"
-                        placeholder="Digite o nome do procedimento..." />
-                    <svg viewBox="0 0 24 24" class="w-5 h-5 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2"
+                        class="h-13 w-full rounded-2xl border border-slate-200 bg-white px-5 pr-12 outline-none focus:border-[#1b9a84] focus:ring-2 focus:ring-[#1b9a84]/15"
+                        placeholder="Digite o nome do procedimento..." aria-label="Buscar procedimento" />
+                    <svg viewBox="0 0 24 24" class="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
                         fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="7" />
                         <path d="m20 20-3.5-3.5" />
                     </svg>
                 </div>
 
-                <div id="frequentGrid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+                <div id="frequentGrid" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"></div>
 
                 <button id="addSelectedBtn"
-                    class="mt-6 w-full h-14 rounded-2xl bg-[#1b9a84] text-white font-semibold shadow-lg shadow-[#1b9a84]/20 hover:bg-[#178a77] transition flex items-center justify-center gap-2">
-                    <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5">
+                    class="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-[#1b9a84] px-4 py-3 font-semibold text-white shadow-lg shadow-[#1b9a84]/20 transition hover:bg-[#178a77] active:bg-[#136d60] disabled:cursor-not-allowed disabled:opacity-70">
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5">
                         <path d="M12 5v14M5 12h14" />
                     </svg>
-                    <span>Adicionar ao grupo selecionado</span>
+                    <span class="btn-label">Adicionar ao grupo selecionado</span>
+                    <svg class="btn-spinner hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"
+                        aria-hidden="true">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
                 </button>
             </div>
 
-            <div class="panel p-0 overflow-hidden flex flex-col min-h-[620px]">
-                <div class="p-6 border-b border-slate-200 flex items-center justify-between gap-4">
-                    <h2 class="text-xl font-semibold text-slate-800">Procedimentos selecionados</h2>
-                    <span id="countBadge"
-                        class="px-3 py-1 rounded-full bg-[#e8f5f1] text-[#1b9a84] text-sm font-semibold">0 itens</span>
+            <div class="panel flex min-h-[620px] flex-col overflow-hidden p-0">
+                <div class="border-b border-slate-200 p-6">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl font-semibold text-slate-800">Procedimentos selecionados</h2>
+                            <p class="text-sm text-slate-500">Revise os itens antes de confirmar.</p>
+                        </div>
+                        <span id="countBadge"
+                            class="rounded-full bg-[#e8f5f1] px-3 py-1 text-sm font-semibold text-[#1b9a84]">0
+                            itens</span>
+                    </div>
+
+                    <div class="mt-4 flex gap-3">
+                        <button id="openNewGroupBtn" type="button"
+                            class="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-sky-700 active:bg-sky-800">
+                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M12 5v14M5 12h14" />
+                            </svg>
+                            Novo Grupo
+                        </button>
+                    </div>
                 </div>
 
-                <div id="selectedState" class="flex-1 flex items-center justify-center p-8 text-center">
+                <div id="selectedState" class="flex flex-1 items-center justify-center p-8 text-center">
                     <div class="max-w-xs">
                         <div
-                            class="w-20 h-20 mx-auto rounded-3xl bg-[#eef8f5] flex items-center justify-center text-[#1b9a84] mb-4">
-                            <svg viewBox="0 0 24 24" class="w-10 h-10" fill="none" stroke="currentColor"
+                            class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-[#eef8f5] text-[#1b9a84]">
+                            <svg viewBox="0 0 24 24" class="h-10 w-10" fill="none" stroke="currentColor"
                                 stroke-width="2">
                                 <rect x="4" y="3" width="14" height="18" rx="2" />
                                 <path d="M9 3v18" />
@@ -213,18 +243,18 @@
                             </svg>
                         </div>
                         <div class="text-lg font-semibold text-slate-800">Nenhum procedimento selecionado</div>
-                        <p class="mt-2 text-slate-500 leading-7">Busque e adicione procedimentos para montar o grupo
+                        <p class="mt-2 leading-7 text-slate-500">Busque e adicione procedimentos para montar o grupo
                             desejado.</p>
                     </div>
                 </div>
 
-                <div id="selectedList" class="hidden p-6 pt-2 space-y-3"></div>
+                <div id="selectedList" class="hidden space-y-3 p-6 pt-2"></div>
 
-                <div class="p-6 border-t border-slate-200">
+                <div class="border-t border-slate-200 p-6">
                     <button id="removeSelectedBtn"
-                        class="w-full h-12 rounded-2xl border border-slate-200 text-slate-400 bg-slate-50 font-medium flex items-center justify-center gap-2 cursor-not-allowed"
+                        class="inline-flex h-12 w-full cursor-not-allowed items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 font-medium text-slate-400"
                         disabled>
-                        <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M3 6h18" />
                             <path d="M8 6V4h8v2" />
                             <path d="M19 6l-1 14H6L5 6" />
@@ -235,27 +265,130 @@
                 </div>
             </div>
         </section>
+
+        <!-- TABELA DE GRUPOS -->
+        <section class="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div
+                class="flex flex-col gap-4 border-b border-slate-200 p-6 md:flex-row md:items-center md:justify-between">
+                <div>
+                    <h2 class="text-xl font-semibold text-slate-800">Grupos de procedimentos</h2>
+                    <p class="text-sm text-slate-500">Lista enxuta com as informações principais.</p>
+                </div>
+
+                <div class="relative w-full md:w-80">
+                    <input id="groupSearch" type="search" placeholder="Buscar grupo..."
+                        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2 pr-10 text-sm outline-none transition focus:border-[#1b9a84] focus:ring-2 focus:ring-[#1b9a84]/15"
+                        aria-label="Buscar grupo" />
+                    <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                        viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                            d="M8.5 3a5.5 5.5 0 104.23 9.02l3.13 3.13 1.41-1.41-3.13-3.13A5.5 5.5 0 008.5 3zm0 2a3.5 3.5 0 110 7 3.5 3.5 0 010-7z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr class="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            <th class="px-4 py-3">Nome do Grupo</th>
+                            <th class="px-4 py-3">Código</th>
+                            <th class="px-4 py-3">Qtd. de Procedimentos</th>
+                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3 text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="groupTableBody" class="divide-y divide-slate-100">
+                        <tr data-name="Consulta Clínica" data-code="GRP-001">
+                            <td class="px-4 py-3 text-sm font-medium text-slate-900">Consulta Clínica</td>
+                            <td class="px-4 py-3 text-sm text-slate-600">GRP-001</td>
+                            <td class="px-4 py-3 text-sm text-slate-600">12</td>
+                            <td class="px-4 py-3">
+                                <span
+                                    class="inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">Ativo</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex justify-end gap-2">
+                                    <button type="button"
+                                        class="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                                        title="Editar grupo" aria-label="Editar grupo">
+                                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path
+                                                d="M13.586 3a2 2 0 012.828 2.828l-8.5 8.5-3.364.707.707-3.364 8.329-8.671z" />
+                                        </svg>
+                                    </button>
+
+                                    <button type="button"
+                                        class="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border border-rose-200 text-rose-600 transition hover:bg-rose-50 hover:text-rose-700"
+                                        title="Excluir grupo" aria-label="Excluir grupo" data-delete>
+                                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path
+                                                d="M6 7h8l-.5 9a2 2 0 01-2 2h-3a2 2 0 01-2-2L6 7zm3-4h2a1 1 0 011 1v1h4a1 1 0 110 2H4a1 1 0 110-2h4V4a1 1 0 011-1z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </main>
 
-    <div class="fixed bottom-6 right-6 z-50 flex gap-3">
+    <!-- <div class="fixed bottom-6 right-6 z-50 flex gap-3">
         <button id="cancelBtn"
-            class="h-12 px-5 rounded-2xl bg-white border border-slate-200 text-slate-700 font-semibold shadow-sm hover:bg-slate-50 transition flex items-center gap-2">
-            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
+            class="inline-flex h-12 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 6 6 18M6 6l12 12" />
             </svg>
             <span>Cancelar</span>
         </button>
 
         <button id="confirmBtn"
-            class="h-12 px-5 rounded-2xl bg-[#1b9a84] text-white font-semibold shadow-lg shadow-[#1b9a84]/20 hover:bg-[#178a77] transition flex items-center gap-2">
-            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5">
+            class="inline-flex h-12 items-center gap-2 rounded-2xl bg-[#1b9a84] px-5 font-semibold text-white shadow-lg shadow-[#1b9a84]/20 transition hover:bg-[#178a77] active:bg-[#136d60]">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5">
                 <path d="m5 13 4 4L19 7" />
             </svg>
             <span>Confirmar grupo</span>
         </button>
-    </div>
+    </div> -->
 
-    <div id="toast" class="toast hidden"></div>
+    <button id="confirmBtn"
+        class="inline-flex h-12 items-center gap-2 rounded-2xl bg-[#1b9a84] px-5 font-semibold text-white shadow-lg shadow-[#1b9a84]/20 transition hover:bg-[#178a77] active:bg-[#136d60] disabled:cursor-not-allowed disabled:opacity-70">
+        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="m5 13 4 4L19 7" />
+        </svg>
+        <span class="btn-label">Confirmar grupo</span>
+        <svg class="btn-spinner hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+        </svg>
+    </button>
+
+    <!-- Toasts -->
+    <div id="toastArea" class="fixed right-4 top-4 z-50 space-y-3"></div>
+
+    <!-- Modal de exclusão -->
+    <dialog id="deleteModal" class="w-full max-w-md rounded-2xl p-0 backdrop:bg-slate-900/50">
+        <div class="rounded-2xl bg-white p-6">
+            <h2 class="text-lg font-semibold text-slate-900">Confirmar exclusão</h2>
+            <p class="mt-2 text-sm text-slate-600">
+                Essa ação irá excluir permanentemente o grupo selecionado e pode impactar procedimentos vinculados.
+            </p>
+
+            <div class="mt-6 flex justify-end gap-3">
+                <button id="btnCancelDelete" type="button"
+                    class="rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                    Cancelar
+                </button>
+                <button id="btnConfirmDelete" type="button"
+                    class="inline-flex items-center justify-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-700">
+                    Confirmar Exclusão
+                </button>
+            </div>
+        </div>
+    </dialog>
+
     <script src="grupo-procedimentos.js"></script>
 </body>
 

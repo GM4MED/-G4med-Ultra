@@ -62,64 +62,109 @@ const removeSelectedBtn = document.getElementById('removeSelectedBtn');
 const addSelectedBtn = document.getElementById('addSelectedBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const confirmBtn = document.getElementById('confirmBtn');
-const toast = document.getElementById('toast');
+const toastArea = document.getElementById('toastArea');
 const search = document.getElementById('procedureSearch');
 
 function iconWrap(svg) {
     return `
     <div class="proc-ico bg-[#eef8f5] text-[#1b9a84]">
-      <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         ${svg}
       </svg>
     </div>
   `;
 }
 
-function toastMsg(msg) {
-    toast.textContent = msg;
-    toast.classList.remove('hidden');
-    toast.classList.add('opacity-100');
+function setLoading(button, loading, loadingText = 'Processando...') {
+    if (!button) return;
+
+    const label = button.querySelector('.btn-label');
+    const spinner = button.querySelector('.btn-spinner');
+
+    button.disabled = loading;
+
+    if (label) {
+        if (!button.dataset.originalLabel) {
+            button.dataset.originalLabel = label.textContent;
+        }
+        label.textContent = loading ? loadingText : button.dataset.originalLabel;
+    }
+
+    if (spinner) spinner.classList.toggle('hidden', !loading);
+}
+
+function showToast(message, type = 'info') {
+    if (!toastArea) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    toast.textContent = message;
+
+    toastArea.appendChild(toast);
+
+    requestAnimationFrame(() => {
+        toast.classList.remove('hidden');
+    });
 
     clearTimeout(window.__toastTimer);
     window.__toastTimer = setTimeout(() => {
         toast.classList.add('hidden');
+        setTimeout(() => toast.remove(), 250);
     }, 2200);
 }
 
 function renderFrequent(filter = '') {
     frequentGrid.innerHTML = '';
 
-    procedures
-        .filter(p => p.name.toLowerCase().includes(filter.toLowerCase()))
-        .forEach(p => {
-            const btn = document.createElement('button');
-            btn.className = 'procedure-card';
-            btn.dataset.id = p.id;
+    const filtered = procedures.filter((p) =>
+        p.name.toLowerCase().includes(filter.toLowerCase()) ||
+        p.sub.toLowerCase().includes(filter.toLowerCase())
+    );
 
+    if (!filtered.length) {
+        frequentGrid.innerHTML = `
+      <div class="col-span-full rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-500">
+        Nenhum procedimento encontrado.
+      </div>
+    `;
+        return;
+    }
+
+    filtered.forEach((p) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'procedure-card';
+        btn.dataset.id = p.id;
+        btn.dataset.procedure = p.name;
+
+        const isSelected = state.frequent.has(p.id);
+        if (isSelected) btn.classList.add('selected');
+
+        btn.innerHTML = `
+      ${iconWrap(p.icon)}
+      <div class="min-w-0 flex-1">
+        <div class="proc-title">${p.name}</div>
+        <div class="proc-sub">${p.sub}</div>
+      </div>
+      <div class="text-slate-300">${isSelected ? '✓' : '+'}</div>
+    `;
+
+        btn.setAttribute('aria-pressed', String(isSelected));
+        btn.title = isSelected ? `Remover ${p.name}` : `Adicionar ${p.name}`;
+
+        btn.addEventListener('click', () => {
             if (state.frequent.has(p.id)) {
-                btn.classList.add('selected');
+                state.frequent.delete(p.id);
+            } else {
+                state.frequent.add(p.id);
             }
-
-            btn.innerHTML = `
-        ${iconWrap(p.icon)}
-        <div class="flex-1 min-w-0">
-          <div class="proc-title">${p.name}</div>
-          <div class="proc-sub">${p.sub}</div>
-        </div>
-        <div class="text-slate-300">${state.frequent.has(p.id) ? '✓' : '+'}</div>
-      `;
-
-            btn.addEventListener('click', () => {
-                if (state.frequent.has(p.id)) {
-                    state.frequent.delete(p.id);
-                } else {
-                    state.frequent.add(p.id);
-                }
-                renderFrequent(search.value);
-            });
-
-            frequentGrid.appendChild(btn);
+            renderFrequent(search.value);
         });
+
+        frequentGrid.appendChild(btn);
+    });
 }
 
 function renderSelected() {
@@ -129,21 +174,27 @@ function renderSelected() {
     if (items.length === 0) {
         selectedState.classList.remove('hidden');
         selectedList.classList.add('hidden');
+        selectedList.innerHTML = '';
     } else {
         selectedState.classList.add('hidden');
         selectedList.classList.remove('hidden');
         selectedList.innerHTML = '';
 
-        items.forEach(item => {
+        items.forEach((item) => {
             const row = document.createElement('div');
             row.className = 'selected-item';
             row.innerHTML = `
-        <div>
+        <div class="min-w-0">
           <div class="font-semibold text-slate-800">${item.name}</div>
           <div class="text-sm text-slate-500">${item.sub}</div>
         </div>
-        <button class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 flex items-center justify-center text-slate-500" aria-label="Remover ${item.name}">
-          <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2">
+        <button
+          type="button"
+          class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-rose-50 hover:text-rose-600"
+          aria-label="Remover ${item.name}"
+          title="Remover ${item.name}"
+        >
+          <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 6h18"/>
             <path d="M8 6V4h8v2"/>
             <path d="M19 6l-1 14H6L5 6"/>
@@ -155,6 +206,7 @@ function renderSelected() {
             row.querySelector('button').addEventListener('click', () => {
                 state.selected.delete(item.id);
                 renderSelected();
+                showToast('Procedimento removido do grupo.', 'info');
             });
 
             selectedList.appendChild(row);
@@ -163,23 +215,31 @@ function renderSelected() {
 
     removeSelectedBtn.disabled = items.length === 0;
     removeSelectedBtn.className = items.length === 0
-        ? 'w-full h-12 rounded-2xl border border-slate-200 text-slate-400 bg-slate-50 font-medium flex items-center justify-center gap-2 cursor-not-allowed'
-        : 'w-full h-12 rounded-2xl border border-rose-200 text-rose-600 bg-rose-50 font-medium flex items-center justify-center gap-2 hover:bg-rose-100 transition';
+        ? 'inline-flex h-12 w-full cursor-not-allowed items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 font-medium text-slate-400'
+        : 'inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 font-medium text-rose-600 transition hover:bg-rose-100';
 }
 
 function addFrequent() {
-    state.frequent.forEach(id => {
-        const p = procedures.find(x => x.id === id);
-        if (p) state.selected.set(p.id, p);
-    });
-
-    state.frequent.clear();
-    renderFrequent(search.value);
-    renderSelected();
-
-    if (state.selected.size) {
-        toastMsg('Procedimentos adicionados ao grupo.');
+    if (!state.frequent.size) {
+        showToast('Selecione ao menos um procedimento para adicionar.', 'error');
+        return;
     }
+
+    setLoading(addSelectedBtn, true, 'Adicionando...');
+
+    setTimeout(() => {
+        state.frequent.forEach((id) => {
+            const p = procedures.find((x) => x.id === id);
+            if (p) state.selected.set(p.id, p);
+        });
+
+        state.frequent.clear();
+        renderFrequent(search.value);
+        renderSelected();
+
+        setLoading(addSelectedBtn, false);
+        showToast('Procedimentos adicionados ao grupo.', 'success');
+    }, 900);
 }
 
 function clearAll() {
@@ -189,47 +249,41 @@ function clearAll() {
     renderSelected();
 }
 
-search.addEventListener('input', e => {
+search.addEventListener('input', (e) => {
     renderFrequent(e.target.value);
 });
 
 addSelectedBtn.addEventListener('click', addFrequent);
 
 removeSelectedBtn.addEventListener('click', () => {
-    if (state.selected.size > 0) {
-        state.selected.clear();
-        renderSelected();
-        toastMsg('Procedimentos removidos.');
+    if (!state.selected.size) {
+        showToast('Não há procedimentos para remover.', 'error');
+        return;
     }
+
+    state.selected.clear();
+    renderSelected();
+    showToast('Procedimentos removidos.', 'success');
 });
 
 cancelBtn.addEventListener('click', () => {
     clearAll();
-    toastMsg('Seleções limpas.');
+    showToast('Seleções limpas.', 'info');
 });
 
 confirmBtn.addEventListener('click', () => {
     if (!state.selected.size) {
-        toastMsg('Adicione procedimentos antes de confirmar.');
+        showToast('Adicione procedimentos antes de confirmar.', 'error');
         return;
     }
 
-    toastMsg('Grupo de procedimentos criado com sucesso!');
-});
+    setLoading(confirmBtn, true, 'Confirmando...');
 
-document.getElementById('toast').style.cssText = `
-  position:fixed;
-  left:50%;
-  bottom:24px;
-  transform:translateX(-50%);
-  background:#0f172a;
-  color:#fff;
-  padding:14px 18px;
-  border-radius:14px;
-  box-shadow:0 12px 30px rgba(15,23,42,.18);
-  z-index:60;
-  transition:.25s;
-`;
+    setTimeout(() => {
+        setLoading(confirmBtn, false);
+        showToast('Grupo de procedimentos criado com sucesso!', 'success');
+    }, 1100);
+});
 
 renderFrequent();
 renderSelected();
