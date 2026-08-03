@@ -37,9 +37,6 @@
                 <button id="btnProximo" class="btn btn-dark" disabled>
                     Próximo <i class="fas fa-chevron-right"></i>
                 </button>
-                <!-- <button id="btnSair" class="btn btn-dark" onclick="window.location.href='index.html'">
-                    <i class="fas fa-sign-out-alt"></i> Sair
-                </button> -->
                 <button id="btnSair" class="btn btn-dark" onclick="window.location.href='../Menu-Principal.html'">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </button>
@@ -59,16 +56,17 @@
                         <div id="dados-exame" class="tab-content active">
                             <div class="form-grid">
                                 <div class="form-group col-2">
-                                    <label>Código ID</label>
+                                    <label for="exameId">Código ID</label>
                                     <input type="text" id="exameId" readonly placeholder="Auto">
                                 </div>
                                 <div class="form-group col-10">
-                                    <label>Nome do Exame</label>
-                                    <input type="text" id="nomeExame" class="uppercase" disabled required>
+                                    <label for="nomeExame">Nome do Exame</label>
+                                    <input type="text" id="nomeExame" class="uppercase" disabled required
+                                        autocomplete="off">
                                 </div>
 
                                 <div class="form-group col-6">
-                                    <label>Categoria</label>
+                                    <label for="categoriaExame">Categoria</label>
                                     <select id="categoriaExame" disabled>
                                         <option value="">Selecione...</option>
                                         <option value="01">01 - Cardiologia</option>
@@ -90,7 +88,7 @@
                                 </div>
 
                                 <div class="form-group col-6">
-                                    <label>Tipo de Exame</label>
+                                    <label for="tipoExame">Tipo de Exame</label>
                                     <select id="tipoExame" disabled>
                                         <option value="">Selecione...</option>
                                         <option value="01">01 - Laboratorial</option>
@@ -104,7 +102,7 @@
                                         <option value="09">09 - Otorrinolaringológico</option>
                                         <option value="10">10 - Funcional</option>
                                         <option value="11">11 - Procedimento</option>
-                                        <option value="12">12 - Antomopatológico</option>
+                                        <option value="12">12 - Anatomopatológico</option>
                                         <option value="13">13 - Citológico</option>
                                     </select>
                                 </div>
@@ -118,27 +116,27 @@
                                     <h3 class="section-title">Dados do Convênio Vinculado</h3>
                                 </div>
                                 <div class="form-group col-2">
-                                    <label>Código ID</label>
+                                    <label for="convenioId">Código ID</label>
                                     <input type="text" id="convenioId" disabled>
                                 </div>
                                 <div class="form-group col-6">
-                                    <label>Nome do Convênio</label>
+                                    <label for="nomeConvenio">Nome do Convênio</label>
                                     <input type="text" id="nomeConvenio" disabled>
                                 </div>
                                 <div class="form-group col-4">
-                                    <label>Registro ANS</label>
+                                    <label for="registroAns">Registro ANS</label>
                                     <input type="text" id="registroAns" disabled>
                                 </div>
                                 <div class="form-group col-4">
-                                    <label>CNPJ</label>
+                                    <label for="cnpjConvenio">CNPJ</label>
                                     <input type="text" id="cnpjConvenio" disabled>
                                 </div>
                                 <div class="form-group col-4">
-                                    <label>Telefone</label>
+                                    <label for="telConvenio">Telefone</label>
                                     <input type="text" id="telConvenio" disabled>
                                 </div>
                                 <div class="form-group col-4">
-                                    <label>E-mail</label>
+                                    <label for="emailConvenio">E-mail</label>
                                     <input type="email" id="emailConvenio" disabled>
                                 </div>
 
@@ -146,19 +144,19 @@
                                     <h3 class="section-title">Valores e Status</h3>
                                 </div>
                                 <div class="form-group col-3">
-                                    <label>Valor Particular</label>
+                                    <label for="valorParticular">Valor Particular</label>
                                     <input type="text" id="valorParticular" placeholder="R$ 0,00" disabled>
                                 </div>
                                 <div class="form-group col-3">
-                                    <label>Valor Convênio</label>
+                                    <label for="valorConvenio">Valor Convênio</label>
                                     <input type="text" id="valorConvenio" placeholder="R$ 0,00" disabled>
                                 </div>
                                 <div class="form-group col-3">
-                                    <label>Custo Interno</label>
+                                    <label for="custoInterno">Custo Interno</label>
                                     <input type="text" id="custoInterno" placeholder="R$ 0,00" disabled>
                                 </div>
                                 <div class="form-group col-3">
-                                    <label>Status</label>
+                                    <label for="statusExame">Status</label>
                                     <select id="statusExame" disabled>
                                         <option value="A">Ativo</option>
                                         <option value="I">Inativo</option>
@@ -182,12 +180,12 @@
                     <table id="tabelaExames">
                         <thead>
                             <tr>
-                                <th width="80">ID</th>
+                                <th style="width: 80px;">ID</th>
                                 <th>Nome do Exame</th>
-                                <th width="200">Categoria</th>
-                                <th width="150">Tipo</th>
-                                <th width="100">Valor Part.</th>
-                                <th width="100">Status</th>
+                                <th style="width: 200px;">Categoria</th>
+                                <th style="width: 150px;">Tipo</th>
+                                <th style="width: 100px;">Valor Part.</th>
+                                <th style="width: 100px;">Status</th>
                             </tr>
                         </thead>
                         <tbody id="corpoTabelaExames">
