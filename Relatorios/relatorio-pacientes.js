@@ -1,497 +1,855 @@
-/* =========================================================
-   G4MED · Relatório de Pacientes · BI · JS
-   ========================================================= */
 (() => {
     'use strict';
-    const $ = (s, r = document) => r.querySelector(s);
-    const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
-    /* ============ DATA ============ */
-    const COLORS = {
-        brand: '#4f46e5', brand2: '#6366f1', purple: '#8b5cf6', cyan: '#06b6d4',
-        ok: '#10b981', warn: '#f59e0b', danger: '#ef4444', info: '#0284c7', rose: '#f43f5e',
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+    const state = {
+        theme: localStorage.getItem('g4med-theme') || document.documentElement.dataset.theme || 'light',
+        period: '30',
+        chartNovosMode: 'bar',
+        chartEvolucaoMetric: 'all',
+        search: '',
+        filters: {
+            from: '',
+            to: '',
+            unit: '',
+            insurance: '',
+            ageRange: '',
+            origin: ''
+        }
     };
 
-    const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const COLORS = {
+        brand: '#4f46e5',
+        brand2: '#6366f1',
+        purple: '#8b5cf6',
+        cyan: '#06b6d4',
+        ok: '#10b981',
+        warn: '#f59e0b',
+        danger: '#ef4444',
+        info: '#0284c7',
+        rose: '#f43f5e',
+        ink3: '#94a3b8'
+    };
 
-    const NEW_PATIENTS = [342, 368, 401, 389, 425, 448, 462, 471, 489, 512, 498, 487];
-    const TARGET = [350, 370, 390, 410, 430, 450, 470, 490, 510, 530, 550, 570];
+    const CHARTS = {};
 
-    const SEXO = [
-        { label: 'Feminino', value: 58, color: COLORS.rose },
-        { label: 'Masculino', value: 40, color: COLORS.brand },
-        { label: 'Outro', value: 2, color: COLORS.purple },
-    ];
+    const DATA = {
+        sexo: [
+            { label: 'Feminino', value: 56, color: COLORS.rose },
+            { label: 'Masculino', value: 42, color: COLORS.brand },
+            { label: 'Outro/Não informado', value: 2, color: COLORS.info }
+        ],
+        convenios: [
+            { label: 'Particular', value: 34, color: COLORS.brand },
+            { label: 'Unimed', value: 24, color: COLORS.cyan },
+            { label: 'Bradesco Saúde', value: 14, color: COLORS.purple },
+            { label: 'SulAmérica', value: 11, color: COLORS.rose },
+            { label: 'Amil', value: 9, color: COLORS.warn },
+            { label: 'Outros', value: 8, color: COLORS.info }
+        ],
+        cidades: [
+            { name: 'Goiânia', value: 38, color: COLORS.brand },
+            { name: 'Aparecida de Goiânia', value: 21, color: COLORS.cyan },
+            { name: 'Anápolis', value: 14, color: COLORS.purple },
+            { name: 'Trindade', value: 9, color: COLORS.ok },
+            { name: 'Senador Canedo', value: 8, color: COLORS.warn },
+            { name: 'Inhumas', value: 5, color: COLORS.rose },
+            { name: 'Outras', value: 5, color: COLORS.info }
+        ],
+        conveniosBreakdown: [
+            { name: 'Particular', patients: 4260, new: 312, ret: 69.2, age: 37, ltv: 3240, delta: 12.4, trend: [15, 18, 20, 24, 21, 25, 28, 30, 33, 31, 35, 38] },
+            { name: 'Unimed', patients: 3120, new: 198, ret: 66.8, age: 39, ltv: 2810, delta: 8.7, trend: [18, 17, 19, 22, 23, 24, 26, 27, 28, 29, 31, 33] },
+            { name: 'Bradesco Saúde', patients: 1860, new: 121, ret: 64.4, age: 41, ltv: 2950, delta: 5.1, trend: [10, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 24] },
+            { name: 'Amil', patients: 1220, new: 94, ret: 62.1, age: 36, ltv: 2360, delta: -1.8, trend: [8, 9, 10, 11, 11, 10, 12, 13, 13, 12, 11, 12] },
+            { name: 'SulAmérica', patients: 980, new: 71, ret: 60.7, age: 43, ltv: 2580, delta: 3.4, trend: [6, 8, 8, 9, 10, 10, 11, 11, 12, 13, 13, 14] },
+            { name: 'Outros', patients: 1407, new: 112, ret: 58.9, age: 38, ltv: 1980, delta: 2.2, trend: [7, 7, 8, 9, 10, 10, 10, 11, 11, 12, 12, 13] }
+        ],
+        rankPatients: [
+            { name: 'Maria Oliveira', conv: 'Particular', consultas: 28, lastVisit: '12 dias', ltv: 12400, nps: 9.8, score: 96, initials: 'MO' },
+            { name: 'João Silva', conv: 'Unimed', consultas: 24, lastVisit: '18 dias', ltv: 10800, nps: 9.5, score: 93, initials: 'JS' },
+            { name: 'Ana Costa', conv: 'Bradesco Saúde', consultas: 22, lastVisit: '6 dias', ltv: 10220, nps: 9.7, score: 92, initials: 'AC' },
+            { name: 'Paulo Santos', conv: 'Amil', consultas: 19, lastVisit: '21 dias', ltv: 9210, nps: 9.1, score: 88, initials: 'PS' },
+            { name: 'Fernanda Lima', conv: 'SulAmérica', consultas: 18, lastVisit: '9 dias', ltv: 8740, nps: 9.3, score: 87, initials: 'FL' },
+            { name: 'Ricardo Alves', conv: 'Particular', consultas: 17, lastVisit: '27 dias', ltv: 8190, nps: 9.0, score: 85, initials: 'RA' },
+            { name: 'Camila Rocha', conv: 'Unimed', consultas: 16, lastVisit: '14 dias', ltv: 7920, nps: 9.2, score: 84, initials: 'CR' },
+            { name: 'Bruno Pereira', conv: 'Particular', consultas: 15, lastVisit: '23 dias', ltv: 7600, nps: 8.9, score: 82, initials: 'BP' },
+            { name: 'Mariana Souza', conv: 'Outros', consultas: 14, lastVisit: '11 dias', ltv: 7050, nps: 9.4, score: 81, initials: 'MS' },
+            { name: 'Lucas Ferreira', conv: 'Amil', consultas: 13, lastVisit: '30 dias', ltv: 6620, nps: 8.8, score: 78, initials: 'LF' },
+            { name: 'Patrícia Gomes', conv: 'Bradesco Saúde', consultas: 12, lastVisit: '16 dias', ltv: 6410, nps: 9.1, score: 77, initials: 'PG' },
+            { name: 'Thiago Martins', conv: 'SulAmérica', consultas: 11, lastVisit: '19 dias', ltv: 6120, nps: 8.7, score: 75, initials: 'TM' }
+        ]
+    };
 
-    const CONVENIOS = [
-        { name: 'Particular', value: 2840, perc: 22.1, age: 36, ltv: 3120, ret: 72, delta: 9.4, color: COLORS.brand, trend: [180, 192, 204, 216, 228, 238, 248, 258, 268, 278, 284, 290] },
-        { name: 'Unimed', value: 3210, perc: 25.0, age: 39, ltv: 2480, ret: 74, delta: 6.2, color: COLORS.cyan, trend: [210, 218, 228, 238, 248, 256, 264, 272, 280, 286, 292, 298] },
-        { name: 'Bradesco Saúde', value: 1980, perc: 15.4, age: 41, ltv: 2780, ret: 68, delta: 4.8, color: COLORS.purple, trend: [150, 158, 164, 170, 176, 182, 188, 194, 198, 204, 208, 212] },
-        { name: 'SulAmérica', value: 1420, perc: 11.1, age: 38, ltv: 2540, ret: 66, delta: 11.2, color: COLORS.rose, trend: [100, 108, 116, 124, 132, 138, 144, 150, 156, 162, 168, 172] },
-        { name: 'Amil', value: 1180, perc: 9.2, age: 40, ltv: 2220, ret: 62, delta: -2.1, color: COLORS.warn, trend: [110, 112, 116, 118, 116, 118, 114, 116, 118, 116, 114, 112] },
-        { name: 'NotreDame', value: 842, perc: 6.6, age: 37, ltv: 2140, ret: 64, delta: 8.3, color: COLORS.ok, trend: [58, 62, 66, 70, 74, 76, 80, 82, 84, 86, 88, 90] },
-        { name: 'Hapvida', value: 684, perc: 5.3, age: 42, ltv: 1840, ret: 58, delta: 5.7, color: COLORS.info, trend: [50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72] },
-        { name: 'Outros', value: 691, perc: 5.4, age: 39, ltv: 2080, ret: 60, delta: 3.2, color: COLORS.danger, trend: [54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 72, 74] },
-    ];
+    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const novosReal = [210, 245, 268, 289, 301, 322, 340, 355, 372, 390, 0, 0];
+    const novosMeta = [200, 230, 250, 275, 290, 310, 320, 340, 360, 380, 400, 420];
+    const novosPrev = [180, 195, 212, 230, 244, 255, 266, 280, 290, 301, 315, 330];
 
-    const FAIXAS = [
-        { label: '0-12', fem: 284, mas: 312 },
-        { label: '13-17', fem: 198, mas: 212 },
-        { label: '18-29', fem: 1420, mas: 1180 },
-        { label: '30-44', fem: 2680, mas: 2120 },
-        { label: '45-59', fem: 1842, mas: 1418 },
-        { label: '60+', fem: 1064, mas: 317 },
-    ];
+    const getCanvas = id => {
+        const el = document.getElementById(id);
+        return el ? el.getContext('2d') : null;
+    };
 
-    const ORIGENS = ['Indicação', 'Google', 'Instagram', 'Convênio', 'Site', 'Retorno'];
-
-    const CITIES = [
-        { name: 'São Paulo · SP', value: 42, color: COLORS.brand },
-        { name: 'Guarulhos · SP', value: 14, color: COLORS.cyan },
-        { name: 'Osasco · SP', value: 11, color: COLORS.purple },
-        { name: 'Santo André · SP', value: 9, color: COLORS.rose },
-        { name: 'Barueri · SP', value: 8, color: COLORS.warn },
-        { name: 'Outros', value: 16, color: COLORS.info },
-    ];
-
-    const TOP_PATIENTS = [
-        { name: 'Maria Silva Santos', ins: 'Particular', visits: 42, last: 'há 3 dias', ltv: 18420, nps: 9.8 },
-        { name: 'João Pedro Almeida', ins: 'Unimed', visits: 38, last: 'há 1 sem', ltv: 16280, nps: 9.6 },
-        { name: 'Ana Beatriz Costa', ins: 'Bradesco Saúde', visits: 36, last: 'há 2 dias', ltv: 15640, nps: 9.7 },
-        { name: 'Carlos Eduardo Lima', ins: 'Particular', visits: 34, last: 'há 5 dias', ltv: 14820, nps: 9.4 },
-        { name: 'Fernanda Ribeiro', ins: 'SulAmérica', visits: 32, last: 'há 12 dias', ltv: 13980, nps: 9.5 },
-        { name: 'Roberto Mendes', ins: 'Unimed', visits: 30, last: 'há 1 dia', ltv: 13420, nps: 9.3 },
-        { name: 'Patrícia Oliveira', ins: 'Particular', visits: 29, last: 'há 8 dias', ltv: 12960, nps: 9.6 },
-        { name: 'Lucas Henrique Souza', ins: 'Amil', visits: 27, last: 'há 4 dias', ltv: 11840, nps: 9.2 },
-        { name: 'Camila Andrade', ins: 'Particular', visits: 26, last: 'há 2 sem', ltv: 11420, nps: 9.5 },
-        { name: 'Bruno Castro Vieira', ins: 'NotreDame', visits: 25, last: 'há 6 dias', ltv: 10840, nps: 9.1 },
-        { name: 'Juliana Pereira', ins: 'Unimed', visits: 24, last: 'há 9 dias', ltv: 10420, nps: 9.4 },
-        { name: 'Marcelo Torres', ins: 'Bradesco Saúde', visits: 23, last: 'há 3 sem', ltv: 9980, nps: 9.0 },
-    ];
-
-    const charts = {};
-    const ctx = id => $('#' + id).getContext('2d');
-
-    /* ============ CHART DEFAULTS ============ */
-    function cfgChart() {
+    function applyChartDefaults() {
         const dark = document.documentElement.dataset.theme === 'dark';
-        Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+        Chart.defaults.font.family = "'Plus Jakarta Sans', system-ui, sans-serif";
         Chart.defaults.font.size = 12;
         Chart.defaults.color = dark ? '#94a3b8' : '#64748b';
-        Chart.defaults.borderColor = dark ? 'rgba(255,255,255,.06)' : 'rgba(15,23,42,.06)';
+        Chart.defaults.borderColor = dark ? 'rgba(255,255,255,.08)' : 'rgba(15,23,42,.08)';
     }
 
-    const tooltip = {
+    function destroyChart(key) {
+        if (CHARTS[key]) {
+            CHARTS[key].destroy();
+            CHARTS[key] = null;
+        }
+    }
+
+    const tooltipBase = {
         enabled: true,
         backgroundColor: 'rgba(15,23,42,.95)',
-        titleColor: '#fff', titleFont: { weight: 700, size: 12.5 },
-        bodyColor: '#e2e8f0', bodyFont: { size: 12 },
-        padding: 12, cornerRadius: 10, boxPadding: 6, displayColors: true, usePointStyle: true,
-        borderColor: 'rgba(255,255,255,.08)', borderWidth: 1,
+        titleColor: '#fff',
+        bodyColor: '#e2e8f0',
+        borderColor: 'rgba(255,255,255,.08)',
+        borderWidth: 1,
+        padding: 12,
+        cornerRadius: 10,
+        boxPadding: 6,
+        displayColors: true,
+        usePointStyle: true,
+        titleFont: { weight: '700', size: 12.5 },
+        bodyFont: { size: 12 }
     };
 
-    /* ============ CHART: NOVOS PACIENTES ============ */
-    function chartNovosPacientes(mode = 'bar') {
-        const c = ctx('chartNovosPacientes');
-        const grad = c.createLinearGradient(0, 0, 0, 300);
+    function createChartNovos(mode = state.chartNovosMode) {
+        const ctx = getCanvas('chartNovosPacientes');
+        if (!ctx) return;
+        destroyChart('novos');
+
+        const grad = ctx.createLinearGradient(0, 0, 0, 300);
         grad.addColorStop(0, COLORS.brand);
         grad.addColorStop(1, COLORS.cyan);
 
-        const gradFill = c.createLinearGradient(0, 0, 0, 300);
-        gradFill.addColorStop(0, 'rgba(79,70,229,.35)');
-        gradFill.addColorStop(1, 'rgba(79,70,229,0)');
+        const datasets = [];
+        if (mode === 'bar') {
+            datasets.push({
+                label: 'Novos',
+                data: novosReal,
+                backgroundColor: grad,
+                borderRadius: 8,
+                maxBarThickness: 32
+            });
+        } else {
+            datasets.push({
+                label: 'Novos',
+                data: novosReal,
+                borderColor: COLORS.brand,
+                backgroundColor: 'rgba(79,70,229,.15)',
+                fill: true,
+                tension: .4,
+                borderWidth: 3,
+                pointRadius: 5,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: COLORS.brand,
+                pointBorderWidth: 2
+            });
+        }
 
-        charts.novos?.destroy();
-        charts.novos = new Chart(c, {
-            type: mode === 'line' ? 'line' : 'bar',
-            data: {
-                labels: MONTHS,
-                datasets: mode === 'line'
-                    ? [
-                        { label: 'Novos pacientes', data: NEW_PATIENTS, borderColor: COLORS.brand, backgroundColor: gradFill, fill: true, tension: .4, borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', pointBorderColor: COLORS.brand, pointBorderWidth: 2, pointHoverRadius: 6 },
-                        { label: 'Meta', data: TARGET, borderColor: COLORS.ok, borderDash: [6, 4], borderWidth: 2, pointRadius: 0, tension: .4, fill: false }
-                    ]
-                    : [
-                        { label: 'Novos pacientes', data: NEW_PATIENTS, backgroundColor: grad, borderRadius: 8, maxBarThickness: 32 },
-                        { label: 'Meta', data: TARGET, type: 'line', borderColor: COLORS.ok, borderDash: [6, 4], borderWidth: 2, pointRadius: 0, tension: .4, fill: false }
-                    ]
-            },
+        datasets.push({
+            label: 'Meta',
+            data: novosMeta,
+            borderColor: COLORS.ok,
+            borderDash: [6, 4],
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: .4,
+            fill: false
+        });
+
+        CHARTS.novos = new Chart(ctx, {
+            type: mode === 'bar' ? 'bar' : 'line',
+            data: { labels: months, datasets },
             options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { font: { size: 11.5 }, usePointStyle: true, padding: 12, boxWidth: 8 } }, tooltip },
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { font: { size: 12 }, usePointStyle: true, padding: 14, boxWidth: 8 }
+                    },
+                    tooltip: tooltipBase
+                },
                 scales: {
-                    x: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 11.5, weight: 600 } } },
+                    x: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 11.5 } } },
                     y: { grid: { color: 'rgba(15,23,42,.05)' }, border: { display: false }, beginAtZero: true, ticks: { font: { size: 11 } } }
                 }
             }
         });
     }
 
-    /* ============ CHART: SEXO DOUGHNUT ============ */
-    function chartSexoPacientes() {
-        charts.sexo?.destroy();
-        charts.sexo = new Chart(ctx('chartSexoPacientes'), {
+    function createSexoChart() {
+        const ctx = getCanvas('chartSexoPacientes');
+        if (!ctx) return;
+        destroyChart('sexo');
+
+        CHARTS.sexo = new Chart(ctx, {
             type: 'doughnut',
-            data: { labels: SEXO.map(s => s.label), datasets: [{ data: SEXO.map(s => s.value), backgroundColor: SEXO.map(s => s.color), borderWidth: 0, spacing: 3, hoverOffset: 8 }] },
+            data: {
+                labels: DATA.sexo.map(s => s.label),
+                datasets: [{
+                    data: DATA.sexo.map(s => s.value),
+                    backgroundColor: DATA.sexo.map(s => s.color),
+                    borderWidth: 0,
+                    spacing: 3,
+                    hoverOffset: 8
+                }]
+            },
             options: {
-                responsive: true, maintainAspectRatio: false, cutout: '72%',
-                plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: c => ` ${c.label}: ${c.parsed}%` } } }
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        ...tooltipBase,
+                        callbacks: {
+                            label: c => ` ${c.label}: ${c.parsed}%`
+                        }
+                    }
+                }
             }
         });
-        $('#legendSexo').innerHTML = SEXO.map(s => `<span class="legend-item"><span class="sw" style="background:${s.color}"></span>${s.label} <b style="margin-left:6px;color:var(--ink);font-weight:700">${s.value}%</b></span>`).join('');
+
+        const legend = document.getElementById('legendSexo');
+        if (legend) {
+            legend.innerHTML = DATA.sexo.map(s => `
+        <span class="legend-item">
+          <span class="sw" style="background:${s.color}"></span>
+          ${s.label}
+          <b style="margin-left:6px;color:var(--ink);font-weight:700">${s.value}%</b>
+        </span>
+      `).join('');
+        }
     }
 
-    /* ============ CHART: CONVÊNIOS (polar) ============ */
-    function chartConveniosPacientes() {
-        charts.conv?.destroy();
-        charts.conv = new Chart(ctx('chartConveniosPacientes'), {
+    function createConveniosChart() {
+        const ctx = getCanvas('chartConveniosPacientes');
+        if (!ctx) return;
+        destroyChart('convenios');
+
+        CHARTS.convenios = new Chart(ctx, {
             type: 'polarArea',
             data: {
-                labels: CONVENIOS.map(c => c.name),
-                datasets: [{ data: CONVENIOS.map(c => c.value), backgroundColor: CONVENIOS.map(c => c.color + 'cc'), borderWidth: 0 }]
+                labels: DATA.convenios.map(c => c.label),
+                datasets: [{
+                    data: DATA.convenios.map(c => c.value),
+                    backgroundColor: DATA.convenios.map(c => `${c.color}cc`),
+                    borderWidth: 0
+                }]
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'right', labels: { font: { size: 11 }, boxWidth: 10, padding: 8, usePointStyle: true } },
-                    tooltip
+                    legend: {
+                        position: 'right',
+                        labels: { font: { size: 11 }, boxWidth: 10, padding: 10, usePointStyle: true }
+                    },
+                    tooltip: tooltipBase
                 },
-                scales: { r: { ticks: { display: false }, grid: { color: 'rgba(15,23,42,.08)' }, angleLines: { color: 'rgba(15,23,42,.05)' } } }
+                scales: {
+                    r: {
+                        ticks: { display: false },
+                        grid: { color: 'rgba(15,23,42,.08)' },
+                        angleLines: { color: 'rgba(15,23,42,.05)' }
+                    }
+                }
             }
         });
     }
 
-    /* ============ CHART: FAIXA ETÁRIA (pirâmide) ============ */
-    function chartFaixaEtaria() {
-        charts.faixa?.destroy();
-        charts.faixa = new Chart(ctx('chartFaixaEtaria'), {
+    function createFaixaEtariaChart() {
+        const ctx = getCanvas('chartFaixaEtaria');
+        if (!ctx) return;
+        destroyChart('faixa');
+
+        const labels = ['0-12', '13-17', '18-29', '30-44', '45-59', '60+'];
+        const values = [8, 11, 20, 28, 18, 15];
+
+        CHARTS.faixa = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: FAIXAS.map(f => f.label),
-                datasets: [
-                    { label: 'Feminino', data: FAIXAS.map(f => -f.fem), backgroundColor: COLORS.rose + 'cc', borderRadius: 6, maxBarThickness: 24 },
-                    { label: 'Masculino', data: FAIXAS.map(f => f.mas), backgroundColor: COLORS.brand + 'cc', borderRadius: 6, maxBarThickness: 24 },
-                ]
+                labels,
+                datasets: [{
+                    label: 'Pacientes',
+                    data: values,
+                    backgroundColor: [
+                        COLORS.brand,
+                        COLORS.cyan,
+                        COLORS.purple,
+                        COLORS.ok,
+                        COLORS.warn,
+                        COLORS.rose
+                    ],
+                    borderRadius: 8,
+                    maxBarThickness: 30
+                }]
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
-                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom', labels: { font: { size: 11.5 }, usePointStyle: true, padding: 12, boxWidth: 8 } },
-                    tooltip: { ...tooltip, callbacks: { label: c => ` ${c.dataset.label}: ${Math.abs(c.parsed.x).toLocaleString('pt-BR')}` } }
+                    legend: { display: false },
+                    tooltip: tooltipBase
                 },
                 scales: {
-                    x: { stacked: false, grid: { color: 'rgba(15,23,42,.05)' }, border: { display: false }, ticks: { font: { size: 10.5 }, callback: v => Math.abs(v).toLocaleString('pt-BR') } },
-                    y: { stacked: true, grid: { display: false }, border: { display: false }, ticks: { font: { size: 11.5, weight: 600 } } }
+                    x: { grid: { display: false }, border: { display: false } },
+                    y: { grid: { color: 'rgba(15,23,42,.05)' }, border: { display: false }, beginAtZero: true }
                 }
             }
         });
     }
 
-    /* ============ HEATMAP ORIGEM × MÊS ============ */
-    function heatmap() {
-        const el = $('#heatmap');
-        // simulate captação data
-        const data = ORIGENS.map((o, oi) => MONTHS.map((m, mi) => {
-            let base = [120, 80, 140, 90, 60, 100][oi]; // base by origin
-            base = base + Math.sin(mi / 3 + oi) * 30 + Math.random() * 30;
-            if (o === 'Instagram') base += mi * 8; // crescimento Instagram
-            return Math.round(base);
-        }));
-        const max = Math.max(...data.flat());
-        const colors = ['#eef2ff', '#c7d2fe', '#a5b4fc', '#818cf8', '#6366f1', '#4f46e5', '#3730a3'];
-        const iconMap = { Indicação: 'user-plus', Google: 'search', Instagram: 'instagram', Convênio: 'id-card', Site: 'globe', Retorno: 'repeat' };
+    function createEvolucaoChart(metric = state.chartEvolucaoMetric) {
+        const ctx = getCanvas('chartEvolucaoPacientes');
+        if (!ctx) return;
+        destroyChart('evolucao');
 
-        let html = `<div></div>` + MONTHS.map(m => `<div class="hm-th">${m}</div>`).join('');
-        ORIGENS.forEach((o, oi) => {
-            html += `<div class="hm-rh" title="${o}"><i data-lucide="${iconMap[o] || 'circle'}" style="width:14px;height:14px;margin-right:7px;color:var(--brand)"></i>${o}</div>`;
-            data[oi].forEach((v, mi) => {
-                const intensity = Math.min(v / max, 1);
-                const idx = Math.min(Math.floor(intensity * colors.length), colors.length - 1);
-                const c = colors[idx];
-                html += `<div class="hm-cell" style="background:${c}" title="${o} · ${MONTHS[mi]}: ${v} pacientes"></div>`;
-            });
-        });
-        el.innerHTML = html;
-        lucide.createIcons();
-    }
-
-    /* ============ CHART: EVOLUÇÃO ============ */
-    function chartEvolucaoPacientes(metric = 'all') {
-        const real = [];
-        let acc = 9800;
-        for (let i = 0; i < 12; i++) { acc += NEW_PATIENTS[i] - Math.round(NEW_PATIENTS[i] * 0.04); real.push(acc); }
-        const target = real.map((_, i) => 9800 + (i + 1) * 420);
-        const prev = real.map((v, i) => Math.round(v * 0.86 - i * 8));
-
-        const c = ctx('chartEvolucaoPacientes');
-        const grad1 = c.createLinearGradient(0, 0, 0, 380);
-        grad1.addColorStop(0, 'rgba(79,70,229,.35)');
-        grad1.addColorStop(1, 'rgba(79,70,229,0)');
+        const grad = ctx.createLinearGradient(0, 0, 0, 380);
+        grad.addColorStop(0, 'rgba(79,70,229,.35)');
+        grad.addColorStop(1, 'rgba(79,70,229,0)');
 
         const datasets = [];
-        if (metric === 'all' || metric === 'real') datasets.push({ label: 'Realizado', data: real, borderColor: COLORS.brand, backgroundColor: grad1, fill: true, tension: .4, borderWidth: 3, pointRadius: 5, pointBackgroundColor: '#fff', pointBorderColor: COLORS.brand, pointBorderWidth: 2, pointHoverRadius: 7 });
-        if (metric === 'all' || metric === 'target') datasets.push({ label: 'Meta', data: target, borderColor: COLORS.ok, borderDash: [6, 4], borderWidth: 2, pointRadius: 0, tension: .4, fill: false });
-        if (metric === 'all' || metric === 'prev') datasets.push({ label: 'Ano Anterior', data: prev, borderColor: '#94a3b8', borderWidth: 2, pointRadius: 3, tension: .4, fill: false, borderDash: [2, 3] });
+        if (metric === 'all' || metric === 'real') {
+            datasets.push({
+                label: 'Realizado',
+                data: novosReal,
+                borderColor: COLORS.brand,
+                backgroundColor: grad,
+                fill: true,
+                tension: .4,
+                borderWidth: 3,
+                pointRadius: 5,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: COLORS.brand,
+                pointBorderWidth: 2
+            });
+        }
+        if (metric === 'all' || metric === 'target') {
+            datasets.push({
+                label: 'Meta',
+                data: novosMeta,
+                borderColor: COLORS.ok,
+                borderDash: [6, 4],
+                borderWidth: 2,
+                pointRadius: 0,
+                tension: .4,
+                fill: false
+            });
+        }
+        if (metric === 'all' || metric === 'prev') {
+            datasets.push({
+                label: 'Ano Anterior',
+                data: novosPrev,
+                borderColor: COLORS.ink3,
+                borderDash: [2, 3],
+                borderWidth: 2,
+                pointRadius: 3,
+                tension: .4,
+                fill: false
+            });
+        }
 
-        charts.evol?.destroy();
-        charts.evol = new Chart(c, {
+        CHARTS.evolucao = new Chart(ctx, {
             type: 'line',
-            data: { labels: MONTHS, datasets },
+            data: { labels: months, datasets },
             options: {
-                responsive: true, maintainAspectRatio: false,
+                responsive: true,
+                maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
                 plugins: {
-                    legend: { position: 'bottom', labels: { font: { size: 12 }, usePointStyle: true, padding: 14, boxWidth: 8 } },
-                    tooltip
+                    legend: {
+                        position: 'bottom',
+                        labels: { font: { size: 12 }, usePointStyle: true, padding: 14, boxWidth: 8 }
+                    },
+                    tooltip: tooltipBase
                 },
                 scales: {
-                    x: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 11.5 } } },
-                    y: { grid: { color: 'rgba(15,23,42,.05)' }, border: { display: false }, beginAtZero: false, ticks: { font: { size: 11 }, callback: v => v.toLocaleString('pt-BR') } }
+                    x: { grid: { display: false }, border: { display: false } },
+                    y: { grid: { color: 'rgba(15,23,42,.05)' }, border: { display: false }, beginAtZero: true }
                 }
             }
         });
     }
 
-    /* ============ SPARKLINES ============ */
-    function sparklines() {
+    function createSparkline(canvas, data, color) {
+        const ctx = canvas.getContext('2d');
+        const grad = ctx.createLinearGradient(0, 0, 0, 40);
+        grad.addColorStop(0, `${color}66`);
+        grad.addColorStop(1, `${color}00`);
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map((_, i) => i),
+                datasets: [{
+                    data,
+                    borderColor: color,
+                    backgroundColor: grad,
+                    fill: true,
+                    tension: .4,
+                    borderWidth: 2,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                },
+                scales: { x: { display: false }, y: { display: false } }
+            }
+        });
+    }
+
+    function renderSparklines() {
         $$('.spark').forEach(el => {
             const color = COLORS[el.dataset.spark] || COLORS.brand;
             const data = Array.from({ length: 14 }, () => Math.random() * 40 + 30);
-            const c = el.getContext('2d');
-            const grad = c.createLinearGradient(0, 0, 0, 40);
-            grad.addColorStop(0, color + '66'); grad.addColorStop(1, color + '00');
-            new Chart(c, {
-                type: 'line',
-                data: { labels: data.map((_, i) => i), datasets: [{ data, borderColor: color, backgroundColor: grad, fill: true, tension: .4, borderWidth: 2, pointRadius: 0 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false } } }
-            });
+            createSparkline(el, data, color);
         });
     }
 
-    /* ============ TREND MINI CHARTS ============ */
-    function trendMini(canvas, data, color) {
-        const c = canvas.getContext('2d');
-        const grad = c.createLinearGradient(0, 0, 0, 30);
-        grad.addColorStop(0, color + '55'); grad.addColorStop(1, color + '00');
-        new Chart(c, {
-            type: 'line',
-            data: { labels: data.map((_, i) => i), datasets: [{ data, borderColor: color, backgroundColor: grad, fill: true, tension: .4, borderWidth: 1.8, pointRadius: 0 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false } } }
-        });
+    function renderTopCities() {
+        const el = document.getElementById('topCities');
+        if (!el) return;
+
+        const max = Math.max(...DATA.cidades.map(c => c.value));
+        el.innerHTML = DATA.cidades.map(c => `
+      <div class="bar-item">
+        <div class="bar-head">
+          <strong>${c.name}</strong>
+          <span>${c.value}%</span>
+        </div>
+        <div class="bar-track" aria-hidden="true">
+          <div class="bar-fill" style="width:${(c.value / max * 100).toFixed(1)}%;background:${c.color}"></div>
+        </div>
+      </div>
+    `).join('');
     }
 
-    /* ============ BAR LIST: CITIES ============ */
-    function renderCities() {
-        const max = Math.max(...CITIES.map(c => c.value));
-        $('#topCities').innerHTML = CITIES.map(c => `
-    <div class="bar-item">
-      <div class="bar-head"><strong>${c.name}</strong><span>${c.value}%</span></div>
-      <div class="bar-track"><div class="bar-fill" style="width:${(c.value / max * 100).toFixed(1)}%;background:${c.color}"></div></div>
-    </div>
-  `).join('');
-    }
+    function renderRankTable() {
+        const tbody = document.querySelector('#rankTable tbody');
+        if (!tbody) return;
 
-    /* ============ RANK TABLE: TOP PACIENTES ============ */
-    function renderRank() {
-        const tb = $('#rankTable tbody');
-        const maxV = Math.max(...TOP_PATIENTS.map(p => p.visits));
-        const maxL = Math.max(...TOP_PATIENTS.map(p => p.ltv));
-        const ranked = TOP_PATIENTS.map(p => {
-            const score = ((p.visits / maxV) * 40 + (p.ltv / maxL) * 40 + (p.nps / 10) * 20);
-            return { ...p, score: Math.round(score * 10) / 10 };
-        }).sort((a, b) => b.score - a.score);
+        const ranked = [...DATA.rankPatients].sort((a, b) => b.score - a.score);
 
-        const initials = name => name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+        tbody.innerHTML = ranked.map((p, i) => {
+            const posClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+            const scoreColor = p.score >= 90 ? 'var(--ok)' : p.score >= 80 ? 'var(--brand)' : 'var(--warn)';
 
-        tb.innerHTML = ranked.map((p, i) => {
-            const cls = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
             return `
-    <tr>
-      <td><span class="rank-pos ${cls}">${i + 1}</span></td>
-      <td><div class="doc-cell"><div class="av">${initials(p.name)}</div><div><strong>${p.name}</strong><small>${p.ins}</small></div></div></td>
-      <td>${p.ins}</td>
-      <td><b style="font-family:'JetBrains Mono',monospace">${p.visits}</b></td>
-      <td><span style="color:var(--ink-3);font-size:12.5px">${p.last}</span></td>
-      <td><b style="font-family:'JetBrains Mono',monospace;color:var(--ink-2)">R$ ${(p.ltv / 1000).toFixed(1)}k</b></td>
-      <td><b style="color:${p.nps >= 9.5 ? 'var(--ok)' : p.nps >= 9 ? 'var(--brand)' : 'var(--warn)'};font-weight:700">${p.nps.toFixed(1)}</b></td>
-      <td><div class="score-bar"><div class="bar"><span style="width:${p.score}%"></span></div><b>${p.score}</b></div></td>
-    </tr>`;
+        <tr>
+          <td><span class="rank-pos ${posClass}">${i + 1}</span></td>
+          <td>
+            <div class="doc-cell">
+              <div class="av">${p.initials}</div>
+              <div>
+                <strong>${p.name}</strong>
+                <small>${p.conv}</small>
+              </div>
+            </div>
+          </td>
+          <td>${p.conv}</td>
+          <td class="num">${p.consultas}</td>
+          <td>${p.lastVisit}</td>
+          <td class="num">R$ ${p.ltv.toLocaleString('pt-BR')}</td>
+          <td class="num"><b style="color:${scoreColor}">${p.nps.toFixed(1)}</b></td>
+          <td class="num">
+            <div class="score-bar">
+              <div class="bar"><span style="width:${p.score}%"></span></div>
+              <b>${p.score}</b>
+            </div>
+          </td>
+        </tr>
+      `;
         }).join('');
     }
 
-    /* ============ BREAKDOWN TABLE ============ */
-    function renderBreakdown(filter = '') {
-        const tb = $('#breakdownTable tbody');
-        const list = CONVENIOS.filter(s => !filter || s.name.toLowerCase().includes(filter.toLowerCase()));
-        tb.innerHTML = list.map((s, i) => `
-    <tr data-idx="${i}">
-      <td><div class="spec-cell"><span class="dot" style="background:${s.color}"></span><strong>${s.name}</strong></div></td>
-      <td class="num">${s.value.toLocaleString('pt-BR')}</td>
-      <td class="num">${Math.round(s.value * 0.04)}</td>
-      <td class="num"><b style="color:${s.ret >= 70 ? 'var(--ok)' : s.ret >= 64 ? 'var(--ink-2)' : 'var(--warn)'}">${s.ret}%</b></td>
-      <td class="num">${s.age} anos</td>
-      <td class="num">R$ ${(s.ltv / 1000).toFixed(1)}k</td>
-      <td class="num">${s.delta >= 0 ? `<span class="delta up"><i data-lucide="trending-up"></i>+${s.delta}%</span>` : `<span class="delta down"><i data-lucide="trending-down"></i>${s.delta}%</span>`}</td>
-      <td><canvas class="trend-cell" id="trend${i}"></canvas></td>
-    </tr>
-  `).join('');
-        lucide.createIcons();
-        list.forEach((s, i) => {
-            const c = $('#trend' + i);
-            if (c) trendMini(c, s.trend, s.color);
+    function renderHeatmap() {
+        const el = document.getElementById('heatmap');
+        if (!el) return;
+
+        const headers = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const sources = ['Google', 'Instagram', 'Indicação', 'Site', 'Convênio', 'Retorno'];
+        const palette = ['#eef2ff', '#c7d2fe', '#a5b4fc', '#818cf8', '#6366f1', '#4f46e5', '#3730a3'];
+
+        let html = `<div></div>${headers.map(h => `<div class="hm-th">${h}</div>`).join('')}`;
+
+        sources.forEach((source, rowIndex) => {
+            html += `<div class="hm-rh">${source}</div>`;
+
+            for (let col = 0; col < headers.length; col++) {
+                let intensity = Math.random() * 0.8 + 0.2;
+                intensity *= rowIndex === 1 ? 1.2 : 1;
+                intensity *= rowIndex === 0 ? 0.9 : 1;
+
+                const idx = Math.min(Math.floor(intensity * palette.length), palette.length - 1);
+                const value = Math.round(intensity * 60);
+
+                html += `
+          <div
+            class="hm-cell"
+            style="background:${palette[idx]}"
+            title="${source} · ${headers[col]}: ${value} pacientes"
+            aria-label="${source} em ${headers[col]}: ${value} pacientes"
+            role="gridcell"
+          ></div>
+        `;
+            }
         });
-        // totals
-        const tot = list.reduce((a, s) => ({ tot: a.tot + s.value, nw: a.nw + Math.round(s.value * 0.04), ret: a.ret + s.ret * s.value, age: a.age + s.age * s.value, ltv: a.ltv + s.ltv * s.value, w: a.w + s.value }), { tot: 0, nw: 0, ret: 0, age: 0, ltv: 0, w: 0 });
-        $('#tFTot').textContent = tot.tot.toLocaleString('pt-BR');
-        $('#tFNew').textContent = tot.nw.toLocaleString('pt-BR');
-        $('#tFRet').textContent = (tot.ret / tot.w).toFixed(1) + '%';
-        $('#tFAge').textContent = (tot.age / tot.w).toFixed(0) + ' anos';
-        $('#tFLtv').textContent = 'R$ ' + (tot.ltv / tot.w / 1000).toFixed(1) + 'k';
+
+        el.innerHTML = html;
     }
 
-    /* ============ COUNTERS ============ */
-    function counters() {
-        $$('[data-counter]').forEach(el => {
-            const target = +el.dataset.counter;
-            const dur = 1200; const start = performance.now();
-            function tick(now) {
-                const p = Math.min((now - start) / dur, 1);
-                const eased = 1 - Math.pow(1 - p, 3);
-                el.textContent = Math.round(target * eased).toLocaleString('pt-BR');
-                if (p < 1) requestAnimationFrame(tick);
+    function createTrendMini(canvas, data, color) {
+        const ctx = canvas.getContext('2d');
+        const grad = ctx.createLinearGradient(0, 0, 0, 30);
+        grad.addColorStop(0, `${color}55`);
+        grad.addColorStop(1, `${color}00`);
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map((_, i) => i),
+                datasets: [{
+                    data,
+                    borderColor: color,
+                    backgroundColor: grad,
+                    fill: true,
+                    tension: .4,
+                    borderWidth: 1.8,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                },
+                scales: { x: { display: false }, y: { display: false } }
             }
+        });
+    }
+
+    function renderBreakdown(search = state.search) {
+        const tbody = document.querySelector('#breakdownTable tbody');
+        if (!tbody) return;
+
+        const list = DATA.conveniosBreakdown.filter(item =>
+            !search || item.name.toLowerCase().includes(search.toLowerCase())
+        );
+
+        tbody.innerHTML = list.map(item => `
+      <tr>
+        <td>
+          <div class="spec-cell">
+            <span class="dot" style="background:${COLORS.brand}"></span>
+            <strong>${item.name}</strong>
+          </div>
+        </td>
+        <td class="num">${item.patients.toLocaleString('pt-BR')}</td>
+        <td class="num">${item.new.toLocaleString('pt-BR')}</td>
+        <td class="num">${item.ret.toFixed(1)}%</td>
+        <td class="num">${item.age}</td>
+        <td class="num">R$ ${item.ltv.toLocaleString('pt-BR')}</td>
+        <td class="num">
+          <span class="delta ${item.delta >= 0 ? 'up' : 'down'}">
+            <i data-lucide="${item.delta >= 0 ? 'trending-up' : 'trending-down'}" aria-hidden="true"></i>
+            ${item.delta >= 0 ? '+' : ''}${item.delta}%
+          </span>
+        </td>
+        <td><canvas class="trend-cell" data-trend="${item.name}" aria-label="Tendência de ${item.name}" role="img"></canvas></td>
+      </tr>
+    `).join('');
+
+        lucide.createIcons();
+
+        list.forEach(item => {
+            const canvas = tbody.querySelector(`canvas[data-trend="${CSS.escape(item.name)}"]`);
+            if (canvas) createTrendMini(canvas, item.trend, COLORS.brand);
+        });
+
+        const totals = list.reduce((acc, item) => {
+            acc.tot += item.patients;
+            acc.new += item.new;
+            acc.ret += item.ret * item.patients;
+            acc.age += item.age * item.patients;
+            acc.ltv += item.ltv * item.patients;
+            return acc;
+        }, { tot: 0, new: 0, ret: 0, age: 0, ltv: 0 });
+
+        $('#tFTot').textContent = totals.tot.toLocaleString('pt-BR');
+        $('#tFNew').textContent = totals.new.toLocaleString('pt-BR');
+        $('#tFRet').textContent = totals.tot ? `${(totals.ret / totals.tot).toFixed(1)}%` : '0%';
+        $('#tFAge').textContent = totals.tot ? Math.round(totals.age / totals.tot).toString() : '0';
+        $('#tFLtv').textContent = totals.tot ? `R$ ${Math.round(totals.ltv / totals.tot).toLocaleString('pt-BR')}` : 'R$ 0';
+    }
+
+    function animateCounters() {
+        $$('[data-counter]').forEach(el => {
+            const target = Number(el.dataset.counter || 0);
+            const duration = 1200;
+            const start = performance.now();
+
+            function tick(now) {
+                const progress = Math.min((now - start) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = Math.round(target * eased).toLocaleString('pt-BR');
+                if (progress < 1) requestAnimationFrame(tick);
+            }
+
             requestAnimationFrame(tick);
         });
     }
 
-    /* ============ TOAST ============ */
-    function toast(title, msg = '', type = 'info') {
+    function toast(title, message = '', type = 'info') {
         const icons = { info: 'info', ok: 'check-circle-2', warn: 'alert-triangle' };
+        const box = document.getElementById('toastBox');
+        if (!box) return;
+
         const el = document.createElement('div');
         el.className = `toast ${type}`;
-        el.innerHTML = `<i data-lucide="${icons[type]}"></i><div><strong>${title}</strong>${msg ? `<span>${msg}</span>` : ''}</div>`;
-        $('#toastBox').appendChild(el);
+        el.innerHTML = `
+      <i data-lucide="${icons[type] || icons.info}" aria-hidden="true"></i>
+      <div>
+        <strong>${title}</strong>
+        ${message ? `<span>${message}</span>` : ''}
+      </div>
+    `;
+
+        box.appendChild(el);
         lucide.createIcons();
-        setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(40px)' }, 3200);
+
+        setTimeout(() => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateX(40px)';
+        }, 3200);
+
         setTimeout(() => el.remove(), 3700);
     }
 
-    /* ============ EXPORT CSV ============ */
-    function exportCSV() {
-        const headers = ['Convenio', 'Pacientes', 'Novos', 'Retorno (%)', 'Idade media', 'LTV medio (R$)', 'Variacao (%)'];
-        const rows = CONVENIOS.map(s => [s.name, s.value, Math.round(s.value * 0.04), s.ret, s.age, s.ltv, s.delta]);
-        const csv = [headers, ...rows].map(r => r.join(';')).join('\n');
-        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `relatorio-pacientes-${new Date().toISOString().slice(0, 10)}.csv`;
-        a.click();
-        toast('Relatório exportado', 'Arquivo CSV gerado', 'ok');
+    function syncThemeButton() {
+        const icon = $('#toggleTheme i');
+        if (!icon) return;
+        icon.setAttribute('data-lucide', state.theme === 'dark' ? 'sun' : 'moon');
+        lucide.createIcons();
     }
 
-    /* ============ BINDINGS ============ */
-    function bind() {
-        // theme persist
-        const savedTheme = localStorage.getItem('g4med-theme');
-        if (savedTheme === 'dark') {
-            document.documentElement.dataset.theme = 'dark';
-            $('#toggleTheme i')?.setAttribute('data-lucide', 'sun');
-            lucide.createIcons();
-        }
-        $('#toggleTheme').addEventListener('click', () => {
-            const cur = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-            document.documentElement.dataset.theme = cur;
-            localStorage.setItem('g4med-theme', cur);
-            $('#toggleTheme i').setAttribute('data-lucide', cur === 'dark' ? 'sun' : 'moon');
-            lucide.createIcons();
-            cfgChart();
-            Object.values(charts).forEach(c => c.update());
-            toast(`Tema ${cur === 'dark' ? 'escuro' : 'claro'} ativado`);
+    function bindEvents() {
+        $('#toggleTheme')?.addEventListener('click', () => {
+            state.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+            document.documentElement.dataset.theme = state.theme;
+            localStorage.setItem('g4med-theme', state.theme);
+
+            syncThemeButton();
+            applyChartDefaults();
+
+            Object.values(CHARTS).forEach(chart => chart?.update());
+            toast(`Tema ${state.theme === 'dark' ? 'escuro' : 'claro'} ativado`, '', 'ok');
         });
 
-        // periods
-        $$('.period-tabs button').forEach(b => b.addEventListener('click', () => {
-            $$('.period-tabs button').forEach(x => x.classList.remove('active'));
-            b.classList.add('active');
-            toast('Período atualizado', `${b.textContent.trim()} aplicado`, 'ok');
-        }));
+        $$('.period-tabs button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.period = btn.dataset.period || '30';
+                $$('.period-tabs button').forEach(b => {
+                    const active = b === btn;
+                    b.classList.toggle('active', active);
+                    b.setAttribute('aria-pressed', String(active));
+                });
+                toast('Período atualizado', `${btn.textContent.trim()} aplicado`, 'ok');
+            });
+        });
 
-        // evolução seg
-        $$('.seg button[data-metric]').forEach(b => b.addEventListener('click', () => {
-            b.parentElement.querySelectorAll('button').forEach(x => x.classList.remove('active'));
-            b.classList.add('active');
-            chartEvolucaoPacientes(b.dataset.metric);
-        }));
+        const segNovos = $('.seg[data-target="chartNovosPacientes"]');
+        segNovos?.querySelectorAll('button[data-mode]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.chartNovosMode = btn.dataset.mode || 'bar';
+                segNovos.querySelectorAll('button').forEach(b => {
+                    const active = b === btn;
+                    b.classList.toggle('active', active);
+                    b.setAttribute('aria-pressed', String(active));
+                });
+                createChartNovos(state.chartNovosMode);
+            });
+        });
 
-        // novos pacientes seg
-        $$('.seg button[data-mode]').forEach(b => b.addEventListener('click', () => {
-            b.parentElement.querySelectorAll('button').forEach(x => x.classList.remove('active'));
-            b.classList.add('active');
-            chartNovosPacientes(b.dataset.mode);
-        }));
+        const segEvolucao = $('.seg[data-target="chartEvolucaoPacientes"]');
+        segEvolucao?.querySelectorAll('button[data-metric]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.chartEvolucaoMetric = btn.dataset.metric || 'all';
+                segEvolucao.querySelectorAll('button').forEach(b => {
+                    const active = b === btn;
+                    b.classList.toggle('active', active);
+                    b.setAttribute('aria-pressed', String(active));
+                });
+                createEvolucaoChart(state.chartEvolucaoMetric);
+            });
+        });
 
-        // refresh
-        $('#btnRefresh').addEventListener('click', () => {
-            const ic = $('#btnRefresh i');
-            ic.style.transition = 'transform .8s';
-            ic.style.transform = 'rotate(360deg)';
-            setTimeout(() => { ic.style.transform = '' }, 800);
+        $('#btnRefresh')?.addEventListener('click', () => {
+            const icon = $('#btnRefresh i');
+            if (icon) {
+                icon.style.transition = 'transform .8s';
+                icon.style.transform = 'rotate(360deg)';
+                setTimeout(() => { icon.style.transform = ''; }, 800);
+            }
+
+            animateCounters();
+            renderRankTable();
+            renderBreakdown();
             toast('Dados atualizados', 'Última sincronização agora', 'ok');
             $('#lastUpdate').textContent = 'agora';
         });
 
-        // export / print / share
-        $('#btnExport').addEventListener('click', exportCSV);
-        $('#btnExportCat')?.addEventListener('click', exportCSV);
-        $('#btnPrint').addEventListener('click', () => window.print());
-        $('#btnShare').addEventListener('click', () => {
-            if (navigator.share) navigator.share({ title: 'Relatório Pacientes G4Med', text: 'Veja o relatório', url: location.href }).catch(() => { });
-            else { navigator.clipboard?.writeText(location.href); toast('Link copiado', 'Compartilhe com sua equipe', 'ok') }
+        $('#btnPrint')?.addEventListener('click', () => window.print());
+
+        $('#btnExport')?.addEventListener('click', () => {
+            const headers = ['Convênio', 'Pacientes', 'Novos', 'Retorno', 'Idade média', 'LTV médio', 'Variação'];
+            const rows = DATA.conveniosBreakdown.map(item => [
+                item.name,
+                item.patients,
+                item.new,
+                item.ret,
+                item.age,
+                item.ltv,
+                item.delta
+            ]);
+            const csv = [headers, ...rows].map(r => r.join(';')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `relatorio-pacientes-${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            toast('Relatório exportado', 'Arquivo CSV gerado', 'ok');
         });
 
-        // filters apply / clear
-        $('#btnApply').addEventListener('click', () => {
+        $('#btnExportCat')?.addEventListener('click', () => {
+            const headers = ['Convênio', 'Pacientes', 'Novos', 'Retorno', 'Idade média', 'LTV médio', 'Variação'];
+            const rows = DATA.conveniosBreakdown.map(item => [
+                item.name,
+                item.patients,
+                item.new,
+                item.ret,
+                item.age,
+                item.ltv,
+                item.delta
+            ]);
+            const csv = [headers, ...rows].map(r => r.join(';')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `detalhamento-convenios-${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            toast('CSV exportado', 'Detalhamento por convênio gerado', 'ok');
+        });
+
+        $('#btnShare')?.addEventListener('click', async () => {
+            const payload = {
+                title: 'Relatório G4Med',
+                text: 'Veja o relatório de pacientes da G4Med.',
+                url: location.href
+            };
+
+            try {
+                if (navigator.share) {
+                    await navigator.share(payload);
+                } else if (navigator.clipboard?.writeText) {
+                    await navigator.clipboard.writeText(location.href);
+                    toast('Link copiado', 'Compartilhe com sua equipe', 'ok');
+                }
+            } catch {
+                toast('Compartilhamento cancelado', '', 'info');
+            }
+        });
+
+        $('#btnApply')?.addEventListener('click', () => {
+            state.filters.from = $('#dateFrom')?.value || '';
+            state.filters.to = $('#dateTo')?.value || '';
+            state.filters.unit = $('#fUnit')?.value || '';
+            state.filters.insurance = $('#fIns')?.value || '';
+            state.filters.ageRange = $('#fAge')?.value || '';
+            state.filters.origin = $('#fOrig')?.value || '';
+
             toast('Filtros aplicados', 'Atualizando dashboards...', 'ok');
-            counters();
+            animateCounters();
         });
-        $('#btnClear').addEventListener('click', () => {
+
+        $('#btnClear')?.addEventListener('click', () => {
             $$('.filter-bar select').forEach(s => s.selectedIndex = 0);
-            $('#dateFrom').value = ''; $('#dateTo').value = '';
-            toast('Filtros limpos');
+            if ($('#dateFrom')) $('#dateFrom').value = '';
+            if ($('#dateTo')) $('#dateTo').value = '';
+            if ($('#tblSearch')) $('#tblSearch').value = '';
+            state.search = '';
+            state.filters = { from: '', to: '', unit: '', insurance: '', ageRange: '', origin: '' };
+            renderBreakdown('');
+            toast('Filtros limpos', '', 'info');
         });
 
-        // table search
-        $('#tblSearch').addEventListener('input', e => renderBreakdown(e.target.value));
+        $('#tblSearch')?.addEventListener('input', e => {
+            state.search = e.target.value || '';
+            renderBreakdown(state.search);
+        });
     }
 
-    /* ============ INIT ============ */
+    function initDates() {
+        const from = $('#dateFrom');
+        const to = $('#dateTo');
+        if (!from || !to) return;
+
+        const end = new Date();
+        const start = new Date();
+        start.setDate(start.getDate() - 30);
+
+        to.valueAsDate = end;
+        from.valueAsDate = start;
+    }
+
     function init() {
+        document.documentElement.dataset.theme = state.theme;
         lucide.createIcons();
-        cfgChart();
+        applyChartDefaults();
+        syncThemeButton();
 
-        chartNovosPacientes();
-        chartSexoPacientes();
-        chartConveniosPacientes();
-        chartFaixaEtaria();
-        chartEvolucaoPacientes();
-        heatmap();
-        sparklines();
-        renderCities();
-        renderRank();
+        initDates();
+        createChartNovos();
+        createSexoChart();
+        createConveniosChart();
+        createFaixaEtariaChart();
+        createEvolucaoChart();
+        renderSparklines();
+        renderTopCities();
+        renderHeatmap();
+        renderRankTable();
         renderBreakdown();
-        counters();
-        bind();
+        animateCounters();
+        bindEvents();
 
-        // dates default = last 30 days
-        const t = new Date();
-        const f = new Date(); f.setDate(f.getDate() - 30);
-        $('#dateFrom').valueAsDate = f;
-        $('#dateTo').valueAsDate = t;
-
-        setTimeout(() => toast('Bem-vindo ao BI de Pacientes', 'Base sincronizada em tempo real', 'ok'), 400);
+        setTimeout(() => {
+            toast('Bem-vindo ao BI', 'Dados consolidados em tempo real', 'ok');
+        }, 400);
     }
 
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-    else init();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 })();

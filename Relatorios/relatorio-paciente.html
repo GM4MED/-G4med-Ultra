@@ -2,10 +2,12 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Relatórios & BI · Pacientes · G4Med</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
         rel="stylesheet">
@@ -16,390 +18,520 @@
 </head>
 
 <body>
+    <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
 
-    <!-- TOPBAR -->
-    <header class="topbar">
+    <header class="topbar" role="banner">
         <div class="topbar-left">
-            <a href="../Menu-Principal.html" class="back-btn" title="Voltar"><i data-lucide="arrow-left">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        data-lucide="arrow-left" aria-hidden="true" class="lucide lucide-arrow-left">
-                        <path d="m12 19-7-7 7-7"></path>
-                        <path d="M19 12H5"></path>
-                    </svg>
-                </i></a>
-            <!-- ----------------------------------------------------------------------------------------------------------------------- -->
-            <div class="brand">
-                <div class="brand-mark"><i data-lucide="users"></i></div>
+            <!-- <a href="../Menu-Principal.html" class="back-btn" title="Voltar para o menu principal"
+                aria-label="Voltar para o menu principal">
+                <i data-lucide="arrow-left" aria-hidden="true"></i>
+            </a> -->
+            <!-- <a href="../Menu-Principal.html" class="back-btn" title="Voltar para o menu principal"
+                aria-label="Voltar para o menu principal">
+                <i data-lucide="arrow-left" aria-hidden="true"></i>
+                <span class="back-text">Voltar</span>
+            </a> -->
+            <a href="../Menu-Principal.html" class="back-btn" title="Voltar para o menu principal"
+                aria-label="Voltar para o menu principal">
+                <i data-lucide="arrow-left" aria-hidden="true"></i>
+                <span class="back-text">Voltar</span>
+            </a>
+
+            <div class="brand" aria-label="G4Med BI">
+                <div class="brand-mark" aria-hidden="true">
+                    <i data-lucide="users"></i>
+                </div>
                 <div>
-                    <div class="brand-name">G4Med <span>BI</span></div>
-                    <div class="brand-sub">Relatório de Pacientes</div>
+                    <p class="brand-name">G4Med <span>BI</span></p>
+                    <p class="brand-sub">Relatório de Pacientes</p>
                 </div>
             </div>
         </div>
-        <div class="topbar-right">
-            <button class="icon-btn" id="toggleTheme" title="Tema"><i data-lucide="moon"></i></button>
-            <button class="icon-btn" title="Atualizar" id="btnRefresh"><i data-lucide="refresh-cw"></i></button>
-            <button class="icon-btn has-dot" title="Alertas"><i data-lucide="bell"></i><span
-                    class="dot"></span></button>
-            <div class="user-chip">
-                <div class="avatar">DR</div>
-                <div class="user-meta"><span class="user-name">Dr. Rodrigo</span><span class="user-role">Gestor
-                        BI</span></div>
+
+        <div class="topbar-right" aria-label="Ações rápidas">
+            <button class="icon-btn" id="toggleTheme" type="button" title="Alternar tema" aria-label="Alternar tema">
+                <i data-lucide="moon" aria-hidden="true"></i>
+            </button>
+
+            <button class="icon-btn" id="btnRefresh" type="button" title="Atualizar dados" aria-label="Atualizar dados">
+                <i data-lucide="refresh-cw" aria-hidden="true"></i>
+            </button>
+
+            <button class="icon-btn has-dot" type="button" title="Alertas" aria-label="Ver alertas">
+                <i data-lucide="bell" aria-hidden="true"></i>
+                <span class="dot" aria-hidden="true"></span>
+            </button>
+
+            <div class="user-chip" aria-label="Usuário logado">
+                <div class="avatar" aria-hidden="true">DR</div>
+                <div class="user-meta">
+                    <span class="user-name">Dr. Rodrigo</span>
+                    <span class="user-role">Gestor BI</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="page">
-
-        <!-- HEADER -->
-        <section class="page-header">
+    <main class="page" id="conteudo-principal">
+        <header class="page-header">
             <div class="page-title">
-                <span class="crumb"><a href="../index.html">Início</a> · Relatórios · <strong>Pacientes</strong></span>
+                <nav class="crumb" aria-label="Breadcrumb">
+                    <a href="../index.html">Início</a>
+                    <span aria-hidden="true">·</span>
+                    <a href="#">Relatórios</a>
+                    <span aria-hidden="true">·</span>
+                    <span aria-current="page"><strong>Pacientes</strong></span>
+                </nav>
                 <h1>Inteligência de Pacientes</h1>
                 <p>Perfil demográfico, captação, fidelização e jornada do paciente — análise 360° da base ativa.</p>
             </div>
-            <div class="page-actions">
-                <div class="period-tabs" id="periodTabs">
-                    <button data-period="7">7 dias</button>
-                    <button data-period="30" class="active">30 dias</button>
-                    <button data-period="90">90 dias</button>
-                    <button data-period="365">12 meses</button>
-                    <button data-period="custom"><i data-lucide="calendar"></i> Personalizado</button>
-                </div>
-                <button class="btn ghost" id="btnPrint"><i data-lucide="printer"></i> Imprimir</button>
-                <button class="btn ghost" id="btnExport"><i data-lucide="download"></i> Exportar</button>
-                <button class="btn primary" id="btnShare"><i data-lucide="share-2"></i> Compartilhar</button>
-            </div>
-        </section>
 
-        <!-- FILTERS -->
-        <section class="filter-bar">
+            <div class="page-actions" aria-label="Ações do relatório">
+                <fieldset class="period-tabs" id="periodTabs" aria-label="Selecionar período">
+                    <legend class="sr-only">Selecionar período</legend>
+                    <button type="button" data-period="7">7 dias</button>
+                    <button type="button" data-period="30" class="active" aria-pressed="true">30 dias</button>
+                    <button type="button" data-period="90">90 dias</button>
+                    <button type="button" data-period="365">12 meses</button>
+                    <button type="button" data-period="custom">
+                        <i data-lucide="calendar" aria-hidden="true"></i>
+                        Personalizado
+                    </button>
+                </fieldset>
+
+                <button class="btn ghost" type="button" id="btnPrint">
+                    <i data-lucide="printer" aria-hidden="true"></i>
+                    Imprimir
+                </button>
+
+                <button class="btn ghost" type="button" id="btnExport">
+                    <i data-lucide="download" aria-hidden="true"></i>
+                    Exportar
+                </button>
+
+                <button class="btn primary" type="button" id="btnShare">
+                    <i data-lucide="share-2" aria-hidden="true"></i>
+                    Compartilhar
+                </button>
+            </div>
+        </header>
+
+        <section class="filter-bar" aria-labelledby="filtros-title">
+            <h2 id="filtros-title" class="sr-only">Filtros do relatório</h2>
+
             <div class="filter-group">
-                <label>Período</label>
+                <label for="dateFrom">Período inicial</label>
                 <div class="date-range">
-                    <input type="date" id="dateFrom"><span>—</span><input type="date" id="dateTo">
+                    <input type="date" id="dateFrom" name="dateFrom">
+                    <span aria-hidden="true">—</span>
+                    <input type="date" id="dateTo" name="dateTo">
                 </div>
             </div>
+
             <div class="filter-group">
-                <label>Unidade</label>
-                <select id="fUnit">
-                    <option>Todas as unidades</option>
-                    <option>Itaim Bibi · Matriz</option>
-                    <option>Alphaville</option>
-                    <option>Jardins</option>
+                <label for="fUnit">Unidade</label>
+                <select id="fUnit" name="unit">
+                    <option value="">Todas as unidades</option>
+                    <option value="itaim">Itaim Bibi · Matriz</option>
+                    <option value="alphaville">Alphaville</option>
+                    <option value="jardins">Jardins</option>
                 </select>
             </div>
+
             <div class="filter-group">
-                <label>Convênio</label>
-                <select id="fIns">
-                    <option>Todos</option>
-                    <option>Particular</option>
-                    <option>Unimed</option>
-                    <option>Bradesco Saúde</option>
-                    <option>Amil</option>
-                    <option>SulAmérica</option>
+                <label for="fIns">Convênio</label>
+                <select id="fIns" name="insurance">
+                    <option value="">Todos</option>
+                    <option value="particular">Particular</option>
+                    <option value="unimed">Unimed</option>
+                    <option value="bradesco">Bradesco Saúde</option>
+                    <option value="amil">Amil</option>
+                    <option value="sulamerica">SulAmérica</option>
                 </select>
             </div>
+
             <div class="filter-group">
-                <label>Faixa Etária</label>
-                <select id="fAge">
-                    <option>Todas</option>
-                    <option>0-12 (Infantil)</option>
-                    <option>13-17 (Adolescente)</option>
-                    <option>18-29</option>
-                    <option>30-44</option>
-                    <option>45-59</option>
-                    <option>60+ (Idoso)</option>
+                <label for="fAge">Faixa Etária</label>
+                <select id="fAge" name="ageRange">
+                    <option value="">Todas</option>
+                    <option value="0-12">0-12 (Infantil)</option>
+                    <option value="13-17">13-17 (Adolescente)</option>
+                    <option value="18-29">18-29</option>
+                    <option value="30-44">30-44</option>
+                    <option value="45-59">45-59</option>
+                    <option value="60+">60+ (Idoso)</option>
                 </select>
             </div>
+
             <div class="filter-group">
-                <label>Origem</label>
-                <select id="fOrig">
-                    <option>Todas</option>
-                    <option>Indicação</option>
-                    <option>Google</option>
-                    <option>Instagram</option>
-                    <option>Convênio</option>
-                    <option>Site</option>
-                    <option>Retorno</option>
+                <label for="fOrig">Origem</label>
+                <select id="fOrig" name="origin">
+                    <option value="">Todas</option>
+                    <option value="indicação">Indicação</option>
+                    <option value="google">Google</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="convênio">Convênio</option>
+                    <option value="site">Site</option>
+                    <option value="retorno">Retorno</option>
                 </select>
             </div>
-            <div class="filter-actions">
-                <button class="btn ghost sm" id="btnClear"><i data-lucide="rotate-ccw"></i> Limpar</button>
-                <button class="btn primary sm" id="btnApply"><i data-lucide="filter"></i> Aplicar</button>
+
+            <div class="filter-actions" aria-label="Ações dos filtros">
+                <button class="btn ghost sm" type="button" id="btnClear">
+                    <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+                    Limpar
+                </button>
+                <button class="btn primary sm" type="button" id="btnApply">
+                    <i data-lucide="filter" aria-hidden="true"></i>
+                    Aplicar
+                </button>
             </div>
         </section>
 
-        <!-- KPI ROW -->
-        <section class="kpi-row">
-            <div class="kpi-card">
+        <section class="kpi-row" aria-labelledby="kpis-title">
+            <h2 id="kpis-title" class="sr-only">Indicadores principais</h2>
+
+            <article class="kpi-card" aria-label="Pacientes ativos">
                 <div class="kpi-head">
-                    <div class="kpi-icon brand"><i data-lucide="users"></i></div>
-                    <span class="kpi-trend up"><i data-lucide="trending-up"></i> +8.4%</span>
+                    <div class="kpi-icon brand" aria-hidden="true"><i data-lucide="users"></i></div>
+                    <span class="kpi-trend up" aria-label="Crescimento de 8.4 por cento">
+                        <i data-lucide="trending-up" aria-hidden="true"></i> +8.4%
+                    </span>
                 </div>
                 <span class="kpi-label">Pacientes Ativos</span>
-                <span class="kpi-value" data-counter="12847">0</span>
-                <div class="kpi-foot"><canvas class="spark" data-spark="brand"></canvas></div>
-            </div>
-            <div class="kpi-card">
+                <strong class="kpi-value" data-counter="12847">0</strong>
+                <div class="kpi-foot"><canvas class="spark" data-spark="brand" aria-hidden="true"></canvas></div>
+            </article>
+
+            <article class="kpi-card" aria-label="Novos pacientes no período">
                 <div class="kpi-head">
-                    <div class="kpi-icon ok"><i data-lucide="user-plus"></i></div>
-                    <span class="kpi-trend up"><i data-lucide="trending-up"></i> +14.2%</span>
+                    <div class="kpi-icon ok" aria-hidden="true"><i data-lucide="user-plus"></i></div>
+                    <span class="kpi-trend up" aria-label="Crescimento de 14.2 por cento">
+                        <i data-lucide="trending-up" aria-hidden="true"></i> +14.2%
+                    </span>
                 </div>
                 <span class="kpi-label">Novos no Período</span>
-                <span class="kpi-value" data-counter="487">0</span>
-                <div class="kpi-foot"><canvas class="spark" data-spark="ok"></canvas></div>
-            </div>
-            <div class="kpi-card">
+                <strong class="kpi-value" data-counter="487">0</strong>
+                <div class="kpi-foot"><canvas class="spark" data-spark="ok" aria-hidden="true"></canvas></div>
+            </article>
+
+            <article class="kpi-card" aria-label="Taxa de retorno">
                 <div class="kpi-head">
-                    <div class="kpi-icon info"><i data-lucide="repeat"></i></div>
-                    <span class="kpi-trend up"><i data-lucide="trending-up"></i> +2.1%</span>
+                    <div class="kpi-icon info" aria-hidden="true"><i data-lucide="repeat"></i></div>
+                    <span class="kpi-trend up" aria-label="Crescimento de 2.1 por cento">
+                        <i data-lucide="trending-up" aria-hidden="true"></i> +2.1%
+                    </span>
                 </div>
                 <span class="kpi-label">Taxa de Retorno</span>
-                <span class="kpi-value">68.4<small>%</small></span>
-                <div class="kpi-foot"><canvas class="spark" data-spark="info"></canvas></div>
-            </div>
-            <div class="kpi-card">
+                <strong class="kpi-value">68.4<small>%</small></strong>
+                <div class="kpi-foot"><canvas class="spark" data-spark="info" aria-hidden="true"></canvas></div>
+            </article>
+
+            <article class="kpi-card" aria-label="Taxa de churn">
                 <div class="kpi-head">
-                    <div class="kpi-icon warn"><i data-lucide="user-x"></i></div>
-                    <span class="kpi-trend up"><i data-lucide="trending-down"></i> -0.6%</span>
+                    <div class="kpi-icon warn" aria-hidden="true"><i data-lucide="user-x"></i></div>
+                    <span class="kpi-trend down" aria-label="Redução de 0.6 por cento">
+                        <i data-lucide="trending-down" aria-hidden="true"></i> -0.6%
+                    </span>
                 </div>
                 <span class="kpi-label">Taxa de Churn</span>
-                <span class="kpi-value">4.8<small>%</small></span>
-                <div class="kpi-foot"><canvas class="spark" data-spark="warn"></canvas></div>
-            </div>
-            <div class="kpi-card">
+                <strong class="kpi-value">4.8<small>%</small></strong>
+                <div class="kpi-foot"><canvas class="spark" data-spark="warn" aria-hidden="true"></canvas></div>
+            </article>
+
+            <article class="kpi-card" aria-label="Idade média dos pacientes">
                 <div class="kpi-head">
-                    <div class="kpi-icon purple"><i data-lucide="cake"></i></div>
-                    <span class="kpi-trend up"><i data-lucide="trending-up"></i> estável</span>
+                    <div class="kpi-icon purple" aria-hidden="true"><i data-lucide="cake"></i></div>
+                    <span class="kpi-trend neutral" aria-label="Métrica estável">
+                        <i data-lucide="minus" aria-hidden="true"></i> estável
+                    </span>
                 </div>
                 <span class="kpi-label">Idade Média</span>
-                <span class="kpi-value">38<small>anos</small></span>
-                <div class="kpi-foot"><canvas class="spark" data-spark="purple"></canvas></div>
-            </div>
-            <div class="kpi-card">
+                <strong class="kpi-value">38<small>anos</small></strong>
+                <div class="kpi-foot"><canvas class="spark" data-spark="purple" aria-hidden="true"></canvas></div>
+            </article>
+
+            <article class="kpi-card" aria-label="LTV médio">
                 <div class="kpi-head">
-                    <div class="kpi-icon rose"><i data-lucide="heart"></i></div>
-                    <span class="kpi-trend up"><i data-lucide="trending-up"></i> +0.3</span>
+                    <div class="kpi-icon rose" aria-hidden="true"><i data-lucide="heart"></i></div>
+                    <span class="kpi-trend up" aria-label="Crescimento de 0.3 ponto">
+                        <i data-lucide="trending-up" aria-hidden="true"></i> +0.3
+                    </span>
                 </div>
                 <span class="kpi-label">LTV Médio</span>
-                <span class="kpi-value">R$ 2.4<small>k</small></span>
-                <div class="kpi-foot"><canvas class="spark" data-spark="rose"></canvas></div>
-            </div>
+                <strong class="kpi-value">R$ 2.4<small>k</small></strong>
+                <div class="kpi-foot"><canvas class="spark" data-spark="rose" aria-hidden="true"></canvas></div>
+            </article>
         </section>
 
-        <!-- INSIGHTS -->
-        <section class="insights-row">
-            <div class="insight">
-                <div class="insight-icon ok"><i data-lucide="lightbulb"></i></div>
+        <section class="insights-row" aria-labelledby="insights-title">
+            <h2 id="insights-title" class="sr-only">Insights do período</h2>
+
+            <article class="insight">
+                <div class="insight-icon ok" aria-hidden="true"><i data-lucide="lightbulb"></i></div>
                 <div>
-                    <strong>Destaque do período</strong>
+                    <h3>Destaque do período</h3>
                     <p>Captação por <b>Instagram</b> cresceu 32% no mês. Custo por paciente caiu para <b>R$ 84</b> — ROI
                         4,6x.</p>
                 </div>
-            </div>
-            <div class="insight">
-                <div class="insight-icon warn"><i data-lucide="alert-triangle"></i></div>
+            </article>
+
+            <article class="insight">
+                <div class="insight-icon warn" aria-hidden="true"><i data-lucide="alert-triangle"></i></div>
                 <div>
-                    <strong>Atenção</strong>
+                    <h3>Atenção</h3>
                     <p><b>284 pacientes</b> sem retorno há mais de 12 meses. Campanha de reativação pode recuperar
                         <b>~R$ 168k</b>.
                     </p>
                 </div>
-            </div>
-            <div class="insight">
-                <div class="insight-icon info"><i data-lucide="rocket"></i></div>
+            </article>
+
+            <article class="insight">
+                <div class="insight-icon info" aria-hidden="true"><i data-lucide="rocket"></i></div>
                 <div>
-                    <strong>Oportunidade</strong>
+                    <h3>Oportunidade</h3>
                     <p>Faixa <b>30-44 anos</b> concentra 38% da base. Pacote preventivo direcionado pode aumentar
                         receita em <b>~R$ 92k/mês</b>.</p>
                 </div>
-            </div>
+            </article>
         </section>
 
-        <!-- CHARTS GRID -->
-        <section class="grid">
-
-            <!-- CHART: NOVOS PACIENTES POR MÊS -->
-            <div class="card span-2">
+        <section class="grid" aria-label="Painéis analíticos">
+            <article class="card span-2" aria-labelledby="chartNovosPacientes-title">
                 <div class="card-head">
                     <div>
-                        <h3><i data-lucide="user-plus"></i> Novos Pacientes por Mês</h3>
-                        <span class="card-sub">Captação mensal vs. meta</span>
+                        <h3 id="chartNovosPacientes-title"><i data-lucide="user-plus" aria-hidden="true"></i> Novos
+                            Pacientes por Mês</h3>
+                        <p class="card-sub">Captação mensal vs. meta</p>
                     </div>
+
                     <div class="card-actions">
-                        <div class="seg" data-target="chartNovosPacientes">
-                            <button class="active" data-mode="bar">Barras</button>
-                            <button data-mode="line">Linha</button>
-                        </div>
-                        <button class="icon-btn sm" title="Exportar"><i data-lucide="download"></i></button>
-                        <button class="icon-btn sm" title="Maximizar"><i data-lucide="maximize-2"></i></button>
+                        <fieldset class="seg" data-target="chartNovosPacientes"
+                            aria-label="Alternar visualização do gráfico">
+                            <legend class="sr-only">Alternar visualização do gráfico</legend>
+                            <button type="button" class="active" data-mode="bar" aria-pressed="true">Barras</button>
+                            <button type="button" data-mode="line">Linha</button>
+                        </fieldset>
+
+                        <button class="icon-btn sm" type="button" title="Exportar gráfico"
+                            aria-label="Exportar gráfico">
+                            <i data-lucide="download" aria-hidden="true"></i>
+                        </button>
+
+                        <button class="icon-btn sm" type="button" title="Maximizar gráfico"
+                            aria-label="Maximizar gráfico">
+                            <i data-lucide="maximize-2" aria-hidden="true"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="chart-wrap"><canvas id="chartNovosPacientes"></canvas></div>
-            </div>
 
-            <!-- CHART: SEXO -->
-            <div class="card">
+                <div class="chart-wrap">
+                    <canvas id="chartNovosPacientes" aria-label="Gráfico de novos pacientes por mês"
+                        role="img"></canvas>
+                </div>
+            </article>
+
+            <article class="card" aria-labelledby="chartSexoPacientes-title">
                 <div class="card-head">
                     <div>
-                        <h3><i data-lucide="venus-and-mars"></i> Pacientes por Sexo</h3>
-                        <span class="card-sub">Distribuição da base ativa</span>
+                        <h3 id="chartSexoPacientes-title"><i data-lucide="venus-and-mars" aria-hidden="true"></i>
+                            Pacientes por Sexo</h3>
+                        <p class="card-sub">Distribuição da base ativa</p>
                     </div>
-                    <button class="icon-btn sm" title="Mais"><i data-lucide="more-horizontal"></i></button>
+                    <button class="icon-btn sm" type="button" title="Mais opções" aria-label="Mais opções">
+                        <i data-lucide="more-horizontal" aria-hidden="true"></i>
+                    </button>
                 </div>
+
                 <div class="chart-wrap doughnut">
-                    <canvas id="chartSexoPacientes"></canvas>
-                    <div class="dough-center">
+                    <canvas id="chartSexoPacientes" aria-label="Gráfico de pacientes por sexo" role="img"></canvas>
+                    <div class="dough-center" aria-hidden="true">
                         <span class="dough-num">12.847</span>
                         <span class="dough-lbl">Pacientes</span>
                     </div>
                 </div>
-                <div class="legend" id="legendSexo"></div>
-            </div>
+                <div class="legend" id="legendSexo" aria-label="Legenda do gráfico de sexo"></div>
+            </article>
 
-            <!-- CHART: CONVENIOS -->
-            <div class="card">
+            <article class="card" aria-labelledby="chartConveniosPacientes-title">
                 <div class="card-head">
                     <div>
-                        <h3><i data-lucide="id-card"></i> Distribuição por Convênio</h3>
-                        <span class="card-sub">Participação na base</span>
+                        <h3 id="chartConveniosPacientes-title"><i data-lucide="id-card" aria-hidden="true"></i>
+                            Distribuição por Convênio</h3>
+                        <p class="card-sub">Participação na base</p>
                     </div>
-                    <button class="icon-btn sm" title="Mais"><i data-lucide="more-horizontal"></i></button>
+                    <button class="icon-btn sm" type="button" title="Mais opções" aria-label="Mais opções">
+                        <i data-lucide="more-horizontal" aria-hidden="true"></i>
+                    </button>
                 </div>
-                <div class="chart-wrap"><canvas id="chartConveniosPacientes"></canvas></div>
-            </div>
 
-            <!-- CHART: FAIXA ETARIA -->
-            <div class="card">
+                <div class="chart-wrap">
+                    <canvas id="chartConveniosPacientes" aria-label="Gráfico de convênios dos pacientes"
+                        role="img"></canvas>
+                </div>
+            </article>
+
+            <article class="card" aria-labelledby="chartFaixaEtaria-title">
                 <div class="card-head">
                     <div>
-                        <h3><i data-lucide="bar-chart-2"></i> Faixa Etária</h3>
-                        <span class="card-sub">Pirâmide demográfica</span>
+                        <h3 id="chartFaixaEtaria-title"><i data-lucide="bar-chart-2" aria-hidden="true"></i> Faixa
+                            Etária</h3>
+                        <p class="card-sub">Pirâmide demográfica</p>
                     </div>
-                    <button class="icon-btn sm" title="Mais"><i data-lucide="more-horizontal"></i></button>
+                    <button class="icon-btn sm" type="button" title="Mais opções" aria-label="Mais opções">
+                        <i data-lucide="more-horizontal" aria-hidden="true"></i>
+                    </button>
                 </div>
-                <div class="chart-wrap"><canvas id="chartFaixaEtaria"></canvas></div>
-            </div>
 
-            <!-- TOP CIDADES (BAR LIST) -->
-            <div class="card">
+                <div class="chart-wrap">
+                    <canvas id="chartFaixaEtaria" aria-label="Gráfico de faixa etária" role="img"></canvas>
+                </div>
+            </article>
+
+            <article class="card" aria-labelledby="topCities-title">
                 <div class="card-head">
                     <div>
-                        <h3><i data-lucide="map-pin"></i> Top Cidades</h3>
-                        <span class="card-sub">Origem geográfica</span>
+                        <h3 id="topCities-title"><i data-lucide="map-pin" aria-hidden="true"></i> Top Cidades</h3>
+                        <p class="card-sub">Origem geográfica</p>
                     </div>
                 </div>
-                <div class="bar-list" id="topCities"></div>
-            </div>
 
-            <!-- HEATMAP ORIGEM × MÊS -->
-            <div class="card span-2">
+                <div class="bar-list" id="topCities" aria-label="Lista das principais cidades"></div>
+            </article>
+
+            <article class="card span-2" aria-labelledby="heatmap-title">
                 <div class="card-head">
                     <div>
-                        <h3><i data-lucide="grid-3x3"></i> Mapa de Calor — Origem × Mês</h3>
-                        <span class="card-sub">Captação por canal nos últimos 12 meses</span>
+                        <h3 id="heatmap-title"><i data-lucide="grid-3x3" aria-hidden="true"></i> Mapa de Calor — Origem
+                            × Mês</h3>
+                        <p class="card-sub">Captação por canal nos últimos 12 meses</p>
                     </div>
-                    <button class="icon-btn sm" title="Mais"><i data-lucide="more-horizontal"></i></button>
+                    <button class="icon-btn sm" type="button" title="Mais opções" aria-label="Mais opções">
+                        <i data-lucide="more-horizontal" aria-hidden="true"></i>
+                    </button>
                 </div>
-                <div class="heatmap" id="heatmap"></div>
-                <div class="heatmap-legend">
+
+                <div class="heatmap" id="heatmap" role="grid" aria-label="Mapa de calor origem por mês"></div>
+                <div class="heatmap-legend" aria-hidden="true">
                     <span>Baixo</span>
                     <div class="scale"><span></span><span></span><span></span><span></span><span></span></div>
                     <span>Alto</span>
                 </div>
-            </div>
+            </article>
 
-            <!-- CHART: EVOLUÇÃO DE CADASTROS -->
-            <div class="card span-3">
+            <article class="card span-3" aria-labelledby="chartEvolucaoPacientes-title">
                 <div class="card-head">
                     <div>
-                        <h3><i data-lucide="line-chart"></i> Evolução de Cadastros</h3>
-                        <span class="card-sub">Acumulado da base — comparativo entre realizado, meta e ano
-                            anterior</span>
+                        <h3 id="chartEvolucaoPacientes-title"><i data-lucide="line-chart" aria-hidden="true"></i>
+                            Evolução de Cadastros</h3>
+                        <p class="card-sub">Acumulado da base — comparativo entre realizado, meta e ano anterior</p>
                     </div>
+
                     <div class="card-actions">
-                        <div class="seg" data-target="chartEvolucaoPacientes">
-                            <button class="active" data-metric="all">Tudo</button>
-                            <button data-metric="real">Realizado</button>
-                            <button data-metric="target">Meta</button>
-                            <button data-metric="prev">Ano Anterior</button>
-                        </div>
-                        <button class="icon-btn sm"><i data-lucide="download"></i></button>
+                        <fieldset class="seg" data-target="chartEvolucaoPacientes"
+                            aria-label="Alternar métricas do histórico">
+                            <legend class="sr-only">Alternar métricas do histórico</legend>
+                            <button type="button" class="active" data-metric="all" aria-pressed="true">Tudo</button>
+                            <button type="button" data-metric="real">Realizado</button>
+                            <button type="button" data-metric="target">Meta</button>
+                            <button type="button" data-metric="prev">Ano Anterior</button>
+                        </fieldset>
+
+                        <button class="icon-btn sm" type="button" aria-label="Exportar gráfico">
+                            <i data-lucide="download" aria-hidden="true"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="chart-wrap tall"><canvas id="chartEvolucaoPacientes"></canvas></div>
-            </div>
 
-            <!-- TOP MÉDICOS POR PACIENTES ATIVOS -->
-            <div class="card span-3">
+                <div class="chart-wrap tall">
+                    <canvas id="chartEvolucaoPacientes" aria-label="Gráfico de evolução de cadastros"
+                        role="img"></canvas>
+                </div>
+            </article>
+
+            <article class="card span-3" aria-labelledby="rankTable-title">
                 <div class="card-head">
                     <div>
-                        <h3><i data-lucide="trophy"></i> Top 12 Pacientes — Maior LTV</h3>
-                        <span class="card-sub">Pacientes mais valiosos por receita acumulada</span>
+                        <h3 id="rankTable-title"><i data-lucide="trophy" aria-hidden="true"></i> Top 12 Pacientes —
+                            Maior LTV</h3>
+                        <p class="card-sub">Pacientes mais valiosos por receita acumulada</p>
                     </div>
                     <div class="card-actions">
-                        <div class="seg">
-                            <button class="active">Geral</button>
-                            <button>LTV</button>
-                            <button>Frequência</button>
-                            <button>Recência</button>
-                        </div>
+                        <fieldset class="seg" aria-label="Ordenação do ranking">
+                            <legend class="sr-only">Ordenação do ranking</legend>
+                            <button type="button" class="active" aria-pressed="true">Geral</button>
+                            <button type="button">LTV</button>
+                            <button type="button">Frequência</button>
+                            <button type="button">Recência</button>
+                        </fieldset>
                     </div>
                 </div>
+
                 <div class="table-wrap">
                     <table class="rank-table" id="rankTable">
+                        <caption class="sr-only">Ranking dos pacientes mais valiosos por LTV</caption>
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Paciente</th>
-                                <th>Convênio</th>
-                                <th>Consultas</th>
-                                <th>Última visita</th>
-                                <th>LTV</th>
-                                <th>NPS</th>
-                                <th>Score</th>
+                                <th scope="col">#</th>
+                                <th scope="col">Paciente</th>
+                                <th scope="col">Convênio</th>
+                                <th scope="col" class="num">Consultas</th>
+                                <th scope="col">Última visita</th>
+                                <th scope="col" class="num">LTV</th>
+                                <th scope="col" class="num">NPS</th>
+                                <th scope="col" class="num">Score</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
                 </div>
-            </div>
-
+            </article>
         </section>
 
-        <!-- BREAKDOWN TABLE -->
-        <section class="card">
+        <section class="card" aria-labelledby="breakdown-title">
             <div class="card-head">
                 <div>
-                    <h3><i data-lucide="table-2"></i> Detalhamento por Convênio</h3>
-                    <span class="card-sub">Métricas consolidadas e variação vs. período anterior</span>
+                    <h2 id="breakdown-title"><i data-lucide="table-2" aria-hidden="true"></i> Detalhamento por Convênio
+                    </h2>
+                    <p class="card-sub">Métricas consolidadas e variação vs. período anterior</p>
                 </div>
+
                 <div class="card-actions">
-                    <div class="search-mini"><i data-lucide="search"></i><input id="tblSearch"
-                            placeholder="Buscar convênio..."></div>
-                    <button class="btn ghost sm" id="btnExportCat"><i data-lucide="download"></i> CSV</button>
+                    <label class="search-mini" for="tblSearch">
+                        <i data-lucide="search" aria-hidden="true"></i>
+                        <input id="tblSearch" type="search" placeholder="Buscar convênio..."
+                            aria-label="Buscar convênio">
+                    </label>
+
+                    <button class="btn ghost sm" type="button" id="btnExportCat">
+                        <i data-lucide="download" aria-hidden="true"></i>
+                        CSV
+                    </button>
                 </div>
             </div>
+
             <div class="table-wrap">
                 <table class="data-table" id="breakdownTable">
+                    <caption class="sr-only">
+                        Tabela de detalhamento por convênio com pacientes, novos, retorno, idade média, LTV médio,
+                        variação e tendência.
+                    </caption>
                     <thead>
                         <tr>
-                            <th>Convênio</th>
-                            <th class="num">Pacientes</th>
-                            <th class="num">Novos</th>
-                            <th class="num">Retorno</th>
-                            <th class="num">Idade média</th>
-                            <th class="num">LTV médio</th>
-                            <th class="num">Variação</th>
-                            <th>Tendência</th>
+                            <th scope="col">Convênio</th>
+                            <th scope="col" class="num">Pacientes</th>
+                            <th scope="col" class="num">Novos</th>
+                            <th scope="col" class="num">Retorno</th>
+                            <th scope="col" class="num">Idade média</th>
+                            <th scope="col" class="num">LTV médio</th>
+                            <th scope="col" class="num">Variação</th>
+                            <th scope="col">Tendência</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                     <tfoot>
                         <tr>
-                            <th>TOTAL</th>
+                            <th scope="row">TOTAL</th>
                             <th class="num" id="tFTot">0</th>
                             <th class="num" id="tFNew">0</th>
                             <th class="num" id="tFRet">0%</th>
@@ -413,13 +545,16 @@
             </div>
         </section>
 
-        <footer class="page-footer">
-            <span>© 2026 G4Med · Inteligência Hospitalar · Última atualização: <b id="lastUpdate">agora</b></span>
-            <span>Dados consolidados · Fonte: Data Warehouse v3.2 · SLA 99.98%</span>
+        <footer class="page-footer" role="contentinfo">
+            <p>
+                © 2026 G4Med · Inteligência Hospitalar · Última atualização:
+                <strong id="lastUpdate" aria-live="polite">agora</strong>
+            </p>
+            <p>Dados consolidados · Fonte: Data Warehouse v3.2 · SLA 99.98%</p>
         </footer>
     </main>
 
-    <div id="toastBox" class="toast-box"></div>
+    <div id="toastBox" class="toast-box" aria-live="polite" aria-atomic="true"></div>
 
     <script src="relatorio-paciente.js"></script>
 </body>
