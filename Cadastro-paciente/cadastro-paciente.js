@@ -476,8 +476,7 @@ function updateGenderSummary() {
         const percentage = item.value / total * 100;
 
         return `
-            <span class="rounded-full px-2 py-1 text-[10px]"
-                style="background:var(--panel-soft);color:var(--text-soft)">
+            <span class="rounded-full px-2 py-1 text-[10px] u-bg-soft u-text-soft">
                 <span class="mr-1 inline-block h-2 w-2 rounded-full"
                     style="background:${item.color}"></span>
                 ${escapeHTML(item.name)}
@@ -694,7 +693,7 @@ function renderCities() {
         return `
             <div>
                 <div class="mb-1 flex justify-between text-xs">
-                    <span style="color:var(--text-soft)">
+                    <span class="u-text-soft">
                         ${escapeHTML(city.name)}
                     </span>
                     <strong class="font-mono">
@@ -702,8 +701,7 @@ function renderCities() {
                     </strong>
                 </div>
 
-                <div class="h-2 overflow-hidden rounded-full"
-                    style="background:var(--line-soft)">
+                <div class="h-2 overflow-hidden rounded-full u-bg-line-soft">
                     <div class="h-full rounded-full"
                         style="width:${width}%;background:var(--gradient)">
                     </div>
@@ -812,12 +810,12 @@ function renderRank() {
                     : 'text-rose-500';
 
         return `
-            <tr class="border-b" style="border-color:var(--line-soft)">
+            <tr class="border-b u-bd-soft">
                 <td class="p-3 font-mono">${index + 1}</td>
                 <td class="p-3 font-semibold">${escapeHTML(patient.name)}</td>
                 <td class="p-3">${escapeHTML(patient.insurance)}</td>
                 <td class="p-3 font-mono">${patient.consultations}</td>
-                <td class="p-3" style="color:var(--muted)">
+                <td class="p-3 u-muted">
                     ${escapeHTML(patient.lastVisit)}
                 </td>
                 <td class="p-3 font-mono">${formatCurrency(patient.ltv)}</td>
@@ -857,7 +855,7 @@ function renderBreakdown(search = '') {
                 : 'text-rose-500';
 
         return `
-            <tr class="border-b" style="border-color:var(--line-soft)">
+            <tr class="border-b u-bd-soft">
                 <td class="p-3 font-bold">
                     ${escapeHTML(item.name)}
                 </td>

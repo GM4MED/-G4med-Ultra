@@ -371,6 +371,49 @@ button[disabled] {
     opacity: .85;
 }
 
+/* Utilitarios de tema: substituem os style="" repetidos do HTML.
+   Existem porque o Tailwind CDN nao conhece as variaveis CSS do tema. */
+.u-muted {
+    color: var(--muted);
+}
+
+.u-text-soft {
+    color: var(--text-soft);
+}
+
+.u-text {
+    color: var(--text);
+}
+
+.u-bd {
+    border-color: var(--line);
+}
+
+.u-bd-soft {
+    border-color: var(--line-soft);
+}
+
+.u-bg-panel {
+    background: var(--panel);
+}
+
+.u-bg-soft {
+    background: var(--panel-soft);
+}
+
+.u-bg-line-soft {
+    background: var(--line-soft);
+}
+
+.u-bg-gradient {
+    background: var(--gradient);
+}
+
+.u-bg-glass {
+    background: color-mix(in srgb, var(--panel) 88%, transparent);
+    backdrop-filter: blur(8px);
+}
+
 @media print {
 
     .topbar,
