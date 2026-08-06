@@ -5,52 +5,59 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* ==========================================
-   2. Base Styles & Layers
+   2. Base Styles
    ================================---------- */
 @layer base {
+    :root {
+        /* CSS Variables para facilitar manutenção e temas */
+        --scrollbar-track: theme('colors.slate.100');
+        --scrollbar-thumb: theme('colors.slate.300');
+        --scrollbar-thumb-hover: theme('colors.slate.400');
+    }
+
     body {
-        font-family: 'Inter', sans-serif, system-ui;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
         @apply bg-slate-50 text-slate-800 antialiased;
+    }
+
+    /* Scrollbar padrão (Firefox + Modern Spec) */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    }
+
+    /* Scrollbar para navegadores WebKit (Chrome, Safari, Edge) */
+    ::-webkit-scrollbar {
+        @apply w-1.5 h-1.5;
+    }
+
+    ::-webkit-scrollbar-track {
+        background-color: var(--scrollbar-track);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: var(--scrollbar-thumb);
+        @apply rounded-full;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: var(--scrollbar-thumb-hover);
     }
 }
 
-
 /* ==========================================
-   3. Scrollbar Customization
-   ================================---------- */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f5f9;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
-
-
-/* ==========================================
-   4. Animations & Keyframes
+   3. Keyframes & Animations
    ================================---------- */
 @keyframes pulse-red {
 
     0%,
     100% {
-        background-color: rgba(239, 68, 68, 1);
+        background-color: theme('colors.red.500');
     }
 
     50% {
-        background-color: rgba(185, 28, 28, 1);
+        background-color: theme('colors.red.700');
     }
 }
 
@@ -66,43 +73,60 @@
     }
 }
 
+/* ==========================================
+   4. Custom Components Layer
+   ================================---------- */
+@layer components {
+
+    /* Glassmorphic Header */
+    .header-glass {
+        @apply bg-white/90 backdrop-blur-md border-b border-slate-200/80;
+    }
+
+    /* Sidebar Items */
+    .sidebar-item-active {
+        @apply bg-cyan-50 text-cyan-700 font-medium border-r-4 border-cyan-600 transition-colors duration-150;
+    }
+
+    .sidebar-item-inactive {
+        @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150;
+    }
+
+    /* Notification Badge */
+    .notification-badge {
+        @apply absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] text-white font-bold pointer-events-none;
+    }
+}
 
 /* ==========================================
-   5. Custom Components & Utilities
+   5. Custom Utilities Layer
    ================================---------- */
+@layer utilities {
 
-/* Charts */
-.chart-bar {
-    transition: height 0.5s ease-in-out;
+    /* Transitions & Animations */
+    .chart-bar {
+        @apply transition-[height] duration-500 ease-in-out;
+    }
+
+    .emergency-active {
+        animation: pulse-red 1s infinite ease-in-out;
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.2s ease-out forwards;
+        will-change: opacity, transform;
+    }
 }
 
-/* Emergency States */
-.emergency-active {
-    animation: pulse-red 1s infinite;
-}
+/* ==========================================
+   6. Accessibility Overrides
+   ================================---------- */
+@media (prefers-reduced-motion: reduce) {
 
-/* Modals & Dropdowns */
-.animate-fade-in {
-    animation: fadeIn 0.2s ease-out forwards;
-}
-
-/* Layout (Glassmorphism) */
-.header-glass {
-    background-color: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-}
-
-/* Sidebar States */
-.sidebar-item-active {
-    @apply bg-cyan-50 text-cyan-700 font-medium border-r-4 border-cyan-600;
-}
-
-.sidebar-item-inactive {
-    @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150;
-}
-
-/* Badges & Indicators */
-.notification-badge {
-    @apply absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] text-white font-bold;
+    .animate-fade-in,
+    .emergency-active,
+    .chart-bar {
+        animation: none !important;
+        transition: none !important;
+    }
 }
