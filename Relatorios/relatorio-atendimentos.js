@@ -1,627 +1,665 @@
-/* =========================================================
-   G4MED · Relatório de Atendimentos · BI · JS
-   Reescrito para o HTML/CSS semânticos e acessíveis
-   ========================================================= */
+'use strict';
 
-(() => {
-    'use strict';
+const $ = (selector, root = document) =>
+    root.querySelector(selector);
 
-    const $ = (selector, root = document) => root.querySelector(selector);
-    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+const $$ = (selector, root = document) =>
+    Array.from(root.querySelectorAll(selector));
 
-    const state = {
-        theme: document.documentElement.dataset.theme || 'light',
-        period: '30',
-        chartDoctorsMode: 'bar',
-        chartHistoryMetric: 'all',
-        search: '',
-        filters: {
-            from: '',
-            to: '',
-            unit: '',
-            spec: '',
-            doctor: '',
-            insurance: ''
-        }
+const charts = new Map();
+
+const state = {
+    period: '30',
+    newPatientsMode: 'bar',
+    evolutionMetric: 'all',
+    rankMode: 'geral',
+    filters: {},
+    data: null,
+    isLoading: false,
+    requestId: 0,
+    controller: null,
+    firstPaint: true
+};
+
+// Troque para false quando o endpoint real estiver disponível.
+const USE_MOCK_DATA = true;
+
+const API_ENDPOINT = '/api/pacientes/relatorio';
+
+const REQUEST_TIMEOUT = 15000;
+
+const prefersReducedMotion = window.matchMedia
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false;
+
+const COLORS = {
+    brand: '#4f46e5',
+    cyan: '#06b6d4',
+    success: '#10b981',
+    warning: '#f59e0b',
+    danger: '#ef4444',
+    info: '#0284c7',
+    purple: '#8b5cf6',
+    rose: '#f43f5e',
+    gray: '#94a3b8'
+};
+
+const MONTHS = [
+    'Jan', 'Fev', 'Mar', 'Abr',
+    'Mai', 'Jun', 'Jul', 'Ago',
+    'Set', 'Out', 'Nov', 'Dez'
+];
+
+const MONTHS_FULL = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril',
+    'Maio', 'Junho', 'Julho', 'Agosto',
+    'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+];
+
+const numberFormatter = new Intl.NumberFormat('pt-BR');
+
+const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    maximumFractionDigits: 0
+});
+
+const decimalFormatter = new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1
+});
+
+function formatNumber(value) {
+    return numberFormatter.format(
+        Math.round(Number(value) || 0)
+    );
+}
+
+function formatCurrency(value) {
+    return currencyFormatter.format(
+        Number(value) || 0
+    );
+}
+
+function formatDecimal(value) {
+    return decimalFormatter.format(
+        Number(value) || 0
+    );
+}
+
+function formatPercent(value) {
+    return `${formatDecimal(value)}%`;
+}
+
+function escapeHTML(value) {
+    return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+}
+
+function isDark() {
+    return document.documentElement.classList.contains('dark');
+}
+
+function themeColors() {
+    return {
+        text: isDark() ? '#cbd5e1' : '#475569',
+        muted: isDark() ? '#94a3b8' : '#64748b',
+        grid: isDark()
+            ? 'rgba(148,163,184,.16)'
+            : 'rgba(15,23,42,.07)',
+        surface: isDark() ? '#111832' : '#ffffff'
     };
+}
 
-    const COLORS = {
-        brand: '#4f46e5',
-        brand2: '#6366f1',
-        purple: '#8b5cf6',
-        cyan: '#06b6d4',
-        ok: '#10b981',
-        warn: '#f59e0b',
-        danger: '#ef4444',
-        info: '#0284c7',
-        rose: '#f43f5e',
-        ink3: '#94a3b8'
-    };
+function showToast(message, type = 'info') {
+    const area = $('#toastBox');
+    if (!area) return;
 
-    const SPECS = [
-        { name: 'Cardiologia', color: COLORS.brand, atend: 842, nshow: 5.1, tm: 32, nps: 9.3, rev: 421000, delta: 14.2, trend: [12, 15, 14, 18, 21, 19, 24] },
-        { name: 'Ortopedia', color: COLORS.cyan, atend: 678, nshow: 7.4, tm: 28, nps: 8.7, rev: 298000, delta: 8.1, trend: [18, 16, 19, 17, 22, 24, 25] },
-        { name: 'Pediatria', color: COLORS.purple, atend: 912, nshow: 4.8, tm: 24, nps: 9.5, rev: 312000, delta: 18.5, trend: [10, 14, 16, 19, 22, 26, 28] },
-        { name: 'Ginecologia', color: COLORS.rose, atend: 587, nshow: 6.2, tm: 30, nps: 9.1, rev: 264000, delta: 5.4, trend: [14, 15, 17, 16, 18, 19, 20] },
-        { name: 'Dermatologia', color: COLORS.warn, atend: 521, nshow: 8.1, tm: 22, nps: 8.9, rev: 189000, delta: -2.3, trend: [20, 18, 17, 16, 15, 16, 17] },
-        { name: 'Neurologia', color: COLORS.info, atend: 412, nshow: 7.7, tm: 38, nps: 9.0, rev: 248000, delta: 11.0, trend: [10, 12, 14, 15, 17, 19, 21] },
-        { name: 'Endocrinologia', color: COLORS.ok, atend: 389, nshow: 5.9, tm: 28, nps: 9.2, rev: 187000, delta: 6.7, trend: [14, 15, 16, 17, 18, 19, 20] },
-        { name: 'Oftalmologia', color: COLORS.danger, atend: 486, nshow: 6.5, tm: 20, nps: 8.8, rev: 172000, delta: 9.4, trend: [12, 13, 14, 16, 18, 19, 21] }
-    ];
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    toast.setAttribute('role', 'status');
 
-    const DOCTORS = [
-        { name: 'Dra. Mariana Costa', spec: 'Cardiologia', atend: 312, nps: 9.6, punc: 96, initials: 'MC' },
-        { name: 'Dr. Felipe Andrade', spec: 'Ortopedia', atend: 289, nps: 9.2, punc: 92, initials: 'FA' },
-        { name: 'Dra. Helena Vieira', spec: 'Pediatria', atend: 276, nps: 9.7, punc: 94, initials: 'HV' },
-        { name: 'Dr. Rafael Mendes', spec: 'Cardiologia', atend: 251, nps: 9.0, punc: 88, initials: 'RM' },
-        { name: 'Dra. Larissa Souza', spec: 'Ginecologia', atend: 238, nps: 9.4, punc: 91, initials: 'LS' },
-        { name: 'Dr. Bruno Almeida', spec: 'Neurologia', atend: 217, nps: 9.1, punc: 87, initials: 'BA' },
-        { name: 'Dra. Paula Ribeiro', spec: 'Pediatria', atend: 204, nps: 9.5, punc: 93, initials: 'PR' },
-        { name: 'Dr. Gustavo Lima', spec: 'Dermatologia', atend: 189, nps: 8.8, punc: 85, initials: 'GL' },
-        { name: 'Dra. Camila Torres', spec: 'Endocrinologia', atend: 178, nps: 9.3, punc: 90, initials: 'CT' },
-        { name: 'Dr. André Castro', spec: 'Oftalmologia', atend: 164, nps: 8.9, punc: 89, initials: 'AC' }
-    ];
+    area.appendChild(toast);
 
-    const STATUSES = [
-        { label: 'Realizadas', value: 67, color: COLORS.ok },
-        { label: 'Confirmadas', value: 14, color: COLORS.brand },
-        { label: 'Aguardando', value: 8, color: COLORS.info },
-        { label: 'No-Show', value: 6, color: COLORS.warn },
-        { label: 'Canceladas', value: 5, color: COLORS.danger }
-    ];
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(30px)';
+    }, 2800);
 
-    const WEEK = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-    const WEEK_DATA = [842, 891, 654, 789, 803, 512, 336];
+    setTimeout(() => toast.remove(), 3200);
+}
 
-    const INSURANCES = [
-        { name: 'Particular', value: 34, color: COLORS.brand },
-        { name: 'Unimed', value: 24, color: COLORS.cyan },
-        { name: 'Bradesco Saúde', value: 14, color: COLORS.purple },
-        { name: 'SulAmérica', value: 11, color: COLORS.rose },
-        { name: 'Amil', value: 9, color: COLORS.warn },
-        { name: 'Outros', value: 8, color: COLORS.info }
-    ];
-
-    const charts = {};
-
-    const getCanvas = id => {
-        const el = document.getElementById(id);
-        return el ? el.getContext('2d') : null;
-    };
-
-    function applyChartDefaults() {
-        const dark = document.documentElement.dataset.theme === 'dark';
-
-        Chart.defaults.font.family = "'Plus Jakarta Sans', system-ui, sans-serif";
-        Chart.defaults.font.size = 12;
-        Chart.defaults.color = dark ? '#94a3b8' : '#64748b';
-        Chart.defaults.borderColor = dark ? 'rgba(255,255,255,.08)' : 'rgba(15,23,42,.08)';
-    }
-
-    function destroyChart(key) {
-        if (charts[key]) {
-            charts[key].destroy();
-            charts[key] = null;
-        }
-    }
-
-    const tooltipBase = {
-        enabled: true,
-        backgroundColor: 'rgba(15,23,42,.95)',
-        titleColor: '#fff',
-        bodyColor: '#e2e8f0',
-        borderColor: 'rgba(255,255,255,.08)',
-        borderWidth: 1,
-        padding: 12,
-        cornerRadius: 10,
-        boxPadding: 6,
-        displayColors: true,
-        usePointStyle: true,
-        titleFont: { weight: '700', size: 12.5 },
-        bodyFont: { size: 12 }
-    };
-
-    function createDoctorsChart(mode = state.chartDoctorsMode) {
-        const ctx = getCanvas('chartDoctors');
-        if (!ctx) return;
-
-        destroyChart('doctors');
-
-        const top = DOCTORS.slice(0, 10);
-        const grad = ctx.createLinearGradient(0, 0, 0, 300);
-        grad.addColorStop(0, COLORS.brand);
-        grad.addColorStop(1, COLORS.cyan);
-
-        charts.doctors = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: top.map(d => d.name.replace(/^Dra?\.\s?/i, '')),
-                datasets: [{
-                    label: 'Atendimentos',
-                    data: top.map(d => d.atend),
-                    backgroundColor: grad,
-                    borderRadius: 8,
-                    maxBarThickness: 32
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: mode === 'bar-h' ? 'y' : 'x',
-                plugins: {
-                    legend: { display: false },
-                    tooltip: tooltipBase
-                },
-                scales: {
-                    x: {
-                        grid: { display: mode === 'bar-h' },
-                        border: { display: false },
-                        ticks: { font: { size: 11 } }
-                    },
-                    y: {
-                        grid: { color: 'rgba(15,23,42,.05)' },
-                        border: { display: false },
-                        beginAtZero: true,
-                        ticks: { font: { size: 11 } }
-                    }
-                }
-            }
-        });
-    }
-
-    function createStatusChart() {
-        const ctx = getCanvas('chartStatus');
-        if (!ctx) return;
-
-        destroyChart('status');
-
-        charts.status = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: STATUSES.map(s => s.label),
-                datasets: [{
-                    data: STATUSES.map(s => s.value),
-                    backgroundColor: STATUSES.map(s => s.color),
-                    borderWidth: 0,
-                    spacing: 3,
-                    hoverOffset: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '72%',
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        ...tooltipBase,
-                        callbacks: {
-                            label: c => ` ${c.label}: ${c.parsed}%`
-                        }
-                    }
-                }
-            }
-        });
-
-        const legend = document.getElementById('legendStatus');
-        if (legend) {
-            legend.innerHTML = STATUSES.map(s => (
-                `<span class="legend-item">
-          <span class="sw" style="background:${s.color}"></span>
-          ${s.label}
-          <b style="margin-left:6px;color:var(--ink);font-weight:700">${s.value}%</b>
-        </span>`
-            )).join('');
-        }
-    }
-
-    function createSpecChart() {
-        const ctx = getCanvas('chartSpec');
-        if (!ctx) return;
-
-        destroyChart('spec');
-
-        charts.spec = new Chart(ctx, {
-            type: 'polarArea',
-            data: {
-                labels: SPECS.map(s => s.name),
-                datasets: [{
-                    data: SPECS.map(s => s.atend),
-                    backgroundColor: SPECS.map(s => `${s.color}cc`),
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            font: { size: 11 },
-                            boxWidth: 10,
-                            padding: 10,
-                            usePointStyle: true
-                        }
-                    },
-                    tooltip: tooltipBase
-                },
-                scales: {
-                    r: {
-                        ticks: { display: false },
-                        grid: { color: 'rgba(15,23,42,.08)' },
-                        angleLines: { color: 'rgba(15,23,42,.05)' }
-                    }
-                }
-            }
-        });
-    }
-
-    function createWeekChart() {
-        const ctx = getCanvas('chartWeek');
-        if (!ctx) return;
-
-        destroyChart('week');
-
-        const max = Math.max(...WEEK_DATA);
-        const colors = WEEK_DATA.map(v => {
-            const ratio = v / max;
-            if (ratio > .85) return COLORS.brand;
-            if (ratio > .6) return COLORS.brand2;
-            if (ratio > .4) return COLORS.cyan;
-            return '#a5b4fc';
-        });
-
-        charts.week = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: WEEK,
-                datasets: [{
-                    data: WEEK_DATA,
-                    backgroundColor: colors,
-                    borderRadius: 10,
-                    maxBarThickness: 36
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: tooltipBase
-                },
-                scales: {
-                    x: {
-                        grid: { display: false },
-                        border: { display: false },
-                        ticks: { font: { size: 11.5, weight: 600 } }
-                    },
-                    y: {
-                        grid: { color: 'rgba(15,23,42,.05)' },
-                        border: { display: false },
-                        beginAtZero: true,
-                        ticks: { font: { size: 11 } }
-                    }
-                }
-            }
-        });
-    }
-
-    function renderHeatmap() {
-        const el = document.getElementById('heatmap');
-        if (!el) return;
-
-        const hours = ['07h', '08h', '09h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h'];
-        const palette = ['#eef2ff', '#c7d2fe', '#a5b4fc', '#818cf8', '#6366f1', '#4f46e5', '#3730a3'];
-
-        let html = `<div></div>${WEEK.map(d => `<div class="hm-th">${d}</div>`).join('')}`;
-
-        hours.forEach(h => {
-            html += `<div class="hm-rh">${h}</div>`;
-
-            WEEK.forEach((day, dayIndex) => {
-                const hh = Number(h.replace('h', ''));
-                let intensity = 0.2;
-
-                if ((hh >= 9 && hh <= 11) || (hh >= 14 && hh <= 17)) intensity = 0.7;
-                if (hh === 10 || hh === 15) intensity = 0.95;
-                if (dayIndex >= 5) intensity *= 0.4;
-                intensity *= (0.85 + Math.random() * 0.3);
-                intensity = Math.min(intensity, 1);
-
-                const idx = Math.min(Math.floor(intensity * palette.length), palette.length - 1);
-                const value = Math.round(intensity * 60);
-
-                html += `
-          <div
-            class="hm-cell"
-            style="background:${palette[idx]}"
-            title="${h} · ${day}: ${value} atendimentos"
-            aria-label="${h} em ${day}: ${value} atendimentos"
-            role="gridcell"
-          ></div>
-        `;
-            });
-        });
-
-        el.innerHTML = html;
-    }
-
-    function createHistoryChart(metric = state.chartHistoryMetric) {
-        const ctx = getCanvas('chartHistory');
-        if (!ctx) return;
-
-        destroyChart('history');
-
-        const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        const real = [3812, 3920, 4102, 4230, 4118, 4382, 4521, 4678, 4812, 4827, null, null];
-        const target = [3800, 3900, 4000, 4100, 4200, 4300, 4400, 4500, 4600, 4700, 4800, 4900];
-        const prev = [3520, 3601, 3782, 3850, 3902, 3988, 4012, 4180, 4310, 4456, 4520, 4612];
-
-        const grad = ctx.createLinearGradient(0, 0, 0, 380);
-        grad.addColorStop(0, 'rgba(79,70,229,.35)');
-        grad.addColorStop(1, 'rgba(79,70,229,0)');
-
-        const datasets = [];
-
-        if (metric === 'all' || metric === 'real') {
-            datasets.push({
-                label: 'Realizado',
-                data: real,
-                borderColor: COLORS.brand,
-                backgroundColor: grad,
-                fill: true,
-                tension: .4,
-                borderWidth: 3,
-                pointRadius: 5,
-                pointBackgroundColor: '#fff',
-                pointBorderColor: COLORS.brand,
-                pointBorderWidth: 2,
-                pointHoverRadius: 7
-            });
-        }
-
-        if (metric === 'all' || metric === 'target') {
-            datasets.push({
-                label: 'Meta',
-                data: target,
-                borderColor: COLORS.ok,
-                borderDash: [6, 4],
-                borderWidth: 2,
-                pointRadius: 0,
-                tension: .4,
-                fill: false
-            });
-        }
-
-        if (metric === 'all' || metric === 'prev') {
-            datasets.push({
-                label: 'Ano Anterior',
-                data: prev,
-                borderColor: COLORS.ink3,
-                borderWidth: 2,
-                pointRadius: 3,
-                tension: .4,
-                fill: false,
-                borderDash: [2, 3]
-            });
-        }
-
-        charts.history = new Chart(ctx, {
-            type: 'line',
-            data: { labels: months, datasets },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            font: { size: 12 },
-                            usePointStyle: true,
-                            padding: 14,
-                            boxWidth: 8
-                        }
-                    },
-                    tooltip: tooltipBase
-                },
-                scales: {
-                    x: {
-                        grid: { display: false },
-                        border: { display: false },
-                        ticks: { font: { size: 11.5 } }
-                    },
-                    y: {
-                        grid: { color: 'rgba(15,23,42,.05)' },
-                        border: { display: false },
-                        beginAtZero: false,
-                        ticks: {
-                            font: { size: 11 },
-                            callback: v => Number(v).toLocaleString('pt-BR')
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    function createSparkline(canvas, data, color) {
-        const ctx = canvas.getContext('2d');
-        const grad = ctx.createLinearGradient(0, 0, 0, 40);
-        grad.addColorStop(0, `${color}66`);
-        grad.addColorStop(1, `${color}00`);
-
-        return new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: data.map((_, i) => i),
-                datasets: [{
-                    data,
-                    borderColor: color,
-                    backgroundColor: grad,
-                    fill: true,
-                    tension: .4,
-                    borderWidth: 2,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: false }
-                },
-                scales: {
-                    x: { display: false },
-                    y: { display: false }
-                }
-            }
-        });
-    }
-
-    function renderSparklines() {
-        $$('.spark').forEach(el => {
-            const color = COLORS[el.dataset.spark] || COLORS.brand;
-            const data = Array.from({ length: 14 }, () => Math.random() * 40 + 30);
-            createSparkline(el, data, color);
-        });
-    }
-
-    function renderInsurance() {
-        const el = document.getElementById('topInsurance');
-        if (!el) return;
-
-        const max = Math.max(...INSURANCES.map(i => i.value));
-        el.innerHTML = INSURANCES.map(i => `
-      <div class="bar-item">
-        <div class="bar-head">
-          <strong>${i.name}</strong>
-          <span>${i.value}%</span>
-        </div>
-        <div class="bar-track" aria-hidden="true">
-          <div class="bar-fill" style="width:${(i.value / max * 100).toFixed(1)}%;background:${i.color}"></div>
-        </div>
-      </div>
-    `).join('');
-    }
-
-    function renderRank() {
-        const tbody = $('#rankTable tbody');
-        if (!tbody) return;
-
-        const max = Math.max(...DOCTORS.map(d => d.atend));
-        const ranked = DOCTORS
-            .map(d => {
-                const score = ((d.atend / max) * 40) + ((d.nps / 10) * 30) + ((d.punc / 100) * 30);
-                return { ...d, score: Math.round(score * 10) / 10 };
-            })
-            .sort((a, b) => b.score - a.score);
-
-        tbody.innerHTML = ranked.map((d, i) => {
-            const posClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
-            const npsColor = d.nps >= 9.3 ? 'var(--ok)' : d.nps >= 9 ? 'var(--brand)' : 'var(--warn)';
-
-            return `
-        <tr>
-          <td><span class="rank-pos ${posClass}">${i + 1}</span></td>
-          <td>
-            <div class="doc-cell">
-              <div class="av">${d.initials}</div>
-              <div>
-                <strong>${d.name}</strong>
-                <small>${d.spec}</small>
-              </div>
-            </div>
-          </td>
-          <td>${d.spec}</td>
-          <td class="num">${d.atend}</td>
-          <td class="num"><b style="color:${npsColor}">${d.nps.toFixed(1)}</b></td>
-          <td class="num">${d.punc}%</td>
-          <td class="num">
-            <div class="score-bar">
-              <div class="bar"><span style="width:${d.score}%"></span></div>
-              <b>${d.score}</b>
-            </div>
-          </td>
-        </tr>
-      `;
-        }).join('');
-    }
-
-    function renderBreakdown(search = state.search) {
-        const tbody = $('#breakdownTable tbody');
-        if (!tbody) return;
-
-        const list = SPECS.filter(s => !search || s.name.toLowerCase().includes(search.toLowerCase()));
-
-        tbody.innerHTML = list.map(s => `
-      <tr>
-        <td>
-          <div class="spec-cell">
-            <span class="dot" style="background:${s.color}"></span>
-            <strong>${s.name}</strong>
-          </div>
-        </td>
-        <td class="num">${s.atend.toLocaleString('pt-BR')}</td>
-        <td class="num">${s.nshow.toFixed(1)}%</td>
-        <td class="num">${s.tm} min</td>
-        <td class="num"><b style="color:${s.nps >= 9.2 ? 'var(--ok)' : 'var(--ink-2)'}">${s.nps.toFixed(1)}</b></td>
-        <td class="num">R$ ${(s.rev / 1000).toFixed(0)}k</td>
-        <td class="num">
-          ${s.delta >= 0
-                ? `<span class="delta up"><i data-lucide="trending-up" aria-hidden="true"></i>+${s.delta}%</span>`
-                : `<span class="delta down"><i data-lucide="trending-down" aria-hidden="true"></i>${s.delta}%</span>`
-            }
-        </td>
-        <td><canvas class="trend-cell" data-trend="${s.name}" aria-label="Tendência de ${s.name}" role="img"></canvas></td>
-      </tr>
-    `).join('');
-
+function refreshIcons() {
+    if (window.lucide) {
         lucide.createIcons();
+    }
+}
 
-        list.forEach(s => {
-            const canvas = tbody.querySelector(`canvas[data-trend="${CSS.escape(s.name)}"]`);
-            if (canvas) {
-                createTrendMini(canvas, s.trend, s.color);
+function destroyChart(key) {
+    const chart = charts.get(key);
+
+    if (chart) {
+        chart.destroy();
+        charts.delete(key);
+    }
+}
+
+function registerChart(key, chart) {
+    destroyChart(key);
+    charts.set(key, chart);
+}
+
+function isPlainObject(value) {
+    return Boolean(value) &&
+        typeof value === 'object' &&
+        !Array.isArray(value);
+}
+
+function mergeDeep(base, override) {
+    const result = { ...base };
+
+    Object.entries(override).forEach(([key, value]) => {
+        result[key] = isPlainObject(value) && isPlainObject(base[key])
+            ? mergeDeep(base[key], value)
+            : value;
+    });
+
+    return result;
+}
+
+function chartOptions(options = {}) {
+    const theme = themeColors();
+
+    const defaults = {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+            duration: 600,
+            easing: 'easeOutQuart'
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    color: theme.text,
+                    usePointStyle: true,
+                    boxWidth: 8,
+                    padding: 12
+                }
+            },
+            tooltip: {
+                backgroundColor: theme.surface,
+                titleColor: theme.text,
+                bodyColor: theme.text,
+                borderColor: theme.grid,
+                borderWidth: 1,
+                padding: 10,
+                cornerRadius: 9,
+                usePointStyle: true
             }
-        });
+        },
+        scales: {
+            x: {
+                ticks: { color: theme.muted },
+                grid: { color: theme.grid }
+            },
+            y: {
+                ticks: { color: theme.muted },
+                grid: { color: theme.grid },
+                beginAtZero: true
+            }
+        }
+    };
 
-        const totals = list.reduce((acc, s) => {
-            acc.atend += s.atend;
-            acc.ns += s.nshow * s.atend;
-            acc.tm += s.tm * s.atend;
-            acc.nps += s.nps * s.atend;
-            acc.rev += s.rev;
-            return acc;
-        }, { atend: 0, ns: 0, tm: 0, nps: 0, rev: 0 });
+    return mergeDeep(defaults, options);
+}
 
-        $('#tFAtend').textContent = totals.atend.toLocaleString('pt-BR');
-        $('#tFNs').textContent = totals.atend ? `${(totals.ns / totals.atend).toFixed(1)}%` : '0%';
-        $('#tFTm').textContent = totals.atend ? `${Math.round(totals.tm / totals.atend)} min` : '0 min';
-        $('#tFNps').textContent = totals.atend ? (totals.nps / totals.atend).toFixed(1) : '0';
-        $('#tFRev').textContent = `R$ ${(totals.rev / 1000).toFixed(0)}k`;
+function makeData() {
+    return {
+        totalPatients: 12847,
+
+        acquisition: [
+            342, 368, 401, 389,
+            425, 448, 462, 471,
+            489, 512, 498, 487
+        ],
+
+        target: [
+            350, 370, 390, 410,
+            430, 450, 470, 490,
+            510, 530, 550, 570
+        ],
+
+        gender: [
+            {
+                name: 'Feminino',
+                value: 7048,
+                color: COLORS.rose
+            },
+            {
+                name: 'Masculino',
+                value: 5011,
+                color: COLORS.brand
+            },
+            {
+                name: 'Outro / Não informado',
+                value: 788,
+                color: COLORS.gray
+            }
+        ],
+
+        insurance: [
+            ['Particular', 2840, 418, 2422, 36, 3120, 9.4, 'up'],
+            ['Unimed', 3210, 384, 2826, 39, 2480, 6.2, 'up'],
+            ['Bradesco Saúde', 1980, 264, 1716, 41, 2780, 4.8, 'up'],
+            ['SulAmérica', 1420, 198, 1222, 38, 2540, 11.2, 'up'],
+            ['Amil', 1180, 146, 1034, 40, 2220, -2.1, 'down'],
+            ['NotreDame', 842, 104, 738, 37, 2140, 8.3, 'up'],
+            ['Hapvida', 684, 82, 602, 42, 1840, 5.7, 'up'],
+            ['Outros', 691, 76, 615, 39, 2080, 3.2, 'up']
+        ].map(item => ({
+            name: item[0],
+            patients: item[1],
+            newPatients: item[2],
+            returns: item[3],
+            age: item[4],
+            ltv: item[5],
+            variation: item[6],
+            trend: item[7]
+        })),
+
+        ageGroups: [
+            ['0–12', 284, 312],
+            ['13–17', 198, 212],
+            ['18–29', 1420, 1180],
+            ['30–44', 2680, 2120],
+            ['45–59', 1842, 1418],
+            ['60+', 1064, 317]
+        ].map(item => ({
+            label: item[0],
+            female: item[1],
+            male: item[2]
+        })),
+
+        cities: [
+            ['São Paulo · SP', 42],
+            ['Guarulhos · SP', 14],
+            ['Osasco · SP', 11],
+            ['Santo André · SP', 9],
+            ['Barueri · SP', 8],
+            ['Outros', 16]
+        ].map(item => ({
+            name: item[0],
+            value: item[1]
+        })),
+
+        origins: [
+            'Indicação',
+            'Google',
+            'Instagram',
+            'Convênio',
+            'Site',
+            'Retorno'
+        ],
+
+        evolutionReal: [
+            9820, 10170, 10530, 10920,
+            11340, 11780, 12220, 12680,
+            13140, 13620, 14080, 14540
+        ],
+
+        evolutionTarget: [
+            9800, 10200, 10600, 11000,
+            11400, 11800, 12200, 12600,
+            13000, 13400, 13800, 14200
+        ],
+
+        evolutionPrevious: [
+            9140, 9480, 9810, 10160,
+            10520, 10860, 11200, 11540,
+            11880, 12210, 12540, 12890
+        ],
+
+        patients: [
+            ['Maria Silva Santos', 'Particular', 42, 'há 3 dias', 18420, 9.8],
+            ['João Pedro Almeida', 'Unimed', 38, 'há 1 semana', 16280, 9.6],
+            ['Ana Beatriz Costa', 'Bradesco Saúde', 36, 'há 2 dias', 15640, 9.7],
+            ['Carlos Eduardo Lima', 'Particular', 34, 'há 5 dias', 14820, 9.4],
+            ['Fernanda Ribeiro', 'SulAmérica', 32, 'há 12 dias', 13980, 9.5],
+            ['Roberto Mendes', 'Unimed', 30, 'há 1 dia', 13420, 9.3],
+            ['Patrícia Oliveira', 'Particular', 29, 'há 8 dias', 12960, 9.6],
+            ['Lucas Henrique Souza', 'Amil', 27, 'há 4 dias', 11840, 9.2],
+            ['Camila Andrade', 'Particular', 26, 'há 2 semanas', 11420, 9.5],
+            ['Bruno Castro Vieira', 'NotreDame', 25, 'há 6 dias', 10840, 9.1],
+            ['Juliana Pereira', 'Unimed', 24, 'há 9 dias', 10420, 9.4],
+            ['Marcelo Torres', 'Bradesco Saúde', 23, 'há 3 semanas', 9980, 9.0]
+        ].map(item => ({
+            name: item[0],
+            insurance: item[1],
+            consultations: item[2],
+            lastVisit: item[3],
+            ltv: item[4],
+            nps: item[5]
+        }))
+    };
+}
+
+function renderNewPatients() {
+    const canvas = $('#chartNovosPacientes');
+    if (!canvas) return;
+
+    const context = canvas.getContext('2d');
+    const gradient = context.createLinearGradient(0, 0, 0, 300);
+
+    gradient.addColorStop(0, 'rgba(79,70,229,.9)');
+    gradient.addColorStop(1, 'rgba(6,182,212,.75)');
+
+    const area = context.createLinearGradient(0, 0, 0, 300);
+    area.addColorStop(0, 'rgba(79,70,229,.28)');
+    area.addColorStop(1, 'rgba(79,70,229,0)');
+
+    const chart = new Chart(canvas, {
+        type: state.newPatientsMode === 'line'
+            ? 'line'
+            : 'bar',
+
+        data: {
+            labels: MONTHS,
+            datasets: [
+                {
+                    label: 'Novos pacientes',
+                    data: state.data.acquisition,
+                    backgroundColor: state.newPatientsMode === 'line'
+                        ? area
+                        : gradient,
+                    borderColor: COLORS.brand,
+                    borderWidth: state.newPatientsMode === 'line'
+                        ? 3
+                        : 0,
+                    borderRadius: 7,
+                    fill: state.newPatientsMode === 'line',
+                    tension: .38,
+                    pointRadius: state.newPatientsMode === 'line'
+                        ? 4
+                        : 0,
+                    maxBarThickness: 32
+                },
+                {
+                    type: 'line',
+                    label: 'Meta',
+                    data: state.data.target,
+                    borderColor: COLORS.warning,
+                    borderDash: [6, 5],
+                    borderWidth: 2,
+                    pointRadius: 2,
+                    fill: false,
+                    tension: .35
+                }
+            ]
+        },
+
+        options: chartOptions({
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        })
+    });
+
+    registerChart('newPatients', chart);
+}
+
+function renderGender() {
+    const canvas = $('#chartSexoPacientes');
+    if (!canvas) return;
+
+    updateGenderSummary();
+
+    const chart = new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+            labels: state.data.gender.map(item => item.name),
+            datasets: [{
+                data: state.data.gender.map(item => item.value),
+                backgroundColor: state.data.gender.map(item => item.color),
+                borderWidth: 0,
+                spacing: 3,
+                hoverOffset: 8
+            }]
+        },
+        options: chartOptions({
+            cutout: '72%',
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label(context) {
+                            return `${context.label}: ${formatNumber(context.raw)}`;
+                        }
+                    }
+                }
+            }
+        })
+    });
+
+    registerChart('gender', chart);
+}
+
+function updateGenderSummary() {
+    const total = state.data.gender.reduce(
+        (sum, item) => sum + item.value,
+        0
+    );
+
+    const totalElement = $('#doughnutTotal');
+
+    if (totalElement) {
+        totalElement.textContent = formatNumber(total);
     }
 
-    function createTrendMini(canvas, data, color) {
-        const ctx = canvas.getContext('2d');
-        const grad = ctx.createLinearGradient(0, 0, 0, 30);
-        grad.addColorStop(0, `${color}55`);
-        grad.addColorStop(1, `${color}00`);
+    const legend = $('#legendSexo');
 
-        new Chart(ctx, {
+    if (!legend) return;
+
+    legend.innerHTML = state.data.gender.map(item => {
+        const percentage = item.value / total * 100;
+
+        return `
+            <span class="rounded-full px-2 py-1 text-[10px]"
+                style="background:var(--panel-soft);color:var(--text-soft)">
+                <span class="mr-1 inline-block h-2 w-2 rounded-full"
+                    style="background:${item.color}"></span>
+                ${escapeHTML(item.name)}
+                <strong class="ml-1">${formatPercent(percentage)}</strong>
+            </span>
+        `;
+    }).join('');
+}
+
+function renderInsurance() {
+    const canvas = $('#chartConveniosPacientes');
+    if (!canvas) return;
+
+    const chart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: state.data.insurance.map(item => item.name),
+            datasets: [{
+                label: 'Pacientes',
+                data: state.data.insurance.map(item => item.patients),
+                backgroundColor: [
+                    COLORS.brand,
+                    COLORS.cyan,
+                    COLORS.purple,
+                    COLORS.rose,
+                    COLORS.warning,
+                    COLORS.success,
+                    COLORS.info,
+                    COLORS.gray
+                ],
+                borderRadius: 6,
+                borderWidth: 0,
+                maxBarThickness: 26
+            }]
+        },
+        options: chartOptions({
+            indexAxis: 'y',
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        })
+    });
+
+    registerChart('insurance', chart);
+}
+
+function renderAge() {
+    const canvas = $('#chartFaixaEtaria');
+    if (!canvas) return;
+
+    const chart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: state.data.ageGroups.map(item => item.label),
+            datasets: [
+                {
+                    label: 'Feminino',
+                    data: state.data.ageGroups.map(item => item.female),
+                    backgroundColor: `${COLORS.rose}cc`,
+                    borderRadius: 6,
+                    maxBarThickness: 24
+                },
+                {
+                    label: 'Masculino',
+                    data: state.data.ageGroups.map(item => item.male),
+                    backgroundColor: `${COLORS.brand}cc`,
+                    borderRadius: 6,
+                    maxBarThickness: 24
+                }
+            ]
+        },
+        options: chartOptions({
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        })
+    });
+
+    registerChart('age', chart);
+}
+
+function renderEvolution() {
+    const canvas = $('#chartEvolucaoPacientes');
+    if (!canvas) return;
+
+    const datasets = [];
+
+    if (state.evolutionMetric === 'all' ||
+        state.evolutionMetric === 'real') {
+        datasets.push({
+            label: 'Realizado',
+            data: state.data.evolutionReal,
+            borderColor: COLORS.brand,
+            backgroundColor: 'rgba(79,70,229,.14)',
+            borderWidth: 3,
+            tension: .38,
+            fill: true,
+            pointRadius: 3
+        });
+    }
+
+    if (state.evolutionMetric === 'all' ||
+        state.evolutionMetric === 'target') {
+        datasets.push({
+            label: 'Meta',
+            data: state.data.evolutionTarget,
+            borderColor: COLORS.success,
+            borderDash: [6, 5],
+            borderWidth: 2,
+            tension: .35,
+            fill: false,
+            pointRadius: 2
+        });
+    }
+
+    if (state.evolutionMetric === 'all' ||
+        state.evolutionMetric === 'prev') {
+        datasets.push({
+            label: 'Ano anterior',
+            data: state.data.evolutionPrevious,
+            borderColor: COLORS.gray,
+            borderDash: [2, 4],
+            borderWidth: 2,
+            tension: .35,
+            fill: false,
+            pointRadius: 2
+        });
+    }
+
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: MONTHS,
+            datasets
+        },
+        options: chartOptions({
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        })
+    });
+
+    registerChart('evolution', chart);
+}
+
+function renderSparklines() {
+    $$('.spark').forEach((canvas, index) => {
+        const color = canvas.dataset.color || COLORS.brand;
+        const values = Array.from(
+            { length: 12 },
+            (_, position) =>
+                28 + position * 2 + ((position * 11 + index * 5) % 14)
+        );
+
+        const context = canvas.getContext('2d');
+        const gradient = context.createLinearGradient(0, 0, 0, 40);
+
+        gradient.addColorStop(0, `${color}55`);
+        gradient.addColorStop(1, `${color}00`);
+
+        const chart = new Chart(canvas, {
             type: 'line',
             data: {
-                labels: data.map((_, i) => i),
+                labels: values.map(() => ''),
                 datasets: [{
-                    data,
+                    data: values,
                     borderColor: color,
-                    backgroundColor: grad,
-                    fill: true,
+                    backgroundColor: gradient,
+                    borderWidth: 2,
                     tension: .4,
-                    borderWidth: 1.8,
-                    pointRadius: 0
+                    pointRadius: 0,
+                    fill: true
                 }]
             },
             options: {
@@ -637,256 +675,820 @@
                 }
             }
         });
-    }
 
-    function animateCounters() {
-        $$('[data-counter]').forEach(el => {
-            const target = Number(el.dataset.counter || 0);
-            const duration = 1200;
-            const start = performance.now();
+        registerChart(`spark-${index}`, chart);
+    });
+}
 
-            function tick(now) {
-                const progress = Math.min((now - start) / duration, 1);
-                const eased = 1 - Math.pow(1 - progress, 3);
-                el.textContent = Math.round(target * eased).toLocaleString('pt-BR');
-                if (progress < 1) requestAnimationFrame(tick);
-            }
+function renderCities() {
+    const container = $('#topCities');
+    if (!container) return;
 
-            requestAnimationFrame(tick);
-        });
-    }
+    const max = Math.max(
+        ...state.data.cities.map(city => city.value)
+    );
 
-    function toast(title, message = '', type = 'info') {
-        const icons = {
-            info: 'info',
-            ok: 'check-circle-2',
-            warn: 'alert-triangle'
-        };
+    container.innerHTML = state.data.cities.map(city => {
+        const width = city.value / max * 100;
 
-        const box = document.getElementById('toastBox');
-        if (!box) return;
+        return `
+            <div>
+                <div class="mb-1 flex justify-between text-xs">
+                    <span style="color:var(--text-soft)">
+                        ${escapeHTML(city.name)}
+                    </span>
+                    <strong class="font-mono">
+                        ${city.value}%
+                    </strong>
+                </div>
 
-        const el = document.createElement('div');
-        el.className = `toast ${type}`;
-        el.innerHTML = `
-      <i data-lucide="${icons[type] || icons.info}" aria-hidden="true"></i>
-      <div>
-        <strong>${title}</strong>
-        ${message ? `<span>${message}</span>` : ''}
-      </div>
+                <div class="h-2 overflow-hidden rounded-full"
+                    style="background:var(--line-soft)">
+                    <div class="h-full rounded-full"
+                        style="width:${width}%;background:var(--gradient)">
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderHeatmap() {
+    const container = $('#heatmap');
+    if (!container) return;
+
+    const base = [120, 86, 142, 98, 64, 108];
+
+    const rows = state.data.origins.map((origin, originIndex) => ({
+        origin,
+        values: MONTHS.map((_, monthIndex) => {
+            const season = .78 +
+                ((monthIndex * 9 + originIndex * 13) % 38) / 100;
+
+            const instagramBoost =
+                origin === 'Instagram'
+                    ? monthIndex * 6
+                    : 0;
+
+            return Math.round(
+                base[originIndex] * season +
+                instagramBoost
+            );
+        })
+    }));
+
+    const allValues = rows.flatMap(row => row.values);
+    const min = Math.min(...allValues);
+    const max = Math.max(...allValues);
+
+    const intensity = value => {
+        if (max === min) return .5;
+        return .18 + ((value - min) / (max - min)) * .82;
+    };
+
+    let html = `
+        <div class="heatmap-row heatmap-header">
+            <div class="heatmap-label">Origem</div>
+            ${MONTHS.map(month => `<div>${month}</div>`).join('')}
+        </div>
     `;
 
-        box.appendChild(el);
-        lucide.createIcons();
+    rows.forEach(row => {
+        html += `
+            <div class="heatmap-row">
+                <div class="heatmap-label">
+                    ${escapeHTML(row.origin)}
+                </div>
 
-        setTimeout(() => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateX(40px)';
-        }, 3200);
+                ${row.values.map((value, index) => `
+                    <div
+                        class="heatmap-cell"
+                        style="--intensity:${intensity(value)}"
+                        title="${escapeHTML(row.origin)} — ${MONTHS_FULL[index]}: ${formatNumber(value)} pacientes">
+                        ${formatNumber(value)}
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    });
 
-        setTimeout(() => el.remove(), 3700);
-    }
+    container.innerHTML = html;
+}
 
-    function updateThemeButton() {
-        const icon = $('#toggleTheme i');
-        if (!icon) return;
-        icon.setAttribute('data-lucide', state.theme === 'dark' ? 'sun' : 'moon');
-        lucide.createIcons();
-    }
+function renderRank() {
+    const tbody = $('#rankTable tbody');
+    if (!tbody) return;
 
-    function syncPeriodButtons(activeBtn) {
-        $$('.period-tabs button').forEach(btn => {
-            const isActive = btn === activeBtn;
-            btn.classList.toggle('active', isActive);
-            btn.setAttribute('aria-pressed', String(isActive));
-        });
-    }
+    let patients = [...state.data.patients];
 
-    function syncSegmentButtons(container, predicate) {
-        $$('button', container).forEach(btn => {
-            const active = predicate(btn);
-            btn.classList.toggle('active', active);
-            btn.setAttribute('aria-pressed', String(active));
-        });
-    }
-
-    function bindEvents() {
-        const themeBtn = $('#toggleTheme');
-        const refreshBtn = $('#btnRefresh');
-        const exportBtn = $('#btnExport');
-        const printBtn = $('#btnPrint');
-        const shareBtn = $('#btnShare');
-        const applyBtn = $('#btnApply');
-        const clearBtn = $('#btnClear');
-        const searchInput = $('#tblSearch');
-
-        themeBtn?.addEventListener('click', () => {
-            state.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-            document.documentElement.dataset.theme = state.theme;
-            updateThemeButton();
-            applyChartDefaults();
-
-            Object.keys(charts).forEach(key => {
-                if (charts[key]) charts[key].update();
-            });
-
-            toast(`Tema ${state.theme === 'dark' ? 'escuro' : 'claro'} ativado`, '', 'ok');
-        });
-
-        $$('.period-tabs button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                state.period = btn.dataset.period || '30';
-                syncPeriodButtons(btn);
-                toast('Período atualizado', `${btn.textContent.trim()} aplicado`, 'ok');
-            });
-        });
-
-        const doctorsSeg = $('.seg[data-target="chartDoctors"]');
-        if (doctorsSeg) {
-            $$('button[data-mode]', doctorsSeg).forEach(btn => {
-                btn.addEventListener('click', () => {
-                    state.chartDoctorsMode = btn.dataset.mode || 'bar';
-                    syncSegmentButtons(doctorsSeg, candidate => candidate === btn);
-                    createDoctorsChart(state.chartDoctorsMode);
-                });
-            });
-        }
-
-        const historySeg = $('.seg[data-target="chartHistory"]');
-        if (historySeg) {
-            $$('button[data-metric]', historySeg).forEach(btn => {
-                btn.addEventListener('click', () => {
-                    state.chartHistoryMetric = btn.dataset.metric || 'all';
-                    syncSegmentButtons(historySeg, candidate => candidate === btn);
-                    createHistoryChart(state.chartHistoryMetric);
-                });
-            });
-        }
-
-        refreshBtn?.addEventListener('click', () => {
-            const icon = $('#btnRefresh i');
-            if (icon) {
-                icon.style.transition = 'transform .8s';
-                icon.style.transform = 'rotate(360deg)';
-                setTimeout(() => { icon.style.transform = ''; }, 800);
-            }
-
-            animateCounters();
-            toast('Dados atualizados', 'Última sincronização agora', 'ok');
-            const last = $('#lastUpdate');
-            if (last) last.textContent = 'agora';
-        });
-
-        exportBtn?.addEventListener('click', () => {
-            const headers = ['Especialidade', 'Atendimentos', 'No-Show', 'Tempo médio', 'NPS', 'Receita', 'Variação'];
-            const rows = SPECS.map(s => [s.name, s.atend, s.nshow, s.tm, s.nps, s.rev, s.delta]);
-            const csv = [headers, ...rows].map(r => r.join(';')).join('\n');
-
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `relatorio-atendimentos-${new Date().toISOString().slice(0, 10)}.csv`;
-            a.click();
-
-            toast('Relatório exportado', 'Arquivo CSV gerado', 'ok');
-        });
-
-        printBtn?.addEventListener('click', () => window.print());
-
-        shareBtn?.addEventListener('click', async () => {
-            const payload = {
-                title: 'Relatório G4Med',
-                text: 'Veja o relatório de atendimentos da G4Med.',
-                url: location.href
-            };
-
-            try {
-                if (navigator.share) {
-                    await navigator.share(payload);
-                } else if (navigator.clipboard?.writeText) {
-                    await navigator.clipboard.writeText(location.href);
-                    toast('Link copiado', 'Compartilhe com sua equipe', 'ok');
-                }
-            } catch {
-                toast('Compartilhamento cancelado', '', 'info');
-            }
-        });
-
-        applyBtn?.addEventListener('click', () => {
-            state.filters.from = $('#dateFrom')?.value || '';
-            state.filters.to = $('#dateTo')?.value || '';
-            state.filters.unit = $('#fUnit')?.value || '';
-            state.filters.spec = $('#fSpec')?.value || '';
-            state.filters.doctor = $('#fDoc')?.value || '';
-            state.filters.insurance = $('#fIns')?.value || '';
-
-            toast('Filtros aplicados', 'Atualizando dashboards...', 'ok');
-            animateCounters();
-        });
-
-        clearBtn?.addEventListener('click', () => {
-            $$('.filter-bar select').forEach(select => { select.selectedIndex = 0; });
-            const from = $('#dateFrom');
-            const to = $('#dateTo');
-            const search = $('#tblSearch');
-
-            if (from) from.value = '';
-            if (to) to.value = '';
-            if (search) search.value = '';
-
-            state.search = '';
-            state.filters = { from: '', to: '', unit: '', spec: '', doctor: '', insurance: '' };
-
-            renderBreakdown('');
-            toast('Filtros limpos', '', 'info');
-        });
-
-        searchInput?.addEventListener('input', e => {
-            state.search = e.target.value || '';
-            renderBreakdown(state.search);
-        });
-    }
-
-    function initDates() {
-        const to = $('#dateTo');
-        const from = $('#dateFrom');
-        if (!to || !from) return;
-
-        const end = new Date();
-        const start = new Date();
-        start.setDate(start.getDate() - 30);
-
-        to.valueAsDate = end;
-        from.valueAsDate = start;
-    }
-
-    function init() {
-        lucide.createIcons();
-        applyChartDefaults();
-        updateThemeButton();
-
-        initDates();
-        createDoctorsChart();
-        createStatusChart();
-        createSpecChart();
-        createWeekChart();
-        createHistoryChart();
-        renderHeatmap();
-        renderSparklines();
-        renderInsurance();
-        renderRank();
-        renderBreakdown();
-        animateCounters();
-        bindEvents();
-
-        setTimeout(() => {
-            toast('Bem-vindo ao BI', 'Dados consolidados em tempo real', 'ok');
-        }, 400);
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+    if (state.rankMode === 'frequency') {
+        patients.sort((a, b) =>
+            b.consultations - a.consultations
+        );
     } else {
-        init();
+        patients.sort((a, b) => b.ltv - a.ltv);
     }
-})();
+
+    const maxVisits = Math.max(
+        ...patients.map(patient => patient.consultations)
+    );
+
+    const maxLtv = Math.max(
+        ...patients.map(patient => patient.ltv)
+    );
+
+    tbody.innerHTML = patients.map((patient, index) => {
+        const score = Math.round(
+            patient.consultations / maxVisits * 40 +
+            patient.ltv / maxLtv * 40 +
+            patient.nps / 10 * 20
+        );
+
+        const scoreColor =
+            score >= 90
+                ? 'text-emerald-500'
+                : score >= 75
+                    ? 'text-amber-500'
+                    : 'text-rose-500';
+
+        return `
+            <tr class="border-b" style="border-color:var(--line-soft)">
+                <td class="p-3 font-mono">${index + 1}</td>
+                <td class="p-3 font-semibold">${escapeHTML(patient.name)}</td>
+                <td class="p-3">${escapeHTML(patient.insurance)}</td>
+                <td class="p-3 font-mono">${patient.consultations}</td>
+                <td class="p-3" style="color:var(--muted)">
+                    ${escapeHTML(patient.lastVisit)}
+                </td>
+                <td class="p-3 font-mono">${formatCurrency(patient.ltv)}</td>
+                <td class="p-3 font-mono">${formatDecimal(patient.nps)}</td>
+                <td class="p-3 font-mono font-bold ${scoreColor}">
+                    ${score}
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function renderBreakdown(search = '') {
+    const tbody = $('#breakdownTable tbody');
+    if (!tbody) return;
+
+    const term = search.trim().toLowerCase();
+
+    const rows = state.data.insurance.filter(item =>
+        item.name.toLowerCase().includes(term)
+    );
+
+    tbody.innerHTML = rows.map(item => {
+        const variationClass =
+            item.variation >= 0
+                ? 'text-emerald-500'
+                : 'text-rose-500';
+
+        const trend =
+            item.trend === 'up'
+                ? '↗'
+                : '↘';
+
+        const trendClass =
+            item.trend === 'up'
+                ? 'text-emerald-500'
+                : 'text-rose-500';
+
+        return `
+            <tr class="border-b" style="border-color:var(--line-soft)">
+                <td class="p-3 font-bold">
+                    ${escapeHTML(item.name)}
+                </td>
+
+                <td class="p-3 text-right font-mono">
+                    ${formatNumber(item.patients)}
+                </td>
+
+                <td class="p-3 text-right font-mono">
+                    ${formatNumber(item.newPatients)}
+                </td>
+
+                <td class="p-3 text-right font-mono">
+                    ${formatNumber(item.returns)}
+                </td>
+
+                <td class="p-3 text-right font-mono">
+                    ${item.age} anos
+                </td>
+
+                <td class="p-3 text-right font-mono">
+                    ${formatCurrency(item.ltv)}
+                </td>
+
+                <td class="p-3 text-right font-mono font-bold ${variationClass}">
+                    ${item.variation >= 0 ? '+' : ''}
+                    ${formatPercent(item.variation)}
+                </td>
+
+                <td class="p-3 text-lg font-bold ${trendClass}">
+                    ${trend}
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    updateTotals(rows);
+}
+
+function updateTotals(rows) {
+    const patients = rows.reduce(
+        (sum, item) => sum + item.patients,
+        0
+    );
+
+    const newPatients = rows.reduce(
+        (sum, item) => sum + item.newPatients,
+        0
+    );
+
+    const returns = rows.reduce(
+        (sum, item) => sum + item.returns,
+        0
+    );
+
+    const age = rows.reduce(
+        (sum, item) => sum + item.age * item.patients,
+        0
+    ) / Math.max(patients, 1);
+
+    const ltv = rows.reduce(
+        (sum, item) => sum + item.ltv * item.patients,
+        0
+    ) / Math.max(patients, 1);
+
+    $('#tFTot').textContent = formatNumber(patients);
+    $('#tFNew').textContent = formatNumber(newPatients);
+    $('#tFRet').textContent = formatNumber(returns);
+    $('#tFAge').textContent = `${formatDecimal(age)} anos`;
+    $('#tFLtv').textContent = formatCurrency(ltv);
+}
+
+function animateCounters() {
+    $$('[data-counter]').forEach(element => {
+        const target = Number(element.dataset.counter) || 0;
+
+        // Sem animação para quem pediu menos movimento no sistema.
+        if (prefersReducedMotion) {
+            element.textContent = formatNumber(target);
+            return;
+        }
+        const start = performance.now();
+        const duration = 1100;
+
+        function frame(now) {
+            const progress = Math.min(
+                (now - start) / duration,
+                1
+            );
+
+            const eased = 1 - Math.pow(1 - progress, 3);
+
+            element.textContent = formatNumber(
+                target * eased
+            );
+
+            if (progress < 1) {
+                requestAnimationFrame(frame);
+            }
+        }
+
+        requestAnimationFrame(frame);
+    });
+}
+
+function renderAll() {
+    renderNewPatients();
+    renderGender();
+    renderInsurance();
+    renderAge();
+    renderEvolution();
+    renderSparklines();
+    renderCities();
+    renderHeatmap();
+    renderRank();
+    renderBreakdown();
+    refreshIcons();
+}
+
+function syncChart(key, mutate) {
+    const chart = charts.get(key);
+
+    if (!chart) return false;
+
+    mutate(chart);
+
+    // 'none' aplica os novos dados sem reanimar o gráfico inteiro
+    chart.update('none');
+
+    return true;
+}
+
+function updateAll() {
+    // Primeira pintura: cria as instâncias. Depois, apenas atualiza os dados.
+    if (charts.size === 0) {
+        renderAll();
+        return;
+    }
+
+    syncChart('newPatients', chart => {
+        chart.data.datasets[0].data = state.data.acquisition;
+        chart.data.datasets[1].data = state.data.target;
+    });
+
+    syncChart('gender', chart => {
+        chart.data.labels = state.data.gender.map(item => item.name);
+        chart.data.datasets[0].data = state.data.gender.map(item => item.value);
+    });
+
+    syncChart('insurance', chart => {
+        chart.data.labels = state.data.insurance.map(item => item.name);
+        chart.data.datasets[0].data = state.data.insurance.map(item => item.patients);
+    });
+
+    syncChart('age', chart => {
+        chart.data.labels = state.data.ageGroups.map(item => item.label);
+        chart.data.datasets[0].data = state.data.ageGroups.map(item => item.female);
+        chart.data.datasets[1].data = state.data.ageGroups.map(item => item.male);
+    });
+
+    syncChart('evolution', chart => {
+        const source = {
+            'Realizado': state.data.evolutionReal,
+            'Meta': state.data.evolutionTarget,
+            'Ano anterior': state.data.evolutionPrevious
+        };
+
+        chart.data.datasets.forEach(dataset => {
+            dataset.data = source[dataset.label] || dataset.data;
+        });
+    });
+
+    updateGenderSummary();
+    renderCities();
+    renderHeatmap();
+    renderRank();
+    renderBreakdown($('#tblSearch')?.value || '');
+    refreshIcons();
+}
+
+function updateLastUpdate() {
+    const element = $('#lastUpdate');
+
+    if (!element) return;
+
+    element.textContent = new Intl.DateTimeFormat(
+        'pt-BR',
+        {
+            dateStyle: 'short',
+            timeStyle: 'short'
+        }
+    ).format(new Date());
+}
+
+function applyTheme() {
+    const saved = localStorage.getItem('g4med-theme');
+    const systemDark = window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    const dark = saved
+        ? saved === 'dark'
+        : systemDark;
+
+    document.documentElement.classList.toggle('dark', dark);
+
+    const icon = $('#toggleTheme i');
+
+    if (icon) {
+        icon.setAttribute(
+            'data-lucide',
+            dark ? 'sun' : 'moon'
+        );
+    }
+
+    refreshIcons();
+}
+
+function bindEvents() {
+    $$('.period-button').forEach(button => {
+        button.addEventListener('click', () => {
+            if (state.isLoading) return;
+
+            if (button.dataset.period === state.period) return;
+
+            $$('.period-button').forEach(item => {
+                item.classList.remove('active', 'text-white');
+                item.style.background = 'transparent';
+            });
+
+            button.classList.add('active', 'text-white');
+            button.style.background = 'var(--gradient)';
+
+            state.period = button.dataset.period;
+
+            const custom = state.period === 'custom';
+
+            $('#dateFrom').disabled = !custom;
+            $('#dateTo').disabled = !custom;
+
+            if (!custom) {
+                refreshData('Período atualizado com sucesso.');
+            }
+        });
+    });
+
+    $$('.segmented[data-target="newPatients"] button')
+        .forEach(button => {
+            button.addEventListener('click', () => {
+                $$('.segmented[data-target="newPatients"] button')
+                    .forEach(item => item.classList.remove('active'));
+
+                button.classList.add('active');
+                state.newPatientsMode = button.dataset.mode;
+                renderNewPatients();
+            });
+        });
+
+    $$('.segmented[data-target="evolution"] button')
+        .forEach(button => {
+            button.addEventListener('click', () => {
+                $$('.segmented[data-target="evolution"] button')
+                    .forEach(item => item.classList.remove('active'));
+
+                button.classList.add('active');
+                state.evolutionMetric = button.dataset.metric;
+                renderEvolution();
+            });
+        });
+
+    $$('#rankTabs button').forEach(button => {
+        button.addEventListener('click', () => {
+            $$('#rankTabs button').forEach(item =>
+                item.classList.remove('active')
+            );
+
+            button.classList.add('active');
+            state.rankMode = button.dataset.rank;
+            renderRank();
+        });
+    });
+
+    $('#toggleTheme').addEventListener('click', () => {
+        const dark = !isDark();
+
+        document.documentElement.classList.toggle('dark', dark);
+        localStorage.setItem(
+            'g4med-theme',
+            dark ? 'dark' : 'light'
+        );
+
+        const icon = $('#toggleTheme i');
+
+        if (icon) {
+            icon.setAttribute(
+                'data-lucide',
+                dark ? 'sun' : 'moon'
+            );
+        }
+
+        refreshIcons();
+        renderAll();
+
+        showToast(
+            dark
+                ? 'Tema escuro ativado.'
+                : 'Tema claro ativado.',
+            'info'
+        );
+    });
+
+    $('#btnRefresh').addEventListener('click', () => {
+        refreshData('Dados atualizados com sucesso.');
+    });
+
+    $('#btnNotifications').addEventListener('click', () => {
+        showToast(
+            'Nenhum alerta crítico no momento.',
+            'info'
+        );
+    });
+
+    $('#btnApply').addEventListener('click', () => {
+        state.filters = {
+            from: $('#dateFrom').value,
+            to: $('#dateTo').value,
+            unit: $('#fUnit').value,
+            insurance: $('#fIns').value,
+            age: $('#fAge').value,
+            origin: $('#fOrig').value
+        };
+
+        if (
+            state.period === 'custom' &&
+            ((!state.filters.from && state.filters.to) ||
+                (state.filters.from && !state.filters.to))
+        ) {
+            showToast(
+                'Preencha as duas datas do período personalizado.',
+                'warning'
+            );
+
+            return;
+        }
+
+        refreshData('Filtros aplicados com sucesso.');
+    });
+
+    $('#btnClear').addEventListener('click', () => {
+        ['#fUnit', '#fIns', '#fAge', '#fOrig']
+            .forEach(selector => {
+                $(selector).selectedIndex = 0;
+            });
+
+        $('#dateFrom').value = '';
+        $('#dateTo').value = '';
+
+        renderBreakdown('');
+
+        showToast(
+            'Filtros limpos.',
+            'info'
+        );
+    });
+
+    $('#tblSearch').addEventListener('input', event => {
+        renderBreakdown(event.target.value);
+    });
+
+    $('#btnPrint').addEventListener('click', () => {
+        showToast(
+            'Preparando impressão do relatório.',
+            'info'
+        );
+
+        setTimeout(() => window.print(), 300);
+    });
+
+    $('#btnExport')?.addEventListener('click', exportCSV);
+
+    $('#btnExportCat')?.addEventListener('click', exportCSV);
+
+    $('#btnShare').addEventListener('click', async () => {
+        try {
+            if (navigator.share) {
+                await navigator.share({
+                    title: 'G4Med BI — Relatório de Pacientes',
+                    text: 'Relatório gerencial de pacientes.',
+                    url: window.location.href
+                });
+
+                showToast(
+                    'Relatório compartilhado.',
+                    'success'
+                );
+            } else {
+                await navigator.clipboard.writeText(
+                    window.location.href
+                );
+
+                showToast(
+                    'Link copiado para a área de transferência.',
+                    'success'
+                );
+            }
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                showToast(
+                    'Não foi possível compartilhar o relatório.',
+                    'danger'
+                );
+            }
+        }
+    });
+}
+
+function buildCSVContent() {
+    const header = [
+        'Convenio',
+        'Pacientes',
+        'Novos',
+        'Retorno',
+        'Idade media',
+        'LTV medio',
+        'Variacao (%)',
+        'Tendencia'
+    ];
+
+    const term = ($('#tblSearch')?.value || '')
+        .trim()
+        .toLowerCase();
+
+    const rows = state.data.insurance
+        .filter(item => item.name.toLowerCase().includes(term))
+        .map(item => [
+            item.name,
+            item.patients,
+            item.newPatients,
+            item.returns,
+            item.age,
+            item.ltv,
+            formatDecimal(item.variation),
+            item.trend === 'up' ? 'Alta' : 'Baixa'
+        ]);
+
+    const escapeCell = value => {
+        const text = String(value ?? '');
+
+        return /[";\n]/.test(text)
+            ? `"${text.replaceAll('"', '""')}"`
+            : text;
+    };
+
+    return [header, ...rows]
+        .map(row => row.map(escapeCell).join(';'))
+        .join('\r\n');
+}
+
+function exportCSV() {
+    try {
+        const content = buildCSVContent();
+
+        // BOM garante acentuacao correta ao abrir no Excel
+        const blob = new Blob(
+            [`\uFEFF${content}`],
+            { type: 'text/csv;charset=utf-8;' }
+        );
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+
+        const stamp = new Date()
+            .toISOString()
+            .slice(0, 10);
+
+        link.href = url;
+        link.download = `g4med-pacientes-convenios-${stamp}.csv`;
+        link.rel = 'noopener';
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+        showToast('Arquivo CSV exportado.', 'success');
+    } catch (error) {
+        console.error('Falha ao exportar CSV:', error);
+        showToast('Não foi possível exportar o CSV.', 'danger');
+    }
+}
+
+function setBusy(busy) {
+    state.isLoading = busy;
+
+    document.body.classList.toggle('is-loading', busy);
+    document.body.setAttribute('aria-busy', busy ? 'true' : 'false');
+
+    $$('.period-button, #btnRefresh, #btnApply, #btnClear')
+        .forEach(element => {
+            element.disabled = busy;
+        });
+}
+
+function buildQuery() {
+    const params = new URLSearchParams({ period: state.period });
+
+    Object.entries(state.filters).forEach(([key, value]) => {
+        if (value) params.set(key, value);
+    });
+
+    return params.toString();
+}
+
+async function fetchReport(signal) {
+    const response = await fetch(`${API_ENDPOINT}?${buildQuery()}`, {
+        signal,
+        headers: { Accept: 'application/json' },
+        credentials: 'same-origin'
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+    }
+
+    return response.json();
+}
+
+async function loadReport(signal) {
+    if (USE_MOCK_DATA) {
+        return makeData();
+    }
+
+    return fetchReport(signal);
+}
+
+async function refreshData(message) {
+    // Trava: ignora cliques enquanto a requisição anterior não terminou.
+    if (state.isLoading) {
+        showToast('Aguarde: atualização em andamento.', 'warning');
+        return;
+    }
+
+    // Cancela qualquer requisição pendente antes de disparar a nova.
+    state.controller?.abort();
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+    const requestId = ++state.requestId;
+
+    state.controller = controller;
+    setBusy(true);
+
+    try {
+        const data = await loadReport(controller.signal);
+
+        // Descarta respostas fora de ordem (ex.: 12 meses depois de 7 dias).
+        if (requestId !== state.requestId) return;
+
+        state.data = data;
+
+        updateAll();
+        updateLastUpdate();
+        showToast(message, 'success');
+    } catch (error) {
+        if (error.name === 'AbortError') return;
+
+        console.error('Falha ao atualizar o relatório:', error);
+
+        showToast(
+            'Não foi possível atualizar os dados. Tente novamente.',
+            'danger'
+        );
+    } finally {
+        // finally garante que a névoa sempre sai, mesmo com erro ou timeout.
+        clearTimeout(timeout);
+
+        if (state.controller === controller) {
+            state.controller = null;
+        }
+
+        if (requestId === state.requestId) {
+            setBusy(false);
+        }
+    }
+}
+
+// Mantido por compatibilidade com chamadas existentes.
+function simulateRefresh(message) {
+    refreshData(message);
+}
+
+function initialize() {
+    state.data = makeData();
+
+    applyTheme();
+    bindEvents();
+
+    $('#dateFrom').disabled = true;
+    $('#dateTo').disabled = true;
+
+    renderAll();
+    animateCounters();
+    updateLastUpdate();
+
+    state.firstPaint = false;
+
+    let resizeTimer = null;
+
+    window.addEventListener('resize', () => {
+        // Debounce: evita centenas de resize() durante o arraste da janela.
+        clearTimeout(resizeTimer);
+
+        resizeTimer = setTimeout(() => {
+            charts.forEach(chart => {
+                if (typeof chart.resize === 'function') {
+                    chart.resize();
+                }
+            });
+        }, 150);
+    }, { passive: true });
+
+    setInterval(updateLastUpdate, 60000);
+    refreshIcons();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener(
+        'DOMContentLoaded',
+        initialize,
+        { once: true }
+    );
+} else {
+    initialize();
+}

@@ -1,524 +1,1494 @@
-/**
- * paciente.js - Cadastro de Paciente G4med
- * Regras do PDF: ao abrir só Novo/Buscar ativos.
- * Novo → habilita tudo, gera ID.
- * Gravar → valida, salva, desabilita.
- * Editar → habilita para alteração.
- * Cancelar → limpa e volta ao estado inicial.
- */
+'use strict';
 
-/* ==========================================================
-   ESTADO
-========================================================== */
-let modo = 'inicial'; // inicial | novo | editando | gravado
-let proxId = 1;
-let streamWebcam = null;
-let historico = [];
+const $ = (selector, root = document) =>
+    root.querySelector(selector);
 
-/* ==========================================================
-   INIT
-========================================================== */
-document.addEventListener('DOMContentLoaded', () => {
-    iniciarRelogio();
-    aplicarMascaras();
-    iniciarAssinatura();
-    iniciarAnexos();
-    setEstadoInicial();
+const $$ = (selector, root = document) =>
+    Array.from(root.querySelectorAll(selector));
 
-    // Eventos
-    document.getElementById('pacNascimento')?.addEventListener('change', calcularIdade);
-    document.getElementById('pacCep')?.addEventListener('blur', buscarCep);
-    document.getElementById('pacCpf')?.addEventListener('blur', function () {
-        if (this.value && !validarCPF(this.value)) {
-            this.style.borderColor = 'var(--vermelho)';
-            alert('CPF inválido!');
-        } else {
-            this.style.borderColor = '';
-        }
-    });
+const charts = new Map();
 
-    // Caixa alta para campos específicos
-    ['pacNome', 'pacNacionalidade', 'pacProfissao', 'pacRespNome', 'pacRespParentesco',
-        'pacEndereco', 'pacBairro', 'pacCidade', 'pacConvenioNome', 'pacTitular', 'pacPlano']
-        .forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.addEventListener('input', function () { this.value = this.value.toUpperCase(); });
-        });
+const state = {
+    period: '30',
+    newPatientsMode: 'bar',
+    evolutionMetric: 'all',
+    rankMode: 'geral',
+    filters: {},
+    data: null,
+    isLoading: false,
+    requestId: 0,
+    controller: null,
+    firstPaint: true
+};
 
-    // Caixa baixa para e-mail
-    const email = document.getElementById('pacEmail');
-    if (email) email.addEventListener('input', function () { this.value = this.value.toLowerCase(); });
+// Troque para false quando o endpoint real estiver disponível.
+const USE_MOCK_DATA = true;
+
+const API_ENDPOINT = '/api/pacientes/relatorio';
+
+const REQUEST_TIMEOUT = 15000;
+
+const prefersReducedMotion = window.matchMedia
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false;
+
+const COLORS = {
+    brand: '#4f46e5',
+    cyan: '#06b6d4',
+    success: '#10b981',
+    warning: '#f59e0b',
+    danger: '#ef4444',
+    info: '#0284c7',
+    purple: '#8b5cf6',
+    rose: '#f43f5e',
+    gray: '#94a3b8'
+};
+
+const MONTHS = [
+    'Jan', 'Fev', 'Mar', 'Abr',
+    'Mai', 'Jun', 'Jul', 'Ago',
+    'Set', 'Out', 'Nov', 'Dez'
+];
+
+const MONTHS_FULL = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril',
+    'Maio', 'Junho', 'Julho', 'Agosto',
+    'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+];
+
+const numberFormatter = new Intl.NumberFormat('pt-BR');
+
+const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    maximumFractionDigits: 0
 });
 
-/* ==========================================================
-   ESTADO DOS BOTÕES E CAMPOS
-========================================================== */
-function setEstadoInicial() {
-    modo = 'inicial';
-    toggleCampos(true);
-    setBtn('btnNovo', false);
-    setBtn('btnGravar', true);
-    setBtn('btnEditar', true);
-    setBtn('btnAnterior', true);
-    setBtn('btnProximo', true);
-    setBtn('btnBuscar', false);
-    setBtn('btnExcluir', true);
-    setBtn('btnCancelar', true);
-    setBtn('btnAnexo', true);
-    setBtn('btnImprimir', true);
-    setBtn('btnHistorico', true);
+const decimalFormatter = new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1
+});
+
+function formatNumber(value) {
+    return numberFormatter.format(
+        Math.round(Number(value) || 0)
+    );
 }
 
-function setEstadoNovo() {
-    modo = 'novo';
-    toggleCampos(false);
-    setBtn('btnNovo', true);
-    setBtn('btnGravar', false);
-    setBtn('btnEditar', true);
-    setBtn('btnAnterior', true);
-    setBtn('btnProximo', true);
-    setBtn('btnBuscar', true);
-    setBtn('btnExcluir', true);
-    setBtn('btnCancelar', false);
-    setBtn('btnAnexo', false);
-    setBtn('btnImprimir', true);
-    setBtn('btnHistorico', true);
-
-    document.getElementById('pacId').value = String(proxId).padStart(5, '0');
-    document.getElementById('pacDataCad').value = agoraISO();
-    document.getElementById('pacUserCad').value = 'ADMIN';
-    document.getElementById('pacStatus').value = 'A';
-    setTimeout(() => document.getElementById('pacNome')?.focus(), 100);
+function formatCurrency(value) {
+    return currencyFormatter.format(
+        Number(value) || 0
+    );
 }
 
-function setEstadoGravado() {
-    modo = 'gravado';
-    toggleCampos(true);
-    setBtn('btnNovo', false);
-    setBtn('btnGravar', true);
-    setBtn('btnEditar', false);
-    setBtn('btnAnterior', false);
-    setBtn('btnProximo', false);
-    setBtn('btnBuscar', false);
-    setBtn('btnExcluir', false);
-    setBtn('btnCancelar', true);
-    setBtn('btnAnexo', true);
-    setBtn('btnImprimir', false);
-    setBtn('btnHistorico', false);
-
-    proxId++;
-    addHistorico('Paciente cadastrado');
+function formatDecimal(value) {
+    return decimalFormatter.format(
+        Number(value) || 0
+    );
 }
 
-function setEstadoEditando() {
-    modo = 'editando';
-    toggleCampos(false);
-    setBtn('btnNovo', true);
-    setBtn('btnGravar', false);
-    setBtn('btnEditar', true);
-    setBtn('btnAnterior', true);
-    setBtn('btnProximo', true);
-    setBtn('btnBuscar', true);
-    setBtn('btnExcluir', true);
-    setBtn('btnCancelar', false);
-    setBtn('btnAnexo', false);
-    setBtn('btnImprimir', true);
-    setBtn('btnHistorico', true);
+function formatPercent(value) {
+    return `${formatDecimal(value)}%`;
 }
 
-function toggleCampos(desabilitar) {
-    document.querySelectorAll('.campo-edita').forEach(el => {
-        el.disabled = desabilitar;
+function escapeHTML(value) {
+    return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+}
+
+function isDark() {
+    return document.documentElement.classList.contains('dark');
+}
+
+function themeColors() {
+    return {
+        text: isDark() ? '#cbd5e1' : '#475569',
+        muted: isDark() ? '#94a3b8' : '#64748b',
+        grid: isDark()
+            ? 'rgba(148,163,184,.16)'
+            : 'rgba(15,23,42,.07)',
+        surface: isDark() ? '#111832' : '#ffffff'
+    };
+}
+
+function showToast(message, type = 'info') {
+    const area = $('#toastBox');
+    if (!area) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    toast.setAttribute('role', 'status');
+
+    area.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(30px)';
+    }, 2800);
+
+    setTimeout(() => toast.remove(), 3200);
+}
+
+function refreshIcons() {
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+}
+
+function destroyChart(key) {
+    const chart = charts.get(key);
+
+    if (chart) {
+        chart.destroy();
+        charts.delete(key);
+    }
+}
+
+function registerChart(key, chart) {
+    destroyChart(key);
+    charts.set(key, chart);
+}
+
+function isPlainObject(value) {
+    return Boolean(value) &&
+        typeof value === 'object' &&
+        !Array.isArray(value);
+}
+
+function mergeDeep(base, override) {
+    const result = { ...base };
+
+    Object.entries(override).forEach(([key, value]) => {
+        result[key] = isPlainObject(value) && isPlainObject(base[key])
+            ? mergeDeep(base[key], value)
+            : value;
+    });
+
+    return result;
+}
+
+function chartOptions(options = {}) {
+    const theme = themeColors();
+
+    const defaults = {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+            duration: 600,
+            easing: 'easeOutQuart'
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    color: theme.text,
+                    usePointStyle: true,
+                    boxWidth: 8,
+                    padding: 12
+                }
+            },
+            tooltip: {
+                backgroundColor: theme.surface,
+                titleColor: theme.text,
+                bodyColor: theme.text,
+                borderColor: theme.grid,
+                borderWidth: 1,
+                padding: 10,
+                cornerRadius: 9,
+                usePointStyle: true
+            }
+        },
+        scales: {
+            x: {
+                ticks: { color: theme.muted },
+                grid: { color: theme.grid }
+            },
+            y: {
+                ticks: { color: theme.muted },
+                grid: { color: theme.grid },
+                beginAtZero: true
+            }
+        }
+    };
+
+    return mergeDeep(defaults, options);
+}
+
+function makeData() {
+    return {
+        totalPatients: 12847,
+
+        acquisition: [
+            342, 368, 401, 389,
+            425, 448, 462, 471,
+            489, 512, 498, 487
+        ],
+
+        target: [
+            350, 370, 390, 410,
+            430, 450, 470, 490,
+            510, 530, 550, 570
+        ],
+
+        gender: [
+            {
+                name: 'Feminino',
+                value: 7048,
+                color: COLORS.rose
+            },
+            {
+                name: 'Masculino',
+                value: 5011,
+                color: COLORS.brand
+            },
+            {
+                name: 'Outro / Não informado',
+                value: 788,
+                color: COLORS.gray
+            }
+        ],
+
+        insurance: [
+            ['Particular', 2840, 418, 2422, 36, 3120, 9.4, 'up'],
+            ['Unimed', 3210, 384, 2826, 39, 2480, 6.2, 'up'],
+            ['Bradesco Saúde', 1980, 264, 1716, 41, 2780, 4.8, 'up'],
+            ['SulAmérica', 1420, 198, 1222, 38, 2540, 11.2, 'up'],
+            ['Amil', 1180, 146, 1034, 40, 2220, -2.1, 'down'],
+            ['NotreDame', 842, 104, 738, 37, 2140, 8.3, 'up'],
+            ['Hapvida', 684, 82, 602, 42, 1840, 5.7, 'up'],
+            ['Outros', 691, 76, 615, 39, 2080, 3.2, 'up']
+        ].map(item => ({
+            name: item[0],
+            patients: item[1],
+            newPatients: item[2],
+            returns: item[3],
+            age: item[4],
+            ltv: item[5],
+            variation: item[6],
+            trend: item[7]
+        })),
+
+        ageGroups: [
+            ['0–12', 284, 312],
+            ['13–17', 198, 212],
+            ['18–29', 1420, 1180],
+            ['30–44', 2680, 2120],
+            ['45–59', 1842, 1418],
+            ['60+', 1064, 317]
+        ].map(item => ({
+            label: item[0],
+            female: item[1],
+            male: item[2]
+        })),
+
+        cities: [
+            ['São Paulo · SP', 42],
+            ['Guarulhos · SP', 14],
+            ['Osasco · SP', 11],
+            ['Santo André · SP', 9],
+            ['Barueri · SP', 8],
+            ['Outros', 16]
+        ].map(item => ({
+            name: item[0],
+            value: item[1]
+        })),
+
+        origins: [
+            'Indicação',
+            'Google',
+            'Instagram',
+            'Convênio',
+            'Site',
+            'Retorno'
+        ],
+
+        evolutionReal: [
+            9820, 10170, 10530, 10920,
+            11340, 11780, 12220, 12680,
+            13140, 13620, 14080, 14540
+        ],
+
+        evolutionTarget: [
+            9800, 10200, 10600, 11000,
+            11400, 11800, 12200, 12600,
+            13000, 13400, 13800, 14200
+        ],
+
+        evolutionPrevious: [
+            9140, 9480, 9810, 10160,
+            10520, 10860, 11200, 11540,
+            11880, 12210, 12540, 12890
+        ],
+
+        patients: [
+            ['Maria Silva Santos', 'Particular', 42, 'há 3 dias', 18420, 9.8],
+            ['João Pedro Almeida', 'Unimed', 38, 'há 1 semana', 16280, 9.6],
+            ['Ana Beatriz Costa', 'Bradesco Saúde', 36, 'há 2 dias', 15640, 9.7],
+            ['Carlos Eduardo Lima', 'Particular', 34, 'há 5 dias', 14820, 9.4],
+            ['Fernanda Ribeiro', 'SulAmérica', 32, 'há 12 dias', 13980, 9.5],
+            ['Roberto Mendes', 'Unimed', 30, 'há 1 dia', 13420, 9.3],
+            ['Patrícia Oliveira', 'Particular', 29, 'há 8 dias', 12960, 9.6],
+            ['Lucas Henrique Souza', 'Amil', 27, 'há 4 dias', 11840, 9.2],
+            ['Camila Andrade', 'Particular', 26, 'há 2 semanas', 11420, 9.5],
+            ['Bruno Castro Vieira', 'NotreDame', 25, 'há 6 dias', 10840, 9.1],
+            ['Juliana Pereira', 'Unimed', 24, 'há 9 dias', 10420, 9.4],
+            ['Marcelo Torres', 'Bradesco Saúde', 23, 'há 3 semanas', 9980, 9.0]
+        ].map(item => ({
+            name: item[0],
+            insurance: item[1],
+            consultations: item[2],
+            lastVisit: item[3],
+            ltv: item[4],
+            nps: item[5]
+        }))
+    };
+}
+
+function renderNewPatients() {
+    const canvas = $('#chartNovosPacientes');
+    if (!canvas) return;
+
+    const context = canvas.getContext('2d');
+    const gradient = context.createLinearGradient(0, 0, 0, 300);
+
+    gradient.addColorStop(0, 'rgba(79,70,229,.9)');
+    gradient.addColorStop(1, 'rgba(6,182,212,.75)');
+
+    const area = context.createLinearGradient(0, 0, 0, 300);
+    area.addColorStop(0, 'rgba(79,70,229,.28)');
+    area.addColorStop(1, 'rgba(79,70,229,0)');
+
+    const chart = new Chart(canvas, {
+        type: state.newPatientsMode === 'line'
+            ? 'line'
+            : 'bar',
+
+        data: {
+            labels: MONTHS,
+            datasets: [
+                {
+                    label: 'Novos pacientes',
+                    data: state.data.acquisition,
+                    backgroundColor: state.newPatientsMode === 'line'
+                        ? area
+                        : gradient,
+                    borderColor: COLORS.brand,
+                    borderWidth: state.newPatientsMode === 'line'
+                        ? 3
+                        : 0,
+                    borderRadius: 7,
+                    fill: state.newPatientsMode === 'line',
+                    tension: .38,
+                    pointRadius: state.newPatientsMode === 'line'
+                        ? 4
+                        : 0,
+                    maxBarThickness: 32
+                },
+                {
+                    type: 'line',
+                    label: 'Meta',
+                    data: state.data.target,
+                    borderColor: COLORS.warning,
+                    borderDash: [6, 5],
+                    borderWidth: 2,
+                    pointRadius: 2,
+                    fill: false,
+                    tension: .35
+                }
+            ]
+        },
+
+        options: chartOptions({
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        })
+    });
+
+    registerChart('newPatients', chart);
+}
+
+function renderGender() {
+    const canvas = $('#chartSexoPacientes');
+    if (!canvas) return;
+
+    updateGenderSummary();
+
+    const chart = new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+            labels: state.data.gender.map(item => item.name),
+            datasets: [{
+                data: state.data.gender.map(item => item.value),
+                backgroundColor: state.data.gender.map(item => item.color),
+                borderWidth: 0,
+                spacing: 3,
+                hoverOffset: 8
+            }]
+        },
+        options: chartOptions({
+            cutout: '72%',
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label(context) {
+                            return `${context.label}: ${formatNumber(context.raw)}`;
+                        }
+                    }
+                }
+            }
+        })
+    });
+
+    registerChart('gender', chart);
+}
+
+function updateGenderSummary() {
+    const total = state.data.gender.reduce(
+        (sum, item) => sum + item.value,
+        0
+    );
+
+    const totalElement = $('#doughnutTotal');
+
+    if (totalElement) {
+        totalElement.textContent = formatNumber(total);
+    }
+
+    const legend = $('#legendSexo');
+
+    if (!legend) return;
+
+    legend.innerHTML = state.data.gender.map(item => {
+        const percentage = item.value / total * 100;
+
+        return `
+            <span class="rounded-full px-2 py-1 text-[10px]"
+                style="background:var(--panel-soft);color:var(--text-soft)">
+                <span class="mr-1 inline-block h-2 w-2 rounded-full"
+                    style="background:${item.color}"></span>
+                ${escapeHTML(item.name)}
+                <strong class="ml-1">${formatPercent(percentage)}</strong>
+            </span>
+        `;
+    }).join('');
+}
+
+function renderInsurance() {
+    const canvas = $('#chartConveniosPacientes');
+    if (!canvas) return;
+
+    const chart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: state.data.insurance.map(item => item.name),
+            datasets: [{
+                label: 'Pacientes',
+                data: state.data.insurance.map(item => item.patients),
+                backgroundColor: [
+                    COLORS.brand,
+                    COLORS.cyan,
+                    COLORS.purple,
+                    COLORS.rose,
+                    COLORS.warning,
+                    COLORS.success,
+                    COLORS.info,
+                    COLORS.gray
+                ],
+                borderRadius: 6,
+                borderWidth: 0,
+                maxBarThickness: 26
+            }]
+        },
+        options: chartOptions({
+            indexAxis: 'y',
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        })
+    });
+
+    registerChart('insurance', chart);
+}
+
+function renderAge() {
+    const canvas = $('#chartFaixaEtaria');
+    if (!canvas) return;
+
+    const chart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: state.data.ageGroups.map(item => item.label),
+            datasets: [
+                {
+                    label: 'Feminino',
+                    data: state.data.ageGroups.map(item => item.female),
+                    backgroundColor: `${COLORS.rose}cc`,
+                    borderRadius: 6,
+                    maxBarThickness: 24
+                },
+                {
+                    label: 'Masculino',
+                    data: state.data.ageGroups.map(item => item.male),
+                    backgroundColor: `${COLORS.brand}cc`,
+                    borderRadius: 6,
+                    maxBarThickness: 24
+                }
+            ]
+        },
+        options: chartOptions({
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        })
+    });
+
+    registerChart('age', chart);
+}
+
+function renderEvolution() {
+    const canvas = $('#chartEvolucaoPacientes');
+    if (!canvas) return;
+
+    const datasets = [];
+
+    if (state.evolutionMetric === 'all' ||
+        state.evolutionMetric === 'real') {
+        datasets.push({
+            label: 'Realizado',
+            data: state.data.evolutionReal,
+            borderColor: COLORS.brand,
+            backgroundColor: 'rgba(79,70,229,.14)',
+            borderWidth: 3,
+            tension: .38,
+            fill: true,
+            pointRadius: 3
+        });
+    }
+
+    if (state.evolutionMetric === 'all' ||
+        state.evolutionMetric === 'target') {
+        datasets.push({
+            label: 'Meta',
+            data: state.data.evolutionTarget,
+            borderColor: COLORS.success,
+            borderDash: [6, 5],
+            borderWidth: 2,
+            tension: .35,
+            fill: false,
+            pointRadius: 2
+        });
+    }
+
+    if (state.evolutionMetric === 'all' ||
+        state.evolutionMetric === 'prev') {
+        datasets.push({
+            label: 'Ano anterior',
+            data: state.data.evolutionPrevious,
+            borderColor: COLORS.gray,
+            borderDash: [2, 4],
+            borderWidth: 2,
+            tension: .35,
+            fill: false,
+            pointRadius: 2
+        });
+    }
+
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: MONTHS,
+            datasets
+        },
+        options: chartOptions({
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        })
+    });
+
+    registerChart('evolution', chart);
+}
+
+function renderSparklines() {
+    $$('.spark').forEach((canvas, index) => {
+        const color = canvas.dataset.color || COLORS.brand;
+        const values = Array.from(
+            { length: 12 },
+            (_, position) =>
+                28 + position * 2 + ((position * 11 + index * 5) % 14)
+        );
+
+        const context = canvas.getContext('2d');
+        const gradient = context.createLinearGradient(0, 0, 0, 40);
+
+        gradient.addColorStop(0, `${color}55`);
+        gradient.addColorStop(1, `${color}00`);
+
+        const chart = new Chart(canvas, {
+            type: 'line',
+            data: {
+                labels: values.map(() => ''),
+                datasets: [{
+                    data: values,
+                    borderColor: color,
+                    backgroundColor: gradient,
+                    borderWidth: 2,
+                    tension: .4,
+                    pointRadius: 0,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                },
+                scales: {
+                    x: { display: false },
+                    y: { display: false }
+                }
+            }
+        });
+
+        registerChart(`spark-${index}`, chart);
     });
 }
 
-function setBtn(id, disabled) {
-    const btn = document.getElementById(id);
-    if (btn) btn.disabled = disabled;
+function renderCities() {
+    const container = $('#topCities');
+    if (!container) return;
+
+    const max = Math.max(
+        ...state.data.cities.map(city => city.value)
+    );
+
+    container.innerHTML = state.data.cities.map(city => {
+        const width = city.value / max * 100;
+
+        return `
+            <div>
+                <div class="mb-1 flex justify-between text-xs">
+                    <span style="color:var(--text-soft)">
+                        ${escapeHTML(city.name)}
+                    </span>
+                    <strong class="font-mono">
+                        ${city.value}%
+                    </strong>
+                </div>
+
+                <div class="h-2 overflow-hidden rounded-full"
+                    style="background:var(--line-soft)">
+                    <div class="h-full rounded-full"
+                        style="width:${width}%;background:var(--gradient)">
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
-/* ==========================================================
-   AÇÕES DOS BOTÕES
-========================================================== */
-function acaoNovo() {
-    if (modo === 'novo' || modo === 'editando') {
-        if (!confirm('Deseja limpar e iniciar um novo cadastro?')) return;
-        limparFormulario();
-    }
-    setEstadoNovo();
+function renderHeatmap() {
+    const container = $('#heatmap');
+    if (!container) return;
+
+    const base = [120, 86, 142, 98, 64, 108];
+
+    const rows = state.data.origins.map((origin, originIndex) => ({
+        origin,
+        values: MONTHS.map((_, monthIndex) => {
+            const season = .78 +
+                ((monthIndex * 9 + originIndex * 13) % 38) / 100;
+
+            const instagramBoost =
+                origin === 'Instagram'
+                    ? monthIndex * 6
+                    : 0;
+
+            return Math.round(
+                base[originIndex] * season +
+                instagramBoost
+            );
+        })
+    }));
+
+    const allValues = rows.flatMap(row => row.values);
+    const min = Math.min(...allValues);
+    const max = Math.max(...allValues);
+
+    const intensity = value => {
+        if (max === min) return .5;
+        return .18 + ((value - min) / (max - min)) * .82;
+    };
+
+    let html = `
+        <div class="heatmap-row heatmap-header">
+            <div class="heatmap-label">Origem</div>
+            ${MONTHS.map(month => `<div>${month}</div>`).join('')}
+        </div>
+    `;
+
+    rows.forEach(row => {
+        html += `
+            <div class="heatmap-row">
+                <div class="heatmap-label">
+                    ${escapeHTML(row.origin)}
+                </div>
+
+                ${row.values.map((value, index) => `
+                    <div
+                        class="heatmap-cell"
+                        style="--intensity:${intensity(value)}"
+                        title="${escapeHTML(row.origin)} — ${MONTHS_FULL[index]}: ${formatNumber(value)} pacientes">
+                        ${formatNumber(value)}
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
 }
 
-function acaoGravar() {
-    if (!validarFormulario()) return;
-    document.getElementById('pacUltAtu').value = agoraISO();
-    setEstadoGravado();
-    alert('Paciente gravado com sucesso!');
-}
+function renderRank() {
+    const tbody = $('#rankTable tbody');
+    if (!tbody) return;
 
-function acaoEditar() {
-    setEstadoEditando();
-    addHistorico('Iniciada edição do cadastro');
-}
+    let patients = [...state.data.patients];
 
-function acaoExcluir() {
-    if (confirm('Deseja realmente excluir este paciente?')) {
-        addHistorico('Paciente excluído');
-        limparFormulario();
-        setEstadoInicial();
-        alert('Paciente excluído.');
-    }
-}
-
-function acaoCancelar() {
-    if (modo === 'novo') {
-        if (!confirm('Cancelar o cadastro atual?')) return;
-        limparFormulario();
-        setEstadoInicial();
-    } else if (modo === 'editando') {
-        if (!confirm('Cancelar as alterações?')) return;
-        toggleCampos(true);
-        setEstadoGravado(); // Volta ao estado gravado
+    if (state.rankMode === 'frequency') {
+        patients.sort((a, b) =>
+            b.consultations - a.consultations
+        );
     } else {
-        limparFormulario();
-        setEstadoInicial();
+        patients.sort((a, b) => b.ltv - a.ltv);
     }
+
+    const maxVisits = Math.max(
+        ...patients.map(patient => patient.consultations)
+    );
+
+    const maxLtv = Math.max(
+        ...patients.map(patient => patient.ltv)
+    );
+
+    tbody.innerHTML = patients.map((patient, index) => {
+        const score = Math.round(
+            patient.consultations / maxVisits * 40 +
+            patient.ltv / maxLtv * 40 +
+            patient.nps / 10 * 20
+        );
+
+        const scoreColor =
+            score >= 90
+                ? 'text-emerald-500'
+                : score >= 75
+                    ? 'text-amber-500'
+                    : 'text-rose-500';
+
+        return `
+            <tr class="border-b" style="border-color:var(--line-soft)">
+                <td class="p-3 font-mono">${index + 1}</td>
+                <td class="p-3 font-semibold">${escapeHTML(patient.name)}</td>
+                <td class="p-3">${escapeHTML(patient.insurance)}</td>
+                <td class="p-3 font-mono">${patient.consultations}</td>
+                <td class="p-3" style="color:var(--muted)">
+                    ${escapeHTML(patient.lastVisit)}
+                </td>
+                <td class="p-3 font-mono">${formatCurrency(patient.ltv)}</td>
+                <td class="p-3 font-mono">${formatDecimal(patient.nps)}</td>
+                <td class="p-3 font-mono font-bold ${scoreColor}">
+                    ${score}
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
-function acaoBuscar() {
-    abrirModal('modalBusca');
-    setTimeout(() => document.getElementById('buscaTermo')?.focus(), 100);
+function renderBreakdown(search = '') {
+    const tbody = $('#breakdownTable tbody');
+    if (!tbody) return;
+
+    const term = search.trim().toLowerCase();
+
+    const rows = state.data.insurance.filter(item =>
+        item.name.toLowerCase().includes(term)
+    );
+
+    tbody.innerHTML = rows.map(item => {
+        const variationClass =
+            item.variation >= 0
+                ? 'text-emerald-500'
+                : 'text-rose-500';
+
+        const trend =
+            item.trend === 'up'
+                ? '↗'
+                : '↘';
+
+        const trendClass =
+            item.trend === 'up'
+                ? 'text-emerald-500'
+                : 'text-rose-500';
+
+        return `
+            <tr class="border-b" style="border-color:var(--line-soft)">
+                <td class="p-3 font-bold">
+                    ${escapeHTML(item.name)}
+                </td>
+
+                <td class="p-3 text-right font-mono">
+                    ${formatNumber(item.patients)}
+                </td>
+
+                <td class="p-3 text-right font-mono">
+                    ${formatNumber(item.newPatients)}
+                </td>
+
+                <td class="p-3 text-right font-mono">
+                    ${formatNumber(item.returns)}
+                </td>
+
+                <td class="p-3 text-right font-mono">
+                    ${item.age} anos
+                </td>
+
+                <td class="p-3 text-right font-mono">
+                    ${formatCurrency(item.ltv)}
+                </td>
+
+                <td class="p-3 text-right font-mono font-bold ${variationClass}">
+                    ${item.variation >= 0 ? '+' : ''}
+                    ${formatPercent(item.variation)}
+                </td>
+
+                <td class="p-3 text-lg font-bold ${trendClass}">
+                    ${trend}
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    updateTotals(rows);
 }
 
-function acaoAnterior() { alert('Navegar para registro anterior (integrar com BD)'); }
-function acaoProximo() { alert('Navegar para próximo registro (integrar com BD)'); }
-function acaoAnexo() { switchTab('tab8'); }
-function acaoImprimir() { window.print(); }
-function acaoHistorico() { abrirModal('modalHistorico'); }
-function acaoSair() { if (confirm('Deseja sair?')) window.location.href = 'index.html'; }
+function updateTotals(rows) {
+    const patients = rows.reduce(
+        (sum, item) => sum + item.patients,
+        0
+    );
 
-/* ==========================================================
-   VALIDAÇÃO
-========================================================== */
-function validarFormulario() {
-    const nome = document.getElementById('pacNome')?.value.trim();
-    const cpf = document.getElementById('pacCpf')?.value.trim();
-    const nasc = document.getElementById('pacNascimento')?.value;
+    const newPatients = rows.reduce(
+        (sum, item) => sum + item.newPatients,
+        0
+    );
 
-    if (!nome) { alert('Preencha o Nome Completo.'); document.getElementById('pacNome').focus(); return false; }
-    if (!cpf || cpf.length < 14) { alert('Preencha o CPF corretamente.'); document.getElementById('pacCpf').focus(); return false; }
-    if (!validarCPF(cpf)) { alert('CPF inválido.'); document.getElementById('pacCpf').focus(); return false; }
-    if (!nasc) { alert('Preencha a Data de Nascimento.'); document.getElementById('pacNascimento').focus(); return false; }
+    const returns = rows.reduce(
+        (sum, item) => sum + item.returns,
+        0
+    );
+
+    const age = rows.reduce(
+        (sum, item) => sum + item.age * item.patients,
+        0
+    ) / Math.max(patients, 1);
+
+    const ltv = rows.reduce(
+        (sum, item) => sum + item.ltv * item.patients,
+        0
+    ) / Math.max(patients, 1);
+
+    $('#tFTot').textContent = formatNumber(patients);
+    $('#tFNew').textContent = formatNumber(newPatients);
+    $('#tFRet').textContent = formatNumber(returns);
+    $('#tFAge').textContent = `${formatDecimal(age)} anos`;
+    $('#tFLtv').textContent = formatCurrency(ltv);
+}
+
+function animateCounters() {
+    $$('[data-counter]').forEach(element => {
+        const target = Number(element.dataset.counter) || 0;
+
+        // Sem animação para quem pediu menos movimento no sistema.
+        if (prefersReducedMotion) {
+            element.textContent = formatNumber(target);
+            return;
+        }
+        const start = performance.now();
+        const duration = 1100;
+
+        function frame(now) {
+            const progress = Math.min(
+                (now - start) / duration,
+                1
+            );
+
+            const eased = 1 - Math.pow(1 - progress, 3);
+
+            element.textContent = formatNumber(
+                target * eased
+            );
+
+            if (progress < 1) {
+                requestAnimationFrame(frame);
+            }
+        }
+
+        requestAnimationFrame(frame);
+    });
+}
+
+function renderAll() {
+    renderNewPatients();
+    renderGender();
+    renderInsurance();
+    renderAge();
+    renderEvolution();
+    renderSparklines();
+    renderCities();
+    renderHeatmap();
+    renderRank();
+    renderBreakdown();
+    refreshIcons();
+}
+
+function syncChart(key, mutate) {
+    const chart = charts.get(key);
+
+    if (!chart) return false;
+
+    mutate(chart);
+
+    // 'none' aplica os novos dados sem reanimar o gráfico inteiro
+    chart.update('none');
+
     return true;
 }
 
-/* ==========================================================
-   LIMPAR FORMULÁRIO
-========================================================== */
-function limparFormulario() {
-    document.querySelectorAll('input, select, textarea').forEach(el => {
-        if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
-        else if (!el.readOnly && el.type !== 'button') el.value = '';
-    });
-    document.getElementById('fotoPreview').src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-    document.getElementById('anexoLista').innerHTML = '<div class="anexo-vazio">Nenhum documento anexado</div>';
-    limparAssinatura();
-}
-
-/* ==========================================================
-   MÁSCARAS
-========================================================== */
-function aplicarMascaras() {
-    const map = {
-        'pacCpf': 'cpf', 'pacRg': 'rg', 'pacTel1': 'tel', 'pacTel2': 'tel',
-        'pacWhats': 'tel', 'pacRespTel': 'tel', 'pacRespWhats': 'tel',
-        'pacCep': 'cep', 'pacTitularCpf': 'cpf'
-    };
-    Object.entries(map).forEach(([id, tipo]) => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('input', e => mascara(e.target, tipo));
-    });
-}
-
-function mascara(el, tipo) {
-    let v = el.value.replace(/\D/g, '');
-    if (tipo === 'cpf') {
-        v = v.replace(/(\d{3})(\d)/, '$1.$2');
-        v = v.replace(/(\d{3})(\d)/, '$1.$2');
-        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-    } else if (tipo === 'rg') {
-        v = v.replace(/(\d{2})(\d)/, '$1.$2');
-        v = v.replace(/(\d{3})(\d)/, '$1.$2');
-        v = v.replace(/(\d{3})([\dXx])$/, '$1-$2');
-    } else if (tipo === 'tel') {
-        v = v.length > 10
-            ? v.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
-            : v.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-    } else if (tipo === 'cep') {
-        v = v.replace(/(\d{5})(\d)/, '$1-$2');
-    }
-    el.value = v;
-}
-
-/* ==========================================================
-   VALIDAÇÃO CPF
-========================================================== */
-function validarCPF(cpf) {
-    cpf = cpf.replace(/[^\d]/g, '');
-    if (cpf.length !== 11 || /^(.)(\1){10}$/.test(cpf)) return false;
-    let s = 0, r;
-    for (let i = 1; i <= 9; i++) s += parseInt(cpf[i - 1]) * (11 - i);
-    r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
-    if (r !== parseInt(cpf[9])) return false;
-    s = 0;
-    for (let i = 1; i <= 10; i++) s += parseInt(cpf[i - 1]) * (12 - i);
-    r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
-    return r === parseInt(cpf[10]);
-}
-
-/* ==========================================================
-   BUSCA CEP
-========================================================== */
-function buscarCep() {
-    const cep = document.getElementById('pacCep')?.value.replace(/\D/g, '');
-    if (cep.length !== 8) return;
-
-    fetch(`https://viacep.com.br/ws/${cep}/json/`)
-        .then(r => r.json())
-        .then(data => {
-            if (data.erro) { alert('CEP não encontrado.'); return; }
-            document.getElementById('pacEndereco').value = (data.logradouro || '').toUpperCase();
-            document.getElementById('pacBairro').value = (data.bairro || '').toUpperCase();
-            document.getElementById('pacCidade').value = (data.localidade || '').toUpperCase();
-            document.getElementById('pacEstado').value = (data.uf || '').toUpperCase();
-            document.getElementById('pacPais').value = 'BRASIL';
-            document.getElementById('pacNumero').focus();
-        })
-        .catch(() => alert('Erro ao buscar CEP.'));
-}
-
-/* ==========================================================
-   CÁLCULO IDADE
-========================================================== */
-function calcularIdade() {
-    const nasc = document.getElementById('pacNascimento')?.value;
-    const el = document.getElementById('pacIdade');
-    if (!nasc || !el) return;
-    const hoje = new Date(), n = new Date(nasc);
-    if (isNaN(n)) return;
-    let a = hoje.getFullYear() - n.getFullYear();
-    let m = hoje.getMonth() - n.getMonth();
-    let d = hoje.getDate() - n.getDate();
-    if (d < 0) { m--; d += 30; }
-    if (m < 0) { a--; m += 12; }
-    el.value = `${a} Anos ${String(m).padStart(2, '0')} Meses ${String(d).padStart(2, '0')} Dias`;
-}
-
-/* ==========================================================
-   TABS
-========================================================== */
-function switchTab(tabId) {
-    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    document.querySelector(`[data-tab="${tabId}"]`)?.classList.add('active');
-    document.getElementById(tabId)?.classList.add('active');
-}
-
-/* ==========================================================
-   WEBCAM
-========================================================== */
-function abrirWebcam() {
-    abrirModal('modalWebcam');
-    const video = document.getElementById('webcamVideo');
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(s => { streamWebcam = s; video.srcObject = s; })
-        .catch(() => { alert('Não foi possível acessar a webcam.'); fecharWebcam(); });
-}
-
-function capturarFoto() {
-    const video = document.getElementById('webcamVideo');
-    const canvas = document.getElementById('webcamCanvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0);
-    document.getElementById('fotoPreview').src = canvas.toDataURL('image/png');
-    fecharWebcam();
-}
-
-function fecharWebcam() {
-    fecharModal('modalWebcam');
-    if (streamWebcam) { streamWebcam.getTracks().forEach(t => t.stop()); streamWebcam = null; }
-}
-
-/* ==========================================================
-   ASSINATURA DIGITAL
-========================================================== */
-let ctxAss = null, desenhando = false;
-
-function iniciarAssinatura() {
-    const c = document.getElementById('assinaturaCanvas');
-    if (!c) return;
-    ctxAss = c.getContext('2d');
-    ctxAss.strokeStyle = '#333'; ctxAss.lineWidth = 2; ctxAss.lineCap = 'round';
-
-    const pos = (e) => {
-        const r = c.getBoundingClientRect();
-        const sx = c.width / r.width, sy = c.height / r.height;
-        return { x: (e.clientX - r.left) * sx, y: (e.clientY - r.top) * sy };
-    };
-    const start = (e) => { desenhando = true; const p = pos(e); ctxAss.beginPath(); ctxAss.moveTo(p.x, p.y); };
-    const move = (e) => { if (!desenhando) return; const p = pos(e); ctxAss.lineTo(p.x, p.y); ctxAss.stroke(); };
-    const end = () => { desenhando = false; };
-
-    c.addEventListener('mousedown', start);
-    c.addEventListener('mousemove', move);
-    c.addEventListener('mouseup', end);
-    c.addEventListener('mouseleave', end);
-    c.addEventListener('touchstart', e => { e.preventDefault(); start(e.touches[0]); });
-    c.addEventListener('touchmove', e => { e.preventDefault(); move(e.touches[0]); });
-    c.addEventListener('touchend', end);
-}
-
-function limparAssinatura() {
-    const c = document.getElementById('assinaturaCanvas');
-    if (c && ctxAss) ctxAss.clearRect(0, 0, c.width, c.height);
-}
-
-function salvarAssinatura() {
-    const c = document.getElementById('assinaturaCanvas');
-    if (!c) return;
-    console.log('Assinatura:', c.toDataURL('image/png').substring(0, 50));
-    alert('Assinatura salva!');
-}
-
-/* ==========================================================
-   ANEXOS
-========================================================== */
-function iniciarAnexos() {
-    const drop = document.getElementById('dropZone');
-    const input = document.getElementById('anexoInput');
-    if (!drop || !input) return;
-
-    drop.addEventListener('click', () => input.click());
-    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('dragover'); });
-    drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
-    drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('dragover'); processarArquivos(e.dataTransfer.files); });
-    input.addEventListener('change', e => processarArquivos(e.target.files));
-}
-
-function processarArquivos(files) {
-    const lista = document.getElementById('anexoLista');
-    if (!lista) return;
-    if (lista.querySelector('.anexo-vazio')) lista.innerHTML = '';
-
-    Array.from(files).forEach(file => {
-        const ext = file.name.split('.').pop().toLowerCase();
-        const icon = ['pdf'].includes(ext) ? 'fa-file-pdf' :
-            ['jpg', 'jpeg', 'png'].includes(ext) ? 'fa-file-image' :
-                ['doc', 'docx'].includes(ext) ? 'fa-file-word' : 'fa-file';
-        const size = (file.size / 1024).toFixed(1) + ' KB';
-
-        const div = document.createElement('div');
-        div.className = 'anexo-item';
-        div.innerHTML = `
-            <div class="anexo-item-info">
-                <i class="fa-solid ${icon}"></i>
-                <div><div class="anexo-item-nome">${file.name}</div><div class="anexo-item-size">${size}</div></div>
-            </div>
-            <div class="anexo-item-actions">
-                <button type="button" class="btn-view" title="Visualizar"><i class="fa-solid fa-eye"></i></button>
-                <button type="button" class="btn-del" title="Excluir" onclick="this.closest('.anexo-item').remove()"><i class="fa-solid fa-trash"></i></button>
-            </div>`;
-        lista.appendChild(div);
-    });
-}
-
-/* ==========================================================
-   HISTÓRICO
-========================================================== */
-function addHistorico(acao) {
-    historico.push({ data: new Date().toLocaleString('pt-BR'), usuario: 'ADMIN', acao });
-    renderHistorico();
-}
-
-function renderHistorico() {
-    const el = document.getElementById('historicoConteudo');
-    if (!el) return;
-    if (historico.length === 0) {
-        el.innerHTML = '<div class="historico-vazio">Nenhuma alteração registrada.</div>';
+function updateAll() {
+    // Primeira pintura: cria as instâncias. Depois, apenas atualiza os dados.
+    if (charts.size === 0) {
+        renderAll();
         return;
     }
-    el.innerHTML = historico.map(h => `
-        <div class="historico-item">
-            <div class="historico-data">${h.data}</div>
-            <div class="historico-acao">${h.acao}</div>
-            <div class="historico-user">@${h.usuario}</div>
-        </div>`).join('');
-}
 
-/* ==========================================================
-   MODAIS
-========================================================== */
-function abrirModal(id) { document.getElementById(id)?.classList.add('active'); }
-function fecharModal(id) { document.getElementById(id)?.classList.remove('active'); }
+    syncChart('newPatients', chart => {
+        chart.data.datasets[0].data = state.data.acquisition;
+        chart.data.datasets[1].data = state.data.target;
+    });
 
-/* ==========================================================
-   BUSCA (simulação)
-========================================================== */
-function executarBusca() {
-    const termo = document.getElementById('buscaTermo')?.value.trim();
-    const res = document.getElementById('buscaResultados');
-    if (!termo || !res) return;
+    syncChart('gender', chart => {
+        chart.data.labels = state.data.gender.map(item => item.name);
+        chart.data.datasets[0].data = state.data.gender.map(item => item.value);
+    });
 
-    // Simulação de resultados
-    res.innerHTML = `
-        <div class="busca-item" onclick="alert('Paciente selecionado: ${termo}')">
-            <div class="busca-item-nome">${termo.toUpperCase()}</div>
-            <div class="busca-item-info">CPF: 000.000.000-00 | Código: 00001</div>
-        </div>
-        <div class="busca-item" onclick="alert('Paciente selecionado: MARIA SILVA')">
-            <div class="busca-item-nome">MARIA SILVA</div>
-            <div class="busca-item-info">CPF: 111.111.111-11 | Código: 00002</div>
-        </div>`;
-}
+    syncChart('insurance', chart => {
+        chart.data.labels = state.data.insurance.map(item => item.name);
+        chart.data.datasets[0].data = state.data.insurance.map(item => item.patients);
+    });
 
-/* ==========================================================
-   RELÓGIO
-========================================================== */
-function iniciarRelogio() {
-    const el = document.getElementById('clock');
-    if (!el) return;
-    const upd = () => {
-        el.textContent = new Date().toLocaleString('pt-BR', {
-            day: '2-digit', month: '2-digit', year: 'numeric',
-            hour: '2-digit', minute: '2-digit', second: '2-digit'
+    syncChart('age', chart => {
+        chart.data.labels = state.data.ageGroups.map(item => item.label);
+        chart.data.datasets[0].data = state.data.ageGroups.map(item => item.female);
+        chart.data.datasets[1].data = state.data.ageGroups.map(item => item.male);
+    });
+
+    syncChart('evolution', chart => {
+        const source = {
+            'Realizado': state.data.evolutionReal,
+            'Meta': state.data.evolutionTarget,
+            'Ano anterior': state.data.evolutionPrevious
+        };
+
+        chart.data.datasets.forEach(dataset => {
+            dataset.data = source[dataset.label] || dataset.data;
         });
+    });
+
+    updateGenderSummary();
+    renderCities();
+    renderHeatmap();
+    renderRank();
+    renderBreakdown($('#tblSearch')?.value || '');
+    refreshIcons();
+}
+
+function updateLastUpdate() {
+    const element = $('#lastUpdate');
+
+    if (!element) return;
+
+    element.textContent = new Intl.DateTimeFormat(
+        'pt-BR',
+        {
+            dateStyle: 'short',
+            timeStyle: 'short'
+        }
+    ).format(new Date());
+}
+
+function applyTheme() {
+    const saved = localStorage.getItem('g4med-theme');
+    const systemDark = window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    const dark = saved
+        ? saved === 'dark'
+        : systemDark;
+
+    document.documentElement.classList.toggle('dark', dark);
+
+    const icon = $('#toggleTheme i');
+
+    if (icon) {
+        icon.setAttribute(
+            'data-lucide',
+            dark ? 'sun' : 'moon'
+        );
+    }
+
+    refreshIcons();
+}
+
+function bindEvents() {
+    $$('.period-button').forEach(button => {
+        button.addEventListener('click', () => {
+            if (state.isLoading) return;
+
+            if (button.dataset.period === state.period) return;
+
+            $$('.period-button').forEach(item => {
+                item.classList.remove('active', 'text-white');
+                item.style.background = 'transparent';
+            });
+
+            button.classList.add('active', 'text-white');
+            button.style.background = 'var(--gradient)';
+
+            state.period = button.dataset.period;
+
+            const custom = state.period === 'custom';
+
+            $('#dateFrom').disabled = !custom;
+            $('#dateTo').disabled = !custom;
+
+            if (!custom) {
+                refreshData('Período atualizado com sucesso.');
+            }
+        });
+    });
+
+    $$('.segmented[data-target="newPatients"] button')
+        .forEach(button => {
+            button.addEventListener('click', () => {
+                $$('.segmented[data-target="newPatients"] button')
+                    .forEach(item => item.classList.remove('active'));
+
+                button.classList.add('active');
+                state.newPatientsMode = button.dataset.mode;
+                renderNewPatients();
+            });
+        });
+
+    $$('.segmented[data-target="evolution"] button')
+        .forEach(button => {
+            button.addEventListener('click', () => {
+                $$('.segmented[data-target="evolution"] button')
+                    .forEach(item => item.classList.remove('active'));
+
+                button.classList.add('active');
+                state.evolutionMetric = button.dataset.metric;
+                renderEvolution();
+            });
+        });
+
+    $$('#rankTabs button').forEach(button => {
+        button.addEventListener('click', () => {
+            $$('#rankTabs button').forEach(item =>
+                item.classList.remove('active')
+            );
+
+            button.classList.add('active');
+            state.rankMode = button.dataset.rank;
+            renderRank();
+        });
+    });
+
+    $('#toggleTheme').addEventListener('click', () => {
+        const dark = !isDark();
+
+        document.documentElement.classList.toggle('dark', dark);
+        localStorage.setItem(
+            'g4med-theme',
+            dark ? 'dark' : 'light'
+        );
+
+        const icon = $('#toggleTheme i');
+
+        if (icon) {
+            icon.setAttribute(
+                'data-lucide',
+                dark ? 'sun' : 'moon'
+            );
+        }
+
+        refreshIcons();
+        renderAll();
+
+        showToast(
+            dark
+                ? 'Tema escuro ativado.'
+                : 'Tema claro ativado.',
+            'info'
+        );
+    });
+
+    $('#btnRefresh').addEventListener('click', () => {
+        refreshData('Dados atualizados com sucesso.');
+    });
+
+    $('#btnNotifications').addEventListener('click', () => {
+        showToast(
+            'Nenhum alerta crítico no momento.',
+            'info'
+        );
+    });
+
+    $('#btnApply').addEventListener('click', () => {
+        state.filters = {
+            from: $('#dateFrom').value,
+            to: $('#dateTo').value,
+            unit: $('#fUnit').value,
+            insurance: $('#fIns').value,
+            age: $('#fAge').value,
+            origin: $('#fOrig').value
+        };
+
+        if (
+            state.period === 'custom' &&
+            ((!state.filters.from && state.filters.to) ||
+                (state.filters.from && !state.filters.to))
+        ) {
+            showToast(
+                'Preencha as duas datas do período personalizado.',
+                'warning'
+            );
+
+            return;
+        }
+
+        refreshData('Filtros aplicados com sucesso.');
+    });
+
+    $('#btnClear').addEventListener('click', () => {
+        ['#fUnit', '#fIns', '#fAge', '#fOrig']
+            .forEach(selector => {
+                $(selector).selectedIndex = 0;
+            });
+
+        $('#dateFrom').value = '';
+        $('#dateTo').value = '';
+
+        renderBreakdown('');
+
+        showToast(
+            'Filtros limpos.',
+            'info'
+        );
+    });
+
+    $('#tblSearch').addEventListener('input', event => {
+        renderBreakdown(event.target.value);
+    });
+
+    $('#btnPrint').addEventListener('click', () => {
+        showToast(
+            'Preparando impressão do relatório.',
+            'info'
+        );
+
+        setTimeout(() => window.print(), 300);
+    });
+
+    $('#btnExport')?.addEventListener('click', exportCSV);
+
+    $('#btnExportCat')?.addEventListener('click', exportCSV);
+
+    $('#btnShare').addEventListener('click', async () => {
+        try {
+            if (navigator.share) {
+                await navigator.share({
+                    title: 'G4Med BI — Relatório de Pacientes',
+                    text: 'Relatório gerencial de pacientes.',
+                    url: window.location.href
+                });
+
+                showToast(
+                    'Relatório compartilhado.',
+                    'success'
+                );
+            } else {
+                await navigator.clipboard.writeText(
+                    window.location.href
+                );
+
+                showToast(
+                    'Link copiado para a área de transferência.',
+                    'success'
+                );
+            }
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                showToast(
+                    'Não foi possível compartilhar o relatório.',
+                    'danger'
+                );
+            }
+        }
+    });
+}
+
+function buildCSVContent() {
+    const header = [
+        'Convenio',
+        'Pacientes',
+        'Novos',
+        'Retorno',
+        'Idade media',
+        'LTV medio',
+        'Variacao (%)',
+        'Tendencia'
+    ];
+
+    const term = ($('#tblSearch')?.value || '')
+        .trim()
+        .toLowerCase();
+
+    const rows = state.data.insurance
+        .filter(item => item.name.toLowerCase().includes(term))
+        .map(item => [
+            item.name,
+            item.patients,
+            item.newPatients,
+            item.returns,
+            item.age,
+            item.ltv,
+            formatDecimal(item.variation),
+            item.trend === 'up' ? 'Alta' : 'Baixa'
+        ]);
+
+    const escapeCell = value => {
+        const text = String(value ?? '');
+
+        return /[";\n]/.test(text)
+            ? `"${text.replaceAll('"', '""')}"`
+            : text;
     };
-    upd(); setInterval(upd, 1000);
+
+    return [header, ...rows]
+        .map(row => row.map(escapeCell).join(';'))
+        .join('\r\n');
 }
 
-/* ==========================================================
-   UTILS
-========================================================== */
-function agoraISO() {
-    const d = new Date();
-    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+function exportCSV() {
+    try {
+        const content = buildCSVContent();
+
+        // BOM garante acentuacao correta ao abrir no Excel
+        const blob = new Blob(
+            [`\uFEFF${content}`],
+            { type: 'text/csv;charset=utf-8;' }
+        );
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+
+        const stamp = new Date()
+            .toISOString()
+            .slice(0, 10);
+
+        link.href = url;
+        link.download = `g4med-pacientes-convenios-${stamp}.csv`;
+        link.rel = 'noopener';
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+        showToast('Arquivo CSV exportado.', 'success');
+    } catch (error) {
+        console.error('Falha ao exportar CSV:', error);
+        showToast('Não foi possível exportar o CSV.', 'danger');
+    }
 }
 
-/* ==========================================================
-   ABA OUTROS
-========================================================== */
-function emitirAtestado() {
-    alert('📝 ATESTADO MÉDICO\n\n• Paciente: ' + (document.getElementById('pacNome')?.value || 'N/A') + '\n• CID: [campo para preenchimento]\n• Acompanhante: [se necessário]\n• Assinatura digital do médico\n\n(Integrar com impressão/PDF)');
+function setBusy(busy) {
+    state.isLoading = busy;
+
+    document.body.classList.toggle('is-loading', busy);
+    document.body.setAttribute('aria-busy', busy ? 'true' : 'false');
+
+    $$('.period-button, #btnRefresh, #btnApply, #btnClear')
+        .forEach(element => {
+            element.disabled = busy;
+        });
 }
 
-function emitirPedidoExames() {
-    alert('🧪 PEDIDO DE EXAMES\n\n• Selecionar exames solicitados\n• Assinatura digital integrada\n• Opção para consulta online\n\n(Integrar com laboratório parceiro)');
+function buildQuery() {
+    const params = new URLSearchParams({ period: state.period });
+
+    Object.entries(state.filters).forEach(([key, value]) => {
+        if (value) params.set(key, value);
+    });
+
+    return params.toString();
 }
 
-function emitirReceita() {
-    alert('💊 RECEITA MÉDICA\n\n• Medicamentos e posologia\n• CRM e Especialidade do médico\n• Assinatura digital\n• Opção de impressão ou envio digital\n\n(Integrar com impressão/PDF)');
+async function fetchReport(signal) {
+    const response = await fetch(`${API_ENDPOINT}?${buildQuery()}`, {
+        signal,
+        headers: { Accept: 'application/json' },
+        credentials: 'same-origin'
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+    }
+
+    return response.json();
 }
 
-function verHistorico() {
-    acaoHistorico();
+async function loadReport(signal) {
+    if (USE_MOCK_DATA) {
+        return makeData();
+    }
+
+    return fetchReport(signal);
+}
+
+async function refreshData(message) {
+    // Trava: ignora cliques enquanto a requisição anterior não terminou.
+    if (state.isLoading) {
+        showToast('Aguarde: atualização em andamento.', 'warning');
+        return;
+    }
+
+    // Cancela qualquer requisição pendente antes de disparar a nova.
+    state.controller?.abort();
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+    const requestId = ++state.requestId;
+
+    state.controller = controller;
+    setBusy(true);
+
+    try {
+        const data = await loadReport(controller.signal);
+
+        // Descarta respostas fora de ordem (ex.: 12 meses depois de 7 dias).
+        if (requestId !== state.requestId) return;
+
+        state.data = data;
+
+        updateAll();
+        updateLastUpdate();
+        showToast(message, 'success');
+    } catch (error) {
+        if (error.name === 'AbortError') return;
+
+        console.error('Falha ao atualizar o relatório:', error);
+
+        showToast(
+            'Não foi possível atualizar os dados. Tente novamente.',
+            'danger'
+        );
+    } finally {
+        // finally garante que a névoa sempre sai, mesmo com erro ou timeout.
+        clearTimeout(timeout);
+
+        if (state.controller === controller) {
+            state.controller = null;
+        }
+
+        if (requestId === state.requestId) {
+            setBusy(false);
+        }
+    }
+}
+
+// Mantido por compatibilidade com chamadas existentes.
+function simulateRefresh(message) {
+    refreshData(message);
+}
+
+function initialize() {
+    state.data = makeData();
+
+    applyTheme();
+    bindEvents();
+
+    $('#dateFrom').disabled = true;
+    $('#dateTo').disabled = true;
+
+    renderAll();
+    animateCounters();
+    updateLastUpdate();
+
+    state.firstPaint = false;
+
+    let resizeTimer = null;
+
+    window.addEventListener('resize', () => {
+        // Debounce: evita centenas de resize() durante o arraste da janela.
+        clearTimeout(resizeTimer);
+
+        resizeTimer = setTimeout(() => {
+            charts.forEach(chart => {
+                if (typeof chart.resize === 'function') {
+                    chart.resize();
+                }
+            });
+        }, 150);
+    }, { passive: true });
+
+    setInterval(updateLastUpdate, 60000);
+    refreshIcons();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener(
+        'DOMContentLoaded',
+        initialize,
+        { once: true }
+    );
+} else {
+    initialize();
 }
