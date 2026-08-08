@@ -4,151 +4,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Médico - Gm4Med</title>
+    <title>Sistema Médico - G4Med</title>
 
-    <link rel="stylesheet" href="Menu-Principal.css">
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Configuração Customizada do Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sidebar: {
+                            blue: '#1f5f84',
+                            light: '#2c7aa3'
+                        },
+                        topbar: {
+                            blue: '#2b80aa',
+                            light: '#3f98c5'
+                        },
+                        primary: '#1f5f84',
+                        secondary: '#2b80aa'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Courier New', 'monospace']
+                    },
+                    boxShadow: {
+                        soft: '0 12px 30px rgba(0, 0, 0, 0.08)',
+                        sidebar: '4px 0 25px rgba(0, 0, 0, 0.12)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
+    <!-- CSS Customizado -->
+    <link rel="stylesheet" href="Menu-Principal.css">
+
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
-<body>
+<body class="bg-gray-100 font-sans antialiased min-h-screen overflow-x-hidden">
+    <!-- Background Glow -->
     <div class="background-glow"></div>
 
-    <aside class="sidebar">
-        <nav>
-            <div class="sidebar-header">
-                <i data-lucide="stethoscope" class="heart-pulse medical-icon"></i>
-                <div class="brand-container">
-                    <h1 class="brand-name">G4Med</h1>
-                    <p class="brand-slogan">Intelligent Health System</p>
+    <!-- Sidebar -->
+    <aside
+        class="sidebar fixed top-0 left-0 w-[290px] h-screen flex flex-col bg-gradient-to-b from-sidebar-blue to-sidebar-light shadow-sidebar p-5 overflow-y-auto overflow-x-hidden transition-transform duration-300 ease-in-out z-[100]">
+        <nav class="flex flex-col gap-2.5">
+            <!-- Header -->
+            <div class="sidebar-header w-full flex-shrink-0 text-center mb-7 pb-7 border-b border-white/15">
+                <div class="flex items-center justify-center gap-3">
+                    <i data-lucide="stethoscope" class="heart-pulse medical-icon w-11 h-11 text-[#7fd8ff]"></i>
+                    <div class="brand-container">
+                        <h1 class="brand-name text-3xl font-extrabold text-white mt-2.5">G4Med</h1>
+                        <p class="brand-slogan text-xs text-white/95 mt-1">Intelligent Health System</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- <a href="agenda-medica/agenda.html" class="menu-item">
-                <i class="fa-solid fa-calendar-days"></i> <span>Agenda</span>
-            </a> -->
-            <!-- <a href="agenda-medica/agenda.html" class="menu-item">
-                <i class="fa-solid fa-calendar-days"></i> <span>Agenda</span>
-            </a> --> <a href="Agenda-medica/agenda-geral.html" class="menu-item">
-                <i class="fa-solid fa-calendar-days"></i> </i> <span>Agenda</span>
+            <!-- Menu Items -->
+            <a href="Agenda-medica/agenda-geral.html"
+                class="menu-item flex items-center gap-3.5 px-4 py-3.5 text-white text-base font-semibold rounded-[14px] hover:bg-white/8 transition-all duration-300">
+                <i class="fa-solid fa-calendar-days w-6 text-center text-lg"></i>
+                <span>Agenda</span>
             </a>
-            <a href="Atendimento-do-paciente-na-recepcao/atendimento-recepcao.html" class="menu-item">
-                <i class="fa-solid fa-clipboard-user"></i> <span>Atendimento Recepção</span>
+
+            <a href="Atendimento-do-paciente-na-recepcao/atendimento-recepcao.html"
+                class="menu-item flex items-center gap-3.5 px-4 py-3.5 text-white text-base font-semibold rounded-[14px] hover:bg-white/8 transition-all duration-300">
+                <i class="fa-solid fa-clipboard-user w-6 text-center text-lg"></i>
+                <span>Atendimento Recepção</span>
             </a>
 
+            <!-- Menu Group: Cadastro -->
             <div class="menu-group">
-                <div class="menu-item submenu-toggle" aria-expanded="false">
-                    <div><i class="fa-solid fa-folder-open"></i> <span>Cadastro</span></div>
-                    <i class="fa-solid fa-chevron-down arrow"></i>
+                <div class="menu-item submenu-toggle flex items-center gap-3.5 px-4 py-3.5 text-white text-base font-semibold rounded-[14px] hover:bg-white/8 transition-all duration-300 cursor-pointer"
+                    aria-expanded="false">
+                    <div class="flex items-center gap-3.5">
+                        <i class="fa-solid fa-folder-open w-6 text-center text-lg"></i>
+                        <span>Cadastro</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down arrow ml-auto transition-transform duration-300"></i>
                 </div>
-                <div class="submenu">
-                    <a href="Cadastro-paciente/cadastro-paciente.html"><i class="fa-solid fa-user"></i> Paciente</a>
-                    <a href="Cadastros-medicos/cadastro-medicos.html"><i class="fa-solid fa-user-doctor"></i> Médico</a>
+                <div class="submenu hidden flex-col mt-1.5 ml-10.5 gap-1">
+                    <a href="Cadastro-paciente/cadastro-paciente.html"
+                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
+                        <i class="fa-solid fa-user w-6 text-center"></i>
+                        Paciente
+                    </a>
+                    <a href="Cadastros-medicos/cadastro-medicos.html"
+                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
+                        <i class="fa-solid fa-user-doctor w-6 text-center"></i>
+                        Médico
+                    </a>
                 </div>
             </div>
-            <div class="menu-group">
-                <div class="menu-item submenu-toggle" aria-expanded="false">
-                    <div><i class="fa-solid fa-chart-column"></i> <span>Relatório</span></div>
-                    <i class="fa-solid fa-chevron-down arrow"></i>
-                </div>
-                <div class="submenu">
-                    <a href="Relatorios/relatorio-atendimento.html"><i class="fa-solid fa-file-lines"></i>
-                        Atendimentos</a>
-                    <a href="Relatorios/relatorio-paciente.html"><i class="fa-solid fa-users"></i> Pacientes</a>
-                </div>
-            </div>
-            <div class="menu-group">
-                <div class="menu-item submenu-toggle" aria-expanded="false">
-                    <div><i class="fa-solid fa-screwdriver-wrench"></i> <span>Utilitários</span></div>
-                    <i class="fa-solid fa-chevron-down arrow"></i>
-                </div>
-                <div class="submenu">
-                    <a href="Grupo-de-exames/grupo-exames.html">
-                        <i class="fa-solid fa-file-medical"></i> Grupo De Exames
-                    </a>
-                    <a href="Grupo-de-procedimentos/grupo-procedimentos.html">
-                        <i class="fa-solid fa-stethoscope"></i> Grupo De Procedimentos
-                    </a>
-                    <a href="Grupo-de-atendimento/grupo-de-atendimento.html">
-                        <i class="fa-solid fa-notes-medical"></i> Grupo De Atendimento
-                    </a>
-                    <a href="Grupo-de-tipos-de-atendimento/grupo-de-tipos-de-atendimento.html">
-                        <i class="fa-solid fa-layer-group"></i> Grupo De Tipos De Atendimento
-                    </a>
-                    <a href="Procedimento-médico/procedimento-medico.html">
-                        <i class="fa-solid fa-syringe"></i> Procedimento Médico
-                    </a>
-                    <a href="Cadastro-exame/cadastro-exames.html">
-                        <i class="fa-solid fa-syringe"></i> Exames
-                    </a>
 
-                    <a href="convenios/convenios.html">
-                        <i class="fa-solid fa-id-card-clip"></i> Convênios
+            <!-- Menu Group: Relatório -->
+            <div class="menu-group">
+                <div class="menu-item submenu-toggle flex items-center gap-3.5 px-4 py-3.5 text-white text-base font-semibold rounded-[14px] hover:bg-white/8 transition-all duration-300 cursor-pointer"
+                    aria-expanded="false">
+                    <div class="flex items-center gap-3.5">
+                        <i class="fa-solid fa-chart-column w-6 text-center text-lg"></i>
+                        <span>Relatório</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down arrow ml-auto transition-transform duration-300"></i>
+                </div>
+                <div class="submenu hidden flex-col mt-1.5 ml-10.5 gap-1">
+                    <a href="Relatorios/relatorio-atendimento.html"
+                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
+                        <i class="fa-solid fa-file-lines w-6 text-center"></i>
+                        Atendimentos
                     </a>
-                    <a href="Utilitarios/utilitario-logs.html">
-                        <i class="fa-solid fa-clock-rotate-left"></i> Logs
-                    </a>
-                    <a href="Siglas/siglas.html">
-                        <i class="fa-solid fa-list-ul"></i> Siglas
-                    </a>
-                    <a href="Utilitarios/utilitario-usuario.html">
-                        <i class="fa-solid fa-users-gear"></i> Usuários
-                    </a>
-                    <a href="Utilitarios/utilitario-logs.html">
-                        <i class="fa-solid fa-user-doctor"></i> Especialidade Médica
+                    <a href="Relatorios/relatorio-paciente.html"
+                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
+                        <i class="fa-solid fa-users w-6 text-center"></i>
+                        Pacientes
                     </a>
                 </div>
             </div>
-            <a href="Suporte/suporte.html" class="menu-item">
-                <i class="fa-solid fa-headset"></i>
+
+            <!-- Menu Group: Utilitários -->
+            <div class="menu-group">
+                <div class="menu-item submenu-toggle flex items-center gap-3.5 px-4 py-3.5 text-white text-base font-semibold rounded-[14px] hover:bg-white/8 transition-all duration-300 cursor-pointer"
+                    aria-expanded="false">
+                    <div class="flex items-center gap-3.5">
+                        <i class="fa-solid fa-screwdriver-wrench w-6 text-center text-lg"></i>
+                        <span>Utilitários</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down arrow ml-auto transition-transform duration-300"></i>
+                </div>
+                <div class="submenu hidden flex-col mt-1.5 ml-10.5 gap-1">
+                    <a href="Grupo-de-exames/grupo-exames.html"
+                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
+                        <i class="fa-solid fa-file-medical w-6 text-center"></i>
+                        Grupo De Exames
+                    </a>
+                    <a href="Grupo-de-procedimentos/grupo-procedimentos.html"
+                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
+                        <i class="fa-solid fa-stethoscope w-6 text-center"></i>
+                        Grupo De Procedimentos
+                    </a>
+                    <a href="Grupo-de-atendimento/grupo-de-atendimento.html"
+                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
+                        <i class="fa-solid fa-notes-medical w-6 text-center"></i>
+                        Grupo De Atendimento
+                    </a>
+                    <a href="Grupo-de-tipos-de-atendimento/grupo-de-tipos-de-atendimento.html"
+                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
+                        <i class="fa-solid fa-layer-group w-6 text-center"></i>
+                        Grupo De Tipos De Atendimento
+                    </a>
+                    <a href="Procedimento-médico/procedimento-medico.html"
+                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
+                        <i class="fa-solid fa-syringe w-6 text-center"></i>
+                        Procedimento Médico
+                    </a>
+                    <a href="Cadastro-exame/cadastro-exames.html"
+                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
+                        <i class="fa-solid fa-microscope w-6 text-center"></i>
+                        Exames
+                    </a>
+                    <a href="convenios/convenios.html"
+                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
+                        <i class="fa-solid fa-id-card-clip w-6 text-center"></i>
+                        Convênios
+                    </a>
+                    <a href="Utilitarios/utilitario-logs.html"
+                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
+                        <i class="fa-solid fa-clock-rotate-left w-6 text-center"></i>
+                        Logs
+                    </a>
+                    <a href="Siglas/siglas.html"
+                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
+                        <i class="fa-solid fa-list-ul w-6 text-center"></i>
+                        Siglas
+                    </a>
+                    <a href="Utilitarios/utilitario-usuario.html"
+                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
+                        <i class="fa-solid fa-users-gear w-6 text-center"></i>
+                        Usuários
+                    </a>
+                    <a href="Utilitarios/utilitario-especialidade.html"
+                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
+                        <i class="fa-solid fa-user-doctor w-6 text-center"></i>
+                        Especialidade Médica
+                    </a>
+                </div>
+            </div>
+
+            <!-- Suporte -->
+            <a href="Suporte/suporte.html"
+                class="menu-item flex items-center gap-3.5 px-4 py-3.5 text-white text-base font-semibold rounded-[14px] hover:bg-white/8 transition-all duration-300">
+                <i class="fa-solid fa-headset w-6 text-center text-lg"></i>
                 <span>Suporte</span>
             </a>
-            <a href="Sair/sair-sair.html" class="menu-item logout">
-                <i class="fa-solid fa-right-from-bracket"></i> <span>Sair</span>
+
+            <!-- Logout -->
+            <a href="Sair/sair-sair.html"
+                class="menu-item logout flex items-center gap-3.5 px-4 py-3.5 text-white text-base font-semibold rounded-[14px] hover:bg-red-500/20 transition-all duration-300">
+                <i class="fa-solid fa-right-from-bracket w-6 text-center text-lg"></i>
+                <span>Sair</span>
             </a>
         </nav>
     </aside>
 
-    <main class="main-content">
-        <header class="topbar">
-            <div class="topbar-left">
-                <div class="system-info">
+    <!-- Main Content -->
+    <main class="main-content flex-1 min-h-screen ml-[290px] p-1.5 pb-20">
+        <header
+            class="topbar flex items-center justify-between w-full min-h-[80px] px-4.5 text-white bg-gradient-to-r from-topbar-blue to-topbar-light rounded-[24px] shadow-lg">
+            <div class="topbar-left flex items-center gap-4 flex-1">
+                <div class="system-info text-base font-medium">
                     <h3>GM4 — Home V - 1.0.0</h3>
                 </div>
             </div>
 
-            <div class="topbar-right">
-                <div class="datetime-box">
-                    <i class="fa fa-calendar"></i>
-                    <span id="relogio-dinamico" class="monospace-text">Carregando...</span>
+            <div class="topbar-right flex items-center gap-3 justify-end">
+                <!-- DateTime Box -->
+                <div
+                    class="datetime-box flex items-center gap-3 text-white bg-white/14 border border-white/12 backdrop-blur-md rounded-[18px] px-4 py-2.5 min-w-[220px]">
+                    <i class="fa fa-calendar text-sm"></i>
+                    <span id="relogio-dinamico"
+                        class="monospace-text font-mono text-sm min-w-[140px] text-center">Carregando...</span>
                 </div>
 
-                <div class="user-session">
-                    <svg class="user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <!-- User Session -->
+                <div
+                    class="user-session flex items-center gap-3 text-white bg-white/14 border border-white/12 backdrop-blur-md rounded-[18px] px-3.5 py-2">
+                    <svg class="user-icon w-8 h-8 p-1.5 rounded-full bg-white/20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
                         <path d="M20 21a8 8 0 0 0-16 0"></path>
                         <circle cx="12" cy="7" r="4"></circle>
                     </svg>
-                    <div class="user-info">
-                        <div class="username">admin</div>
-                        <div class="status">
-                            <div class="status-dot"></div>
-                            <span class="status-text">Online</span>
+                    <div class="user-info flex flex-col">
+                        <div class="username text-xs text-white">admin</div>
+                        <div class="status flex items-center gap-2 mt-0.5">
+                            <div
+                                class="status-dot relative w-2 h-2 rounded-full bg-[#22c55e] flex-shrink-0 shadow-[0_0_0_3px_rgba(34,197,94,0.2),0_0_10px_rgba(34,197,94,0.9),0_0_20px_rgba(34,197,94,0.5)]">
+                            </div>
+                            <span class="status-text text-xs text-white">Online</span>
                         </div>
-                        <div class="session-time">
-                            Tempo logado: <span id="tempoLogado" class="monospace-text">00h 00m 00s</span>
+                        <div class="session-time text-xs text-white">
+                            Tempo logado:
+                            <span id="tempoLogado"
+                                class="monospace-text font-mono text-xs min-w-[140px] text-center">00h 00m 00s</span>
                         </div>
                     </div>
                 </div>
             </div>
         </header>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-home mt-6">
+            <div class="welcome-card bg-white rounded-[24px] p-10 shadow-soft flex flex-col gap-4">
+                <h1 class="text-3xl font-extrabold text-gray-800">Bem-vindo ao G4Med</h1>
+                <p class="text-base leading-relaxed text-gray-600 max-w-[700px]">
+                    Sistema inteligente de gestão médica. Gerencie pacientes, agenda, atendimentos e muito mais em um só
+                    lugar.
+                </p>
+
+                <!-- BOTÃO ATUALIZADO COM LINK -->
+                <a href="catalogo-exames/catalogo-exames.html"
+                    class="btn-primary self-start inline-flex px-7 py-3.5 border-none rounded-[14px] bg-gradient-to-br from-topbar-blue to-topbar-light text-white text-base font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(43,128,170,0.30)] active:translate-y-0 no-underline">
+                    Começar Agora
+                </a>
+            </div>
+        </div>
     </main>
 
-    <footer class="footer">
-        © 2026 GM4 med - Intelligent Health System. Todos os direitos reservados.
+    <!-- Footer -->
+    <footer
+        class="footer fixed bottom-2.5 left-[290px] w-[calc(100%-290px)] text-center text-xs text-gray-400 opacity-85">
+        © 2026 G4Med - Intelligent Health System. Todos os direitos reservados.
     </footer>
 
+    <!--- Scripts -->
     <script src="Menu-Principal.js"></script>
+    <script>
+        // Inicializa ícones Lucide
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>

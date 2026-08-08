@@ -3,746 +3,801 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>G4Med BI · Inteligência de Pacientes</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap"
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cadastro de Paciente | G4med</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-
     <link rel="stylesheet" href="cadastro-paciente.css">
-
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace']
-                    },
-                    colors: {
-                        brand: '#4f46e5'
-                    }
-                }
-            }
-        };
-    </script>
-
+    <!-- <link rel="stylesheet" href="financeiro.css"> -->
 </head>
 
 <body>
 
-    <!-- TOPBAR -->
-    <header class="sticky top-0 z-50 border-b backdrop-blur-xl u-bg-glass u-bd">
-        <div class="mx-auto flex max-w-[1640px] items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+    <div class="app">
 
-            <div class="flex items-center gap-3">
-                <a href="../Menu-Principal.html" class="icon-button" title="Voltar" aria-label="Voltar">
-                    <i data-lucide="arrow-left"></i>
-                </a>
-
-                <div class="grid h-10 w-10 place-items-center rounded-xl text-white shadow-lg u-bg-gradient">
-                    <i data-lucide="users"></i>
-                </div>
-
-                <div>
-                    <div class="text-sm font-extrabold">
-                        G4Med
-                        <span class="rounded bg-indigo-600 px-1.5 py-0.5 text-[9px] text-white">
-                            BI
-                        </span>
-                    </div>
-
-                    <div class="text-[11px] u-muted">
-                        Relatório de Pacientes
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-1 sm:gap-2">
-                <button id="toggleTheme" class="icon-button" type="button" title="Alternar tema"
-                    aria-label="Alternar tema">
-                    <i data-lucide="moon"></i>
-                </button>
-
-                <button id="btnRefresh" class="icon-button" type="button" title="Atualizar dados"
-                    aria-label="Atualizar dados">
-                    <i data-lucide="refresh-cw"></i>
-                </button>
-
-                <button id="btnNotifications" class="icon-button relative" type="button" title="Notificações"
-                    aria-label="Notificações">
-                    <i data-lucide="bell"></i>
-                    <span class="absolute right-2 top-2 h-2 w-2 rounded-full bg-rose-500"></span>
-                </button>
-
-                <div class="ml-1 flex items-center gap-2 rounded-full border p-1.5 pr-3 u-bd">
-                    <div
-                        class="grid h-8 w-8 place-items-center rounded-full text-xs font-bold text-white u-bg-gradient">
-                        DR
-                    </div>
-
-                    <div class="hidden leading-tight sm:block">
-                        <div class="text-xs font-bold">Dr. Rodrigo</div>
-                        <div class="text-[10px] u-muted">
-                            Gestor BI
+        <!-- MAIN -->
+        <div class="main">
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <div class="topbar-title">G4med — Cadastro de Paciente</div>
+                <div class="topbar-actions">
+                    <div class="clock" id="clock">--/--/---- --:--:--</div>
+                    <div class="user-pill">
+                        <div class="user-avatar">A</div>
+                        <div class="user-info">
+                            <div class="user-name">admin</div>
+                            <div class="user-status"><span class="status-dot"></span>Online</div>
                         </div>
                     </div>
+                </div>
+            </header>
+
+            <!-- CONTENT -->
+            <div class="content">
+                <!-- PAGE HEADER -->
+                <div class="page-header">
+                    <h1><i class="fa-solid fa-user-injured"></i> Cadastro de Paciente</h1>
+                    <p>Cadastro completo com dados pessoais, médicos, financeiros e documentos</p>
+                </div>
+
+                <!-- TOOLBAR -->
+                <div class="toolbar" id="toolbar">
+                    <button type="button" class="btn btn-novo" id="btnNovo" onclick="acaoNovo()">
+                        <i class="fa-solid fa-plus"></i><span>Novo</span>
+                    </button>
+                    <button type="button" class="btn btn-gravar" id="btnGravar" onclick="acaoGravar()" disabled>
+                        <i class="fa-solid fa-floppy-disk"></i><span>Gravar</span>
+                    </button>
+                    <button type="button" class="btn btn-editar" id="btnEditar" onclick="acaoEditar()" disabled>
+                        <i class="fa-solid fa-pen"></i><span>Editar</span>
+                    </button>
+                    <button type="button" class="btn btn-nav" id="btnAnterior" onclick="acaoAnterior()" disabled
+                        title="Anterior">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button type="button" class="btn btn-nav" id="btnProximo" onclick="acaoProximo()" disabled
+                        title="Próximo">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                    <button type="button" class="btn btn-buscar" id="btnBuscar" onclick="acaoBuscar()">
+                        <i class="fa-solid fa-magnifying-glass"></i><span>Buscar</span>
+                    </button>
+                    <button type="button" class="btn btn-excluir" id="btnExcluir" onclick="acaoExcluir()" disabled>
+                        <i class="fa-solid fa-trash"></i><span>Excluir</span>
+                    </button>
+                    <button type="button" class="btn btn-cancelar" id="btnCancelar" onclick="acaoCancelar()" disabled>
+                        <i class="fa-solid fa-xmark"></i><span>Cancelar</span>
+                    </button>
+                    <button type="button" class="btn btn-anexo" id="btnAnexo" onclick="acaoAnexo()" disabled>
+                        <i class="fa-solid fa-paperclip"></i><span>Anexo</span>
+                    </button>
+                    <button type="button" class="btn btn-imprimir" id="btnImprimir" onclick="acaoImprimir()" disabled>
+                        <i class="fa-solid fa-print"></i><span>Imprimir</span>
+                    </button>
+                    <button type="button" class="btn btn-historico" id="btnHistorico" onclick="acaoHistorico()"
+                        disabled>
+                        <i class="fa-solid fa-clock-rotate-left"></i><span>Histórico</span>
+                    </button>
+                    <button type="button" class="btn btn-sair" onclick="window.location.href='../Menu-Principal.html'">
+                        <i class="fa-solid fa-arrow-left"></i> <span>Voltar</span>
+                    </button>
+                </div>
+
+                <!-- CARD COM TABS -->
+                <div class="card">
+                    <!-- TAB HEADERS -->
+                    <div class="tabs-header" id="tabsHeader">
+                        <button type="button" class="tab-btn active" data-tab="tab1" onclick="switchTab('tab1')">
+                            <i class="fa-solid fa-id-card"></i><span>Pessoais</span>
+                        </button>
+                        <button type="button" class="tab-btn" data-tab="tab2" onclick="switchTab('tab2')">
+                            <i class="fa-solid fa-address-book"></i><span>Contato</span>
+                        </button>
+                        <button type="button" class="tab-btn" data-tab="tab3" onclick="switchTab('tab3')">
+                            <i class="fa-solid fa-map-location-dot"></i><span>Endereço</span>
+                        </button>
+                        <button type="button" class="tab-btn" data-tab="tab4" onclick="switchTab('tab4')">
+                            <i class="fa-solid fa-heart-pulse"></i><span>Médicas</span>
+                        </button>
+                        <button type="button" class="tab-btn" data-tab="tab5" onclick="switchTab('tab5')">
+                            <i class="fa-solid fa-hand-holding-medical"></i><span>Convênio</span>
+                        </button>
+                        <!-- <button type="button" class="tab-btn" data-tab="tab6" onclick="switchTab('tab6')">
+                            <i class="fa-solid fa-money-bill-wave"></i><span>Financeiro</span>
+                        </button> -->
+                        <button type="button" class="tab-btn" onclick="window.location.href='financeiro.html'">
+                            <i class="fa-solid fa-money-bill-wave"></i><span>Financeiro</span>
+                        </button>
+                        <button type="button" class="tab-btn" data-tab="tab7" onclick="switchTab('tab7')">
+                            <i class="fa-solid fa-clipboard-check"></i><span>Controle</span>
+                        </button>
+                        <button type="button" class="tab-btn" data-tab="tab8" onclick="switchTab('tab8')">
+                            <i class="fa-solid fa-paperclip"></i><span>Anexos</span>
+                        </button>
+                        <button type="button" class="tab-btn" data-tab="tab9" onclick="switchTab('tab9')">
+                            <i class="fa-solid fa-shield-halved"></i><span>LGPD</span>
+                        </button>
+                        <button type="button" class="tab-btn" data-tab="tab10" onclick="switchTab('tab10')">
+                            <i class="fa-solid fa-file-medical"></i><span>Outros</span>
+                        </button>
+                    </div>
+
+                    <!-- ==================== ABA 1: DADOS PESSOAIS ==================== -->
+                    <div class="tab-content active" id="tab1">
+                        <div class="form-grid">
+                            <div class="form-group fg-codigo">
+                                <label>Código/ID *</label>
+                                <input type="text" class="input" id="pacId" readonly>
+                            </div>
+                            <div class="form-group fg-nome">
+                                <label>Nome Completo *</label>
+                                <input type="text" class="input campo-edita" id="pacNome"
+                                    placeholder="DIGITE O NOME COMPLETO" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Data de Nascimento *</label>
+                                <input type="date" class="input campo-edita" id="pacNascimento" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Idade</label>
+                                <input type="text" class="input" id="pacIdade" placeholder="-- Anos -- Meses -- Dias"
+                                    readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>CPF *</label>
+                                <input type="text" class="input campo-edita" id="pacCpf" placeholder="000.000.000-00"
+                                    maxlength="14" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>RG</label>
+                                <input type="text" class="input campo-edita" id="pacRg" placeholder="00.000.000-0"
+                                    disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Órgão Emissor</label>
+                                <input type="text" class="input campo-edita" id="pacOrgao" placeholder="SSP/UF"
+                                    disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Gênero</label>
+                                <select class="input campo-edita" id="pacGenero" disabled>
+                                    <option value="">Selecione</option>
+                                    <option value="F">Feminino</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="O">Outro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Estado Civil</label>
+                                <select class="input campo-edita" id="pacEstCivil" disabled>
+                                    <option value="">Selecione</option>
+                                    <option>Solteiro(a)</option>
+                                    <option>Casado(a)</option>
+                                    <option>União Estável</option>
+                                    <option>Namorando(a)</option>
+                                    <option>Divorciado(a)</option>
+                                    <option>Viúvo(a)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Nacionalidade</label>
+                                <input type="text" class="input campo-edita" id="pacNacionalidade" value="BRASILEIRO"
+                                    placeholder="DIGITE A NACIONALIDADE" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Profissão</label>
+                                <input type="text" class="input campo-edita" id="pacProfissao"
+                                    placeholder="DIGITE A PROFISSÃO" disabled>
+                            </div>
+                            <div class="form-group fg-foto">
+                                <label>Foto</label>
+                                <div class="foto-box">
+                                    <img id="fotoPreview"
+                                        src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                                        alt="Foto">
+                                    <button type="button" class="btn-foto campo-edita" onclick="abrirWebcam()" disabled
+                                        title="Tirar foto">
+                                        <i class="fa-solid fa-camera"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== ABA 2: CONTATO ==================== -->
+                    <div class="tab-content" id="tab2">
+                        <h3 class="section-title"><i class="fa-solid fa-address-book"></i> Contato Pessoal</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Telefone Principal</label>
+                                <input type="text" class="input campo-edita" id="pacTel1" placeholder="(00) 00000-0000"
+                                    disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Telefone Secundário</label>
+                                <input type="text" class="input campo-edita" id="pacTel2" placeholder="(00) 00000-0000"
+                                    disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>WhatsApp</label>
+                                <input type="text" class="input campo-edita" id="pacWhats" placeholder="(00) 00000-0000"
+                                    disabled>
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>E-mail</label>
+                                <input type="email" class="input campo-edita" id="pacEmail"
+                                    placeholder="email@exemplo.com" disabled>
+                            </div>
+                        </div>
+
+                        <h3 class="section-title"><i class="fa-solid fa-triangle-exclamation"></i> Contato de Emergência
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>Nome do Responsável</label>
+                                <input type="text" class="input campo-edita" id="pacRespNome"
+                                    placeholder="NOME DO RESPONSÁVEL" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Grau de Parentesco</label>
+                                <input type="text" class="input campo-edita" id="pacRespParentesco"
+                                    placeholder="PAI, MÃE, CÔNJUGE..." disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Telefone do Responsável</label>
+                                <input type="text" class="input campo-edita" id="pacRespTel"
+                                    placeholder="(00) 00000-0000" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>WhatsApp do Responsável</label>
+                                <input type="text" class="input campo-edita" id="pacRespWhats"
+                                    placeholder="(00) 00000-0000" disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== ABA 3: ENDEREÇO ==================== -->
+                    <div class="tab-content" id="tab3">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>CEP</label>
+                                <div class="input-group-btn">
+                                    <input type="text" class="input campo-edita" id="pacCep" placeholder="00000-000"
+                                        maxlength="9" disabled>
+                                    <button type="button" class="btn btn-buscar campo-edita" onclick="buscarCep()"
+                                        disabled>
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>Endereço</label>
+                                <input type="text" class="input campo-edita" id="pacEndereco"
+                                    placeholder="RUA, AVENIDA..." disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Número</label>
+                                <input type="text" class="input campo-edita" id="pacNumero" placeholder="Nº" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Complemento</label>
+                                <input type="text" class="input campo-edita" id="pacComplemento"
+                                    placeholder="APTO, BLOCO, SALA..." disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Bairro</label>
+                                <input type="text" class="input campo-edita" id="pacBairro" placeholder="BAIRRO"
+                                    disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Cidade</label>
+                                <input type="text" class="input campo-edita" id="pacCidade" placeholder="CIDADE"
+                                    disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Estado</label>
+                                <input type="text" class="input campo-edita" id="pacEstado" placeholder="UF"
+                                    maxlength="2" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>País</label>
+                                <input type="text" class="input campo-edita" id="pacPais" value="BRASIL" disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== ABA 4: INFO MÉDICAS ==================== -->
+                    <div class="tab-content" id="tab4">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Tipo Sanguíneo</label>
+                                <select class="input campo-edita" id="pacSangue" disabled>
+                                    <option value="">Selecione</option>
+                                    <option>A+</option>
+                                    <option>A-</option>
+                                    <option>B+</option>
+                                    <option>B-</option>
+                                    <option>AB+</option>
+                                    <option>AB-</option>
+                                    <option>O+</option>
+                                    <option>O-</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Gestante</label>
+                                <select class="input campo-edita" id="pacGestante" disabled>
+                                    <option value="N">Não</option>
+                                    <option value="S">Sim</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Deficiência Física</label>
+                                <input type="text" class="input campo-edita" id="pacDeficiencia"
+                                    placeholder="DESCREVA SE HOUVER" disabled>
+                            </div>
+                            <div class="form-group" style="grid-column: span 3;">
+                                <label>Alergias</label>
+                                <textarea class="input textarea campo-edita" id="pacAlergias"
+                                    placeholder="DESCREVA AS ALERGIAS CONHECIDAS" disabled></textarea>
+                            </div>
+                            <div class="form-group" style="grid-column: span 3;">
+                                <label>Medicamentos em Uso</label>
+                                <textarea class="input textarea campo-edita" id="pacMedicamentos"
+                                    placeholder="LISTE OS MEDICAMENTOS" disabled></textarea>
+                            </div>
+                            <div class="form-group" style="grid-column: span 3;">
+                                <label>Doenças Crônicas</label>
+                                <textarea class="input textarea campo-edita" id="pacDoencas"
+                                    placeholder="DESCREVA AS DOENÇAS CRÔNICAS" disabled></textarea>
+                            </div>
+                            <div class="form-group" style="grid-column: span 3;">
+                                <label>Histórico Cirúrgico</label>
+                                <textarea class="input textarea campo-edita" id="pacCirurgico"
+                                    placeholder="DESCREVA O HISTÓRICO CIRÚRGICO" disabled></textarea>
+                            </div>
+                            <div class="form-group" style="grid-column: span 3;">
+                                <label>Observações Médicas</label>
+                                <textarea class="input textarea campo-edita" id="pacObsMed"
+                                    placeholder="OBSERVAÇÕES GERAIS" disabled></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== ABA 5: CONVÊNIO ==================== -->
+                    <div class="tab-content" id="tab5">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Possui Convênio?</label>
+                                <select class="input campo-edita" id="pacTemConvenio" disabled>
+                                    <option value="">Selecione</option>
+                                    <option value="S">Sim</option>
+                                    <option value="N">Não</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label for="pacConvenioNome">Nome do Convênio</label>
+                                <select class="input campo-edita" id="pacConvenioNome" disabled>
+                                    <option value="" selected disabled>SELECIONE O CONVÊNIO</option>
+                                    <option value="particular">PARTICULAR</option>
+                                    <option value="amil">AMIL</option>
+                                    <option value="bradesco">BRADESCO SAÚDE</option>
+                                    <option value="cassi">CASSI</option>
+                                    <option value="postal">CORREIOS (POSTAL SAÚDE)</option>
+                                    <option value="geap">GEAP</option>
+                                    <option value="hapvida">HAPVIDA</option>
+                                    <option value="notredame">INTERMÉDICA NOTREDAME</option>
+                                    <option value="sulamerica">SULAMÉRICA</option>
+                                    <option value="unimed">UNIMED</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Número da Carteirinha</label>
+                                <input type="text" class="input campo-edita" id="pacCarteirinha" placeholder="NÚMERO"
+                                    disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Validade</label>
+                                <input type="date" class="input campo-edita" id="pacValidade" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Plano</label>
+                                <input type="text" class="input campo-edita" id="pacPlano"
+                                    placeholder="EX: OURO, PRATA..." disabled>
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>Titular</label>
+                                <input type="text" class="input campo-edita" id="pacTitular"
+                                    placeholder="NOME DO TITULAR" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>CPF do Titular</label>
+                                <input type="text" class="input campo-edita" id="pacTitularCpf"
+                                    placeholder="000.000.000-00" maxlength="14" disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== ABA 6: FINANCEIRO (NOVA ESTRUTURA) ==================== -->
+                    <div class="tab-content" id="tab6">
+                        <section class="g4med-financeiro" aria-labelledby="financeiro-title">
+                            <header class="g4med-financeiro__header">
+                                <div>
+                                    <h2 id="financeiro-title" class="g4med-financeiro__title">Dados Financeiros</h2>
+                                    <p class="g4med-financeiro__subtitle">Configure a forma de pagamento, dados do
+                                        cartão e parcelamento da consulta/procedimento.</p>
+                                </div>
+                                <div class="g4med-financeiro__total">
+                                    <span class="g4med-financeiro__total-label">Valor total</span>
+                                    <strong id="financeiroValorTotalDisplay" class="g4med-financeiro__total-value">R$
+                                        0,00</strong>
+                                </div>
+                            </header>
+
+                            <form id="financeiroForm" class="g4med-financeiro__form" novalidate>
+                                <input type="hidden" id="financeiroValorTotal" name="financeiro[valor_total]"
+                                    value="0" />
+
+                                <section class="g4med-financeiro__card">
+                                    <div class="g4med-financeiro__section-head">
+                                        <h3 class="g4med-financeiro__section-title">Forma de pagamento</h3>
+                                        <p class="g4med-financeiro__section-help">Selecione a forma de pagamento
+                                            principal do atendimento.</p>
+                                    </div>
+
+                                    <div class="g4med-payment-methods" role="radiogroup"
+                                        aria-label="Formas de pagamento">
+                                        <label class="g4med-payment-method">
+                                            <input type="radio" name="financeiro[metodo_pagamento]" value="dinheiro"
+                                                checked />
+                                            <span>Dinheiro</span>
+                                        </label>
+                                        <label class="g4med-payment-method">
+                                            <input type="radio" name="financeiro[metodo_pagamento]" value="pix" />
+                                            <span>Pix</span>
+                                        </label>
+                                        <label class="g4med-payment-method">
+                                            <input type="radio" name="financeiro[metodo_pagamento]" value="boleto" />
+                                            <span>Boleto</span>
+                                        </label>
+                                        <label class="g4med-payment-method">
+                                            <input type="radio" name="financeiro[metodo_pagamento]" value="debito" />
+                                            <span>Débito</span>
+                                        </label>
+                                        <label class="g4med-payment-method">
+                                            <input type="radio" name="financeiro[metodo_pagamento]" value="credito" />
+                                            <span>Crédito</span>
+                                        </label>
+                                    </div>
+                                </section>
+
+                                <section id="creditoPanel"
+                                    class="g4med-financeiro__card g4med-financeiro__panel is-collapsed"
+                                    aria-hidden="true">
+                                    <div class="g4med-financeiro__section-head">
+                                        <h3 class="g4med-financeiro__section-title">Dados do cartão</h3>
+                                        <p class="g4med-financeiro__section-help">Preencha os dados com segurança. Os
+                                            campos abaixo são exibidos somente para crédito.</p>
+                                    </div>
+
+                                    <div class="g4med-credit-grid">
+                                        <div class="g4med-field g4med-field--full">
+                                            <label for="cartaoNumero">Número do cartão</label>
+                                            <div class="g4med-input-icon">
+                                                <input id="cartaoNumero" name="financeiro[cartao][numero]" type="text"
+                                                    inputmode="numeric" autocomplete="cc-number" maxlength="19"
+                                                    aria-label="Número do cartão de crédito"
+                                                    placeholder="0000 0000 0000 0000" class="g4med-input" />
+                                                <span id="cartaoBandeiraBadge" class="g4med-brand-badge"
+                                                    aria-live="polite">
+                                                    <i class="fa-solid fa-credit-card"></i>
+                                                    <span>Automática</span>
+                                                </span>
+                                            </div>
+                                            <small class="g4med-field__hint">A bandeira será detectada automaticamente
+                                                pelo BIN/IIN.</small>
+                                            <p class="g4med-field__error" data-error-for="cartaoNumero"
+                                                aria-live="polite"></p>
+                                        </div>
+
+                                        <div class="g4med-field">
+                                            <label for="cartaoTitular">Titular</label>
+                                            <input id="cartaoTitular" name="financeiro[cartao][titular]" type="text"
+                                                autocomplete="cc-name" aria-label="Nome do titular do cartão"
+                                                placeholder="Nome como está no cartão" class="g4med-input" />
+                                            <p class="g4med-field__error" data-error-for="cartaoTitular"
+                                                aria-live="polite"></p>
+                                        </div>
+
+                                        <div class="g4med-field">
+                                            <label for="cartaoDocumento">CPF/CNPJ do titular</label>
+                                            <input id="cartaoDocumento" name="financeiro[cartao][documento]" type="text"
+                                                inputmode="numeric" autocomplete="off"
+                                                aria-label="CPF ou CNPJ do titular do cartão"
+                                                placeholder="000.000.000-00" class="g4med-input" />
+                                            <p class="g4med-field__error" data-error-for="cartaoDocumento"
+                                                aria-live="polite"></p>
+                                        </div>
+
+                                        <div class="g4med-field">
+                                            <label for="cartaoValidade">Validade</label>
+                                            <input id="cartaoValidade" name="financeiro[cartao][validade]" type="text"
+                                                inputmode="numeric" autocomplete="cc-exp" maxlength="5"
+                                                aria-label="Validade do cartão no formato mês e ano" placeholder="MM/AA"
+                                                class="g4med-input" />
+                                            <p class="g4med-field__error" data-error-for="cartaoValidade"
+                                                aria-live="polite"></p>
+                                        </div>
+
+                                        <div class="g4med-field">
+                                            <div class="g4med-field__label-row">
+                                                <label for="cartaoCvv">CVV</label>
+                                                <button type="button" class="g4med-tooltip-trigger"
+                                                    aria-label="Ajuda sobre o código de segurança CVV"
+                                                    data-tooltip="Código de 3 ou 4 dígitos geralmente no verso do cartão.">
+                                                    <i class="fa-regular fa-circle-question"></i>
+                                                </button>
+                                            </div>
+                                            <input id="cartaoCvv" name="financeiro[cartao][cvv]" type="text"
+                                                inputmode="numeric" autocomplete="cc-csc" maxlength="4"
+                                                aria-label="Código de segurança do cartão CVV" placeholder="123"
+                                                class="g4med-input" />
+                                            <p class="g4med-field__error" data-error-for="cartaoCvv" aria-live="polite">
+                                            </p>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <section class="g4med-financeiro__card">
+                                    <div class="g4med-financeiro__section-head">
+                                        <h3 class="g4med-financeiro__section-title">Parcelamento</h3>
+                                        <p class="g4med-financeiro__section-help">Recalcula automaticamente conforme o
+                                            valor total ou número de parcelas.</p>
+                                    </div>
+
+                                    <div class="g4med-installments">
+                                        <div class="g4med-field">
+                                            <label for="valorConsulta">Valor da consulta/procedimento</label>
+                                            <input id="valorConsulta" name="financeiro[valor_base]" type="text"
+                                                inputmode="decimal" aria-label="Valor total da consulta ou procedimento"
+                                                placeholder="R$ 0,00" class="g4med-input" />
+                                            <p class="g4med-field__error" data-error-for="valorConsulta"
+                                                aria-live="polite"></p>
+                                        </div>
+
+                                        <div class="g4med-field">
+                                            <label for="parcelas">Parcelas</label>
+                                            <select id="parcelas" name="financeiro[parcelas]"
+                                                aria-label="Número de parcelas" class="g4med-input">
+                                                <option value="1">1x</option>
+                                                <option value="2">2x</option>
+                                                <option value="3">3x</option>
+                                                <option value="4">4x</option>
+                                                <option value="5">5x</option>
+                                                <option value="6">6x</option>
+                                                <option value="7">7x</option>
+                                                <option value="8">8x</option>
+                                                <option value="9">9x</option>
+                                                <option value="10">10x</option>
+                                                <option value="11">11x</option>
+                                                <option value="12">12x</option>
+                                            </select>
+                                            <p class="g4med-field__error" data-error-for="parcelas" aria-live="polite">
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="g4med-installment-summary" aria-live="polite">
+                                        <div class="g4med-installment-summary__item">
+                                            <span>Valor por parcela</span>
+                                            <strong id="valorParcelaDisplay">R$ 0,00</strong>
+                                        </div>
+                                        <div class="g4med-installment-summary__item">
+                                            <span>Total informado</span>
+                                            <strong id="valorTotalResumo">R$ 0,00</strong>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <section class="g4med-financeiro__actions">
+                                    <button type="button" class="g4med-btn g4med-btn--secondary"
+                                        id="limparFinanceiro">Limpar</button>
+                                    <button type="submit" class="g4med-btn g4med-btn--primary">Salvar
+                                        financeiro</button>
+                                </section>
+                            </form>
+                        </section>
+                    </div>
+
+                    <!-- ==================== ABA 7: CONTROLE INTERNO ==================== -->
+                    <div class="tab-content" id="tab7">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Data do Cadastro</label>
+                                <input type="datetime-local" class="input" id="pacDataCad" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Usuário que Cadastrou</label>
+                                <input type="text" class="input" id="pacUserCad" value="ADMIN" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Última Atualização</label>
+                                <input type="datetime-local" class="input" id="pacUltAtu" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Status do Cadastro</label>
+                                <select class="input campo-edita" id="pacStatus" disabled>
+                                    <option value="A">Ativo</option>
+                                    <option value="I">Inativo</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>Observações Gerais</label>
+                                <textarea class="input textarea campo-edita" id="pacObsGeral"
+                                    placeholder="OBSERVAÇÕES INTERNAS" disabled></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== ABA 8: ANEXOS ==================== -->
+                    <div class="tab-content" id="tab8">
+                        <div class="anexo-drop" id="dropZone">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <p>Arraste arquivos aqui ou clique para selecionar</p>
+                            <span class="anexo-tip">PDF, JPG, PNG, DOC, DOCX (máx. 10MB)</span>
+                            <input type="file" id="anexoInput" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" hidden>
+                        </div>
+                        <div class="anexo-lista" id="anexoLista">
+                            <div class="anexo-vazio">Nenhum documento anexado</div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== ABA 9: LGPD ==================== -->
+                    <div class="tab-content" id="tab9">
+                        <div class="lgpd-list">
+                            <div class="lgpd-item">
+                                <label class="check-row">
+                                    <input type="checkbox" class="campo-edita" id="lgpdAceite" disabled>
+                                    <span><strong>Aceite LGPD</strong> — Concordo com o tratamento dos meus dados
+                                        pessoais conforme a Lei 13.709/2018.</span>
+                                </label>
+                            </div>
+                            <div class="lgpd-item">
+                                <label class="check-row">
+                                    <input type="checkbox" class="campo-edita" id="lgpdWhats" disabled>
+                                    <span><strong>Autoriza envio de WhatsApp</strong> — Permito o envio de mensagens via
+                                        WhatsApp para lembretes e comunicados.</span>
+                                </label>
+                            </div>
+                            <div class="lgpd-item">
+                                <label class="check-row">
+                                    <input type="checkbox" class="campo-edita" id="lgpdEmail" disabled>
+                                    <span><strong>Autoriza envio de E-mail</strong> — Permito o envio de e-mails
+                                        informativos e resultados de exames.</span>
+                                </label>
+                            </div>
+                            <div class="lgpd-item">
+                                <label class="check-row">
+                                    <input type="checkbox" class="campo-edita" id="lgpdMarketing" disabled>
+                                    <span><strong>Autoriza Marketing</strong> — Permito o envio de comunicações
+                                        promocionais e novidades.</span>
+                                </label>
+                            </div>
+                            <div class="lgpd-item">
+                                <label>Assinatura Digital</label>
+                                <canvas id="assinaturaCanvas" width="600" height="150"></canvas>
+                                <div class="assinatura-btns">
+                                    <button type="button" class="btn btn-cancelar campo-edita"
+                                        onclick="limparAssinatura()" disabled>Limpar</button>
+                                    <button type="button" class="btn btn-gravar campo-edita"
+                                        onclick="salvarAssinatura()" disabled>Salvar Assinatura</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== ABA 10: OUTROS ==================== -->
+                    <div class="tab-content" id="tab10">
+                        <div class="outros-grid">
+                            <button type="button" class="outro-card campo-edita" onclick="emitirAtestado()" disabled>
+                                <div class="outro-icon"><i class="fa-solid fa-file-medical"></i></div>
+                                <div class="outro-text">
+                                    <strong>Atestado Médico</strong>
+                                    <span>Emitir atestado com CID para paciente e acompanhante</span>
+                                </div>
+                            </button>
+                            <button type="button" class="outro-card campo-edita" onclick="emitirPedidoExames()"
+                                disabled>
+                                <div class="outro-icon"><i class="fa-solid fa-flask"></i></div>
+                                <div class="outro-text">
+                                    <strong>Pedido de Exames</strong>
+                                    <span>Emitir pedido com assinatura digital integrada</span>
+                                </div>
+                            </button>
+                            <button type="button" class="outro-card campo-edita" onclick="emitirReceita()" disabled>
+                                <div class="outro-icon"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
+                                <div class="outro-text">
+                                    <strong>Receita Médica</strong>
+                                    <span>Emitir receituário com CRM, especialidade e assinatura digital</span>
+                                </div>
+                            </button>
+                            <button type="button" class="outro-card campo-edita" onclick="verHistorico()" disabled>
+                                <div class="outro-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                                <div class="outro-text">
+                                    <strong>Histórico do Paciente</strong>
+                                    <span>Visualizar todas as alterações com data, hora e usuário</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- FOOTER -->
+            <footer class="footer">
+                © 2026 G4med - Intelligent Health System. Todos os direitos reservados.
+            </footer>
+        </div>
+    </div>
+
+    <!-- MODAL: HISTÓRICO -->
+    <div class="modal" id="modalHistorico">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Alterações</h3>
+                <button class="modal-close" onclick="fecharModal('modalHistorico')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="historicoConteudo">
+                <div class="historico-vazio">Nenhuma alteração registrada.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: WEBCAM -->
+    <div class="modal" id="modalWebcam">
+        <div class="modal-content" style="max-width:640px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-camera"></i> Capturar Foto</h3>
+                <button class="modal-close" onclick="fecharWebcam()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <video id="webcamVideo" autoplay playsinline></video>
+                <canvas id="webcamCanvas" style="display:none;"></canvas>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-gravar" onclick="capturarFoto()"><i
+                            class="fa-solid fa-camera"></i> Capturar</button>
+                    <button type="button" class="btn btn-cancelar" onclick="fecharWebcam()">Cancelar</button>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
 
-
-    <main class="mx-auto max-w-[1640px] px-4 py-6 sm:px-6 lg:px-8">
-
-        <!-- CABEÇALHO -->
-        <section class="mb-5 flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
-            <div>
-                <div class="mb-2 text-xs u-muted">
-                    <a href="../index.html" class="font-bold text-indigo-500">
-                        Início
-                    </a>
-                    <span> · Relatórios · </span>
-                    <strong class="u-text-soft">
-                        Pacientes
-                    </strong>
-                </div>
-
-                <h1 class="text-2xl font-extrabold tracking-tight sm:text-3xl">
-                    Inteligência de Pacientes
-                </h1>
-
-                <p class="mt-1 max-w-3xl text-sm u-muted">
-                    Perfil demográfico, captação, fidelização e jornada do paciente —
-                    análise 360° da base ativa.
-                </p>
+    <!-- MODAL: BUSCA -->
+    <div class="modal" id="modalBusca">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-magnifying-glass"></i> Buscar Paciente</h3>
+                <button class="modal-close" onclick="fecharModal('modalBusca')"><i
+                        class="fa-solid fa-xmark"></i></button>
             </div>
-
-            <div class="page-actions flex flex-wrap items-center gap-2">
-
-                <div id="periodTabs"
-                    class="flex max-w-full gap-1 overflow-x-auto rounded-xl border p-1 u-bd u-bg-panel">
-                    <button type="button" data-period="7"
-                        class="period-button whitespace-nowrap rounded-lg px-3 py-2 text-xs font-bold u-muted">
-                        7 dias
-                    </button>
-
-                    <button type="button" data-period="30"
-                        class="period-button active whitespace-nowrap rounded-lg px-3 py-2 text-xs font-bold text-white u-bg-gradient">
-                        30 dias
-                    </button>
-
-                    <button type="button" data-period="90"
-                        class="period-button whitespace-nowrap rounded-lg px-3 py-2 text-xs font-bold u-muted">
-                        90 dias
-                    </button>
-
-                    <button type="button" data-period="365"
-                        class="period-button whitespace-nowrap rounded-lg px-3 py-2 text-xs font-bold u-muted">
-                        12 meses
-                    </button>
-
-                    <button type="button" data-period="custom"
-                        class="period-button flex items-center gap-1 whitespace-nowrap rounded-lg px-3 py-2 text-xs font-bold u-muted">
-                        <i data-lucide="calendar" class="h-3.5 w-3.5"></i>
-                        Personalizado
-                    </button>
+            <div class="modal-body">
+                <div class="busca-filtros">
+                    <input type="text" class="input" id="buscaTermo" placeholder="Nome, CPF, Código ou Telefone">
+                    <button type="button" class="btn btn-buscar" onclick="executarBusca()"><i
+                            class="fa-solid fa-search"></i> Buscar</button>
                 </div>
-
-                <button id="btnPrint" class="btn btn-ghost" type="button">
-                    <i data-lucide="printer"></i>
-                    Imprimir
-                </button>
-
-                <button id="btnExport" class="btn btn-ghost" type="button">
-                    <i data-lucide="download"></i>
-                    Exportar
-                </button>
-
-                <button id="btnShare" class="btn btn-primary" type="button">
-                    <i data-lucide="share-2"></i>
-                    Compartilhar
-                </button>
-            </div>
-        </section>
-
-
-        <!-- FILTROS -->
-        <section class="panel mb-5 grid gap-4 rounded-2xl p-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-
-            <label class="block">
-                <span class="mb-1 block text-[10px] font-extrabold uppercase tracking-wider u-muted">
-                    Data inicial
-                </span>
-                <input id="dateFrom" type="date" class="input-control">
-            </label>
-
-            <label class="block">
-                <span class="mb-1 block text-[10px] font-extrabold uppercase tracking-wider u-muted">
-                    Data final
-                </span>
-                <input id="dateTo" type="date" class="input-control">
-            </label>
-
-            <label class="block">
-                <span class="mb-1 block text-[10px] font-extrabold uppercase tracking-wider u-muted">
-                    Unidade
-                </span>
-                <select id="fUnit" class="input-control">
-                    <option value="">Todas as unidades</option>
-                    <option value="Matriz Itaim Bibi">Matriz Itaim Bibi</option>
-                    <option value="Alphaville">Alphaville</option>
-                    <option value="Jardins">Jardins</option>
-                </select>
-            </label>
-
-            <label class="block">
-                <span class="mb-1 block text-[10px] font-extrabold uppercase tracking-wider u-muted">
-                    Convênio
-                </span>
-                <select id="fIns" class="input-control">
-                    <option value="">Todos</option>
-                    <option value="Particular">Particular</option>
-                    <option value="Unimed">Unimed</option>
-                    <option value="Bradesco Saúde">Bradesco Saúde</option>
-                    <option value="SulAmérica">SulAmérica</option>
-                    <option value="Amil">Amil</option>
-                </select>
-            </label>
-
-            <label class="block">
-                <span class="mb-1 block text-[10px] font-extrabold uppercase tracking-wider u-muted">
-                    Faixa etária
-                </span>
-                <select id="fAge" class="input-control">
-                    <option value="">Todas</option>
-                    <option value="0-17">0–17 anos</option>
-                    <option value="18-29">18–29 anos</option>
-                    <option value="30-44">30–44 anos</option>
-                    <option value="45-59">45–59 anos</option>
-                    <option value="60+">60+ anos</option>
-                </select>
-            </label>
-
-            <label class="block">
-                <span class="mb-1 block text-[10px] font-extrabold uppercase tracking-wider u-muted">
-                    Origem
-                </span>
-                <select id="fOrig" class="input-control">
-                    <option value="">Todas</option>
-                    <option value="Indicação">Indicação</option>
-                    <option value="Google">Google</option>
-                    <option value="Instagram">Instagram</option>
-                    <option value="Convênio">Convênio</option>
-                    <option value="Site">Site</option>
-                    <option value="Retorno">Retorno</option>
-                </select>
-            </label>
-
-            <div class="flex items-end gap-2 sm:col-span-2 lg:col-span-3 xl:col-span-6 xl:justify-end">
-                <button id="btnClear" class="btn btn-ghost" type="button">
-                    <i data-lucide="rotate-ccw"></i>
-                    Limpar
-                </button>
-
-                <button id="btnApply" class="btn btn-primary" type="button">
-                    <i data-lucide="filter"></i>
-                    Aplicar filtros
-                </button>
-            </div>
-        </section>
-
-
-        <!-- KPIs -->
-        <section class="mb-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-
-            <article class="panel rounded-2xl p-4">
-                <div class="mb-4 flex items-center justify-between">
-                    <div
-                        class="grid h-10 w-10 place-items-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950">
-                        <i data-lucide="users"></i>
-                    </div>
-                    <span class="text-xs font-bold text-emerald-500">↗ +8,4%</span>
-                </div>
-
-                <div class="text-xs font-bold u-muted">
-                    Pacientes ativos
-                </div>
-
-                <div class="mt-1 font-mono text-2xl font-bold">
-                    <span data-counter="12847">0</span>
-                </div>
-
-                <div class="spark-box mt-3">
-                    <canvas class="spark" data-color="#4f46e5"></canvas>
-                </div>
-            </article>
-
-            <article class="panel rounded-2xl p-4">
-                <div class="mb-4 flex items-center justify-between">
-                    <div
-                        class="grid h-10 w-10 place-items-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-950">
-                        <i data-lucide="user-plus"></i>
-                    </div>
-                    <span class="text-xs font-bold text-emerald-500">↗ +14,2%</span>
-                </div>
-
-                <div class="text-xs font-bold u-muted">
-                    Novos no período
-                </div>
-
-                <div class="mt-1 font-mono text-2xl font-bold">
-                    <span data-counter="487">0</span>
-                </div>
-
-                <div class="spark-box mt-3">
-                    <canvas class="spark" data-color="#10b981"></canvas>
-                </div>
-            </article>
-
-            <article class="panel rounded-2xl p-4">
-                <div class="mb-4 flex items-center justify-between">
-                    <div class="grid h-10 w-10 place-items-center rounded-xl bg-sky-100 text-sky-600 dark:bg-sky-950">
-                        <i data-lucide="repeat"></i>
-                    </div>
-                    <span class="text-xs font-bold text-emerald-500">↗ +2,1%</span>
-                </div>
-
-                <div class="text-xs font-bold u-muted">
-                    Taxa de retorno
-                </div>
-
-                <div class="mt-1 font-mono text-2xl font-bold">
-                    68,4<small class="ml-1 text-sm u-muted">%</small>
-                </div>
-
-                <div class="spark-box mt-3">
-                    <canvas class="spark" data-color="#0284c7"></canvas>
-                </div>
-            </article>
-
-            <article class="panel rounded-2xl p-4">
-                <div class="mb-4 flex items-center justify-between">
-                    <div
-                        class="grid h-10 w-10 place-items-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-950">
-                        <i data-lucide="user-x"></i>
-                    </div>
-                    <span class="text-xs font-bold text-amber-500">↘ -0,6%</span>
-                </div>
-
-                <div class="text-xs font-bold u-muted">
-                    Taxa de churn
-                </div>
-
-                <div class="mt-1 font-mono text-2xl font-bold">
-                    4,8<small class="ml-1 text-sm u-muted">%</small>
-                </div>
-
-                <div class="spark-box mt-3">
-                    <canvas class="spark" data-color="#f59e0b"></canvas>
-                </div>
-            </article>
-
-            <article class="panel rounded-2xl p-4">
-                <div class="mb-4 flex items-center justify-between">
-                    <div
-                        class="grid h-10 w-10 place-items-center rounded-xl bg-violet-100 text-violet-600 dark:bg-violet-950">
-                        <i data-lucide="cake"></i>
-                    </div>
-                    <span class="text-xs font-bold u-muted">Estável</span>
-                </div>
-
-                <div class="text-xs font-bold u-muted">
-                    Idade média
-                </div>
-
-                <div class="mt-1 font-mono text-2xl font-bold">
-                    38<small class="ml-1 text-sm u-muted">anos</small>
-                </div>
-
-                <div class="spark-box mt-3">
-                    <canvas class="spark" data-color="#8b5cf6"></canvas>
-                </div>
-            </article>
-
-            <article class="panel rounded-2xl p-4">
-                <div class="mb-4 flex items-center justify-between">
-                    <div
-                        class="grid h-10 w-10 place-items-center rounded-xl bg-rose-100 text-rose-600 dark:bg-rose-950">
-                        <i data-lucide="heart"></i>
-                    </div>
-                    <span class="text-xs font-bold text-emerald-500">↗ +0,3%</span>
-                </div>
-
-                <div class="text-xs font-bold u-muted">
-                    LTV médio
-                </div>
-
-                <div class="mt-1 font-mono text-2xl font-bold">
-                    R$ 2,4<small class="ml-1 text-sm u-muted">k</small>
-                </div>
-
-                <div class="spark-box mt-3">
-                    <canvas class="spark" data-color="#f43f5e"></canvas>
-                </div>
-            </article>
-        </section>
-
-
-        <!-- INSIGHTS -->
-        <section class="mb-5 grid gap-4 lg:grid-cols-3">
-            <article class="panel flex gap-3 rounded-2xl border-l-4 border-emerald-500 p-4">
-                <div
-                    class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-950">
-                    <i data-lucide="lightbulb"></i>
-                </div>
-                <div>
-                    <strong class="text-sm">Destaque do período</strong>
-                    <p class="mt-1 text-xs leading-relaxed u-muted">
-                        Captação por <b>Instagram</b> cresceu 32%.
-                        O custo por paciente caiu para <b>R$ 84</b>.
-                    </p>
-                </div>
-            </article>
-
-            <article class="panel flex gap-3 rounded-2xl border-l-4 border-amber-500 p-4">
-                <div
-                    class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-950">
-                    <i data-lucide="alert-triangle"></i>
-                </div>
-                <div>
-                    <strong class="text-sm">Atenção</strong>
-                    <p class="mt-1 text-xs leading-relaxed u-muted">
-                        <b>284 pacientes</b> estão sem retorno há mais de 12 meses.
-                    </p>
-                </div>
-            </article>
-
-            <article class="panel flex gap-3 rounded-2xl border-l-4 border-sky-500 p-4">
-                <div
-                    class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sky-100 text-sky-600 dark:bg-sky-950">
-                    <i data-lucide="rocket"></i>
-                </div>
-                <div>
-                    <strong class="text-sm">Oportunidade</strong>
-                    <p class="mt-1 text-xs leading-relaxed u-muted">
-                        A faixa <b>30–44 anos</b> concentra 38% da base.
-                    </p>
-                </div>
-            </article>
-        </section>
-
-
-        <!-- GRÁFICOS -->
-        <section class="grid gap-4 lg:grid-cols-2">
-
-            <!-- Novos pacientes -->
-            <article class="panel rounded-2xl p-5 lg:col-span-2">
-                <div class="mb-4 flex flex-wrap items-start justify-between gap-3 border-b pb-4 u-bd-soft">
-                    <div>
-                        <h2 class="card-title">
-                            <i data-lucide="user-plus"></i>
-                            Novos pacientes por mês
-                        </h2>
-                        <p class="card-subtitle">Captação mensal versus meta</p>
-                    </div>
-
-                    <div class="segmented" data-target="newPatients">
-                        <button type="button" class="active" data-mode="bar">
-                            Barras
-                        </button>
-                        <button type="button" data-mode="line">
-                            Linha
-                        </button>
-                    </div>
-                </div>
-
-                <div class="chart-box">
-                    <canvas id="chartNovosPacientes"></canvas>
-                </div>
-            </article>
-
-
-            <!-- Sexo -->
-            <article class="panel rounded-2xl p-5">
-                <div class="mb-4 border-b pb-4 u-bd-soft">
-                    <h2 class="card-title">
-                        <i data-lucide="venus-and-mars"></i>
-                        Pacientes por sexo
-                    </h2>
-                    <p class="card-subtitle">Distribuição da base ativa</p>
-                </div>
-
-                <div class="relative mx-auto h-64 max-w-xs">
-                    <canvas id="chartSexoPacientes"></canvas>
-
-                    <div class="pointer-events-none absolute inset-0 grid place-items-center text-center">
-                        <div>
-                            <div id="doughnutTotal" class="font-mono text-2xl font-bold">
-                                12.847
-                            </div>
-                            <div class="text-[10px] font-bold uppercase u-muted">
-                                Pacientes
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="legendSexo" class="mt-4 flex flex-wrap justify-center gap-2"></div>
-            </article>
-
-
-            <!-- Convênios -->
-            <article class="panel rounded-2xl p-5">
-                <div class="mb-4 border-b pb-4 u-bd-soft">
-                    <h2 class="card-title">
-                        <i data-lucide="id-card"></i>
-                        Distribuição por convênio
-                    </h2>
-                    <p class="card-subtitle">Participação na base</p>
-                </div>
-
-                <div class="chart-box">
-                    <canvas id="chartConveniosPacientes"></canvas>
-                </div>
-            </article>
-
-
-            <!-- Faixa etária -->
-            <article class="panel rounded-2xl p-5">
-                <div class="mb-4 border-b pb-4 u-bd-soft">
-                    <h2 class="card-title">
-                        <i data-lucide="bar-chart-2"></i>
-                        Faixa etária
-                    </h2>
-                    <p class="card-subtitle">Distribuição demográfica</p>
-                </div>
-
-                <div class="chart-box">
-                    <canvas id="chartFaixaEtaria"></canvas>
-                </div>
-            </article>
-
-
-            <!-- Cidades -->
-            <article class="panel rounded-2xl p-5">
-                <div class="mb-4 border-b pb-4 u-bd-soft">
-                    <h2 class="card-title">
-                        <i data-lucide="map-pin"></i>
-                        Top cidades
-                    </h2>
-                    <p class="card-subtitle">Origem geográfica</p>
-                </div>
-
-                <div id="topCities" class="space-y-4"></div>
-            </article>
-
-
-            <!-- Heatmap -->
-            <article class="panel rounded-2xl p-5 lg:col-span-2">
-                <div class="mb-4 border-b pb-4 u-bd-soft">
-                    <h2 class="card-title">
-                        <i data-lucide="grid-3x3"></i>
-                        Mapa de calor — Origem × Mês
-                    </h2>
-                    <p class="card-subtitle">
-                        Captação por canal nos últimos 12 meses
-                    </p>
-                </div>
-
-                <div id="heatmap" class="heatmap"></div>
-
-                <div class="mt-4 flex items-center justify-end gap-2 text-[10px] font-bold u-muted">
-                    <span>Baixo</span>
-                    <div class="flex gap-1">
-                        <span class="h-2.5 w-5 rounded bg-indigo-100"></span>
-                        <span class="h-2.5 w-5 rounded bg-indigo-300"></span>
-                        <span class="h-2.5 w-5 rounded bg-indigo-400"></span>
-                        <span class="h-2.5 w-5 rounded bg-indigo-600"></span>
-                        <span class="h-2.5 w-5 rounded bg-indigo-900"></span>
-                    </div>
-                    <span>Alto</span>
-                </div>
-            </article>
-
-
-            <!-- Evolução -->
-            <article class="panel rounded-2xl p-5 lg:col-span-2">
-                <div class="mb-4 flex flex-wrap items-start justify-between gap-3 border-b pb-4 u-bd-soft">
-                    <div>
-                        <h2 class="card-title">
-                            <i data-lucide="line-chart"></i>
-                            Evolução de cadastros
-                        </h2>
-                        <p class="card-subtitle">
-                            Realizado, meta e ano anterior
-                        </p>
-                    </div>
-
-                    <div class="segmented" data-target="evolution">
-                        <button type="button" class="active" data-metric="all">
-                            Tudo
-                        </button>
-                        <button type="button" data-metric="real">
-                            Realizado
-                        </button>
-                        <button type="button" data-metric="target">
-                            Meta
-                        </button>
-                        <button type="button" data-metric="prev">
-                            Ano anterior
-                        </button>
-                    </div>
-                </div>
-
-                <div class="chart-box tall">
-                    <canvas id="chartEvolucaoPacientes"></canvas>
-                </div>
-            </article>
-        </section>
-
-
-        <!-- RANKING -->
-        <section class="panel mt-4 rounded-2xl p-5">
-            <div class="mb-4 flex flex-wrap items-start justify-between gap-3 border-b pb-4 u-bd-soft">
-                <div>
-                    <h2 class="card-title">
-                        <i data-lucide="trophy"></i>
-                        Top 12 pacientes — Maior LTV
-                    </h2>
-                    <p class="card-subtitle">
-                        Pacientes mais valiosos por receita acumulada
-                    </p>
-                </div>
-
-                <div id="rankTabs" class="segmented">
-                    <button type="button" class="active" data-rank="geral">
-                        Geral
-                    </button>
-                    <button type="button" data-rank="ltv">
-                        LTV
-                    </button>
-                    <button type="button" data-rank="frequency">
-                        Frequência
-                    </button>
-                    <button type="button" data-rank="recency">
-                        Recência
-                    </button>
+                <div class="busca-resultados" id="buscaResultados">
+                    <div class="busca-vazio">Digite um termo para buscar</div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="overflow-x-auto">
-                <table id="rankTable" class="w-full min-w-[760px] text-left text-xs">
-                    <thead class="u-muted">
-                        <tr class="border-b u-bd-soft">
-                            <th class="p-3">#</th>
-                            <th class="p-3">Paciente</th>
-                            <th class="p-3">Convênio</th>
-                            <th class="p-3">Consultas</th>
-                            <th class="p-3">Última visita</th>
-                            <th class="p-3">LTV</th>
-                            <th class="p-3">NPS</th>
-                            <th class="p-3">Score</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-
-
-        <!-- DETALHAMENTO -->
-        <section class="panel mt-4 rounded-2xl p-5">
-            <div class="mb-4 flex flex-wrap items-center justify-between gap-3 border-b pb-4 u-bd-soft">
-                <div>
-                    <h2 class="card-title">
-                        <i data-lucide="table-2"></i>
-                        Detalhamento por convênio
-                    </h2>
-                    <p class="card-subtitle">
-                        Métricas consolidadas por convênio
-                    </p>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-2">
-                    <div class="flex items-center gap-2 rounded-lg border px-3 u-bd u-bg-soft">
-                        <i data-lucide="search" class="h-4 w-4 u-muted"></i>
-                        <input id="tblSearch" type="search" placeholder="Buscar convênio..."
-                            class="h-9 w-44 bg-transparent text-xs outline-none u-text">
-                    </div>
-
-                    <button id="btnExportCat" class="btn btn-ghost" type="button">
-                        <i data-lucide="download"></i>
-                        CSV
-                    </button>
-                </div>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table id="breakdownTable" class="w-full min-w-[850px] text-left text-xs">
-                    <thead class="u-muted">
-                        <tr class="border-b u-bd-soft">
-                            <th class="p-3">Convênio</th>
-                            <th class="p-3 text-right">Pacientes</th>
-                            <th class="p-3 text-right">Novos</th>
-                            <th class="p-3 text-right">Retorno</th>
-                            <th class="p-3 text-right">Idade média</th>
-                            <th class="p-3 text-right">LTV médio</th>
-                            <th class="p-3 text-right">Variação</th>
-                            <th class="p-3">Tendência</th>
-                        </tr>
-                    </thead>
-
-                    <tbody></tbody>
-
-                    <tfoot>
-                        <tr class="border-t font-bold u-bd">
-                            <th class="p-3">TOTAL</th>
-                            <th id="tFTot" class="p-3 text-right">0</th>
-                            <th id="tFNew" class="p-3 text-right">0</th>
-                            <th id="tFRet" class="p-3 text-right">0</th>
-                            <th id="tFAge" class="p-3 text-right">0</th>
-                            <th id="tFLtv" class="p-3 text-right">R$ 0</th>
-                            <th class="p-3 text-right">—</th>
-                            <th class="p-3"></th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </section>
-
-
-        <!-- RODAPÉ -->
-        <footer class="flex flex-col justify-between gap-2 py-6 text-[11px] sm:flex-row u-muted">
-            <span>
-                © 2026 G4Med · Inteligência Hospitalar ·
-                Última atualização:
-                <b id="lastUpdate">agora</b>
-            </span>
-
-            <span>
-                Data Warehouse v3.2 · SLA 99,98%
-            </span>
-        </footer>
-    </main>
-
-
-    <div id="loadingBar" class="loading-bar" aria-hidden="true"></div>
-
-    <div id="toastBox" class="toast-area" aria-live="polite"></div>
-
-    <script src="cadastro-paciente.js" defer></script>
-
+    <script src="cadastro-paciente.js"></script>
+    <!-- <script src="financeiro.js"></script> -->
 </body>
 
 </html>
