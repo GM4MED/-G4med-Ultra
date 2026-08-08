@@ -374,3 +374,9 @@ window.G4MedCatalog = {
     saveAccordionState,
     clearAccordionState
 };
+// Adiciona um evento de clique no botão de voltar para interceptar a ação padrão,
+// prevenir o comportamento nativo do link e retornar para a página anterior no histórico do navegador.
+document.querySelector('a[href="javascript:history.back()"]').addEventListener('click', function (e) {
+    e.preventDefault();
+    window.history.back();
+});
