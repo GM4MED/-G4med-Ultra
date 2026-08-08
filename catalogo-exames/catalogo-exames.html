@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Exames | G4Med</title>
+
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155'
+                        },
+                        primary: {
+                            DEFAULT: '#00d2ff',
+                            dark: '#3a7bd5'
+                        },
+                        secondary: '#7c3aed'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- CSS Customizado -->
+    <link rel="stylesheet" href="catalogo-exames.css">
+</head>
+
+<body class="bg-dark-900 text-gray-100 font-sans min-h-screen overflow-x-hidden">
+    <!-- Background Animado -->
+    <div class="background-animation"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-logo">
+                <i class="fa-solid fa-microscope"></i>
+            </div>
+            <h1 class="header-title">Catálogo de Exames</h1>
+            <p class="header-subtitle">Explore nossa completa gama de exames laboratoriais e de imagem com tecnologia de
+                ponta</p>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <i class="fa-solid fa-search search-icon"></i>
+            <input type="text" class="search-input" placeholder="Buscar exame..." id="searchInput">
+        </div>
+
+        <!-- Accordion -->
+        <div class="accordion-container">
+            <!-- Exames de Sangue -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="accordion-icon bg-gradient-to-br from-primary to-primary-dark">
+                            <i class="fa-solid fa-droplet"></i>
+                        </div>
+                        <div class="accordion-text">
+                            <h3>Exames de Sangue</h3>
+                            <p>Hemograma, bioquímica e marcadores</p>
+                        </div>
+                    </div>
+                    <div class="accordion-arrow">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-content">
+                        <div class="exam-list">
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Hemograma Completo</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Glicemia em Jejum</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Colesterol Total</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>HDL Colesterol</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>LDL Colesterol</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Triglicerídeos</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Hemoglobina Glicada (HbA1c)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>TSH (Hormônio Tireoestimulante)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>T4 Livre (Tiroxina)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>T3 Total e Livre</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Vitamina B12</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Vitamina D (25-OH)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Ferro Sérico</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Ferritina</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Transferrina</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Ácido Fólico</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Homocisteína</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>PCR (Proteína C Reativa)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Ureia</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Creatinina</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exames de Imagem -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="accordion-icon bg-gradient-to-br from-primary to-primary-dark">
+                            <i class="fa-solid fa-x-ray"></i>
+                        </div>
+                        <div class="accordion-text">
+                            <h3>Exames de Imagem</h3>
+                            <p>Radiologia e diagnósticos por imagem</p>
+                        </div>
+                    </div>
+                    <div class="accordion-arrow">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-content">
+                        <div class="exam-list">
+                            <div class="exam-item">
+                                <i class="fa-solid fa-film text-primary"></i>
+                                <span>Raio-X Digital</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-wave-square text-primary"></i>
+                                <span>Ultrassonografia Geral</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-wave-square text-primary"></i>
+                                <span>Ultrassonografia com Doppler</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-circle-notch text-primary"></i>
+                                <span>Tomografia Computadorizada (TC)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-atom text-primary"></i>
+                                <span>Ressonância Magnética (RM)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-bone text-primary"></i>
+                                <span>Densitometria Óssea</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-heart-pulse text-primary"></i>
+                                <span>Mamografia Digital</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-person-breastfeeding text-primary"></i>
+                                <span>Ultrassonografia Obstétrica</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-eye text-primary"></i>
+                                <span>Ultrassonografia Ocular</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-brain text-primary"></i>
+                                <span>Angiotomografia</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-lungs text-primary"></i>
+                                <span>Tomografia de Tórax</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-bone-break text-primary"></i>
+                                <span>Raio-X de Coluna</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exames Cardíacos -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="accordion-icon bg-gradient-to-br from-primary to-primary-dark">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                        </div>
+                        <div class="accordion-text">
+                            <h3>Exames Cardíacos</h3>
+                            <p>Cardiologia e saúde cardiovascular</p>
+                        </div>
+                    </div>
+                    <div class="accordion-arrow">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-content">
+                        <div class="exam-list">
+                            <div class="exam-item">
+                                <i class="fa-solid fa-heart-circle-bolt text-primary"></i>
+                                <span>Eletrocardiograma (ECG)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-heart-circle-bolt text-primary"></i>
+                                <span>Ecocardiograma Transtorácico</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-heart-circle-bolt text-primary"></i>
+                                <span>Ecocardiograma com Doppler</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-heart-circle-bolt text-primary"></i>
+                                <span>Teste Ergométrico (Esteira)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-heart-circle-bolt text-primary"></i>
+                                <span>Holter 24 Horas</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-heart-circle-bolt text-primary"></i>
+                                <span>MAPA (Monitorização da Pressão)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-heart-circle-bolt text-primary"></i>
+                                <span>Cintilografia Miocárdica</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-heart-circle-bolt text-primary"></i>
+                                <span>Cateterismo Cardíaco</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-heart-circle-bolt text-primary"></i>
+                                <span>Angiografia Coronariana</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-heart-circle-bolt text-primary"></i>
+                                <span>Ecocardiograma Transesofágico</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exames de Urina -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="accordion-icon bg-gradient-to-br from-primary to-primary-dark">
+                            <i class="fa-solid fa-flask"></i>
+                        </div>
+                        <div class="accordion-text">
+                            <h3>Exames de Urina</h3>
+                            <p>Análises urinárias e função renal</p>
+                        </div>
+                    </div>
+                    <div class="accordion-arrow">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-content">
+                        <div class="exam-list">
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>EAS (Elementos Anormais e Sedimentos)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>Urina Tipo 1</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>Urocultura com Antibiograma</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>Proteinúria de 24 Horas</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>Microalbuminúria</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>Creatinina Urinária</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>Cilindros Urinários</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>Cristais Urinários</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>beta-2 Microglobulina</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>Cálcio Urinário</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exames Hormonais -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="accordion-icon bg-gradient-to-br from-primary to-primary-dark">
+                            <i class="fa-solid fa-dna"></i>
+                        </div>
+                        <div class="accordion-text">
+                            <h3>Exames Hormonais</h3>
+                            <p>Dosagens hormonais e endocrinologia</p>
+                        </div>
+                    </div>
+                    <div class="accordion-arrow">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-content">
+                        <div class="exam-list">
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Cortisol Total e Livre</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Testosterona Total</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Testosterona Livre</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Progesterona</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Estradiol (E2)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>LH (Hormônio Luteinizante)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>FSH (Hormônio Folículo-Estimulante)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Prolactina</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Gonadotrofina Coriônica (Beta hCG)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>GH (Hormônio do Crescimento)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>IGF-1 (Fator de Crescimento)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Paratormônio (PTH)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>DHEA-S (Sulfato de Deidroepiandrosterona)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-vial text-primary"></i>
+                                <span>Androstenediona</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Marcadores Tumorais -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="accordion-icon bg-gradient-to-br from-primary to-primary-dark">
+                            <i class="fa-solid fa-ribbon"></i>
+                        </div>
+                        <div class="accordion-text">
+                            <h3>Marcadores Tumorais</h3>
+                            <p>Oncologia e prevenção do câncer</p>
+                        </div>
+                    </div>
+                    <div class="accordion-arrow">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-content">
+                        <div class="exam-list">
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>PSA Total (Antígeno Prostático)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>PSA Livre</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>CA-125 (Ovário)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>CA-15.3 (Mama)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>CA-19.9 (Pâncreas)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>CEA (Antígeno Carcinoembrionário)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>AFP (Alfa-Fetoproteína)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>HCG (Gonadotrofina Coriônica)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>SCC (Antígeno de Células Escamosas)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>Citometria de Fluxo (DNA)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exames Hepáticos -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="accordion-icon bg-gradient-to-br from-primary to-primary-dark">
+                            <i class="fa-solid fa-lungs"></i>
+                        </div>
+                        <div class="accordion-text">
+                            <h3>Exames Hepáticos</h3>
+                            <p>Função e doenças do fígado</p>
+                        </div>
+                    </div>
+                    <div class="accordion-arrow">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-content">
+                        <div class="exam-list">
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>TGO (AST - Transaminase Oxalacética)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>TGP (ALT - Transaminase Pirúvica)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>FA (Fosfatase Alcalina)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>GGT (Gama GT)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>Bilirrubinas Totais e Frações</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>Albumina</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>Proteínas Totais e Frações</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>Tempo de Protrombina (TP)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>Amônia</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>Anti-HCV (Hepatite C)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-flask text-primary"></i>
+                                <span>HBsAg (Hepatite B)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sorologia e Infectologia -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="accordion-icon bg-gradient-to-br from-primary to-primary-dark">
+                            <i class="fa-solid fa-virus"></i>
+                        </div>
+                        <div class="accordion-text">
+                            <h3>Sorologia e Infectologia</h3>
+                            <p>Doenças infecciosas e sorológicos</p>
+                        </div>
+                    </div>
+                    <div class="accordion-arrow">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-content">
+                        <div class="exam-list">
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Anti-HIV 1 e 2</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>VDRL (Sífilis)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>FTA-Abs (Sífilis Confirmatório)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Anti-HCV (Hepatite C)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>HBsAg (Hepatite B)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Anti-HBs (Hepatite B)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Anti-HBc (Hepatite B)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Toxoplasmose IgG e IgM</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Rubéola IgG e IgM</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Citomegalovírus IgG e IgM</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Herpes Simples IgG e IgM</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Dengue NS1 e Sorologia</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Chikungunya IgG e IgM</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Zika Vírus IgG e IgM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exames Imunológicos -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="accordion-icon bg-gradient-to-br from-primary to-primary-dark">
+                            <i class="fa-solid fa-shield-virus"></i>
+                        </div>
+                        <div class="accordion-text">
+                            <h3>Exames Imunológicos</h3>
+                            <p>Imunidade e doenças autoimunes</p>
+                        </div>
+                    </div>
+                    <div class="accordion-arrow">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-content">
+                        <div class="exam-list">
+                            <div class="exam-item">
+                                <i class="fa-solid fa-shield text-primary"></i>
+                                <span>FAN (Fator Antinuclear)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-shield text-primary"></i>
+                                <span>Anti-DNA</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-shield text-primary"></i>
+                                <span>Anti-Ro/SSA</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-shield text-primary"></i>
+                                <span>Anti-La/SSB</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-shield text-primary"></i>
+                                <span>Anti-Sm (Smith)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-shield text-primary"></i>
+                                <span>Anti-RNP</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-shield text-primary"></i>
+                                <span>Anti-Jo1</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-shield text-primary"></i>
+                                <span>Anti-Scl70</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-shield text-primary"></i>
+                                <span>Anti-Mitocôndria</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-shield text-primary"></i>
+                                <span>Anti-Músculo Liso</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-shield text-primary"></i>
+                                <span>Complemento C3 e C4</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-shield text-primary"></i>
+                                <span>Imunoglobulinas (IgA, IgG, IgM)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exames de Coagulação -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="accordion-icon bg-gradient-to-br from-primary to-primary-dark">
+                            <i class="fa-solid fa-droplet-slash"></i>
+                        </div>
+                        <div class="accordion-text">
+                            <h3>Exames de Coagulação</h3>
+                            <p>Hemostasia e trombose</p>
+                        </div>
+                    </div>
+                    <div class="accordion-arrow">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-content">
+                        <div class="exam-list">
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>TP (Tempo de Protrombina)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>TTPA (Tempo de Tromboplastina Parcial)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>INR (Razão Normalizada Internacional)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Fibrinogênio</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Dímero-D</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Proteína C</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Proteína S</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Antitrombina III</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Fator V de Leiden</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-syringe text-primary"></i>
+                                <span>Mutação G20210A (Fator II)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exames Genéticos -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="accordion-icon bg-gradient-to-br from-primary to-primary-dark">
+                            <i class="fa-solid fa-dna"></i>
+                        </div>
+                        <div class="accordion-text">
+                            <h3>Exames Genéticos</h3>
+                            <p>Genética molecular e hereditariedade</p>
+                        </div>
+                    </div>
+                    <div class="accordion-arrow">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-content">
+                        <div class="exam-list">
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>Cariótipo (Análise Cromossômica)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>Painel de Mutação BRCA1/BRCA2</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>Teste de paternidade</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>Hemocromatose (HFE)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>Doença de Wilson (ATP7B)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>Fibrose Cística (CFTR)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>Anemia Falciforme (HBB)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>Talasemia (HBA1/HBA2)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>Deficiência de G6PD</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-dna text-primary"></i>
+                                <span>Doença de Huntington (HTT)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exames Toxicológicos -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="accordion-icon bg-gradient-to-br from-primary to-primary-dark">
+                            <i class="fa-solid fa-flask-vial"></i>
+                        </div>
+                        <div class="accordion-text">
+                            <h3>Exames Toxicológicos</h3>
+                            <p>Detecção de drogas e toxinas</p>
+                        </div>
+                    </div>
+                    <div class="accordion-arrow">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-content">
+                        <div class="exam-list">
+                            <div class="exam-item">
+                                <i class="fa-solid fa-prescription-bottle text-primary"></i>
+                                <span>Screening Toxicológico</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-prescription-bottle text-primary"></i>
+                                <span>Cocaína e Metabólitos</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-prescription-bottle text-primary"></i>
+                                <span>Maconha (THC)</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-prescription-bottle text-primary"></i>
+                                <span>Anfetaminas</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-prescription-bottle text-primary"></i>
+                                <span>Metanfetaminas</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-prescription-bottle text-primary"></i>
+                                <span>Opioáceos</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-prescription-bottle text-primary"></i>
+                                <span>Benzodiazepínicos</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-prescription-bottle text-primary"></i>
+                                <span>Barbitúricos</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-prescription-bottle text-primary"></i>
+                                <span>Metadona</span>
+                            </div>
+                            <div class="exam-item">
+                                <i class="fa-solid fa-prescription-bottle text-primary"></i>
+                                <span>Fentanil</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <i
+                    class="fa-solid fa-flask text-4xl mb-3 bg-gradient-to-br from-primary to-primary-dark bg-clip-text text-transparent"></i>
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Exames Disponíveis</div>
+            </div>
+            <div class="stat-card">
+                <i
+                    class="fa-solid fa-clock text-4xl mb-3 bg-gradient-to-br from-primary to-primary-dark bg-clip-text text-transparent"></i>
+                <div class="stat-number">24h</div>
+                <div class="stat-label">Resultados Rápidos</div>
+            </div>
+            <div class="stat-card">
+                <i
+                    class="fa-solid fa-user-doctor text-4xl mb-3 bg-gradient-to-br from-primary to-primary-dark bg-clip-text text-transparent"></i>
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Especialistas</div>
+            </div>
+            <div class="stat-card">
+                <i
+                    class="fa-solid fa-award text-4xl mb-3 bg-gradient-to-br from-primary to-primary-dark bg-clip-text text-transparent"></i>
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Precisão</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="catalogo-exames.js"></script>
+</body>
+
+</html>
