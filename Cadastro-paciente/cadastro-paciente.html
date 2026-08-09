@@ -106,7 +106,12 @@
                         <!-- <button type="button" class="tab-btn" data-tab="tab6" onclick="switchTab('tab6')">
                             <i class="fa-solid fa-money-bill-wave"></i><span>Financeiro</span>
                         </button> -->
-                        <button type="button" class="tab-btn" onclick="window.location.href='financeiro.html'">
+                        <!-- <button type="button" class="tab-btn" onclick="window.location.href="
+                            financeiro-cadastro-paciente.html">
+                            <i class="fa-solid fa-money-bill-wave"></i><span>Financeiro</span>
+                        </button> -->
+                        <button type="button" class="tab-btn"
+                            onclick="window.location.href='financeiro-cadastro-paciente.html';">
                             <i class="fa-solid fa-money-bill-wave"></i><span>Financeiro</span>
                         </button>
                         <button type="button" class="tab-btn" data-tab="tab7" onclick="switchTab('tab7')">
@@ -124,81 +129,107 @@
                     </div>
 
                     <!-- ==================== ABA 1: DADOS PESSOAIS ==================== -->
+                    <!-- ==================== ABA 1: DADOS PESSOAIS ==================== -->
                     <div class="tab-content active" id="tab1">
-                        <div class="form-grid">
-                            <div class="form-group fg-codigo">
-                                <label>Código/ID *</label>
-                                <input type="text" class="input" id="pacId" readonly>
+                        <div class="paciente-layout">
+                            <div class="paciente-form-grid">
+                                <!-- Linha 1 -->
+                                <div class="form-group">
+                                    <label>Código/ID *</label>
+                                    <input type="text" class="input" id="pacId" readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Nome Completo *</label>
+                                    <input type="text" class="input campo-edita" id="pacNome"
+                                        placeholder="DIGITE O NOME COMPLETO" disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Data de Nascimento *</label>
+                                    <input type="date" class="input campo-edita" id="pacNascimento" disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Data de Nascimento *</label>
+                                    <input type="date" class="input campo-edita" id="pacNascimento2" disabled>
+                                </div>
+
+                                <!-- Linha 2 -->
+                                <div class="form-group">
+                                    <label>Idade</label>
+                                    <input type="text" class="input" id="pacIdade"
+                                        placeholder="-- Anos -- Meses -- Dias" readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>CPF *</label>
+                                    <input type="text" class="input campo-edita" id="pacCpf"
+                                        placeholder="000.000.000-00" maxlength="14" disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>RG</label>
+                                    <input type="text" class="input campo-edita" id="pacRg" placeholder="00.000.000-0"
+                                        disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Órgão Emissor</label>
+                                    <input type="text" class="input campo-edita" id="pacOrgao" placeholder="SSP/UF"
+                                        disabled>
+                                </div>
+
+                                <!-- Linha 3 -->
+                                <div class="form-group">
+                                    <label>Gênero</label>
+                                    <select class="input campo-edita" id="pacGenero" disabled>
+                                        <option value="">Selecione</option>
+                                        <option value="F">Feminino</option>
+                                        <option value="M">Masculino</option>
+                                        <option value="O">Outro</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Estado Civil</label>
+                                    <select class="input campo-edita" id="pacEstCivil" disabled>
+                                        <option value="">Selecione</option>
+                                        <option>Solteiro(a)</option>
+                                        <option>Casado(a)</option>
+                                        <option>União Estável</option>
+                                        <option>Namorando(a)</option>
+                                        <option>Divorciado(a)</option>
+                                        <option>Viúvo(a)</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Nacionalidade</label>
+                                    <input type="text" class="input campo-edita" id="pacNacionalidade"
+                                        value="BRASILEIRO" placeholder="DIGITE A NACIONALIDADE" disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Profissão</label>
+                                    <input type="text" class="input campo-edita" id="pacProfissao"
+                                        placeholder="DIGITE A PROFISSÃO" disabled>
+                                </div>
                             </div>
-                            <div class="form-group fg-nome">
-                                <label>Nome Completo *</label>
-                                <input type="text" class="input campo-edita" id="pacNome"
-                                    placeholder="DIGITE O NOME COMPLETO" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label>Data de Nascimento *</label>
-                                <input type="date" class="input campo-edita" id="pacNascimento" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label>Idade</label>
-                                <input type="text" class="input" id="pacIdade" placeholder="-- Anos -- Meses -- Dias"
-                                    readonly>
-                            </div>
-                            <div class="form-group">
-                                <label>CPF *</label>
-                                <input type="text" class="input campo-edita" id="pacCpf" placeholder="000.000.000-00"
-                                    maxlength="14" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label>RG</label>
-                                <input type="text" class="input campo-edita" id="pacRg" placeholder="00.000.000-0"
-                                    disabled>
-                            </div>
-                            <div class="form-group">
-                                <label>Órgão Emissor</label>
-                                <input type="text" class="input campo-edita" id="pacOrgao" placeholder="SSP/UF"
-                                    disabled>
-                            </div>
-                            <div class="form-group">
-                                <label>Gênero</label>
-                                <select class="input campo-edita" id="pacGenero" disabled>
-                                    <option value="">Selecione</option>
-                                    <option value="F">Feminino</option>
-                                    <option value="M">Masculino</option>
-                                    <option value="O">Outro</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Estado Civil</label>
-                                <select class="input campo-edita" id="pacEstCivil" disabled>
-                                    <option value="">Selecione</option>
-                                    <option>Solteiro(a)</option>
-                                    <option>Casado(a)</option>
-                                    <option>União Estável</option>
-                                    <option>Namorando(a)</option>
-                                    <option>Divorciado(a)</option>
-                                    <option>Viúvo(a)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Nacionalidade</label>
-                                <input type="text" class="input campo-edita" id="pacNacionalidade" value="BRASILEIRO"
-                                    placeholder="DIGITE A NACIONALIDADE" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label>Profissão</label>
-                                <input type="text" class="input campo-edita" id="pacProfissao"
-                                    placeholder="DIGITE A PROFISSÃO" disabled>
-                            </div>
-                            <div class="form-group fg-foto">
-                                <label>Foto</label>
-                                <div class="foto-box">
+
+                            <div class="paciente-foto-area">
+                                <label class="foto-area-label">Foto</label>
+
+                                <div class="foto-capture-panel">
                                     <img id="fotoPreview"
                                         src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-                                        alt="Foto">
+                                        alt="Foto clique dentro do campo">
+
                                     <button type="button" class="btn-foto campo-edita" onclick="abrirWebcam()" disabled
                                         title="Tirar foto">
-                                        <i class="fa-solid fa-camera"></i>
+                                        <!-- <i class="fa-solid fa-camera-retro"></i> -->
+                                        <!-- <i class="fa-solid fa-user foto-user-icon"></i> -->
+                                        <!-- <span>Tirar Foto</span> -->
                                     </button>
                                 </div>
                             </div>
