@@ -1,530 +1,971 @@
-const STORAGE_KEY = 'gm4_atendimentos_recepcao';
+'use strict';
 
-const especialidadesPorMedico = {
-    'Dr. Ricardo Silva': 'Cardiologia',
-    'Dra. Ana Beatriz': 'Dermatologia',
-    'Dr. Marcos Pereira': 'Ortopedia'
-};
+/*
+ * Atendimento do Paciente na Recepção
+ * Sistema GM4
+ *
+ * Funcionalidades:
+ * - Controle da toolbar
+ * - CRUD com localStorage
+ * - Navegação entre registros
+ * - Busca por paciente, CPF ou senha
+ * - Geração automática de ID e senha
+ * - Checklist de recepção
+ * - Impressão da ficha
+ * - Compatibilidade com a função inline openTab(event, tabId)
+ */
 
-let atendimentos = carregarAtendimentos();
-let indiceAtual = -1;
-let modoFormulario = 'visualizacao';
+document.addEventListener('DOMContentLoaded', () => {
+    const STORAGE_KEY = 'G4Med_atendimentos_recepcao';
 
-const campos = [
-    'pacienteId',
-    'cpf',
-    'nomePaciente',
-    'dataNasc',
-    'celular',
-    'convenio',
-    'carteirinha',
-    'validadeConvenio',
-    'dataAtendimento',
-    'horaChegada',
-    'tipoAtendimento',
-    'procedimento',
-    'medico',
-    'especialidade',
-    'numeroSenha',
-    'prioridade',
-    'pacientePresente',
-    'docsConferidos',
-    'convenioValido',
-    'autorizacaoRealizada',
-    'lgpdAceita',
-    'obsAtendimento'
-];
+    const state = {
+        registros: [],
+        registroSelecionadoId: null,
+        modo: 'visualizacao', // visualizacao | novo | edicao
+        resultadoBusca: []
+    };
 
-const camposSomenteLeitura = ['pacienteId', 'especialidade', 'numeroSenha'];
+    const elementos = {
+        form: document.getElementById('atendimentoForm'),
 
-function $(id) {
-    return document.getElementById(id);
-}
+        btnNovo: document.getElementById('btnNovo'),
+        btnSalvar: document.getElementById('btnSalvar'),
+        btnEditar: document.getElementById('btnEditar'),
+        btnExcluir: document.getElementById('btnExcluir'),
+        btnImprimir: document.getElementById('btnImprimir'),
+        btnAnterior: document.getElementById('btnAnterior'),
+        btnProximo: document.getElementById('btnProximo'),
 
-function openTab(evt, tabName) {
-    document.querySelectorAll('.tab-content').forEach(function (tab) {
-        tab.classList.remove('active');
-    });
+        inputBusca: document.getElementById('inputBusca'),
+        btnBuscar: document.querySelector('.grid-search button'),
 
-    document.querySelectorAll('.tab-link').forEach(function (button) {
-        button.classList.remove('active');
-    });
+        tabela: document.getElementById('tabelaAtendimentos'),
+        corpoTabela: document.getElementById('corpoTabelaAtendimentos'),
 
-    const tabSelecionada = $(tabName);
-    if (tabSelecionada) {
-        tabSelecionada.classList.add('active');
+        pacienteId: document.getElementById('pacienteId'),
+        cpf: document.getElementById('cpf'),
+        nomePaciente: document.getElementById('nomePaciente'),
+        dataNasc: document.getElementById('dataNasc'),
+        celular: document.getElementById('celular'),
+        convenio: document.getElementById('convenio'),
+        carteirinha: document.getElementById('carteirinha'),
+        validadeConvenio: document.getElementById('validadeConvenio'),
+
+        dataAtendimento: document.getElementById('dataAtendimento'),
+        horaChegada: document.getElementById('horaChegada'),
+        tipoAtendimento: document.getElementById('tipoAtendimento'),
+        procedimento: document.getElementById('procedimento'),
+        medico: document.getElementById('medico'),
+        especialidade: document.getElementById('especialidade'),
+        numeroSenha: document.getElementById('numeroSenha'),
+        prioridade: document.getElementById('prioridade'),
+        obsAtendimento: document.getElementById('obsAtendimento'),
+
+        pacientePresente: document.getElementById('pacientePresente'),
+        docsConferidos: document.getElementById('docsConferidos'),
+        convenioValido: document.getElementById('convenioValido'),
+        autorizacaoRealizada: document.getElementById('autorizacaoRealizada'),
+        lgpdAceita: document.getElementById('lgpdAceita')
+    };
+
+    inicializar();
+
+    function inicializar() {
+        state.registros = carregarRegistros();
+        state.resultadoBusca = [...state.registros];
+
+        configurarEventos();
+        atualizarTabela();
+        atualizarToolbar();
+        setFormEditable(false);
+
+        // Deixa a primeira aba ativa mesmo quando o HTML não vier com o estado correto.
+        abrirAbaInicial();
+
+        // Preenche automaticamente a especialidade ao selecionar o médico.
+        atualizarEspecialidade();
     }
 
-    if (evt && evt.currentTarget) {
-        evt.currentTarget.classList.add('active');
-    }
-}
+    function configurarEventos() {
+        elementos.btnNovo.addEventListener('click', iniciarNovoRegistro);
+        elementos.btnSalvar.addEventListener('click', salvarRegistro);
+        elementos.btnEditar.addEventListener('click', iniciarEdicao);
+        elementos.btnExcluir.addEventListener('click', excluirRegistro);
+        elementos.btnImprimir.addEventListener('click', imprimirFicha);
+        elementos.btnAnterior.addEventListener('click', () => navegarRegistro(-1));
+        elementos.btnProximo.addEventListener('click', () => navegarRegistro(1));
 
-function carregarAtendimentos() {
-    const dados = localStorage.getItem(STORAGE_KEY);
-    if (dados) {
-        return JSON.parse(dados);
-    }
+        elementos.inputBusca.addEventListener('input', aplicarBusca);
+        elementos.btnBuscar.addEventListener('click', aplicarBusca);
 
-    return [
-        {
-            id: 1,
-            senha: 'G-001',
-            hora: '08:30',
-            paciente: 'JOAO MODESTO DA SILVA',
-            tipo: 'Consulta',
-            medico: 'Dr. Ricardo Silva',
-            especialidade: 'Cardiologia',
-            status: 'Aguardando',
-            cpf: '123.456.789-00',
-            dataNasc: '1985-05-20',
-            celular: '(11) 98888-7777',
-            convenio: 'Unimed',
-            carteirinha: '987654321',
-            validade: '12/28',
-            dataAtendimento: dataHoje(),
-            procedimento: '',
-            prioridade: 'Normal',
-            pacientePresente: false,
-            docsConferidos: false,
-            convenioValido: false,
-            autorizacaoRealizada: false,
-            lgpdAceita: false,
-            obsAtendimento: ''
-        },
-        {
-            id: 2,
-            senha: 'P-002',
-            hora: '08:45',
-            paciente: 'MARIA OLIVEIRA SANTOS',
-            tipo: 'Exame',
-            medico: 'Dra. Ana Beatriz',
-            especialidade: 'Dermatologia',
-            status: 'Em Atendimento',
-            cpf: '222.333.444-55',
-            dataNasc: '1992-10-12',
-            celular: '(21) 97777-6666',
-            convenio: 'Particular',
-            carteirinha: '-',
-            validade: '-',
-            dataAtendimento: dataHoje(),
-            procedimento: 'Hemograma',
-            prioridade: 'Normal',
-            pacientePresente: true,
-            docsConferidos: true,
-            convenioValido: true,
-            autorizacaoRealizada: false,
-            lgpdAceita: true,
-            obsAtendimento: ''
-        },
-        {
-            id: 3,
-            senha: 'E-003',
-            hora: '09:00',
-            paciente: 'PEDRO ALCANTARA',
-            tipo: 'Urgência',
-            medico: 'Dr. Marcos Pereira',
-            especialidade: 'Ortopedia',
-            status: 'Finalizado',
-            cpf: '999.888.777-66',
-            dataNasc: '1970-01-30',
-            celular: '(31) 96666-5555',
-            convenio: 'bradesco',
-            carteirinha: '888222111',
-            validade: '06/27',
-            dataAtendimento: dataHoje(),
-            procedimento: '',
-            prioridade: 'Emergencial',
-            pacientePresente: true,
-            docsConferidos: true,
-            convenioValido: true,
-            autorizacaoRealizada: true,
-            lgpdAceita: true,
-            obsAtendimento: ''
-        }
-    ];
-}
-
-function salvarAtendimentos() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(atendimentos));
-}
-
-function dataHoje() {
-    return new Date().toISOString().slice(0, 10);
-}
-
-function horaAgora() {
-    return new Date().toLocaleTimeString('pt-BR', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
-
-function proximoId() {
-    const maiorId = atendimentos.reduce(function (maior, atendimento) {
-        return Math.max(maior, Number(atendimento.id) || 0);
-    }, 0);
-
-    return maiorId + 1;
-}
-
-function proximaSenha(prioridade) {
-    const prefixo = prioridade === 'Emergencial' ? 'E' : prioridade === 'Normal' ? 'G' : 'P';
-    const numero = atendimentos.length + 1;
-    return `${prefixo}-${String(numero).padStart(3, '0')}`;
-}
-
-function statusClasse(status) {
-    if (status === 'Em Atendimento') return 'status-attending';
-    if (status === 'Finalizado') return 'status-completed';
-    return 'status-waiting';
-}
-
-function textoBuscaAtendimento(atendimento) {
-    return [
-        atendimento.senha,
-        atendimento.hora,
-        atendimento.paciente,
-        atendimento.tipo,
-        atendimento.medico,
-        atendimento.status,
-        atendimento.cpf
-    ].join(' ').toLowerCase();
-}
-
-function renderizarFila() {
-    const corpo = $('corpoTabelaAtendimentos');
-    const busca = $('inputBusca') ? $('inputBusca').value.trim().toLowerCase() : '';
-
-    if (!corpo) return;
-
-    corpo.innerHTML = '';
-
-    atendimentos.forEach(function (atendimento, index) {
-        if (busca && !textoBuscaAtendimento(atendimento).includes(busca)) return;
-
-        const tr = document.createElement('tr');
-        tr.dataset.index = index;
-        tr.addEventListener('click', function () {
-            selecionarAtendimento(index);
+        elementos.form.addEventListener('submit', event => {
+            event.preventDefault();
+            salvarRegistro();
         });
 
-        if (index === indiceAtual) {
-            tr.classList.add('selected');
+        elementos.medico.addEventListener('change', atualizarEspecialidade);
+
+        elementos.prioridade.addEventListener('change', () => {
+            if (state.modo === 'novo') {
+                elementos.numeroSenha.value = gerarNumeroSenha(elementos.prioridade.value);
+            }
+        });
+
+        elementos.cpf.addEventListener('input', aplicarMascaraCPF);
+        elementos.celular.addEventListener('input', aplicarMascaraCelular);
+        elementos.validadeConvenio.addEventListener('input', aplicarMascaraValidade);
+
+        // Delegação de eventos para as linhas criadas dinamicamente.
+        elementos.corpoTabela.addEventListener('click', event => {
+            const linha = event.target.closest('tr[data-id]');
+
+            if (!linha) {
+                return;
+            }
+
+            selecionarRegistro(linha.dataset.id);
+        });
+    }
+
+    /*
+     * Tabs
+     *
+     * A função fica exposta no objeto window porque o HTML fornecido
+     * chama openTab(event, 'dados-paciente') diretamente via onclick.
+     */
+    window.openTab = function openTab(event, tabId) {
+        const conteudos = document.querySelectorAll('.tab-content');
+        const abas = document.querySelectorAll('.tab-link');
+
+        conteudos.forEach(conteudo => {
+            conteudo.classList.toggle('active', conteudo.id === tabId);
+        });
+
+        abas.forEach(aba => {
+            aba.classList.remove('active');
+            aba.setAttribute('aria-selected', 'false');
+        });
+
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+            event.currentTarget.setAttribute('aria-selected', 'true');
+        } else {
+            const abaCorrespondente = Array.from(abas).find(aba => {
+                return aba.getAttribute('onclick')?.includes(`'${tabId}'`);
+            });
+
+            abaCorrespondente?.classList.add('active');
+            abaCorrespondente?.setAttribute('aria-selected', 'true');
+        }
+    };
+
+    function abrirAbaInicial() {
+        const primeiraAba = document.querySelector('.tab-link');
+        const primeiroConteudo = document.querySelector('.tab-content');
+
+        document.querySelectorAll('.tab-content').forEach(conteudo => {
+            conteudo.classList.remove('active');
+        });
+
+        document.querySelectorAll('.tab-link').forEach(aba => {
+            aba.classList.remove('active');
+            aba.setAttribute('aria-selected', 'false');
+        });
+
+        primeiraAba?.classList.add('active');
+        primeiraAba?.setAttribute('aria-selected', 'true');
+        primeiroConteudo?.classList.add('active');
+    }
+
+    function iniciarNovoRegistro() {
+        state.modo = 'novo';
+        state.registroSelecionadoId = null;
+
+        limparFormulario();
+
+        const agora = new Date();
+
+        elementos.pacienteId.value = gerarIdPaciente();
+        elementos.dataAtendimento.value = formatarDataInput(agora);
+        elementos.horaChegada.value = formatarHoraInput(agora);
+        elementos.prioridade.value = 'Normal';
+        elementos.numeroSenha.value = gerarNumeroSenha('Normal');
+
+        setFormEditable(true);
+        atualizarToolbar();
+
+        elementos.nomePaciente.focus();
+    }
+
+    function iniciarEdicao() {
+        const registro = obterRegistroSelecionado();
+
+        if (!registro) {
+            informar('Selecione um atendimento para editar.');
+            return;
         }
 
-        tr.innerHTML = `
-            <td><strong>${atendimento.senha || '-'}</strong></td>
-            <td>${atendimento.hora || '-'}</td>
-            <td><strong>${atendimento.paciente || '-'}</strong></td>
-            <td>${atendimento.tipo || '-'}</td>
-            <td>${atendimento.medico || '-'}</td>
-            <td><span class="status-badge ${statusClasse(atendimento.status)}">${atendimento.status || 'Aguardando'}</span></td>
-        `;
-
-        corpo.appendChild(tr);
-    });
-}
-
-function valorCampo(id) {
-    const campo = $(id);
-    if (!campo) return '';
-    return campo.type === 'checkbox' ? campo.checked : campo.value.trim();
-}
-
-function preencherCampo(id, valor) {
-    const campo = $(id);
-    if (!campo) return;
-
-    if (campo.type === 'checkbox') {
-        campo.checked = Boolean(valor);
-        return;
+        state.modo = 'edicao';
+        setFormEditable(true);
+        atualizarToolbar();
+        elementos.nomePaciente.focus();
     }
 
-    campo.value = valor ?? '';
-}
+    function salvarRegistro() {
+        if (!['novo', 'edicao'].includes(state.modo)) {
+            informar('Clique em "Novo" ou "Editar" antes de gravar.');
+            return;
+        }
 
-function atendimentoParaFormulario(atendimento) {
-    preencherCampo('pacienteId', atendimento.id);
-    preencherCampo('cpf', atendimento.cpf);
-    preencherCampo('nomePaciente', atendimento.paciente);
-    preencherCampo('dataNasc', atendimento.dataNasc);
-    preencherCampo('celular', atendimento.celular);
-    preencherCampo('convenio', atendimento.convenio);
-    preencherCampo('carteirinha', atendimento.carteirinha);
-    preencherCampo('validadeConvenio', atendimento.validade);
-    preencherCampo('dataAtendimento', atendimento.dataAtendimento || dataHoje());
-    preencherCampo('horaChegada', atendimento.hora);
-    preencherCampo('tipoAtendimento', atendimento.tipo);
-    preencherCampo('procedimento', atendimento.procedimento);
-    preencherCampo('medico', atendimento.medico);
-    preencherCampo('especialidade', atendimento.especialidade);
-    preencherCampo('numeroSenha', atendimento.senha);
-    preencherCampo('prioridade', atendimento.prioridade || 'Normal');
-    preencherCampo('pacientePresente', atendimento.pacientePresente);
-    preencherCampo('docsConferidos', atendimento.docsConferidos);
-    preencherCampo('convenioValido', atendimento.convenioValido);
-    preencherCampo('autorizacaoRealizada', atendimento.autorizacaoRealizada);
-    preencherCampo('lgpdAceita', atendimento.lgpdAceita);
-    preencherCampo('obsAtendimento', atendimento.obsAtendimento);
-}
+        const registro = coletarFormulario();
 
-function formularioParaAtendimento() {
-    const prioridade = valorCampo('prioridade') || 'Normal';
-    const idAtual = valorCampo('pacienteId');
-    const id = idAtual === 'NOVO' ? proximoId() : Number(idAtual);
-    const senhaAtual = valorCampo('numeroSenha');
+        if (!validarRegistro(registro)) {
+            return;
+        }
 
-    return {
-        id,
-        senha: senhaAtual || proximaSenha(prioridade),
-        hora: valorCampo('horaChegada'),
-        paciente: valorCampo('nomePaciente').toUpperCase(),
-        tipo: valorCampo('tipoAtendimento'),
-        medico: valorCampo('medico'),
-        especialidade: valorCampo('especialidade'),
-        status: 'Aguardando',
-        cpf: valorCampo('cpf'),
-        dataNasc: valorCampo('dataNasc'),
-        celular: valorCampo('celular'),
-        convenio: valorCampo('convenio'),
-        carteirinha: valorCampo('carteirinha'),
-        validade: valorCampo('validadeConvenio'),
-        dataAtendimento: valorCampo('dataAtendimento'),
-        procedimento: valorCampo('procedimento'),
-        prioridade,
-        pacientePresente: valorCampo('pacientePresente'),
-        docsConferidos: valorCampo('docsConferidos'),
-        convenioValido: valorCampo('convenioValido'),
-        autorizacaoRealizada: valorCampo('autorizacaoRealizada'),
-        lgpdAceita: valorCampo('lgpdAceita'),
-        obsAtendimento: valorCampo('obsAtendimento')
-    };
-}
+        if (state.modo === 'novo') {
+            state.registros.push(registro);
+            state.registroSelecionadoId = registro.id;
+            informar('Atendimento cadastrado com sucesso.');
+        } else {
+            const indice = state.registros.findIndex(item => {
+                return item.id === state.registroSelecionadoId;
+            });
 
-function selecionarAtendimento(index) {
-    const atendimento = atendimentos[index];
-    if (!atendimento) return;
+            if (indice === -1) {
+                informar('Não foi possível localizar o atendimento para atualização.');
+                return;
+            }
 
-    indiceAtual = index;
-    modoFormulario = 'visualizacao';
-    atendimentoParaFormulario(atendimento);
-    desabilitarCampos();
-    configurarBotoes();
-    atualizarNavegacao();
-    renderizarFila();
-}
+            state.registros[indice] = {
+                ...state.registros[indice],
+                ...registro,
+                atualizadoEm: new Date().toISOString()
+            };
 
-function habilitarCampos() {
-    campos.forEach(function (id) {
-        const campo = $(id);
-        if (!campo || camposSomenteLeitura.includes(id)) return;
-        campo.disabled = false;
-    });
-}
+            informar('Atendimento atualizado com sucesso.');
+        }
 
-function desabilitarCampos() {
-    campos.forEach(function (id) {
-        const campo = $(id);
-        if (!campo) return;
-        campo.disabled = true;
-    });
-}
+        salvarRegistros();
+        state.modo = 'visualizacao';
+        state.resultadoBusca = obterRegistrosFiltrados();
 
-function configurarBotoes() {
-    const editando = modoFormulario === 'novo' || modoFormulario === 'edicao';
-    const temSelecionado = indiceAtual >= 0;
-
-    $('btnNovo').disabled = editando;
-    $('btnSalvar').disabled = !editando;
-    $('btnEditar').disabled = editando || !temSelecionado;
-    $('btnExcluir').disabled = editando || !temSelecionado;
-    $('btnImprimir').disabled = editando || !temSelecionado;
-}
-
-function atualizarNavegacao() {
-    $('btnAnterior').disabled = indiceAtual <= 0;
-    $('btnProximo').disabled = indiceAtual === -1 || indiceAtual >= atendimentos.length - 1;
-}
-
-function limparFormularioNovo() {
-    $('atendimentoForm').reset();
-    preencherCampo('pacienteId', 'NOVO');
-    preencherCampo('dataAtendimento', dataHoje());
-    preencherCampo('horaChegada', horaAgora());
-    preencherCampo('prioridade', 'Normal');
-    preencherCampo('numeroSenha', proximaSenha('Normal'));
-    preencherCampo('especialidade', '');
-}
-
-function iniciarNovo() {
-    indiceAtual = -1;
-    modoFormulario = 'novo';
-    limparFormularioNovo();
-    habilitarCampos();
-    configurarBotoes();
-    atualizarNavegacao();
-    renderizarFila();
-
-    const primeiraAba = document.querySelector('.tab-link');
-    if (primeiraAba) primeiraAba.click();
-    $('cpf').focus();
-}
-
-function iniciarEdicao() {
-    if (indiceAtual < 0) return;
-
-    modoFormulario = 'edicao';
-    habilitarCampos();
-    configurarBotoes();
-    $('cpf').focus();
-}
-
-function validarFormulario() {
-    if (!valorCampo('nomePaciente')) {
-        alert('Por favor, preencha o nome do paciente.');
-        $('nomePaciente').focus();
-        return false;
+        atualizarTabela();
+        carregarRegistroSelecionado();
+        setFormEditable(false);
+        atualizarToolbar();
     }
 
-    if (!valorCampo('dataAtendimento')) {
-        alert('Informe a data do atendimento.');
-        $('dataAtendimento').focus();
-        return false;
+    function excluirRegistro() {
+        const registro = obterRegistroSelecionado();
+
+        if (!registro) {
+            informar('Selecione um atendimento para excluir.');
+            return;
+        }
+
+        const confirmou = window.confirm(
+            `Deseja realmente excluir o atendimento de ${registro.nomePaciente}?`
+        );
+
+        if (!confirmou) {
+            return;
+        }
+
+        state.registros = state.registros.filter(item => item.id !== registro.id);
+        state.registroSelecionadoId = null;
+        state.modo = 'visualizacao';
+
+        salvarRegistros();
+        state.resultadoBusca = obterRegistrosFiltrados();
+
+        limparFormulario();
+        atualizarTabela();
+        setFormEditable(false);
+        atualizarToolbar();
+
+        informar('Atendimento excluído com sucesso.');
     }
 
-    if (!valorCampo('horaChegada')) {
-        alert('Informe o horário de chegada.');
-        $('horaChegada').focus();
-        return false;
+    function selecionarRegistro(id) {
+        const registro = state.registros.find(item => item.id === id);
+
+        if (!registro) {
+            return;
+        }
+
+        state.registroSelecionadoId = id;
+        state.modo = 'visualizacao';
+
+        preencherFormulario(registro);
+        setFormEditable(false);
+        atualizarTabela();
+        atualizarToolbar();
     }
 
-    return true;
-}
+    function navegarRegistro(direcao) {
+        const lista = state.resultadoBusca.length
+            ? state.resultadoBusca
+            : state.registros;
 
-function salvarFormulario() {
-    if (!validarFormulario()) return;
+        if (!lista.length) {
+            return;
+        }
 
-    const dados = formularioParaAtendimento();
+        const indiceAtual = lista.findIndex(item => {
+            return item.id === state.registroSelecionadoId;
+        });
 
-    if (modoFormulario === 'novo') {
-        atendimentos.push(dados);
-        indiceAtual = atendimentos.length - 1;
-        alert('Atendimento registrado com sucesso!');
+        let novoIndice = indiceAtual + direcao;
+
+        if (indiceAtual === -1) {
+            novoIndice = direcao > 0 ? 0 : lista.length - 1;
+        }
+
+        if (novoIndice < 0 || novoIndice >= lista.length) {
+            return;
+        }
+
+        selecionarRegistro(lista[novoIndice].id);
     }
 
-    if (modoFormulario === 'edicao') {
-        const statusAnterior = atendimentos[indiceAtual]?.status || 'Aguardando';
-        atendimentos[indiceAtual] = {
-            ...dados,
-            status: statusAnterior
+    function coletarFormulario() {
+        return {
+            id: elementos.pacienteId.value.trim() || gerarIdPaciente(),
+            cpf: elementos.cpf.value.trim(),
+            nomePaciente: elementos.nomePaciente.value.trim().toUpperCase(),
+            dataNasc: elementos.dataNasc.value,
+            celular: elementos.celular.value.trim(),
+            convenio: elementos.convenio.value,
+            carteirinha: elementos.carteirinha.value.trim(),
+            validadeConvenio: elementos.validadeConvenio.value.trim(),
+
+            dataAtendimento: elementos.dataAtendimento.value,
+            horaChegada: elementos.horaChegada.value,
+            tipoAtendimento: elementos.tipoAtendimento.value,
+            procedimento: elementos.procedimento.value.trim(),
+            medico: elementos.medico.value,
+            especialidade: elementos.especialidade.value,
+            numeroSenha: elementos.numeroSenha.value.trim(),
+            prioridade: elementos.prioridade.value,
+
+            checklist: {
+                pacientePresente: elementos.pacientePresente.checked,
+                docsConferidos: elementos.docsConferidos.checked,
+                convenioValido: elementos.convenioValido.checked,
+                autorizacaoRealizada: elementos.autorizacaoRealizada.checked,
+                lgpdAceita: elementos.lgpdAceita.checked
+            },
+
+            obsAtendimento: elementos.obsAtendimento.value.trim(),
+            status: 'Aguardando',
+            criadoEm: new Date().toISOString()
         };
-        alert('Atendimento atualizado com sucesso!');
     }
 
-    salvarAtendimentos();
-    modoFormulario = 'visualizacao';
-    atendimentoParaFormulario(atendimentos[indiceAtual]);
-    desabilitarCampos();
-    configurarBotoes();
-    atualizarNavegacao();
-    renderizarFila();
-}
+    function preencherFormulario(registro) {
+        elementos.pacienteId.value = registro.id || '';
+        elementos.cpf.value = registro.cpf || '';
+        elementos.nomePaciente.value = registro.nomePaciente || '';
+        elementos.dataNasc.value = registro.dataNasc || '';
+        elementos.celular.value = registro.celular || '';
+        elementos.convenio.value = registro.convenio || '';
+        elementos.carteirinha.value = registro.carteirinha || '';
+        elementos.validadeConvenio.value = registro.validadeConvenio || '';
 
-function excluirAtendimento() {
-    if (indiceAtual < 0) return;
+        elementos.dataAtendimento.value = registro.dataAtendimento || '';
+        elementos.horaChegada.value = registro.horaChegada || '';
+        elementos.tipoAtendimento.value = registro.tipoAtendimento || '';
+        elementos.procedimento.value = registro.procedimento || '';
+        elementos.medico.value = registro.medico || '';
+        elementos.especialidade.value = registro.especialidade || '';
+        elementos.numeroSenha.value = registro.numeroSenha || '';
+        elementos.prioridade.value = registro.prioridade || 'Normal';
 
-    const confirmou = confirm('Deseja cancelar este atendimento?');
-    if (!confirmou) return;
+        elementos.pacientePresente.checked = Boolean(
+            registro.checklist?.pacientePresente
+        );
+        elementos.docsConferidos.checked = Boolean(
+            registro.checklist?.docsConferidos
+        );
+        elementos.convenioValido.checked = Boolean(
+            registro.checklist?.convenioValido
+        );
+        elementos.autorizacaoRealizada.checked = Boolean(
+            registro.checklist?.autorizacaoRealizada
+        );
+        elementos.lgpdAceita.checked = Boolean(
+            registro.checklist?.lgpdAceita
+        );
 
-    atendimentos.splice(indiceAtual, 1);
-    salvarAtendimentos();
-    indiceAtual = -1;
-    modoFormulario = 'visualizacao';
-    $('atendimentoForm').reset();
-    desabilitarCampos();
-    configurarBotoes();
-    atualizarNavegacao();
-    renderizarFila();
-}
-
-function preencherEspecialidade() {
-    const medico = valorCampo('medico');
-    preencherCampo('especialidade', especialidadesPorMedico[medico] || '');
-}
-
-function atualizarSenhaPorPrioridade() {
-    if (modoFormulario !== 'novo') return;
-    preencherCampo('numeroSenha', proximaSenha(valorCampo('prioridade')));
-}
-
-function imprimirFicha() {
-    if (indiceAtual < 0 && modoFormulario !== 'novo') {
-        alert('Selecione ou grave um atendimento antes de imprimir.');
-        return;
+        elementos.obsAtendimento.value = registro.obsAtendimento || '';
     }
 
-    window.print();
-}
+    function limparFormulario() {
+        elementos.form.reset();
 
-function aplicarMascaras() {
-    $('cpf').addEventListener('input', function () {
-        this.value = this.value
-            .replace(/\D/g, '')
-            .slice(0, 11)
+        elementos.pacienteId.value = '';
+        elementos.numeroSenha.value = '';
+        elementos.especialidade.value = '';
+
+        document.querySelectorAll('#atendimentoForm input[type="checkbox"]')
+            .forEach(checkbox => {
+                checkbox.checked = false;
+            });
+    }
+
+    function validarRegistro(registro) {
+        if (!registro.nomePaciente) {
+            informar('Informe o nome do paciente.');
+            elementos.nomePaciente.focus();
+            return false;
+        }
+
+        if (!registro.cpf) {
+            informar('Informe o CPF do paciente.');
+            elementos.cpf.focus();
+            return false;
+        }
+
+        if (!registro.dataAtendimento) {
+            informar('Informe a data do atendimento.');
+            elementos.dataAtendimento.focus();
+            return false;
+        }
+
+        if (!registro.horaChegada) {
+            informar('Informe o horário de chegada.');
+            elementos.horaChegada.focus();
+            return false;
+        }
+
+        if (!registro.tipoAtendimento) {
+            informar('Selecione o tipo de atendimento.');
+            elementos.tipoAtendimento.focus();
+            return false;
+        }
+
+        if (!registro.medico) {
+            informar('Selecione o médico responsável.');
+            elementos.medico.focus();
+            return false;
+        }
+
+        if (!registro.numeroSenha) {
+            informar('A senha do atendimento não foi gerada.');
+            return false;
+        }
+
+        return true;
+    }
+
+    function setFormEditable(editavel) {
+        const camposEditaveis = document.querySelectorAll(
+            '#atendimentoForm input:not([readonly]), ' +
+            '#atendimentoForm select, ' +
+            '#atendimentoForm textarea'
+        );
+
+        camposEditaveis.forEach(campo => {
+            campo.disabled = !editavel;
+        });
+
+        // Os checkboxes do checklist não estavam disabled no HTML original.
+        document.querySelectorAll(
+            '#atendimentoForm input[type="checkbox"]'
+        ).forEach(checkbox => {
+            checkbox.disabled = !editavel;
+        });
+
+        // Campos sempre controlados automaticamente pelo sistema.
+        elementos.pacienteId.disabled = true;
+        elementos.numeroSenha.disabled = true;
+        elementos.especialidade.disabled = true;
+    }
+
+    function atualizarToolbar() {
+        const possuiSelecao = Boolean(state.registroSelecionadoId);
+        const editando = state.modo === 'novo' || state.modo === 'edicao';
+
+        elementos.btnSalvar.disabled = !editando;
+        elementos.btnEditar.disabled = !possuiSelecao || editando;
+        elementos.btnExcluir.disabled = !possuiSelecao || editando;
+
+        const lista = state.resultadoBusca.length
+            ? state.resultadoBusca
+            : state.registros;
+
+        const indiceAtual = lista.findIndex(item => {
+            return item.id === state.registroSelecionadoId;
+        });
+
+        elementos.btnAnterior.disabled =
+            !possuiSelecao || editando || indiceAtual <= 0;
+
+        elementos.btnProximo.disabled =
+            !possuiSelecao ||
+            editando ||
+            indiceAtual === -1 ||
+            indiceAtual >= lista.length - 1;
+
+        elementos.btnImprimir.disabled = !possuiSelecao && state.modo !== 'novo';
+    }
+
+    function atualizarTabela() {
+        const registros = obterRegistrosFiltrados();
+
+        state.resultadoBusca = registros;
+
+        if (!registros.length) {
+            elementos.corpoTabela.innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="6">
+                        Nenhum atendimento encontrado.
+                    </td>
+                </tr>
+            `;
+
+            atualizarToolbar();
+            return;
+        }
+
+        elementos.corpoTabela.innerHTML = registros.map(registro => {
+            const selecionado = registro.id === state.registroSelecionadoId;
+            const statusClasse = gerarClasseStatus(registro.status);
+
+            return `
+                <tr
+                    data-id="${escapeHTML(registro.id)}"
+                    class="${selecionado ? 'selected' : ''}"
+                    tabindex="0"
+                    aria-selected="${selecionado}"
+                >
+                    <td>
+                        <span class="senha-badge ${gerarClassePrioridade(registro.prioridade)}">
+                            ${escapeHTML(registro.numeroSenha || '-')}
+                        </span>
+                    </td>
+                    <td>${escapeHTML(registro.horaChegada || '-')}</td>
+                    <td>
+                        <strong>${escapeHTML(registro.nomePaciente || '-')}</strong>
+                        <small>${escapeHTML(registro.cpf || '')}</small>
+                    </td>
+                    <td>${escapeHTML(registro.tipoAtendimento || '-')}</td>
+                    <td>${escapeHTML(registro.medico || '-')}</td>
+                    <td>
+                        <span class="status-badge ${statusClasse}">
+                            ${escapeHTML(registro.status || 'Aguardando')}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        atualizarToolbar();
+    }
+
+    function aplicarBusca() {
+        atualizarTabela();
+    }
+
+    function obterRegistrosFiltrados() {
+        const termo = elementos.inputBusca.value
+            .trim()
+            .toLowerCase();
+
+        if (!termo) {
+            return [...state.registros];
+        }
+
+        return state.registros.filter(registro => {
+            const camposPesquisaveis = [
+                registro.nomePaciente,
+                registro.cpf,
+                registro.numeroSenha,
+                registro.medico,
+                registro.tipoAtendimento
+            ];
+
+            return camposPesquisaveis.some(campo => {
+                return normalizarTexto(campo).includes(normalizarTexto(termo));
+            });
+        });
+    }
+
+    function carregarRegistroSelecionado() {
+        const registro = obterRegistroSelecionado();
+
+        if (registro) {
+            preencherFormulario(registro);
+        }
+    }
+
+    function obterRegistroSelecionado() {
+        return state.registros.find(registro => {
+            return registro.id === state.registroSelecionadoId;
+        });
+    }
+
+    function imprimirFicha() {
+        let registro = obterRegistroSelecionado();
+
+        if (!registro && state.modo === 'novo') {
+            registro = coletarFormulario();
+        }
+
+        if (!registro || !registro.nomePaciente) {
+            informar('Selecione ou preencha um atendimento antes de imprimir.');
+            return;
+        }
+
+        const janelaImpressao = window.open(
+            '',
+            '_blank',
+            'width=800,height=700'
+        );
+
+        if (!janelaImpressao) {
+            informar('Permita pop-ups no navegador para imprimir a ficha.');
+            return;
+        }
+
+        const checklist = registro.checklist || {};
+
+        janelaImpressao.document.write(`
+            <!DOCTYPE html>
+            <html lang="pt-br">
+            <head>
+                <meta charset="UTF-8">
+                <title>Ficha de Atendimento - ${escapeHTML(registro.numeroSenha)}</title>
+                <style>
+                    * {
+                        box-sizing: border-box;
+                    }
+
+                    body {
+                        margin: 0;
+                        padding: 32px;
+                        color: #172033;
+                        font-family: Arial, sans-serif;
+                        background: #fff;
+                    }
+
+                    .ficha {
+                        max-width: 760px;
+                        margin: 0 auto;
+                    }
+
+                    .cabecalho {
+                        display: flex;
+                        justify-content: space-between;
+                        gap: 24px;
+                        padding-bottom: 20px;
+                        border-bottom: 2px solid #172033;
+                    }
+
+                    h1 {
+                        margin: 0 0 6px;
+                        font-size: 22px;
+                    }
+
+                    h2 {
+                        margin: 24px 0 10px;
+                        font-size: 15px;
+                        border-bottom: 1px solid #ccd3df;
+                        padding-bottom: 6px;
+                    }
+
+                    .senha {
+                        min-width: 120px;
+                        padding: 14px;
+                        text-align: center;
+                        border: 2px solid #172033;
+                        border-radius: 8px;
+                        font-size: 24px;
+                        font-weight: bold;
+                    }
+
+                    .grid {
+                        display: grid;
+                        grid-template-columns: repeat(2, 1fr);
+                        gap: 8px 24px;
+                    }
+
+                    .item {
+                        padding: 6px 0;
+                    }
+
+                    .label {
+                        display: block;
+                        color: #667085;
+                        font-size: 11px;
+                        text-transform: uppercase;
+                    }
+
+                    .valor {
+                        font-size: 14px;
+                    }
+
+                    ul {
+                        padding-left: 20px;
+                    }
+
+                    @media print {
+                        body {
+                            padding: 0;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <main class="ficha">
+                    <header class="cabecalho">
+                        <div>
+                            <h1>Ficha de Atendimento</h1>
+                            <div>Sistema G4Med — Recepção</div>
+                        </div>
+                        <div class="senha">
+                            ${escapeHTML(registro.numeroSenha || '-')}
+                        </div>
+                    </header>
+
+                    <h2>Dados do paciente</h2>
+                    <section class="grid">
+                        ${itemFicha('Código ID', registro.id)}
+                        ${itemFicha('CPF', registro.cpf)}
+                        ${itemFicha('Paciente', registro.nomePaciente)}
+                        ${itemFicha('Data de nascimento', formatarDataBR(registro.dataNasc))}
+                        ${itemFicha('Celular', registro.celular)}
+                        ${itemFicha('Convênio', obterNomeConvenio(registro.convenio))}
+                    </section>
+
+                    <h2>Dados do atendimento</h2>
+                    <section class="grid">
+                        ${itemFicha('Data', formatarDataBR(registro.dataAtendimento))}
+                        ${itemFicha('Hora de chegada', registro.horaChegada)}
+                        ${itemFicha('Tipo', registro.tipoAtendimento)}
+                        ${itemFicha('Procedimento', registro.procedimento)}
+                        ${itemFicha('Médico', registro.medico)}
+                        ${itemFicha('Especialidade', registro.especialidade)}
+                        ${itemFicha('Prioridade', registro.prioridade)}
+                        ${itemFicha('Status', registro.status)}
+                    </section>
+
+                    <h2>Checklist da recepção</h2>
+                    <ul>
+                        <li>Paciente presente: ${checklist.pacientePresente ? 'Sim' : 'Não'}</li>
+                        <li>Documentos conferidos: ${checklist.docsConferidos ? 'Sim' : 'Não'}</li>
+                        <li>Convênio válido: ${checklist.convenioValido ? 'Sim' : 'Não'}</li>
+                        <li>Autorização realizada: ${checklist.autorizacaoRealizada ? 'Sim' : 'Não'}</li>
+                        <li>LGPD aceita: ${checklist.lgpdAceita ? 'Sim' : 'Não'}</li>
+                    </ul>
+
+                    <h2>Observações</h2>
+                    <p>${escapeHTML(registro.obsAtendimento || 'Nenhuma observação registrada.')}</p>
+                </main>
+
+                <script>
+                    window.addEventListener('load', () => {
+                        window.print();
+                    });
+                <\/script>
+            </body>
+            </html>
+        `);
+
+        janelaImpressao.document.close();
+    }
+
+    function itemFicha(label, valor) {
+        return `
+            <div class="item">
+                <span class="label">${escapeHTML(label)}</span>
+                <span class="valor">${escapeHTML(valor || '-')}</span>
+            </div>
+        `;
+    }
+
+    function atualizarEspecialidade() {
+        const especialidades = {
+            'Dr. Ricardo Silva': 'Cardiologia',
+            'Dra. Ana Beatriz': 'Clínica Geral',
+            'Dr. Marcos Pereira': 'Ortopedia'
+        };
+
+        elementos.especialidade.value =
+            especialidades[elementos.medico.value] || '';
+    }
+
+    function gerarIdPaciente() {
+        const data = new Date();
+        const parteData = [
+            data.getFullYear(),
+            String(data.getMonth() + 1).padStart(2, '0'),
+            String(data.getDate()).padStart(2, '0')
+        ].join('');
+
+        const sufixo = String(Date.now()).slice(-5);
+
+        return `PAC-${parteData}-${sufixo}`;
+    }
+
+    function gerarNumeroSenha(prioridade) {
+        const prefixo = prioridade === 'Normal' ? 'G' : 'P';
+
+        const numerosUtilizados = state.registros
+            .map(registro => registro.numeroSenha || '')
+            .filter(senha => senha.startsWith(`${prefixo}-`))
+            .map(senha => Number(senha.split('-')[1]))
+            .filter(numero => Number.isInteger(numero));
+
+        const maiorNumero = numerosUtilizados.length
+            ? Math.max(...numerosUtilizados)
+            : 0;
+
+        return `${prefixo}-${String(maiorNumero + 1).padStart(3, '0')}`;
+    }
+
+    function carregarRegistros() {
+        try {
+            const registrosSalvos = localStorage.getItem(STORAGE_KEY);
+
+            if (!registrosSalvos) {
+                return [];
+            }
+
+            const registros = JSON.parse(registrosSalvos);
+
+            return Array.isArray(registros) ? registros : [];
+        } catch (erro) {
+            console.error('Erro ao carregar atendimentos:', erro);
+            informar('Não foi possível carregar os atendimentos salvos.');
+            return [];
+        }
+    }
+
+    function salvarRegistros() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state.registros));
+        } catch (erro) {
+            console.error('Erro ao salvar atendimentos:', erro);
+            informar(
+                'Não foi possível salvar os dados. Verifique o armazenamento do navegador.'
+            );
+        }
+    }
+
+    function formatarDataInput(data) {
+        const ano = data.getFullYear();
+        const mes = String(data.getMonth() + 1).padStart(2, '0');
+        const dia = String(data.getDate()).padStart(2, '0');
+
+        return `${ano}-${mes}-${dia}`;
+    }
+
+    function formatarHoraInput(data) {
+        const horas = String(data.getHours()).padStart(2, '0');
+        const minutos = String(data.getMinutes()).padStart(2, '0');
+
+        return `${horas}:${minutos}`;
+    }
+
+    function formatarDataBR(data) {
+        if (!data || !data.includes('-')) {
+            return data || '-';
+        }
+
+        const [ano, mes, dia] = data.split('-');
+        return `${dia}/${mes}/${ano}`;
+    }
+
+    function obterNomeConvenio(valor) {
+        const opcao = Array.from(elementos.convenio.options)
+            .find(item => item.value === valor || item.textContent === valor);
+
+        return opcao?.textContent || valor || '-';
+    }
+
+    function gerarClassePrioridade(prioridade) {
+        const classes = {
+            Normal: 'senha-normal',
+            Idoso: 'senha-preferencial',
+            Gestante: 'senha-preferencial',
+            PCD: 'senha-preferencial',
+            Emergencial: 'senha-emergencial'
+        };
+
+        return classes[prioridade] || 'senha-normal';
+    }
+
+    function gerarClasseStatus(status) {
+        const classes = {
+            Aguardando: 'status-aguardando',
+            'Em atendimento': 'status-atendimento',
+            Finalizado: 'status-finalizado',
+            Cancelado: 'status-cancelado'
+        };
+
+        return classes[status] || 'status-aguardando';
+    }
+
+    function normalizarTexto(valor) {
+        return String(valor || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase();
+    }
+
+    function escapeHTML(valor) {
+        return String(valor ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function aplicarMascaraCPF(event) {
+        let valor = event.target.value.replace(/\D/g, '').slice(0, 11);
+
+        valor = valor
             .replace(/(\d{3})(\d)/, '$1.$2')
             .replace(/(\d{3})(\d)/, '$1.$2')
             .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-    });
 
-    $('celular').addEventListener('input', function () {
-        this.value = this.value
-            .replace(/\D/g, '')
-            .slice(0, 11)
-            .replace(/^(\d{2})(\d)/, '($1) $2')
-            .replace(/(\d{5})(\d{1,4})$/, '$1-$2');
-    });
-
-    $('validadeConvenio').addEventListener('input', function () {
-        this.value = this.value
-            .replace(/\D/g, '')
-            .slice(0, 4)
-            .replace(/(\d{2})(\d)/, '$1/$2');
-    });
-}
-
-function configurarEventos() {
-    $('btnNovo').addEventListener('click', iniciarNovo);
-    $('btnSalvar').addEventListener('click', salvarFormulario);
-    $('btnEditar').addEventListener('click', iniciarEdicao);
-    $('btnExcluir').addEventListener('click', excluirAtendimento);
-    $('btnImprimir').addEventListener('click', imprimirFicha);
-
-    $('btnAnterior').addEventListener('click', function () {
-        if (indiceAtual > 0) selecionarAtendimento(indiceAtual - 1);
-    });
-
-    $('btnProximo').addEventListener('click', function () {
-        if (indiceAtual < atendimentos.length - 1) selecionarAtendimento(indiceAtual + 1);
-    });
-
-    $('medico').addEventListener('change', preencherEspecialidade);
-    $('prioridade').addEventListener('change', atualizarSenhaPorPrioridade);
-    $('inputBusca').addEventListener('input', renderizarFila);
-
-    const btnBuscar = document.querySelector('.grid-search button');
-    if (btnBuscar) {
-        btnBuscar.addEventListener('click', renderizarFila);
+        event.target.value = valor;
     }
-}
 
-function iniciarPagina() {
-    renderizarFila();
-    desabilitarCampos();
-    configurarBotoes();
-    atualizarNavegacao();
-    aplicarMascaras();
-    configurarEventos();
-}
+    function aplicarMascaraCelular(event) {
+        let valor = event.target.value.replace(/\D/g, '').slice(0, 11);
 
-document.addEventListener('DOMContentLoaded', iniciarPagina);
+        if (valor.length <= 10) {
+            valor = valor
+                .replace(/(\d{2})(\d)/, '($1) $2')
+                .replace(/(\d{4})(\d)/, '$1-$2');
+        } else {
+            valor = valor
+                .replace(/(\d{2})(\d)/, '($1) $2')
+                .replace(/(\d{5})(\d)/, '$1-$2');
+        }
+
+        event.target.value = valor;
+    }
+
+    function aplicarMascaraValidade(event) {
+        let valor = event.target.value.replace(/\D/g, '').slice(0, 4);
+
+        if (valor.length > 2) {
+            valor = `${valor.slice(0, 2)}/${valor.slice(2)}`;
+        }
+
+        event.target.value = valor;
+    }
+
+    function informar(mensagem) {
+        /*
+         * Troque por um componente de toast institucional caso o GM4
+         * já possua um sistema próprio de notificações.
+         */
+        window.alert(mensagem);
+    }
+});

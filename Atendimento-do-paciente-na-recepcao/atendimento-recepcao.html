@@ -1,230 +1,512 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atendimento Recepção | Sistema GM4</title>
+
+    <meta name="description" content="Tela de atendimento do paciente na recepção do Sistema GM4">
+
+    <title>Atendimento Recepção | Sistema G4Med</title>
+
     <link rel="stylesheet" href="atendimento-recepcao.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer">
+
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
 </head>
 
 <body>
     <div class="container">
-        <header>
+
+        <header class="page-header">
             <div class="header-title">
-                <i class="fas fa-hospital-user"></i>
+                <i class="fas fa-hospital-user" aria-hidden="true"></i>
+
                 <h1>Atendimento do Paciente na Recepção</h1>
             </div>
-            <div class="toolbar">
-                <button id="btnNovo" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Novo
-                </button>
-                <button id="btnSalvar" class="btn btn-success" disabled>
-                    <i class="fas fa-save"></i> Gravar
-                </button>
-                <button id="btnEditar" class="btn btn-warning" disabled>
-                    <i class="fas fa-edit"></i> Editar
-                </button>
-                <button id="btnExcluir" class="btn btn-danger" disabled>
-                    <i class="fas fa-trash"></i> Excluir
-                </button>
-                <button id="btnImprimir" class="btn btn-dark" type="button">
-                    <i class="fas fa-print"></i> Imprimir Ficha
-                </button>
-                <button id="btnAnterior" class="btn btn-dark" disabled>
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button id="btnProximo" class="btn btn-dark" disabled>
-                    <i class="fas fa-chevron-right"></i>
+
+            <div class="toolbar" role="toolbar" aria-label="Ações do atendimento">
+                <button id="btnNovo" class="btn btn-primary" type="button" title="Iniciar um novo atendimento">
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                    <span>Novo</span>
                 </button>
 
-                <button id="btnSair" class="btn btn-dark" onclick="window.location.href='../Menu-Principal.html'">
-                    <i class="fas fa-arrow-left"></i> Voltar
+                <button id="btnSalvar" class="btn btn-success" type="button" disabled title="Gravar atendimento">
+                    <i class="fas fa-save" aria-hidden="true"></i>
+                    <span>Gravar</span>
+                </button>
+
+                <button id="btnEditar" class="btn btn-warning" type="button" disabled
+                    title="Editar atendimento selecionado">
+                    <i class="fas fa-edit" aria-hidden="true"></i>
+                    <span>Editar</span>
+                </button>
+
+                <button id="btnExcluir" class="btn btn-danger" type="button" disabled
+                    title="Excluir atendimento selecionado">
+                    <i class="fas fa-trash" aria-hidden="true"></i>
+                    <span>Excluir</span>
+                </button>
+
+                <button id="btnImprimir" class="btn btn-dark" type="button" title="Imprimir ficha de atendimento">
+                    <i class="fas fa-print" aria-hidden="true"></i>
+                    <span>Imprimir Ficha</span>
+                </button>
+
+                <button id="btnAnterior" class="btn btn-dark" type="button" disabled aria-label="Atendimento anterior"
+                    title="Atendimento anterior">
+                    <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                </button>
+
+                <button id="btnProximo" class="btn btn-dark" type="button" disabled aria-label="Próximo atendimento"
+                    title="Próximo atendimento">
+                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                </button>
+
+                <button id="btnSair" class="btn btn-dark" type="button"
+                    onclick="window.location.href='../Menu-Principal.html'" title="Voltar ao menu principal">
+                    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                    <span>Voltar</span>
                 </button>
             </div>
         </header>
 
         <main>
-            <section class="form-area">
-                <nav class="tabs-nav">
-                    <button class="tab-link active" onclick="openTab(event, 'dados-paciente')">1. Dados do
-                        Paciente</button>
-                    <button class="tab-link" onclick="openTab(event, 'dados-atendimento')">2. Dados do
-                        Atendimento</button>
+            <section class="form-area" aria-labelledby="tituloFormulario">
+                <h2 id="tituloFormulario" class="sr-only">
+                    Formulário de atendimento do paciente
+                </h2>
+
+                <nav class="tabs-nav" role="tablist" aria-label="Etapas do atendimento">
+                    <button id="tabDadosPaciente" class="tab-link active" type="button" role="tab" aria-selected="true"
+                        aria-controls="dados-paciente" onclick="openTab(event, 'dados-paciente')">
+                        1. Dados do Paciente
+                    </button>
+
+                    <button id="tabDadosAtendimento" class="tab-link" type="button" role="tab" aria-selected="false"
+                        aria-controls="dados-atendimento" onclick="openTab(event, 'dados-atendimento')">
+                        2. Dados do Atendimento
+                    </button>
                 </nav>
 
                 <div class="form-content">
-                    <form id="atendimentoForm">
+                    <form id="atendimentoForm" novalidate>
+
                         <!-- ABA 1: DADOS DO PACIENTE -->
-                        <div id="dados-paciente" class="tab-content active">
+                        <div id="dados-paciente" class="tab-content active" role="tabpanel"
+                            aria-labelledby="tabDadosPaciente">
                             <div class="form-grid">
+
                                 <div class="form-group col-2">
-                                    <label>Código ID</label>
-                                    <input type="text" id="pacienteId" readonly placeholder="Auto">
-                                </div>
-                                <div class="form-group col-3">
-                                    <label>CPF</label>
-                                    <input type="text" id="cpf" disabled>
-                                </div>
-                                <div class="form-group col-7">
-                                    <label>Nome do Paciente</label>
-                                    <input type="text" id="nomePaciente" class="uppercase" disabled required>
+                                    <label for="pacienteId">
+                                        Código ID
+                                    </label>
+
+                                    <input type="text" id="pacienteId" name="pacienteId" readonly autocomplete="off"
+                                        placeholder="Auto">
                                 </div>
 
                                 <div class="form-group col-3">
-                                    <label>Data de Nasc.</label>
-                                    <input type="date" id="dataNasc" disabled>
+                                    <label for="cpf">
+                                        CPF
+                                    </label>
+
+                                    <input type="text" id="cpf" name="cpf" disabled inputmode="numeric"
+                                        autocomplete="off" maxlength="14" placeholder="000.000.000-00">
                                 </div>
-                                <div class="form-group col-3">
-                                    <label>Tel. Celular</label>
-                                    <input type="text" id="celular" disabled>
+
+                                <div class="form-group col-7">
+                                    <label for="nomePaciente">
+                                        Nome do Paciente
+                                    </label>
+
+                                    <input type="text" id="nomePaciente" name="nomePaciente" class="uppercase" disabled
+                                        required autocomplete="name" maxlength="120"
+                                        placeholder="Nome completo do paciente">
                                 </div>
+
                                 <div class="form-group col-3">
-                                    <label>Convênio</label>
-                                    <select id="convenio" disabled>
-                                        <option value="">Selecione...</option>
-                                        <option>Particular</option>
-                                        <option>Unimed</option>
-                                        <option value="amil">Amil</option>
-                                        <option value="bradesco">Bradesco Saúde</option>
-                                        <option value="careplus">Care Plus</option>
-                                        <option value="cassi">Cassi</option>
-                                        <option value="geap">Geap</option>
-                                        <option value="goldencross">Golden Cross</option>
-                                        <option value="hapvida">Hapvida</option>
-                                        <option value="ipasgo">Ipasgo</option>
-                                        <option value="intermedica">NotreDame Intermédica</option>
-                                        <option value="portoseguro">Porto Seguro Saúde</option>
-                                        <option value="postalsaude">Postal Saúde</option>
-                                        <option value="santacasa">Santa Casa Saúde</option>
-                                        <option value="saofrancisco">São Francisco Saúde</option>
-                                        <option value="sulamerica">SulAmérica</option>
+                                    <label for="dataNasc">
+                                        Data de Nascimento
+                                    </label>
+
+                                    <input type="date" id="dataNasc" name="dataNasc" disabled autocomplete="bday">
+                                </div>
+
+                                <div class="form-group col-3">
+                                    <label for="celular">
+                                        Tel. Celular
+                                    </label>
+
+                                    <input type="tel" id="celular" name="celular" disabled inputmode="tel"
+                                        autocomplete="tel" maxlength="15" placeholder="(00) 00000-0000">
+                                </div>
+
+                                <div class="form-group col-3">
+                                    <label for="convenio">
+                                        Convênio
+                                    </label>
+
+                                    <select id="convenio" name="convenio" disabled>
+                                        <option value="">
+                                            Selecione...
+                                        </option>
+
+                                        <option value="Particular">
+                                            Particular
+                                        </option>
+
+                                        <option value="Unimed">
+                                            Unimed
+                                        </option>
+
+                                        <option value="amil">
+                                            Amil
+                                        </option>
+
+                                        <option value="bradesco">
+                                            Bradesco Saúde
+                                        </option>
+
+                                        <option value="careplus">
+                                            Care Plus
+                                        </option>
+
+                                        <option value="cassi">
+                                            Cassi
+                                        </option>
+
+                                        <option value="geap">
+                                            Geap
+                                        </option>
+
+                                        <option value="goldencross">
+                                            Golden Cross
+                                        </option>
+
+                                        <option value="hapvida">
+                                            Hapvida
+                                        </option>
+
+                                        <option value="ipasgo">
+                                            Ipasgo
+                                        </option>
+
+                                        <option value="intermedica">
+                                            NotreDame Intermédica
+                                        </option>
+
+                                        <option value="portoseguro">
+                                            Porto Seguro Saúde
+                                        </option>
+
+                                        <option value="postalsaude">
+                                            Postal Saúde
+                                        </option>
+
+                                        <option value="santacasa">
+                                            Santa Casa Saúde
+                                        </option>
+
+                                        <option value="saofrancisco">
+                                            São Francisco Saúde
+                                        </option>
+
+                                        <option value="sulamerica">
+                                            SulAmérica
+                                        </option>
                                     </select>
                                 </div>
+
                                 <div class="form-group col-2">
-                                    <label>Carteirinha</label>
-                                    <input type="text" id="carteirinha" disabled>
+                                    <label for="carteirinha">
+                                        Carteirinha
+                                    </label>
+
+                                    <input type="text" id="carteirinha" name="carteirinha" disabled autocomplete="off"
+                                        maxlength="40" placeholder="Número da carteirinha">
                                 </div>
+
                                 <div class="form-group col-1">
-                                    <label>Validade</label>
-                                    <input type="text" id="validadeConvenio" placeholder="MM/AA" disabled>
+                                    <label for="validadeConvenio">
+                                        Validade
+                                    </label>
+
+                                    <input type="text" id="validadeConvenio" name="validadeConvenio" disabled
+                                        inputmode="numeric" autocomplete="off" maxlength="5" placeholder="MM/AA">
                                 </div>
+
                             </div>
                         </div>
 
                         <!-- ABA 2: DADOS DO ATENDIMENTO -->
-                        <div id="dados-atendimento" class="tab-content">
+                        <div id="dados-atendimento" class="tab-content" role="tabpanel"
+                            aria-labelledby="tabDadosAtendimento">
                             <div class="form-grid">
+
                                 <div class="form-group col-3">
-                                    <label>Data do Atendimento</label>
-                                    <input type="date" id="dataAtendimento" disabled>
+                                    <label for="dataAtendimento">
+                                        Data do Atendimento
+                                    </label>
+
+                                    <input type="date" id="dataAtendimento" name="dataAtendimento" disabled required>
                                 </div>
+
                                 <div class="form-group col-3">
-                                    <label>Horário de Chegada</label>
-                                    <input type="time" id="horaChegada" disabled>
+                                    <label for="horaChegada">
+                                        Horário de Chegada
+                                    </label>
+
+                                    <input type="time" id="horaChegada" name="horaChegada" disabled required>
                                 </div>
+
                                 <div class="form-group col-3">
-                                    <label>Tipo de Atendimento</label>
-                                    <select id="tipoAtendimento" disabled>
-                                        <option value="">Selecione...</option>
-                                        <option>Consulta</option>
-                                        <option>Retorno</option>
-                                        <option>Exame</option>
-                                        <option>Procedimento</option>
-                                        <option>Teleconsulta</option>
-                                        <option>Urgência</option>
-                                        <option>Encaixe</option>
+                                    <label for="tipoAtendimento">
+                                        Tipo de Atendimento
+                                    </label>
+
+                                    <select id="tipoAtendimento" name="tipoAtendimento" disabled required>
+                                        <option value="">
+                                            Selecione...
+                                        </option>
+
+                                        <option value="Consulta">
+                                            Consulta
+                                        </option>
+
+                                        <option value="Retorno">
+                                            Retorno
+                                        </option>
+
+                                        <option value="Exame">
+                                            Exame
+                                        </option>
+
+                                        <option value="Procedimento">
+                                            Procedimento
+                                        </option>
+
+                                        <option value="Teleconsulta">
+                                            Teleconsulta
+                                        </option>
+
+                                        <option value="Urgência">
+                                            Urgência
+                                        </option>
+
+                                        <option value="Encaixe">
+                                            Encaixe
+                                        </option>
                                     </select>
                                 </div>
+
                                 <div class="form-group col-3">
-                                    <label>Exame | Procedimento</label>
-                                    <input type="text" id="procedimento" disabled>
+                                    <label for="procedimento">
+                                        Exame ou Procedimento
+                                    </label>
+
+                                    <input type="text" id="procedimento" name="procedimento" disabled maxlength="120"
+                                        placeholder="Informe o exame ou procedimento">
                                 </div>
 
                                 <div class="form-group col-4">
-                                    <label>Médico</label>
-                                    <select id="medico" disabled>
-                                        <option value="">Selecione o médico...</option>
-                                        <option>Dr. Ricardo Silva</option>
-                                        <option>Dra. Ana Beatriz</option>
-                                        <option>Dr. Marcos Pereira</option>
+                                    <label for="medico">
+                                        Médico
+                                    </label>
+
+                                    <select id="medico" name="medico" disabled required>
+                                        <option value="">
+                                            Selecione o médico...
+                                        </option>
+
+                                        <option value="Dr. Ricardo Silva">
+                                            Dr. Ricardo Silva
+                                        </option>
+
+                                        <option value="Dra. Ana Beatriz">
+                                            Dra. Ana Beatriz
+                                        </option>
+
+                                        <option value="Dr. Marcos Pereira">
+                                            Dr. Marcos Pereira
+                                        </option>
                                     </select>
                                 </div>
+
                                 <div class="form-group col-4">
-                                    <label>Especialidade</label>
-                                    <input type="text" id="especialidade" disabled readonly>
+                                    <label for="especialidade">
+                                        Especialidade
+                                    </label>
+
+                                    <input type="text" id="especialidade" name="especialidade" disabled readonly
+                                        placeholder="Preenchida automaticamente">
                                 </div>
+
                                 <div class="form-group col-2">
-                                    <label>Nº Senha</label>
-                                    <input type="text" id="numeroSenha" readonly placeholder="G-001">
+                                    <label for="numeroSenha">
+                                        Nº Senha
+                                    </label>
+
+                                    <input type="text" id="numeroSenha" name="numeroSenha" readonly autocomplete="off"
+                                        placeholder="G-001">
                                 </div>
+
                                 <div class="form-group col-2">
-                                    <label>Prioridade</label>
-                                    <select id="prioridade" disabled>
-                                        <option>Normal</option>
-                                        <option>Idoso</option>
-                                        <option>Gestante</option>
-                                        <option>PCD</option>
-                                        <option>Emergencial</option>
+                                    <label for="prioridade">
+                                        Prioridade
+                                    </label>
+
+                                    <select id="prioridade" name="prioridade" disabled>
+                                        <option value="Normal">
+                                            Normal
+                                        </option>
+
+                                        <option value="Idoso">
+                                            Idoso
+                                        </option>
+
+                                        <option value="Gestante">
+                                            Gestante
+                                        </option>
+
+                                        <option value="PCD">
+                                            PCD
+                                        </option>
+
+                                        <option value="Emergencial">
+                                            Emergencial
+                                        </option>
                                     </select>
                                 </div>
 
                                 <div class="col-12">
-                                    <h3 class="section-title">Confirmação de Presença e Check-list</h3>
-                                </div>
-                                <div class="form-group col-12">
-                                    <div class="checkbox-group">
-                                        <label><input type="checkbox" id="pacientePresente"> Paciente presente</label>
-                                        <label><input type="checkbox" id="docsConferidos"> Documentos conferidos</label>
-                                        <label><input type="checkbox" id="convenioValido"> Convênio valido</label>
-                                        <label><input type="checkbox" id="autorizacaoRealizada"> Autorização
-                                            realizada</label>
-                                        <label><input type="checkbox" id="lgpdAceita"> LGPD aceita</label>
-                                    </div>
+                                    <h3 class="section-title">
+                                        Confirmação de Presença e Check-list
+                                    </h3>
                                 </div>
 
+                                <fieldset class="form-group col-12 checklist-fieldset">
+                                    <legend class="sr-only">
+                                        Checklist de recepção
+                                    </legend>
+
+                                    <div class="checkbox-group">
+
+                                        <label for="pacientePresente">
+                                            <input type="checkbox" id="pacientePresente" name="pacientePresente"
+                                                disabled>
+                                            <span>Paciente presente</span>
+                                        </label>
+
+                                        <label for="docsConferidos">
+                                            <input type="checkbox" id="docsConferidos" name="docsConferidos" disabled>
+                                            <span>Documentos conferidos</span>
+                                        </label>
+
+                                        <label for="convenioValido">
+                                            <input type="checkbox" id="convenioValido" name="convenioValido" disabled>
+                                            <span>Convênio válido</span>
+                                        </label>
+
+                                        <label for="autorizacaoRealizada">
+                                            <input type="checkbox" id="autorizacaoRealizada" name="autorizacaoRealizada"
+                                                disabled>
+                                            <span>Autorização realizada</span>
+                                        </label>
+
+                                        <label for="lgpdAceita">
+                                            <input type="checkbox" id="lgpdAceita" name="lgpdAceita" disabled>
+                                            <span>LGPD aceita</span>
+                                        </label>
+
+                                    </div>
+                                </fieldset>
+
                                 <div class="form-group col-12">
-                                    <label>Observações</label>
-                                    <textarea id="obsAtendimento" rows="2" disabled
+                                    <label for="obsAtendimento">
+                                        Observações
+                                    </label>
+
+                                    <textarea id="obsAtendimento" name="obsAtendimento" rows="3" disabled
+                                        maxlength="500"
                                         placeholder="Observações relevantes sobre o atendimento..."></textarea>
                                 </div>
+
                             </div>
                         </div>
+
                     </form>
                 </div>
             </section>
 
-            <section class="grid-area">
+            <section class="grid-area" aria-labelledby="tituloFila">
                 <div class="grid-header">
-                    <span><i class="fas fa-clock"></i> Fila de Espera / Atendimentos do Dia</span>
+                    <h2 id="tituloFila">
+                        <i class="fas fa-clock" aria-hidden="true"></i>
+                        <span>Fila de Espera / Atendimentos do Dia</span>
+                    </h2>
+
                     <div class="grid-search">
-                        <input type="text" id="inputBusca" placeholder="Localizar agendamento...">
-                        <button class="btn btn-primary btn-sm"><i class="fas fa-search"></i> Buscar</button>
+                        <label for="inputBusca" class="sr-only">
+                            Localizar agendamento
+                        </label>
+
+                        <input type="search" id="inputBusca" name="inputBusca" placeholder="Localizar agendamento..."
+                            autocomplete="off" aria-label="Buscar atendimento por nome, CPF ou senha">
+
+                        <button id="btnBuscar" class="btn btn-primary btn-sm" type="button" title="Buscar atendimento">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                            <span>Buscar</span>
+                        </button>
                     </div>
                 </div>
-                <div class="table-wrapper">
-                    <table id="tabelaAtendimentos">
+
+                <div class="table-wrapper" tabindex="0" aria-label="Tabela de atendimentos">
+                    <table id="tabelaAtendimentos" aria-describedby="tituloFila">
+                        <caption class="sr-only">
+                            Lista de atendimentos e fila de espera
+                        </caption>
+
                         <thead>
                             <tr>
-                                <th width="60">Senha</th>
-                                <th width="80">Hora</th>
-                                <th>Paciente</th>
-                                <th width="150">Tipo</th>
-                                <th width="180">Médico</th>
-                                <th width="120">Status</th>
+                                <th scope="col" width="80">
+                                    Senha
+                                </th>
+
+                                <th scope="col" width="80">
+                                    Hora
+                                </th>
+
+                                <th scope="col">
+                                    Paciente
+                                </th>
+
+                                <th scope="col" width="150">
+                                    Tipo
+                                </th>
+
+                                <th scope="col" width="180">
+                                    Médico
+                                </th>
+
+                                <th scope="col" width="140">
+                                    Status
+                                </th>
                             </tr>
                         </thead>
-                        <tbody id="corpoTabelaAtendimentos">
-                            <!-- Injetado via JS -->
+
+                        <tbody id="corpoTabelaAtendimentos" aria-live="polite">
+                            <!-- Registros injetados pelo JavaScript -->
                         </tbody>
                     </table>
                 </div>
             </section>
         </main>
     </div>
+
     <script src="atendimento-recepcao.js"></script>
 </body>
 
