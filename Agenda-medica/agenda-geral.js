@@ -1,28 +1,34 @@
-/**
- * ==========================================================
- * agenda.js - Módulo de Agenda G4med (ES6+ Modular)
- * ==========================================================
- */
+'use strict';
 
-(() => {
-    'use strict';
+document.addEventListener('DOMContentLoaded', () => {
+    /*
+     * =========================================================
+     * CONFIGURAÇÕES E DADOS BASE
+     * =========================================================
+     */
 
-    /* ==========================================================
-       CONFIGURAÇÃO E ESTADO
-       ========================================================== */
-    const MEDICOS = [
-        { id: 1, nome: 'Dr. Carlos Silva', especialidade: 'Cardiologia' },
-        { id: 2, nome: 'Dra. Ana Paula', especialidade: 'Dermatologia' },
-        { id: 3, nome: 'Dr. Roberto Lima', especialidade: 'Ortopedia' }
-    ];
+    const STORAGE_KEY = 'g4med.agenda.agendamentos.v1';
 
-    const STATUS_CONFIG = {
-        agendado: { label: 'Agendado', cor: '#3b82f6' },
-        confirmado: { label: 'Confirmado', cor: '#10b981' },
-        espera: { label: 'Em Espera', cor: '#f59e0b' },
-        atendido: { label: 'Atendido', cor: '#8b5cf6' },
-        cancelado: { label: 'Cancelado', cor: '#ef4444' },
-        'nao-compareceu': { label: 'Não Compareceu', cor: '#6b7280' }
+    const HORARIO_INICIAL = 8 * 60;   // 08:00
+    const HORARIO_FINAL = 18 * 60;    // 18:00
+    const INTERVALO = 30;             // Grade de 30 em 30 minutos
+
+    const STATUS_LABELS = {
+        agendado: 'Agendado',
+        confirmado: 'Confirmado',
+        espera: 'Em Espera',
+        atendido: 'Atendido',
+        cancelado: 'Cancelado',
+        'nao-compareceu': 'Não Compareceu'
+    };
+
+    const STATUS_CLASSES = {
+        agendado: 'agendado',
+        confirmado: 'confirmado',
+        espera: 'espera',
+        atendido: 'atendido',
+        cancelado: 'cancelado',
+        'nao-compareceu': 'nao-compareceu'
     };
 
     const TIPO_LABELS = {
@@ -32,485 +38,1084 @@
         procedimento: 'Procedimento'
     };
 
-    const TIPO_ICONES = {
-        presencial: 'fa-user',
-        online: 'fa-video',
-        retorno: 'fa-rotate-left',
-        procedimento: 'fa-syringe'
+    const MEDICOS = {
+        '1': {
+            id: '1',
+            nome: 'Dr. Carlos Silva',
+            especialidade: 'Cardiologia',
+            especialidadeId: 'cardio'
+        },
+        '2': {
+            id: '2',
+            nome: 'Dra. Ana Paula',
+            especialidade: 'Dermatologia',
+            especialidadeId: 'derma'
+        },
+        '3': {
+            id: '3',
+            nome: 'Dr. Roberto Lima',
+            especialidade: 'Ortopedia e Traumatologia',
+            especialidadeId: 'orto'
+        }
     };
 
-    const DIAS_SEMANA = [
-        'Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira',
-        'Quinta-feira', 'Sexta-feira', 'Sábado'
-    ];
+    /*
+     * =========================================================
+     * ELEMENTOS DA INTERFACE
+     * =========================================================
+     */
 
-    const MESES = [
-        'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-    ];
+    const elements = {
+        btnPrev: document.querySelector('#btn-prev'),
+        btnNext: document.querySelector('#btn-next'),
+        btnToday: document.querySelector('#btn-today'),
 
-    // Estado da aplicação
-    let agendamentos = [
-        { id: 101, paciente: 'João Pereira', medicoId: 1, data: '2026-06-23', hora: '08:00', duracao: 30, tipo: 'presencial', status: 'confirmado', convenio: 'Unimed', obs: '' },
-        { id: 102, paciente: 'Maria Souza', medicoId: 2, data: '2026-06-23', hora: '08:30', duracao: 30, tipo: 'retorno', status: 'agendado', convenio: 'Particular', obs: '' },
-        { id: 103, paciente: 'Pedro Oliveira', medicoId: 1, data: '2026-06-23', hora: '09:00', duracao: 60, tipo: 'procedimento', status: 'espera', convenio: 'SulAmérica', obs: '' },
-        { id: 104, paciente: 'Ana Lima', medicoId: 3, data: '2026-06-23', hora: '09:30', duracao: 30, tipo: 'online', status: 'agendado', convenio: 'Bradesco', obs: '' },
-        { id: 105, paciente: 'Carlos Mendes', medicoId: 2, data: '2026-06-23', hora: '10:00', duracao: 30, tipo: 'presencial', status: 'cancelado', convenio: 'Unimed', obs: '' },
-        { id: 106, paciente: 'Fernanda Rocha', medicoId: 1, data: '2026-06-23', hora: '10:30', duracao: 30, tipo: 'retorno', status: 'atendido', convenio: 'Particular', obs: '' },
-        { id: 107, paciente: 'Bruno Alves', medicoId: 3, data: '2026-06-23', hora: '11:00', duracao: 45, tipo: 'presencial', status: 'nao-compareceu', convenio: 'Unimed', obs: '' }
-    ];
+        currentDateLabel: document.querySelector('#current-date-label'),
+        currentWeekday: document.querySelector('#current-weekday'),
 
-    let currentDate = new Date(2026, 5, 23);
-    let selectedAg = null;
-    let nextId = 108;
+        filterMedico: document.querySelector('#filter-medico'),
+        filterEspecialidade: document.querySelector('#filter-especialidade'),
 
-    /* ==========================================================
-       UTILITÁRIOS
-       ========================================================== */
-    const $ = (sel, ctx = document) => ctx.querySelector(sel);
-    const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+        agendaHeader: document.querySelector('#agenda-header'),
+        agendaBody: document.querySelector('#agenda-body'),
 
-    const toISODate = (d) =>
-        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        btnNovo: document.querySelector('#btn-novo-agendamento'),
 
-    const formatDataExtenso = (d) =>
-        `${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}`;
+        modalAgendamento: document.querySelector('#modal-agendamento'),
+        modalAcoes: document.querySelector('#modal-acoes'),
 
-    /* ==========================================================
-       INICIALIZAÇÃO
-       ========================================================== */
-    function init() {
-        // Define a data atual do sistema ao inicializar a aplicação pela primeira vez
-        currentDate = new Date();
+        form: document.querySelector('#form-agendamento'),
+        modalTitulo: document.querySelector('#modal-titulo'),
 
-        bindEvents();
-        renderAgenda();
+        btnModalClose: document.querySelector('#modal-close'),
+        btnModalAcoesClose: document.querySelector('#modal-acoes-close'),
+        btnCancelar: document.querySelector('#btn-cancelar'),
+        btnGravar: document.querySelector('#btn-gravar'),
+
+        detalhesAgendamento: document.querySelector('#agendamento-detalhes'),
+        toastContainer: document.querySelector('#toast-container')
+    };
+
+    const fields = {
+        id: document.querySelector('#agendamento-id'),
+        paciente: document.querySelector('#paciente-nome'),
+        medico: document.querySelector('#agendamento-medico'),
+        data: document.querySelector('#agendamento-data'),
+        hora: document.querySelector('#agendamento-hora'),
+        duracao: document.querySelector('#agendamento-duracao'),
+        tipo: document.querySelector('#agendamento-tipo'),
+        convenio: document.querySelector('#agendamento-convenio'),
+        status: document.querySelector('#agendamento-status'),
+        observacoes: document.querySelector('#agendamento-obs'),
+        lembrete: document.querySelector('#agendamento-lembrete')
+    };
+
+    /*
+     * =========================================================
+     * ESTADO DA APLICAÇÃO
+     * =========================================================
+     */
+
+    let dataAtual = inicioDoDia(new Date());
+    let agendamentoSelecionadoId = null;
+    let ultimoElementoFocado = null;
+
+    let agendamentos = carregarAgendamentos();
+
+    /*
+     * =========================================================
+     * INICIALIZAÇÃO
+     * =========================================================
+     */
+
+    inicializar();
+
+    function inicializar() {
+        aplicarAcessibilidadeBasica();
+        configurarEventos();
+        renderizarAgenda();
     }
 
-    /* ==========================================================
-       EVENT LISTENERS
-       ========================================================== */
-    function bindEvents() {
-        // Navegação de datas
-        $('#btn-prev').addEventListener('click', () => navigateDate(-1));
-        $('#btn-next').addEventListener('click', () => navigateDate(1));
-        $('#btn-today').addEventListener('click', () => {
-            currentDate = new Date();
-            renderAgenda();
+    function configurarEventos() {
+        elements.btnPrev?.addEventListener('click', () => alterarData(-1));
+        elements.btnNext?.addEventListener('click', () => alterarData(1));
+        elements.btnToday?.addEventListener('click', irParaHoje);
+
+        elements.filterMedico?.addEventListener('change', renderizarAgenda);
+        elements.filterEspecialidade?.addEventListener('change', renderizarAgenda);
+
+        elements.btnNovo?.addEventListener('click', () => {
+            abrirModalNovo();
         });
 
-        // Filtros
-        $('#filter-medico').addEventListener('change', renderAgenda);
-        $('#filter-especialidade').addEventListener('change', renderAgenda);
+        elements.btnModalClose?.addEventListener('click', fecharModalAgendamento);
+        elements.btnModalAcoesClose?.addEventListener('click', fecharModalAcoes);
+        elements.btnCancelar?.addEventListener('click', fecharModalAgendamento);
 
-        // Modal Novo Agendamento
-        $('#btn-novo-agendamento').addEventListener('click', () => openModal('modal-agendamento'));
-        $('#modal-close').addEventListener('click', () => closeModal('modal-agendamento'));
-        $('#btn-cancelar').addEventListener('click', () => closeModal('modal-agendamento'));
-        $('#btn-gravar').addEventListener('click', gravarAgendamento);
+        elements.btnGravar?.addEventListener('click', salvarAgendamento);
 
-        // Modal Ações
-        $('#modal-acoes-close').addEventListener('click', () => closeModal('modal-acoes'));
-        $$('.modal__acao').forEach(btn => {
-            btn.addEventListener('click', () => executarAcao(btn.dataset.acao));
+        elements.form?.addEventListener('submit', event => {
+            event.preventDefault();
+            salvarAgendamento();
         });
 
-        // Fechar modal ao clicar no overlay
-        $$('.modal').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target.classList.contains('modal__overlay')) closeModal(modal.id);
-            });
-        });
+        document.querySelectorAll('.modal__overlay').forEach(overlay => {
+            overlay.addEventListener('click', event => {
+                const modal = event.currentTarget.closest('.modal');
 
-        // Tecla ESC fecha modais
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                $$('.modal[aria-hidden="false"]').forEach(m => closeModal(m.id));
-            }
-        });
-    }
+                if (modal?.id === 'modal-acoes') {
+                    fecharModalAcoes();
+                }
 
-    /* ==========================================================
-       NAVEGAÇÃO DE DATAS
-       ========================================================== */
-    function navigateDate(dir) {
-        currentDate.setDate(currentDate.getDate() + dir);
-        renderAgenda();
-    }
-
-    /* ==========================================================
-       RENDERIZAÇÃO DA GRADE
-       ========================================================== */
-    function renderAgenda() {
-        const dataStr = toISODate(currentDate);
-
-        // 1 & 3 & 4. Formata e captura os elementos do HTML pelos IDs para inserir os valores atualizados
-        const dateLabel = $('#current-date-label');
-        const weekdayLabel = $('#current-weekday');
-
-        if (dateLabel && weekdayLabel) {
-            // Formata a data por extenso usando as configurações locais (Ex: "24 de junho de 2026")
-            const opcoesData = { day: 'numeric', month: 'long', year: 'numeric' };
-            let dataFormatada = currentDate.toLocaleDateString('pt-BR', opcoesData);
-
-            // Capitaliza a primeira letra do mês
-            dataFormatada = dataFormatada.replace(/de ([a-z])/i, (match, letra) => `de ${letra.toUpperCase()}`);
-
-            // Formata o dia da semana (Ex: "quarta-feira")
-            const opcoesSemana = { weekday: 'long' };
-            let diaSemana = currentDate.toLocaleDateString('pt-BR', opcoesSemana);
-
-            // Capitaliza a primeira letra do dia da semana (Ex: "Quarta-feira")
-            diaSemana = diaSemana.charAt(0).toUpperCase() + diaSemana.slice(1);
-
-            // 5. Insere os valores atualizados nos elementos HTML
-            dateLabel.textContent = dataFormatada;
-            weekdayLabel.textContent = diaSemana;
-        }
-
-        const medicosFiltrados = getMedicosFiltrados();
-        const horarios = gerarHorarios();
-
-        // Renderiza header
-        const header = $('#agenda-header');
-        header.innerHTML = `
-      <div class="agenda__col-time">Horário</div>
-      ${medicosFiltrados.map(m => `
-        <div class="agenda__col-prof" data-medico="${m.id}">
-          <span class="agenda__prof-nome">${m.nome}</span>
-          <span class="agenda__prof-esp">${m.especialidade}</span>
-        </div>
-      `).join('')}
-    `;
-        header.style.gridTemplateColumns = `5rem repeat(${medicosFiltrados.length}, 1fr)`;
-
-        // Renderiza body
-        const body = $('#agenda-body');
-        body.innerHTML = '';
-
-        horarios.forEach(hora => {
-            const row = document.createElement('div');
-            row.className = 'agenda__row';
-            row.style.gridTemplateColumns = `5rem repeat(${medicosFiltrados.length}, 1fr)`;
-
-            let html = `<div class="agenda__slot-time">${hora}</div>`;
-
-            medicosFiltrados.forEach(med => {
-                const ag = agendamentos.find(a =>
-                    a.medicoId === med.id && a.data === dataStr && a.hora === hora
-                );
-
-                if (ag) {
-                    html += renderCard(ag);
-                } else {
-                    html += `
-            <div class="agenda__slot-cell"
-                 data-medico="${med.id}"
-                 data-hora="${hora}"
-                 ondrop="Agenda.drop(event)"
-                 ondragover="Agenda.allowDrop(event)"
-                 ondragleave="Agenda.leaveDrop(event)"></div>
-          `;
+                if (modal?.id === 'modal-agendamento') {
+                    fecharModalAgendamento();
                 }
             });
+        });
 
-            row.innerHTML = html;
-            body.appendChild(row);
+        document.querySelectorAll('.modal__acao').forEach(botao => {
+            botao.addEventListener('click', () => {
+                executarAcao(botao.dataset.acao);
+            });
+        });
+
+        document.addEventListener('keydown', tratarTecladoGlobal);
+    }
+
+    /*
+     * =========================================================
+     * NAVEGAÇÃO DE DATAS
+     * =========================================================
+     */
+
+    function alterarData(dias) {
+        const novaData = new Date(dataAtual);
+        novaData.setDate(novaData.getDate() + dias);
+
+        dataAtual = inicioDoDia(novaData);
+        renderizarAgenda();
+    }
+
+    function irParaHoje() {
+        dataAtual = inicioDoDia(new Date());
+        renderizarAgenda();
+        exibirToast('Agenda posicionada em hoje.', 'info');
+    }
+
+    function atualizarCabecalhoData() {
+        const dataFormatada = new Intl.DateTimeFormat('pt-BR', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        }).format(dataAtual);
+
+        const diaSemana = new Intl.DateTimeFormat('pt-BR', {
+            weekday: 'long'
+        }).format(dataAtual);
+
+        elements.currentDateLabel.textContent = capitalizar(dataFormatada);
+        elements.currentWeekday.textContent = capitalizar(diaSemana);
+    }
+
+    /*
+     * =========================================================
+     * RENDERIZAÇÃO DA AGENDA
+     * =========================================================
+     */
+
+    function renderizarAgenda() {
+        atualizarCabecalhoData();
+        renderizarCabecalhoMedicos();
+        renderizarCorpoAgenda();
+    }
+
+    function renderizarCabecalhoMedicos() {
+        if (!elements.agendaHeader) return;
+
+        const medicosVisiveis = obterMedicosFiltrados();
+
+        elements.agendaHeader.innerHTML = `
+            <div class="agenda__col-time">Horário</div>
+            ${medicosVisiveis.map(medico => `
+                <div class="agenda__col-prof" data-medico="${medico.id}">
+                    <span class="agenda__prof-nome">${escapeHTML(medico.nome)}</span>
+                    <span class="agenda__prof-esp">${escapeHTML(medico.especialidade)}</span>
+                </div>
+            `).join('')}
+        `;
+
+        elements.agendaHeader.style.setProperty(
+            '--quantidade-medicos',
+            medicosVisiveis.length || 1
+        );
+    }
+
+    function renderizarCorpoAgenda() {
+        if (!elements.agendaBody) return;
+
+        const medicosVisiveis = obterMedicosFiltrados();
+        const agendamentosDoDia = obterAgendamentosDoDia();
+
+        if (!medicosVisiveis.length) {
+            elements.agendaBody.innerHTML = `
+                <div class="agenda__empty">
+                    Nenhum médico corresponde aos filtros selecionados.
+                </div>
+            `;
+            return;
+        }
+
+        const linhas = [];
+
+        for (
+            let minutos = HORARIO_INICIAL;
+            minutos <= HORARIO_FINAL;
+            minutos += INTERVALO
+        ) {
+            const horario = minutosParaHora(minutos);
+
+            linhas.push(`
+                <div class="agenda__calendar-row" data-horario="${horario}">
+                    <div class="agenda__time-cell">
+                        <span>${horario}</span>
+                    </div>
+
+                    ${medicosVisiveis.map(medico => {
+                const agendamento = encontrarAgendamentoNoHorario(
+                    agendamentosDoDia,
+                    medico.id,
+                    minutos
+                );
+
+                return `
+                            <div
+                                class="agenda__slot"
+                                data-medico="${medico.id}"
+                                data-minutos="${minutos}"
+                            >
+                                ${agendamento
+                        ? criarCardAgendamento(agendamento)
+                        : ''}
+                            </div>
+                        `;
+            }).join('')}
+                </div>
+            `);
+        }
+
+        elements.agendaBody.innerHTML = linhas.join('');
+
+        elements.agendaBody
+            .querySelectorAll('[data-agendamento-id]')
+            .forEach(card => {
+                card.addEventListener('click', () => {
+                    abrirModalAcoes(card.dataset.agendamentoId);
+                });
+            });
+    }
+
+    function criarCardAgendamento(agendamento) {
+        const status = STATUS_CLASSES[agendamento.status] || 'agendado';
+        const statusLabel = STATUS_LABELS[agendamento.status] || 'Agendado';
+        const tipoLabel = TIPO_LABELS[agendamento.tipo] || agendamento.tipo;
+
+        const duracao = Number(agendamento.duracao) || 30;
+        const linhasOcupadas = Math.max(1, Math.ceil(duracao / INTERVALO));
+
+        return `
+            <article
+                class="agenda__appointment agenda__appointment--${status}"
+                data-agendamento-id="${escapeHTML(agendamento.id)}"
+                tabindex="0"
+                role="button"
+                aria-label="Agendamento de ${escapeHTML(agendamento.paciente)} às ${escapeHTML(agendamento.hora)}"
+                style="--appointment-height: ${linhasOcupadas * 100}%"
+            >
+                <div class="agenda__appointment-time">
+                    ${escapeHTML(agendamento.hora)}
+                </div>
+
+                <div class="agenda__appointment-content">
+                    <strong>${escapeHTML(agendamento.paciente)}</strong>
+                    <span>${escapeHTML(tipoLabel)}</span>
+                    <small>${escapeHTML(statusLabel)}</small>
+                </div>
+
+                ${agendamento.tipo === 'online'
+                ? '<i class="fa-solid fa-video agenda__appointment-icon" title="Teleconsulta"></i>'
+                : ''}
+            </article>
+        `;
+    }
+
+    function obterMedicosFiltrados() {
+        const medicoSelecionado = elements.filterMedico?.value || '';
+        const especialidadeSelecionada = elements.filterEspecialidade?.value || '';
+
+        return Object.values(MEDICOS).filter(medico => {
+            const correspondeAoMedico =
+                !medicoSelecionado || medico.id === medicoSelecionado;
+
+            const correspondeAEspecialidade =
+                !especialidadeSelecionada ||
+                medico.especialidadeId === especialidadeSelecionada;
+
+            return correspondeAoMedico && correspondeAEspecialidade;
         });
     }
 
-    function gerarHorarios() {
-        const horarios = [];
-        for (let h = 8; h < 18; h++) {
-            horarios.push(`${String(h).padStart(2, '0')}:00`);
-            horarios.push(`${String(h).padStart(2, '0')}:30`);
-        }
-        return horarios;
+    function obterAgendamentosDoDia() {
+        const data = formatarDataISO(dataAtual);
+        const especialidadeSelecionada = elements.filterEspecialidade?.value || '';
+        const medicoSelecionado = elements.filterMedico?.value || '';
+
+        return agendamentos.filter(agendamento => {
+            const medico = MEDICOS[agendamento.medicoId];
+
+            if (!medico) return false;
+
+            return (
+                agendamento.data === data &&
+                (!medicoSelecionado || agendamento.medicoId === medicoSelecionado) &&
+                (!especialidadeSelecionada ||
+                    medico.especialidadeId === especialidadeSelecionada)
+            );
+        });
     }
 
-    function getMedicosFiltrados() {
-        const med = $('#filter-medico').value;
-        const esp = $('#filter-especialidade').value;
-        return MEDICOS.filter(m =>
-            (!med || m.id == med) && (!esp || m.especialidade.toLowerCase().includes(esp))
-        );
+    function encontrarAgendamentoNoHorario(lista, medicoId, minutos) {
+        return lista.find(agendamento => {
+            const inicio = horaParaMinutos(agendamento.hora);
+            return (
+                agendamento.medicoId === medicoId &&
+                inicio === minutos
+            );
+        });
     }
 
-    /* ==========================================================
-       CARD DE AGENDAMENTO
-       ========================================================== */
-    function renderCard(ag) {
-        const icone = TIPO_ICONES[ag.tipo] || 'fa-user';
-        const tipoLbl = TIPO_LABELS[ag.tipo] || ag.tipo;
-        const statusCls = `agenda__card--${ag.status}`;
+    /*
+     * =========================================================
+     * MODAL DE NOVO / EDIÇÃO
+     * =========================================================
+     */
 
-        return `
-      <div class="agenda__slot-cell">
-        <article class="agenda__card ${statusCls}"
-                 draggable="true"
-                 data-id="${ag.id}"
-                 onclick="Agenda.abrirAcoes(${ag.id})"
-                 ondragstart="Agenda.drag(event)">
-          <header class="agenda__card-paciente">
-            <i class="fa-solid ${icone}"></i>
-            ${ag.paciente}
-          </header>
-          <p class="agenda__card-info">${ag.convenio} · ${ag.duracao}min</p>
-          <span class="agenda__card-badge agenda__card-badge--${ag.tipo}">${tipoLbl}</span>
-        </article>
-      </div>
-    `;
+    function abrirModalNovo() {
+        limparFormulario();
+
+        fields.data.value = formatarDataISO(dataAtual);
+        fields.status.value = 'agendado';
+        fields.duracao.value = '30';
+        fields.tipo.value = 'presencial';
+        fields.convenio.value = 'particular';
+        fields.lembrete.checked = true;
+
+        elements.modalTitulo.innerHTML = `
+            <i class="fa-solid fa-calendar-plus"></i>
+            Novo Agendamento
+        `;
+
+        abrirModal(elements.modalAgendamento, '#paciente-nome');
     }
 
-    /* ==========================================================
-       DRAG & DROP
-       ========================================================== */
-    function allowDrop(ev) {
-        ev.preventDefault();
-        ev.currentTarget.classList.add('agenda__slot-cell--dragover');
+    function abrirModalEdicao(agendamento) {
+        if (!agendamento) return;
+
+        fields.id.value = agendamento.id;
+        fields.paciente.value = agendamento.paciente;
+        fields.medico.value = agendamento.medicoId;
+        fields.data.value = agendamento.data;
+        fields.hora.value = agendamento.hora;
+        fields.duracao.value = agendamento.duracao;
+        fields.tipo.value = agendamento.tipo;
+        fields.convenio.value = agendamento.convenio || 'particular';
+        fields.status.value = agendamento.status;
+        fields.observacoes.value = agendamento.observacoes || '';
+        fields.lembrete.checked = Boolean(agendamento.lembrete);
+
+        elements.modalTitulo.innerHTML = `
+            <i class="fa-solid fa-pen"></i>
+            Editar Agendamento
+        `;
+
+        abrirModal(elements.modalAgendamento, '#paciente-nome');
     }
 
-    function leaveDrop(ev) {
-        ev.currentTarget.classList.remove('agenda__slot-cell--dragover');
-    }
+    function salvarAgendamento() {
+        const dados = obterDadosFormulario();
 
-    function drag(ev) {
-        ev.dataTransfer.setData('text/plain', ev.target.dataset.id);
-        ev.dataTransfer.effectAllowed = 'move';
-    }
-
-    function drop(ev) {
-        ev.preventDefault();
-        ev.currentTarget.classList.remove('agenda__slot-cell--dragover');
-
-        const id = parseInt(ev.dataTransfer.getData('text/plain'));
-        const medicoId = parseInt(ev.currentTarget.dataset.medico);
-        const hora = ev.currentTarget.dataset.hora;
-        const dataStr = toISODate(currentDate);
-
-        const ag = agendamentos.find(a => a.id === id);
-        if (!ag) return;
-
-        // Verifica conflito
-        const conflito = agendamentos.find(a =>
-            a.id !== id && a.medicoId === medicoId && a.data === dataStr && a.hora === hora
-        );
-        if (conflito) {
-            showToast('Conflito de horário! O médico já possui agendamento neste horário.', 'error');
+        if (!validarAgendamento(dados)) {
             return;
         }
 
-        ag.medicoId = medicoId;
-        ag.hora = hora;
-        ag.data = dataStr;
-        renderAgenda();
-        showToast('Agendamento reagendado com sucesso!', 'success');
-    }
-
-    /* ==========================================================
-       MODAIS
-       ========================================================== */
-    function openModal(id) {
-        const modal = typeof id === 'string' ? $(`#${id}`) : id;
-        modal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-
-        // Foco no primeiro input
-        const firstInput = modal.querySelector('input, select, textarea');
-        if (firstInput) setTimeout(() => firstInput.focus(), 100);
-    }
-
-    function closeModal(id) {
-        const modal = typeof id === 'string' ? $(`#${id}`) : id;
-        modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-    }
-
-    /* ==========================================================
-       CRUD - GRAVAR
-       ========================================================== */
-    function gravarAgendamento() {
-        const paciente = $('#paciente-nome').value.trim();
-        const medicoId = parseInt($('#agendamento-medico').value);
-        const data = $('#agendamento-data').value;
-        const hora = $('#agendamento-hora').value;
-        const duracao = parseInt($('#agendamento-duracao').value);
-        const tipo = $('#agendamento-tipo').value;
-        const convenio = $('#agendamento-convenio').value;
-        const status = $('#agendamento-status').value;
-        const obs = $('#agendamento-obs').value;
-        const lembrete = $('#agendamento-lembrete').checked;
-        const editId = parseInt($('#agendamento-id').value) || 0;
-
-        // Validação
-        if (!paciente || !medicoId || !data || !hora) {
-            showToast('Preencha os campos obrigatórios (*)', 'error');
-            return;
-        }
-
-        // Verifica conflito (exceto no próprio registro em edição)
-        const conflito = agendamentos.find(a =>
-            a.id !== editId && a.medicoId === medicoId && a.data === data && a.hora === hora
+        const indiceExistente = agendamentos.findIndex(
+            agendamento => agendamento.id === dados.id
         );
-        if (conflito) {
-            showToast('Conflito: este horário já está ocupado para o médico selecionado.', 'error');
+
+        if (indiceExistente >= 0) {
+            agendamentos[indiceExistente] = {
+                ...agendamentos[indiceExistente],
+                ...dados,
+                atualizadoEm: new Date().toISOString()
+            };
+
+            persistirAgendamentos();
+            fecharModalAgendamento();
+            renderizarAgenda();
+            exibirToast('Agendamento atualizado com sucesso!', 'success');
             return;
         }
 
-        if (editId) {
-            // Update
-            const idx = agendamentos.findIndex(a => a.id === editId);
-            if (idx > -1) {
-                agendamentos[idx] = { ...agendamentos[idx], paciente, medicoId, data, hora, duracao, tipo, status, convenio, obs };
-                showToast('Agendamento atualizado com sucesso!', 'success');
+        const novoAgendamento = {
+            ...dados,
+            id: gerarId(),
+            criadoEm: new Date().toISOString()
+        };
+
+        agendamentos.push(novoAgendamento);
+        persistirAgendamentos();
+
+        dataAtual = dataStringParaDate(novoAgendamento.data);
+
+        fecharModalAgendamento();
+        renderizarAgenda();
+        exibirToast('Agendamento criado com sucesso!', 'success');
+    }
+
+    function obterDadosFormulario() {
+        return {
+            id: fields.id.value.trim(),
+            paciente: fields.paciente.value.trim(),
+            medicoId: fields.medico.value,
+            data: fields.data.value,
+            hora: fields.hora.value,
+            duracao: Number(fields.duracao.value) || 30,
+            tipo: fields.tipo.value,
+            convenio: fields.convenio.value,
+            status: fields.status.value || 'agendado',
+            observacoes: fields.observacoes.value.trim(),
+            lembrete: fields.lembrete.checked
+        };
+    }
+
+    function validarAgendamento(dados) {
+        limparErrosFormulario();
+
+        const obrigatorios = [
+            ['paciente', fields.paciente, 'Informe o nome do paciente.'],
+            ['medico', fields.medico, 'Selecione um médico.'],
+            ['data', fields.data, 'Informe a data do agendamento.'],
+            ['hora', fields.hora, 'Informe o horário.'],
+            ['tipo', fields.tipo, 'Selecione o tipo de atendimento.']
+        ];
+
+        let formularioValido = true;
+
+        obrigatorios.forEach(([, campo, mensagem]) => {
+            if (!campo.value.trim()) {
+                marcarErro(campo, mensagem);
+                formularioValido = false;
             }
-        } else {
-            // Create
-            agendamentos.push({
-                id: nextId++, paciente, medicoId, data, hora, duracao, tipo, status, convenio, obs
-            });
-            showToast('Agendamento gravado com sucesso!', 'success');
+        });
+
+        if (!formularioValido) {
+            exibirToast('Preencha os campos obrigatórios.', 'warning');
+            return false;
         }
 
-        if (lembrete) {
-            showToast(`Lembrete agendado para ${paciente} (48h e 2h antes)`, 'info');
+        const minutos = horaParaMinutos(dados.hora);
+        const fim = minutos + dados.duracao;
+
+        if (
+            Number.isNaN(minutos) ||
+            minutos < HORARIO_INICIAL ||
+            fim > HORARIO_FINAL
+        ) {
+            marcarErro(
+                fields.hora,
+                `O horário deve estar entre 08:00 e ${minutosParaHora(HORARIO_FINAL - dados.duracao)}.`
+            );
+
+            exibirToast('Horário fora do funcionamento da agenda.', 'warning');
+            return false;
         }
 
-        closeModal('modal-agendamento');
-        $('#form-agendamento').reset();
-        $('#agendamento-id').value = '';
-        $('#modal-titulo').innerHTML = '<i class="fa-solid fa-calendar-plus"></i> Novo Agendamento';
-        renderAgenda();
+        const existeConflito = agendamentos.some(agendamento => {
+            if (
+                agendamento.id === dados.id ||
+                agendamento.data !== dados.data ||
+                agendamento.medicoId !== dados.medicoId ||
+                agendamento.status === 'cancelado'
+            ) {
+                return false;
+            }
+
+            const inicioExistente = horaParaMinutos(agendamento.hora);
+            const fimExistente =
+                inicioExistente + Number(agendamento.duracao || 30);
+
+            return minutos < fimExistente && fim > inicioExistente;
+        });
+
+        if (existeConflito) {
+            marcarErro(
+                fields.hora,
+                'Já existe um agendamento conflitante para este médico.'
+            );
+
+            exibirToast('Existe conflito de horário para este médico.', 'warning');
+            return false;
+        }
+
+        return true;
     }
 
-    /* ==========================================================
-       AÇÕES DO AGENDAMENTO
-       ========================================================== */
-    function abrirAcoes(id) {
-        selectedAg = agendamentos.find(a => a.id === id);
-        if (!selectedAg) return;
-
-        const ag = selectedAg;
-        const med = MEDICOS.find(m => m.id === ag.medicoId);
-        const cfg = STATUS_CONFIG[ag.status];
-
-        $('#agendamento-detalhes').innerHTML = `
-      <strong>${ag.paciente}</strong><br>
-      ${med?.nome || ''} · ${ag.data} ${ag.hora}<br>
-      ${cfg?.label || ag.status} · ${ag.convenio}
-    `;
-
-        openModal('modal-acoes');
+    function limparFormulario() {
+        elements.form?.reset();
+        fields.id.value = '';
+        limparErrosFormulario();
     }
 
-    function ejecutarAcao(acao) {
-        if (!selectedAg) return;
-        const ag = selectedAg;
+    /*
+     * =========================================================
+     * MODAL DE AÇÕES
+     * =========================================================
+     */
+
+    function abrirModalAcoes(id) {
+        const agendamento = obterAgendamentoPorId(id);
+
+        if (!agendamento) return;
+
+        agendamentoSelecionadoId = id;
+        renderizarDetalhesAgendamento(agendamento);
+
+        abrirModal(elements.modalAcoes, '#modal-acoes-close');
+    }
+
+    function renderizarDetalhesAgendamento(agendamento) {
+        const medico = MEDICOS[agendamento.medicoId];
+        const statusLabel = STATUS_LABELS[agendamento.status] || agendamento.status;
+
+        elements.detalhesAgendamento.innerHTML = `
+            <div class="modal__detail-main">
+                <strong>${escapeHTML(agendamento.paciente)}</strong>
+                <span>${escapeHTML(statusLabel)}</span>
+            </div>
+
+            <dl class="modal__detail-list">
+                <div>
+                    <dt>Médico</dt>
+                    <dd>${escapeHTML(medico?.nome || 'Não informado')}</dd>
+                </div>
+
+                <div>
+                    <dt>Especialidade</dt>
+                    <dd>${escapeHTML(medico?.especialidade || 'Não informada')}</dd>
+                </div>
+
+                <div>
+                    <dt>Data e horário</dt>
+                    <dd>${formatarDataCurta(agendamento.data)} às ${escapeHTML(agendamento.hora)}</dd>
+                </div>
+
+                <div>
+                    <dt>Atendimento</dt>
+                    <dd>${escapeHTML(TIPO_LABELS[agendamento.tipo] || agendamento.tipo)}</dd>
+                </div>
+
+                <div>
+                    <dt>Convênio</dt>
+                    <dd>${escapeHTML(agendamento.convenio || 'Particular')}</dd>
+                </div>
+            </dl>
+
+            ${agendamento.observacoes
+                ? `<p class="modal__detail-observacao">
+                    <strong>Observações:</strong>
+                    ${escapeHTML(agendamento.observacoes)}
+                </p>`
+                : ''}
+        `;
+    }
+
+    function executarAcao(acao) {
+        const agendamento = obterAgendamentoPorId(agendamentoSelecionadoId);
+
+        if (!agendamento) {
+            fecharModalAcoes();
+            return;
+        }
 
         switch (acao) {
             case 'confirmar':
-                ag.status = 'confirmado';
-                showToast('Consulta confirmada!', 'success');
+                alterarStatus(agendamento, 'confirmado');
                 break;
+
             case 'espera':
-                ag.status = 'espera';
-                showToast('Paciente movido para sala de espera.', 'info');
+                alterarStatus(agendamento, 'espera');
                 break;
+
             case 'atender':
-                ag.status = 'atendido';
-                showToast('Atendimento registrado.', 'success');
+                alterarStatus(agendamento, 'atendido');
                 break;
-            case 'teleconsulta':
-                showToast('Iniciando teleconsulta...', 'info');
-                window.open(`https://meet.example.com/${ag.id}`, '_blank');
-                break;
-            case 'prontuario':
-                showToast('Abrindo prontuário do paciente...', 'info');
-                break;
-            case 'financeiro':
-                showToast(
-                    ag.convenio === 'Particular'
-                        ? 'Pendência: Aguardando pagamento'
-                        : 'Cobrança via convênio',
-                    'info'
-                );
-                break;
-            case 'editar':
-                closeModal('modal-acoes');
-                preencherFormEdicao(ag);
-                openModal('modal-agendamento');
-                return;
+
             case 'cancelar':
-                if (confirm('Deseja realmente cancelar este agendamento?')) {
-                    ag.status = 'cancelado';
-                    showToast('Agendamento cancelado.', 'info');
-                }
+                alterarStatus(agendamento, 'cancelado');
                 break;
+
             case 'excluir':
-                if (confirm('ATENÇÃO: Exclusão lógica (registro será marcado como inativo). Deseja continuar?')) {
-                    ag.status = 'cancelado';
-                    showToast('Registro inativado com sucesso.', 'success');
-                }
+                excluirAgendamento(agendamento);
                 break;
+
+            case 'editar':
+                fecharModalAcoes();
+                abrirModalEdicao(agendamento);
+                break;
+
+            case 'teleconsulta':
+                iniciarTeleconsulta(agendamento);
+                break;
+
+            case 'prontuario':
+                acessarProntuario(agendamento);
+                break;
+
+            case 'financeiro':
+                acessarFinanceiro(agendamento);
+                break;
+
+            default:
+                exibirToast('Ação não reconhecida.', 'warning');
+        }
+    }
+
+    function alterarStatus(agendamento, novoStatus) {
+        agendamento.status = novoStatus;
+        agendamento.atualizadoEm = new Date().toISOString();
+
+        persistirAgendamentos();
+        fecharModalAcoes();
+        renderizarAgenda();
+
+        exibirToast(
+            `Status alterado para ${STATUS_LABELS[novoStatus]}.`,
+            'success'
+        );
+    }
+
+    function excluirAgendamento(agendamento) {
+        const desejaExcluir = window.confirm(
+            `Excluir o agendamento de ${agendamento.paciente}?`
+        );
+
+        if (!desejaExcluir) return;
+
+        agendamentos = agendamentos.filter(
+            item => item.id !== agendamento.id
+        );
+
+        persistirAgendamentos();
+        fecharModalAcoes();
+        renderizarAgenda();
+
+        exibirToast('Agendamento excluído com sucesso.', 'success');
+    }
+
+    function iniciarTeleconsulta(agendamento) {
+        fecharModalAcoes();
+
+        if (agendamento.tipo !== 'online') {
+            exibirToast(
+                'Este agendamento não está configurado como teleconsulta.',
+                'warning'
+            );
+            return;
         }
 
-        closeModal('modal-acoes');
-        renderAgenda();
+        /*
+         * Integração futura:
+         * window.open(`/teleconsulta?id=${encodeURIComponent(agendamento.id)}`);
+         */
+
+        window.dispatchEvent(new CustomEvent('g4med:teleconsulta', {
+            detail: agendamento
+        }));
+
+        exibirToast('Sala de teleconsulta acionada.', 'info');
     }
 
-    function preencherFormEdicao(ag) {
-        $('#agendamento-id').value = ag.id;
-        $('#paciente-nome').value = ag.paciente;
-        $('#agendamento-medico').value = ag.medicoId;
-        $('#agendamento-data').value = ag.data;
-        $('#agendamento-hora').value = ag.hora;
-        $('#agendamento-duracao').value = ag.duracao;
-        $('#agendamento-tipo').value = ag.tipo;
-        $('#agendamento-convenio').value = ag.convenio;
-        $('#agendamento-status').value = ag.status;
-        $('#agendamento-obs').value = ag.obs || '';
+    function acessarProntuario(agendamento) {
+        window.dispatchEvent(new CustomEvent('g4med:prontuario', {
+            detail: agendamento
+        }));
 
-        $('#modal-titulo').innerHTML = '<i class="fa-solid fa-pen"></i> Editar Agendamento';
+        exibirToast(
+            `Prontuário de ${agendamento.paciente} solicitado.`,
+            'info'
+        );
     }
 
-    /* ==========================================================
-       TOAST NOTIFICATIONS
-       ========================================================== */
-    function showToast(msg, type = 'info') {
-        const container = $('#toast-container');
+    function acessarFinanceiro(agendamento) {
+        window.dispatchEvent(new CustomEvent('g4med:financeiro', {
+            detail: agendamento
+        }));
+
+        exibirToast(
+            `Financeiro do agendamento de ${agendamento.paciente} solicitado.`,
+            'info'
+        );
+    }
+
+    /*
+     * =========================================================
+     * CONTROLE DOS MODAIS E ACESSIBILIDADE
+     * =========================================================
+     *
+     * O foco é colocado dentro do modal, o Escape fecha a janela
+     * e o foco retorna ao elemento que abriu o modal.
+     * Esses comportamentos são importantes em diálogos modais
+     * acessíveis. [1][2]
+     */
+
+    function abrirModal(modal, seletorFoco) {
+        if (!modal) return;
+
+        ultimoElementoFocado = document.activeElement;
+
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('modal-open');
+
+        const elementoFoco = modal.querySelector(seletorFoco);
+
+        window.setTimeout(() => {
+            elementoFoco?.focus();
+        }, 0);
+    }
+
+    function fecharModalAgendamento() {
+        fecharModal(elements.modalAgendamento);
+    }
+
+    function fecharModalAcoes() {
+        fecharModal(elements.modalAcoes);
+        agendamentoSelecionadoId = null;
+    }
+
+    function fecharModal(modal) {
+        if (!modal) return;
+
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+
+        const algumModalAberto =
+            document.querySelector('.modal.is-open');
+
+        if (!algumModalAberto) {
+            document.body.classList.remove('modal-open');
+        }
+
+        if (ultimoElementoFocado && typeof ultimoElementoFocado.focus === 'function') {
+            ultimoElementoFocado.focus();
+        }
+    }
+
+    function tratarTecladoGlobal(event) {
+        const modalAberto = document.querySelector('.modal.is-open');
+
+        if (!modalAberto) return;
+
+        if (event.key === 'Escape') {
+            event.preventDefault();
+
+            if (modalAberto.id === 'modal-acoes') {
+                fecharModalAcoes();
+            } else {
+                fecharModalAgendamento();
+            }
+
+            return;
+        }
+
+        if (event.key === 'Tab') {
+            manterFocoNoModal(event, modalAberto);
+        }
+
+        if (
+            event.key === 'Enter' &&
+            event.target.matches('.agenda__appointment')
+        ) {
+            event.preventDefault();
+            abrirModalAcoes(event.target.dataset.agendamentoId);
+        }
+    }
+
+    function manterFocoNoModal(event, modal) {
+        const elementosFocaveis = [
+            ...modal.querySelectorAll(
+                'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            )
+        ].filter(elemento => elemento.offsetParent !== null);
+
+        if (!elementosFocaveis.length) return;
+
+        const primeiro = elementosFocaveis[0];
+        const ultimo = elementosFocaveis[elementosFocaveis.length - 1];
+
+        if (event.shiftKey && document.activeElement === primeiro) {
+            event.preventDefault();
+            ultimo.focus();
+        } else if (!event.shiftKey && document.activeElement === ultimo) {
+            event.preventDefault();
+            primeiro.focus();
+        }
+    }
+
+    function aplicarAcessibilidadeBasica() {
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.setAttribute('aria-hidden', 'true');
+        });
+
+        elements.agendaBody?.setAttribute(
+            'aria-live',
+            'polite'
+        );
+    }
+
+    /*
+     * =========================================================
+     * TOASTS
+     * =========================================================
+     */
+
+    function exibirToast(mensagem, tipo = 'info', duracao = 3500) {
+        if (!elements.toastContainer) return;
+
         const toast = document.createElement('div');
+        toast.className = `toast toast--${tipo}`;
+        toast.setAttribute('role', 'status');
 
-        const iconMap = {
+        const icones = {
             success: 'fa-circle-check',
+            warning: 'fa-triangle-exclamation',
             error: 'fa-circle-xmark',
             info: 'fa-circle-info'
         };
 
-        toast.className = `toast toast--${type}`;
         toast.innerHTML = `
-      <i class="fa-solid ${iconMap[type] || 'fa-circle-info'}"></i>
-      <span>${msg}</span>
-    `;
+            <i class="fa-solid ${icones[tipo] || icones.info}" aria-hidden="true"></i>
+            <span>${escapeHTML(mensagem)}</span>
+            <button type="button" class="toast__close" aria-label="Fechar notificação">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        `;
 
-        container.appendChild(toast);
-        setTimeout(() => toast.remove(), 4000);
+        elements.toastContainer.appendChild(toast);
+
+        const remover = () => {
+            toast.classList.add('is-leaving');
+
+            window.setTimeout(() => {
+                toast.remove();
+            }, 250);
+        };
+
+        toast.querySelector('.toast__close').addEventListener('click', remover);
+
+        window.setTimeout(() => {
+            if (document.body.contains(toast)) {
+                remover();
+            }
+        }, duracao);
     }
 
-    /* ==========================================================
-       EXPOSIÇÃO PÚBLICA (para atributos inline onclick/ondrag)
-       ========================================================== */
-    window.Agenda = {
-        allowDrop,
-        leaveDrop,
-        drag,
-        drop,
-        abrirAcoes
-    };
+    /*
+     * =========================================================
+     * LOCAL STORAGE
+     * =========================================================
+     */
 
-    // Inicializa quando DOM estiver pronto
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
+    function carregarAgendamentos() {
+        try {
+            const dadosSalvos = localStorage.getItem(STORAGE_KEY);
+
+            if (dadosSalvos) {
+                const dados = JSON.parse(dadosSalvos);
+
+                if (Array.isArray(dados)) {
+                    return dados;
+                }
+            }
+        } catch (erro) {
+            console.warn('Não foi possível carregar os agendamentos:', erro);
+        }
+
+        const dadosIniciais = criarAgendamentosDemonstracao();
+        salvarAgendamentos(dadosIniciais);
+
+        return dadosIniciais;
     }
-})();
+
+    function persistirAgendamentos() {
+        salvarAgendamentos(agendamentos);
+    }
+
+    function salvarAgendamentos(dados) {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+        } catch (erro) {
+            console.warn('Não foi possível salvar os agendamentos:', erro);
+            exibirToast(
+                'Não foi possível persistir os dados neste navegador.',
+                'error'
+            );
+        }
+    }
+
+    function criarAgendamentosDemonstracao() {
+        const hoje = formatarDataISO(new Date());
+
+        return [
+            {
+                id: gerarId(),
+                paciente: 'Mariana Oliveira',
+                medicoId: '1',
+                data: hoje,
+                hora: '08:30',
+                duracao: 30,
+                tipo: 'presencial',
+                convenio: 'unimed',
+                status: 'confirmado',
+                observacoes: '',
+                lembrete: true,
+                criadoEm: new Date().toISOString()
+            },
+            {
+                id: gerarId(),
+                paciente: 'João Pereira',
+                medicoId: '2',
+                data: hoje,
+                hora: '09:00',
+                duracao: 45,
+                tipo: 'online',
+                convenio: 'particular',
+                status: 'agendado',
+                observacoes: 'Paciente solicitou teleconsulta.',
+                lembrete: true,
+                criadoEm: new Date().toISOString()
+            },
+            {
+                id: gerarId(),
+                paciente: 'Fernanda Costa',
+                medicoId: '3',
+                data: hoje,
+                hora: '10:30',
+                duracao: 30,
+                tipo: 'retorno',
+                convenio: 'amil',
+                status: 'espera',
+                observacoes: '',
+                lembrete: false,
+                criadoEm: new Date().toISOString()
+            }
+        ];
+    }
+
+    /*
+     * =========================================================
+     * VALIDAÇÃO VISUAL
+     * =========================================================
+     */
+
+    function marcarErro(campo, mensagem) {
+        campo.classList.add('is-invalid');
+        campo.setAttribute('aria-invalid', 'true');
+        campo.setAttribute('title', mensagem);
+    }
+
+    function limparErrosFormulario() {
+        document
+            .querySelectorAll('.is-invalid')
+            .forEach(campo => {
+                campo.classList.remove('is-invalid');
+                campo.removeAttribute('aria-invalid');
+                campo.removeAttribute('title');
+            });
+    }
+
+    /*
+     * =========================================================
+     * UTILITÁRIOS
+     * =========================================================
+     */
+
+    function obterAgendamentoPorId(id) {
+        return agendamentos.find(agendamento => agendamento.id === id);
+    }
+
+    function gerarId() {
+        if (window.crypto?.randomUUID) {
+            return crypto.randomUUID();
+        }
+
+        return `agendamento-${Date.now()}-${Math.random()
+            .toString(16)
+            .slice(2)}`;
+    }
+
+    function inicioDoDia(data) {
+        const resultado = new Date(data);
+        resultado.setHours(0, 0, 0, 0);
+        return resultado;
+    }
+
+    function formatarDataISO(data) {
+        const ano = data.getFullYear();
+        const mes = String(data.getMonth() + 1).padStart(2, '0');
+        const dia = String(data.getDate()).padStart(2, '0');
+
+        return `${ano}-${mes}-${dia}`;
+    }
+
+    function dataStringParaDate(dataString) {
+        const [ano, mes, dia] = dataString.split('-').map(Number);
+        return new Date(ano, mes - 1, dia);
+    }
+
+    function formatarDataCurta(dataString) {
+        return new Intl.DateTimeFormat('pt-BR').format(
+            dataStringParaDate(dataString)
+        );
+    }
+
+    function horaParaMinutos(hora) {
+        if (!hora || !hora.includes(':')) return NaN;
+
+        const [horas, minutos] = hora.split(':').map(Number);
+
+        return (horas * 60) + minutos;
+    }
+
+    function minutosParaHora(minutos) {
+        const horas = Math.floor(minutos / 60);
+        const minutosRestantes = minutos % 60;
+
+        return `${String(horas).padStart(2, '0')}:${String(
+            minutosRestantes
+        ).padStart(2, '0')}`;
+    }
+
+    function capitalizar(texto) {
+        if (!texto) return '';
+        return texto.charAt(0).toUpperCase() + texto.slice(1);
+    }
+
+    function escapeHTML(valor) {
+        return String(valor ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+});

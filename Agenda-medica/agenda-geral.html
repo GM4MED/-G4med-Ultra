@@ -4,295 +4,917 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Agenda médica do sistema G4med">
+
     <title>G4med - Agenda Médica</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="agenda-geral.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8'
+                        }
+                    },
+                    boxShadow: {
+                        soft: '0 8px 24px rgba(15, 23, 42, 0.08)'
+                    }
+                }
+            }
+        };
+    </script>
+
+    <!-- CSS complementar dos elementos renderizados pelo JavaScript -->
+    <style>
+        [hidden] {
+            display: none !important;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        .modal.is-open {
+            display: flex;
+        }
+
+        .agenda__calendar {
+            --quantidade-medicos: 3;
+        }
+
+        .agenda__calendar-header,
+        .agenda__calendar-row {
+            display: grid;
+            grid-template-columns:
+                84px repeat(var(--quantidade-medicos, 3),
+                    minmax(220px, 1fr));
+            min-width: 760px;
+        }
+
+        .agenda__calendar-header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .agenda__calendar-row {
+            min-height: 64px;
+        }
+
+        .agenda__appointment {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            gap: 8px;
+            min-height: 54px;
+            height: var(--appointment-height, 100%);
+            overflow: hidden;
+            padding: 8px;
+            border-left: 4px solid currentColor;
+            border-radius: 8px;
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgb(15 23 42 / 10%);
+            cursor: pointer;
+            transition:
+                transform 160ms ease,
+                box-shadow 160ms ease;
+        }
+
+        .agenda__appointment:hover,
+        .agenda__appointment:focus-visible {
+            z-index: 30;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 14px rgb(15 23 42 / 18%);
+            outline: 3px solid rgb(59 130 246 / 25%);
+            outline-offset: 1px;
+        }
+
+        .agenda__appointment-time {
+            flex: 0 0 auto;
+            color: currentColor;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+        .agenda__appointment-content {
+            display: flex;
+            min-width: 0;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .agenda__appointment-content strong,
+        .agenda__appointment-content span,
+        .agenda__appointment-content small {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .agenda__appointment-content strong {
+            color: #0f172a;
+            font-size: 0.83rem;
+        }
+
+        .agenda__appointment-content span,
+        .agenda__appointment-content small {
+            color: #64748b;
+            font-size: 0.73rem;
+        }
+
+        .agenda__appointment-icon {
+            margin-left: auto;
+            color: currentColor;
+        }
+
+        .agenda__appointment--agendado {
+            color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .agenda__appointment--confirmado {
+            color: #16a34a;
+            background: #f0fdf4;
+        }
+
+        .agenda__appointment--espera {
+            color: #d97706;
+            background: #fffbeb;
+        }
+
+        .agenda__appointment--atendido {
+            color: #0891b2;
+            background: #ecfeff;
+        }
+
+        .agenda__appointment--cancelado {
+            color: #dc2626;
+            background: #fef2f2;
+            opacity: 0.72;
+        }
+
+        .agenda__appointment--nao-compareceu {
+            color: #7c3aed;
+            background: #f5f3ff;
+        }
+
+        .agenda__empty {
+            min-width: 760px;
+            padding: 48px 20px;
+            color: #64748b;
+            text-align: center;
+        }
+
+        .toast {
+            animation: toast-enter 180ms ease-out;
+        }
+
+        .toast.is-leaving {
+            animation: toast-leave 250ms ease-in forwards;
+        }
+
+        @keyframes toast-enter {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes toast-leave {
+            to {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+        }
+    </style>
 </head>
 
-<body>
-    <!-- =====================================================
-         HEADER / TOOLBAR SUPERIOR
-         ===================================================== -->
-    <header class="agenda__header">
-        <div class="agenda__header-left">
-            <a href="../Menu-Principal.html" class="agenda__btn agenda__btn--voltar"
-                style="text-decoration: none; display: inline-flex; align-items: center;">
-                <i class="fa-solid fa-arrow-left"></i>
-                <span>Voltar</span>
-            </a>
+<body class="min-h-screen bg-slate-100 text-slate-800">
 
-            <div class="agenda__nav-data">
-                <button class="agenda__btn agenda__btn--icon" id="btn-prev" aria-label="Dia anterior">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </button>
-                <div class="agenda__data-display">
-                    <i class="fa-regular fa-calendar"></i>
-                    <div class="agenda__data-texto">
-                        <strong id="current-date-label">Carregando...</strong>
-                        <span id="current-weekday"></span>
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white shadow-sm">
+
+        <div
+            class="mx-auto flex max-w-[1800px] flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8 xl:flex-row xl:items-center xl:justify-between">
+
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
+
+                <a href="../Menu-Principal.html"
+                    class="inline-flex w-fit items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-100">
+
+                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+
+                    <span>Voltar</span>
+                </a>
+
+                <div class="flex w-full items-center justify-between gap-2 sm:w-auto">
+
+                    <button type="button" id="btn-prev" aria-label="Visualizar dia anterior"
+                        class="grid h-10 w-10 place-items-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-50 hover:text-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-100">
+
+                        <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+                    </button>
+
+                    <div class="flex min-w-0 items-center justify-center gap-3 px-2 text-center" aria-live="polite"
+                        aria-atomic="true">
+
+                        <i class="fa-regular fa-calendar text-xl text-blue-600" aria-hidden="true"></i>
+
+                        <div class="flex min-w-0 flex-col">
+                            <strong id="current-date-label"
+                                class="truncate text-sm font-bold text-slate-900 sm:text-base">
+
+                                Carregando...
+                            </strong>
+
+                            <span id="current-weekday" class="text-xs capitalize text-slate-500 sm:text-sm">
+                            </span>
+                        </div>
+                    </div>
+
+                    <button type="button" id="btn-next" aria-label="Visualizar próximo dia"
+                        class="grid h-10 w-10 place-items-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-50 hover:text-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-100">
+
+                        <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                    </button>
+
+                    <button type="button" id="btn-today"
+                        class="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-100">
+
+                        <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+
+                        <span>Hoje</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+
+                <!-- Filtros -->
+
+                <div class="flex flex-col gap-3 sm:flex-row">
+
+                    <div class="relative">
+                        <label for="filter-medico" class="sr-only">
+
+                            Filtrar por médico
+                        </label>
+
+                        <select id="filter-medico" aria-label="Filtrar agenda por médico"
+                            class="h-11 w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 pr-10 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 sm:w-52">
+
+                            <option value="">
+                                Todos os Médicos
+                            </option>
+
+                            <option value="1">
+                                Dr. Carlos Silva
+                            </option>
+
+                            <option value="2">
+                                Dra. Ana Paula
+                            </option>
+
+                            <option value="3">
+                                Dr. Roberto Lima
+                            </option>
+                        </select>
+
+                        <i class="fa-solid fa-chevron-down pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400"
+                            aria-hidden="true"></i>
+                    </div>
+
+                    <div class="relative">
+                        <label for="filter-especialidade" class="sr-only">
+
+                            Filtrar por especialidade
+                        </label>
+
+                        <select id="filter-especialidade" aria-label="Filtrar agenda por especialidade"
+                            class="h-11 w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 pr-10 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 sm:w-64">
+
+                            <option value="">
+                                Todas Especialidades
+                            </option>
+
+                            <optgroup label="Clínicas e Consultas">
+                                <option value="alergia">
+                                    Alergologia e Imunologia
+                                </option>
+
+                                <option value="cardio">
+                                    Cardiologia
+                                </option>
+
+                                <option value="clinica">
+                                    Clínica Médica
+                                </option>
+
+                                <option value="derma">
+                                    Dermatologia
+                                </option>
+
+                                <option value="endo">
+                                    Endocrinologia e Metabologia
+                                </option>
+
+                                <option value="gastro">
+                                    Gastroenterologia
+                                </option>
+
+                                <option value="geriatria">
+                                    Geriatria
+                                </option>
+
+                                <option value="infecto">
+                                    Infectologia
+                                </option>
+
+                                <option value="med-familia">
+                                    Medicina de Família e Comunidade
+                                </option>
+
+                                <option value="med-esporte">
+                                    Medicina do Esporte
+                                </option>
+
+                                <option value="nefro">
+                                    Nefrologia
+                                </option>
+
+                                <option value="neuro">
+                                    Neurologia
+                                </option>
+
+                                <option value="nutrologia">
+                                    Nutrologia
+                                </option>
+
+                                <option value="pediatria">
+                                    Pediatria
+                                </option>
+
+                                <option value="pneumo">
+                                    Pneumologia
+                                </option>
+
+                                <option value="psiquiatria">
+                                    Psiquiatria
+                                </option>
+
+                                <option value="reumato">
+                                    Reumatologia
+                                </option>
+                            </optgroup>
+
+                            <optgroup label="Cirurgias">
+                                <option value="cirurgia-cabeca">
+                                    Cirurgia de Cabeça e Pescoço
+                                </option>
+
+                                <option value="cirurgia-cardio">
+                                    Cirurgia Cardiovascular
+                                </option>
+
+                                <option value="cirurgia-geral">
+                                    Cirurgia Geral
+                                </option>
+
+                                <option value="cirurgia-plastica">
+                                    Cirurgia Plástica
+                                </option>
+
+                                <option value="cirurgia-toracica">
+                                    Cirurgia Torácica
+                                </option>
+
+                                <option value="cirurgia-vascular">
+                                    Cirurgia Vascular
+                                </option>
+
+                                <option value="coloprocto">
+                                    Coloproctologia
+                                </option>
+
+                                <option value="mastologia">
+                                    Mastologia
+                                </option>
+
+                                <option value="oftalmo">
+                                    Oftalmologia
+                                </option>
+
+                                <option value="orto">
+                                    Ortopedia e Traumatologia
+                                </option>
+
+                                <option value="otorrino">
+                                    Otorrinolaringologia
+                                </option>
+
+                                <option value="urologia">
+                                    Urologia
+                                </option>
+                            </optgroup>
+
+                            <optgroup label="Diagnóstico e Outros">
+                                <option value="acupuntura">
+                                    Acupuntura
+                                </option>
+
+                                <option value="anestesia">
+                                    Anestesiologia
+                                </option>
+
+                                <option value="endoscopia">
+                                    Endoscopia
+                                </option>
+
+                                <option value="fisio">
+                                    Fisiatria
+                                </option>
+
+                                <option value="genetica">
+                                    Genética Médica
+                                </option>
+
+                                <option value="gineco">
+                                    Ginecologia e Obstetrícia
+                                </option>
+
+                                <option value="hematologia">
+                                    Hematologia e Hemoterapia
+                                </option>
+
+                                <option value="homeopatia">
+                                    Homeopatia
+                                </option>
+
+                                <option value="med-trabalho">
+                                    Medicina do Trabalho
+                                </option>
+
+                                <option value="med-trafego">
+                                    Medicina de Tráfego
+                                </option>
+
+                                <option value="oncologia">
+                                    Oncologia
+                                </option>
+
+                                <option value="patologia">
+                                    Patologia
+                                </option>
+
+                                <option value="radiologia">
+                                    Radiologia e Diagnóstico por Imagem
+                                </option>
+                            </optgroup>
+                        </select>
+
+                        <i class="fa-solid fa-chevron-down pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400"
+                            aria-hidden="true"></i>
                     </div>
                 </div>
 
-                <button class="agenda__btn agenda__btn--icon" id="btn-next" aria-label="Próximo dia">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </button>
+                <button type="button" id="btn-novo-agendamento"
+                    class="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200">
 
-                <button class="agenda__btn agenda__btn--hoje" id="btn-today">
-                    <i class="fa-regular fa-calendar"></i>
-                    <span>Hoje</span>
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+
+                    <span>Novo Agendamento</span>
                 </button>
             </div>
-        </div>
-
-        <div class="agenda__header-right">
-            <div class="agenda__filtros">
-                <div class="agenda__select-wrap">
-                    <select id="filter-medico" class="agenda__select">
-                        <option value="">Todos os Médicos</option>
-                        <option value="1">Dr. Carlos Silva</option>
-                        <option value="2">Dra. Ana Paula</option>
-                        <option value="3">Dr. Roberto Lima</option>
-                    </select>
-                    <i class="fa-solid fa-chevron-down agenda__select-arrow"></i>
-                </div>
-
-                <div class="agenda__select-wrap">
-                    <select id="filter-especialidade" class="agenda__select">
-                        <option value="">Todas Especialidades</option>
-                        <optgroup label="Clínicas e Consultas">
-                            <option value="alergia">Alergologia e Imunologia</option>
-                            <option value="cardio">Cardiologia</option>
-                            <option value="clinica">Clínica Médica</option>
-                            <option value="derma">Dermatologia</option>
-                            <option value="endo">Endocrinologia e Metabologia</option>
-                            <option value="gastro">Gastroenterologia</option>
-                            <option value="geriatria">Geriatria</option>
-                            <option value="infecto">Infectologia</option>
-                            <option value="med-familia">Medicina de Família e Comunidade</option>
-                            <option value="med-esporte">Medicina do Esporte</option>
-                            <option value="nefro">Nefrologia</option>
-                            <option value="neuro">Neurologia</option>
-                            <option value="nutrologia">Nutrologia</option>
-                            <option value="pediatria">Pediatria</option>
-                            <option value="pneumo">Pneumologia</option>
-                            <option value="psiquiatria">Psiquiatria</option>
-                            <option value="reumato">Reumatologia</option>
-                        </optgroup>
-
-                        <optgroup label="Cirurgias">
-                            <option value="cirurgia-cabeça">Cirurgia de Cabeça e Pescoço</option>
-                            <option value="cirurgia-cardio">Cirurgia Cardiovascular</option>
-                            <option value="cirurgia-geral">Cirurgia Geral</option>
-                            <option value="cirurgia-plastica">Cirurgia Plástica</option>
-                            <option value="cirurgia-toracica">Cirurgia Torácica</option>
-                            <option value="cirurgia-vascular">Cirurgia Vascular</option>
-                            <option value="coloprocto">Coloproctologia</option>
-                            <option value="mastologia">Mastologia</option>
-                            <option value="oftalmo">Oftalmologia</option>
-                            <option value="orto">Ortopedia e Traumatologia</option>
-                            <option value="otorrino">Otorrinolaringologia</option>
-                            <option value="urologia">Urologia</option>
-                        </optgroup>
-
-                        <optgroup label="Diagnóstico e Outros">
-                            <option value="acupuntura">Acupuntura</option>
-                            <option value="anestesia">Anestesiologia</option>
-                            <option value="endoscopia">Endoscopia</option>
-                            <option value="fisio">Fisiatria</option>
-                            <option value="genetica">Genética Médica</option>
-                            <option value="gineco">Ginecologia e Obstetrícia</option>
-                            <option value="hematologia">Hematologia e Hemoterapia</option>
-                            <option value="homeopatia">Homeopatia</option>
-                            <option value="med-trabalho">Medicina do Trabalho</option>
-                            <option value="med-trafego">Medicina de Tráfego</option>
-                            <option value="oncologia">Oncologia</option>
-                            <option value="patologia">Patologia</option>
-                            <option value="radiologia">Radiologia e Diagnóstico por Imagem</option>
-                        </optgroup>
-                    </select>
-                    <i class="fa-solid fa-chevron-down agenda__select-arrow"></i>
-                </div>
-            </div>
-
-            <button class="agenda__btn agenda__btn--primary" id="btn-novo-agendamento">
-                <i class="fa-solid fa-plus"></i>
-                <span>Novo Agendamento</span>
-            </button>
         </div>
     </header>
 
     <!-- =====================================================
-         LEGENDA DE STATUS
+         LEGENDA
          ===================================================== -->
-    <section class="agenda__legend">
-        <span class="agenda__legend-item">
-            <span class="agenda__dot agenda__dot--agendado"></span> Agendado
+
+    <section aria-label="Legenda dos status dos agendamentos"
+        class="mx-auto flex max-w-[1800px] flex-wrap gap-x-5 gap-y-3 px-4 py-4 sm:px-6 lg:px-8">
+
+        <span class="inline-flex items-center gap-2 text-xs font-medium text-slate-600">
+            <span class="h-3 w-3 rounded-full bg-blue-500"></span>
+            Agendado
         </span>
-        <span class="agenda__legend-item">
-            <span class="agenda__dot agenda__dot--confirmado"></span> Confirmado
+
+        <span class="inline-flex items-center gap-2 text-xs font-medium text-slate-600">
+            <span class="h-3 w-3 rounded-full bg-green-500"></span>
+            Confirmado
         </span>
-        <span class="agenda__legend-item">
-            <span class="agenda__dot agenda__dot--espera"></span> Em Espera
+
+        <span class="inline-flex items-center gap-2 text-xs font-medium text-slate-600">
+            <span class="h-3 w-3 rounded-full bg-amber-500"></span>
+            Em Espera
         </span>
-        <span class="agenda__legend-item">
-            <span class="agenda__dot agenda__dot--atendido"></span> Atendido
+
+        <span class="inline-flex items-center gap-2 text-xs font-medium text-slate-600">
+            <span class="h-3 w-3 rounded-full bg-cyan-500"></span>
+            Atendido
         </span>
-        <span class="agenda__legend-item">
-            <span class="agenda__dot agenda__dot--cancelado"></span> Cancelado
+
+        <span class="inline-flex items-center gap-2 text-xs font-medium text-slate-600">
+            <span class="h-3 w-3 rounded-full bg-red-500"></span>
+            Cancelado
         </span>
-        <span class="agenda__legend-item">
-            <span class="agenda__dot agenda__dot--nao-compareceu"></span> Não Compareceu
+
+        <span class="inline-flex items-center gap-2 text-xs font-medium text-slate-600">
+            <span class="h-3 w-3 rounded-full bg-violet-500"></span>
+            Não Compareceu
         </span>
     </section>
 
     <!-- =====================================================
-         GRADE DE AGENDA
+         AGENDA
          ===================================================== -->
-    <main class="agenda__calendar">
-        <div class="agenda__calendar-header" id="agenda-header">
-            <div class="agenda__col-time">Horário</div>
-            <div class="agenda__col-prof" data-medico="1">
-                <span class="agenda__prof-nome">Dr. Carlos Silva</span>
-                <span class="agenda__prof-esp">Cardiologia</span>
-            </div>
-            <div class="agenda__col-prof" data-medico="2">
-                <span class="agenda__prof-nome">Dra. Ana Paula</span>
-                <span class="agenda__prof-esp">Dermatologia</span>
-            </div>
-            <div class="agenda__col-prof" data-medico="3">
-                <span class="agenda__prof-nome">Dr. Roberto Lima</span>
-                <span class="agenda__prof-esp">Ortopedia</span>
-            </div>
-        </div>
 
-        <div class="agenda__calendar-body" id="agenda-body">
-            <!-- Slots renderizados via JS -->
-        </div>
+    <main class="mx-auto max-w-[1800px] px-4 pb-8 sm:px-6 lg:px-8">
+
+        <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-soft"
+            aria-label="Grade de agendamentos médicos">
+
+            <div id="agenda-header" class="agenda__calendar-header border-b border-slate-200 bg-slate-50"
+                aria-label="Profissionais da agenda">
+
+                <div
+                    class="flex min-h-[72px] items-center justify-center border-r border-slate-200 px-3 text-xs font-bold uppercase tracking-wide text-slate-500">
+
+                    Horário
+                </div>
+
+                <div class="flex min-h-[72px] flex-col justify-center gap-1 border-r border-slate-200 px-3"
+                    data-medico="1">
+
+                    <span class="text-sm font-bold text-slate-900">
+                        Dr. Carlos Silva
+                    </span>
+
+                    <span class="text-xs text-slate-500">
+                        Cardiologia
+                    </span>
+                </div>
+
+                <div class="flex min-h-[72px] flex-col justify-center gap-1 border-r border-slate-200 px-3"
+                    data-medico="2">
+
+                    <span class="text-sm font-bold text-slate-900">
+                        Dra. Ana Paula
+                    </span>
+
+                    <span class="text-xs text-slate-500">
+                        Dermatologia
+                    </span>
+                </div>
+
+                <div class="flex min-h-[72px] flex-col justify-center gap-1 px-3" data-medico="3">
+
+                    <span class="text-sm font-bold text-slate-900">
+                        Dr. Roberto Lima
+                    </span>
+
+                    <span class="text-xs text-slate-500">
+                        Ortopedia e Traumatologia
+                    </span>
+                </div>
+            </div>
+
+            <div id="agenda-body" class="overflow-x-auto" aria-live="polite" aria-atomic="false">
+
+                <div class="p-12 text-center text-sm text-slate-500">
+                    Carregando agenda...
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- =====================================================
          MODAL: NOVO / EDITAR AGENDAMENTO
          ===================================================== -->
-    <div class="modal" id="modal-agendamento" aria-hidden="true">
-        <div class="modal__overlay"></div>
-        <div class="modal__content" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
-            <header class="modal__header">
-                <h2 id="modal-titulo"><i class="fa-solid fa-calendar-plus"></i> Novo Agendamento</h2>
-                <button class="modal__close" id="modal-close" aria-label="Fechar modal">
-                    <i class="fa-solid fa-xmark"></i>
+
+    <div id="modal-agendamento" class="modal fixed inset-0 z-50 hidden items-center justify-center p-4"
+        aria-hidden="true">
+
+        <div class="modal__overlay absolute inset-0 bg-slate-900/60 backdrop-blur-sm" aria-hidden="true"></div>
+
+        <div class="modal__content relative z-10 flex max-h-[calc(100vh-2rem)] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+            role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+
+            <header class="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-4 sm:px-6">
+
+                <h2 id="modal-titulo" class="flex items-center gap-2 text-lg font-bold text-slate-900">
+
+                    <i class="fa-solid fa-calendar-plus text-blue-600" aria-hidden="true"></i>
+
+                    Novo Agendamento
+                </h2>
+
+                <button type="button" id="modal-close" aria-label="Fechar modal de agendamento"
+                    class="grid h-9 w-9 place-items-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-100">
+
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </header>
 
-            <form class="modal__form" id="form-agendamento" novalidate>
+            <form id="form-agendamento" class="overflow-y-auto px-5 py-5 sm:px-6" novalidate>
+
                 <input type="hidden" id="agendamento-id">
 
-                <div class="modal__row">
-                    <div class="modal__field modal__field--2">
-                        <label class="modal__label" for="paciente-nome">Paciente *</label>
-                        <div class="modal__input-group">
-                            <input type="text" id="paciente-nome" class="modal__input"
-                                placeholder="Buscar por nome ou CPF" required>
-                            <button type="button" class="modal__input-btn" aria-label="Buscar paciente">
-                                <i class="fa-solid fa-magnifying-glass"></i>
+                <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
+
+                    <div class="lg:col-span-2">
+                        <label for="paciente-nome" class="mb-1.5 block text-sm font-semibold text-slate-700">
+
+                            Paciente *
+                        </label>
+
+                        <div class="relative">
+                            <input type="text" id="paciente-nome" required autocomplete="off"
+                                placeholder="Buscar por nome ou CPF"
+                                class="modal__input h-11 w-full rounded-lg border border-slate-300 bg-white px-3 pr-12 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
+
+                            <button type="button" aria-label="Buscar paciente"
+                                class="absolute right-1 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-blue-600">
+
+                                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
                             </button>
                         </div>
                     </div>
 
-                    <div class="modal__field">
-                        <label class="modal__label" for="agendamento-medico">Médico *</label>
-                        <select id="agendamento-medico" class="modal__input" required>
-                            <option value="">Selecione</option>
-                            <option value="1">Dr. Carlos Silva</option>
-                            <option value="2">Dra. Ana Paula</option>
-                            <option value="3">Dr. Roberto Lima</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal__row">
-                    <div class="modal__field">
-                        <label class="modal__label" for="agendamento-data">Data *</label>
-                        <input type="date" id="agendamento-data" class="modal__input" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="agendamento-hora">Horário da Chegada (24h)</label>
-                        <div style="display: flex; gap: 5px;">
-                            <input type="time" id="agendamento-hora" class="modal__input" required>
-                        </div>
-                    </div>
-                    <div class="modal__field">
-                        <label class="modal__label" for="agendamento-duracao">Duração</label>
-                        <select id="agendamento-duracao" class="modal__input">
-                            <option value="15">15 min</option>
-                            <option value="30" selected>30 min</option>
-                            <option value="45">45 min</option>
-                            <option value="60">60 min</option>
-                            <option value="90">90 min</option>
-                        </select>
-                    </div>
-                </div>
+                    <div>
+                        <label for="agendamento-medico" class="mb-1.5 block text-sm font-semibold text-slate-700">
 
-                <div class="modal__row">
-                    <div class="modal__field">
-                        <label class="modal__label" for="agendamento-tipo">Tipo de Atendimento *</label>
-                        <select id="agendamento-tipo" class="modal__input" required>
-                            <option value="presencial">Presencial</option>
-                            <option value="online">Online (Teleconsulta)</option>
-                            <option value="retorno">Retorno</option>
-                            <option value="procedimento">Procedimento</option>
-                        </select>
-                    </div>
-                    <div class="modal__field">
-                        <label class="modal__label" for="agendamento-convenio">Convênio</label>
-                        <select id="agendamento-convenio" class="modal__input">
-                            <option value="particular">Particular</option>
-                            <option value="unimed">Unimed</option>
-                            <option value="sulamerica">SulAmérica</option>
-                            <option value="bradesco">Bradesco Saúde</option>
-                            <option value="hapvida">Hapvida</option>
-                            <option value="amil">Amil</option>
-                            <option value="medservice">MedService</option>
-                            <option value="notredame">NotreDame Intermédica</option>
-                            <option value="porto-seguro">Porto Seguro Saúde</option>
-                            <option value="golden-cross">Golden Cross</option>
-                            <option value="omint">Omint</option>
-                            <option value="geap">GEAP Saúde</option>
-                            <option value="cassi">CASSI</option>
-                        </select>
-                    </div>
-                    <div class="modal__field">
-                        <label class="modal__label" for="agendamento-status">Status</label>
-                        <select id="agendamento-status" class="modal__input">
-                            <option value="agendado" selected>Agendado</option>
-                            <option value="confirmado">Confirmado</option>
-                            <option value="espera">Em Espera</option>
-                            <option value="atendido">Atendido</option>
-                            <option value="cancelado">Cancelado</option>
-                            <option value="nao-compareceu">Não Compareceu</option>
-                        </select>
-                    </div>
-                </div>
+                            Médico *
+                        </label>
 
-                <div class="modal__row">
-                    <div class="modal__field modal__field--full">
-                        <label class="modal__label" for="agendamento-obs">Observações</label>
-                        <textarea id="agendamento-obs" class="modal__input modal__input--area" rows="3"
-                            placeholder="Informações adicionais..."></textarea>
-                    </div>
-                </div>
+                        <select id="agendamento-medico" required
+                            class="modal__input h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
 
-                <div class="modal__row modal__row--checkbox">
-                    <label class="modal__checkbox">
-                        <input type="checkbox" id="agendamento-lembrete" checked>
-                        <span class="modal__checkmark"></span>
-                        <span class="modal__checkbox-text">Enviar lembrete automático (WhatsApp/SMS)</span>
-                    </label>
+                            <option value="">
+                                Selecione
+                            </option>
+
+                            <option value="1">
+                                Dr. Carlos Silva
+                            </option>
+
+                            <option value="2">
+                                Dra. Ana Paula
+                            </option>
+
+                            <option value="3">
+                                Dr. Roberto Lima
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="agendamento-data" class="mb-1.5 block text-sm font-semibold text-slate-700">
+
+                            Data *
+                        </label>
+
+                        <input type="date" id="agendamento-data" required
+                            class="modal__input h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
+                    </div>
+
+                    <div>
+                        <label for="agendamento-hora" class="mb-1.5 block text-sm font-semibold text-slate-700">
+
+                            Horário da Chegada *
+                        </label>
+
+                        <input type="time" id="agendamento-hora" min="08:00" max="17:30" step="300" required
+                            class="modal__input h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
+                    </div>
+
+                    <div>
+                        <label for="agendamento-duracao" class="mb-1.5 block text-sm font-semibold text-slate-700">
+
+                            Duração
+                        </label>
+
+                        <select id="agendamento-duracao"
+                            class="modal__input h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
+
+                            <option value="15">
+                                15 min
+                            </option>
+
+                            <option value="30" selected>
+                                30 min
+                            </option>
+
+                            <option value="45">
+                                45 min
+                            </option>
+
+                            <option value="60">
+                                60 min
+                            </option>
+
+                            <option value="90">
+                                90 min
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="agendamento-tipo" class="mb-1.5 block text-sm font-semibold text-slate-700">
+
+                            Tipo de Atendimento *
+                        </label>
+
+                        <select id="agendamento-tipo" required
+                            class="modal__input h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
+
+                            <option value="presencial">
+                                Presencial
+                            </option>
+
+                            <option value="online">
+                                Online — Teleconsulta
+                            </option>
+
+                            <option value="retorno">
+                                Retorno
+                            </option>
+
+                            <option value="procedimento">
+                                Procedimento
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="agendamento-convenio" class="mb-1.5 block text-sm font-semibold text-slate-700">
+
+                            Convênio
+                        </label>
+
+                        <select id="agendamento-convenio"
+                            class="modal__input h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
+
+                            <option value="particular">
+                                Particular
+                            </option>
+
+                            <option value="unimed">
+                                Unimed
+                            </option>
+
+                            <option value="sulamerica">
+                                SulAmérica
+                            </option>
+
+                            <option value="bradesco">
+                                Bradesco Saúde
+                            </option>
+
+                            <option value="hapvida">
+                                Hapvida
+                            </option>
+
+                            <option value="amil">
+                                Amil
+                            </option>
+
+                            <option value="medservice">
+                                MedService
+                            </option>
+
+                            <option value="notredame">
+                                NotreDame Intermédica
+                            </option>
+
+                            <option value="porto-seguro">
+                                Porto Seguro Saúde
+                            </option>
+
+                            <option value="golden-cross">
+                                Golden Cross
+                            </option>
+
+                            <option value="omint">
+                                Omint
+                            </option>
+
+                            <option value="geap">
+                                GEAP Saúde
+                            </option>
+
+                            <option value="cassi">
+                                CASSI
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="agendamento-status" class="mb-1.5 block text-sm font-semibold text-slate-700">
+
+                            Status
+                        </label>
+
+                        <select id="agendamento-status"
+                            class="modal__input h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
+
+                            <option value="agendado" selected>
+                                Agendado
+                            </option>
+
+                            <option value="confirmado">
+                                Confirmado
+                            </option>
+
+                            <option value="espera">
+                                Em Espera
+                            </option>
+
+                            <option value="atendido">
+                                Atendido
+                            </option>
+
+                            <option value="cancelado">
+                                Cancelado
+                            </option>
+
+                            <option value="nao-compareceu">
+                                Não Compareceu
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="lg:col-span-3">
+                        <label for="agendamento-obs" class="mb-1.5 block text-sm font-semibold text-slate-700">
+
+                            Observações
+                        </label>
+
+                        <textarea id="agendamento-obs" rows="4" maxlength="1000" placeholder="Informações adicionais..."
+                            class="modal__input w-full resize-y rounded-lg border border-slate-300 bg-white px-3 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"></textarea>
+                    </div>
+
+                    <div class="lg:col-span-3">
+                        <label class="inline-flex cursor-pointer items-center gap-3">
+                            <input type="checkbox" id="agendamento-lembrete" checked
+                                class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+
+                            <span class="text-sm text-slate-600">
+                                Enviar lembrete automático por WhatsApp/SMS
+                            </span>
+                        </label>
+                    </div>
                 </div>
             </form>
 
-            <footer class="modal__footer">
-                <button type="button" class="agenda__btn agenda__btn--secondary" id="btn-cancelar">Cancelar</button>
-                <button type="button" class="agenda__btn agenda__btn--primary" id="btn-gravar">
-                    <i class="fa-solid fa-floppy-disk"></i> Gravar
+            <footer
+                class="flex flex-col-reverse gap-3 border-t border-slate-200 px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
+
+                <button type="button" id="btn-cancelar"
+                    class="inline-flex h-11 items-center justify-center rounded-lg border border-slate-300 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-100">
+
+                    Cancelar
+                </button>
+
+                <button type="submit" form="form-agendamento" id="btn-gravar"
+                    class="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 text-sm font-bold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200">
+
+                    <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+
+                    Gravar
                 </button>
             </footer>
         </div>
@@ -301,48 +923,108 @@
     <!-- =====================================================
          MODAL: AÇÕES DO AGENDAMENTO
          ===================================================== -->
-    <div class="modal modal--sm" id="modal-acoes" aria-hidden="true">
-        <div class="modal__overlay"></div>
-        <div class="modal__content" role="dialog" aria-modal="true">
-            <header class="modal__header">
-                <h2>Ações do Agendamento</h2>
-                <button class="modal__close" id="modal-acoes-close" aria-label="Fechar modal">
-                    <i class="fa-solid fa-xmark"></i>
+
+    <div id="modal-acoes" class="modal modal--sm fixed inset-0 z-50 hidden items-center justify-center p-4"
+        aria-hidden="true">
+
+        <div class="modal__overlay absolute inset-0 bg-slate-900/60 backdrop-blur-sm" aria-hidden="true"></div>
+
+        <div class="modal__content relative z-10 flex max-h-[calc(100vh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+            role="dialog" aria-modal="true" aria-labelledby="modal-acoes-titulo">
+
+            <header class="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-4">
+
+                <h2 id="modal-acoes-titulo" class="text-lg font-bold text-slate-900">
+
+                    Ações do Agendamento
+                </h2>
+
+                <button type="button" id="modal-acoes-close" aria-label="Fechar ações do agendamento"
+                    class="grid h-9 w-9 place-items-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-100">
+
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </header>
 
-            <div class="modal__body">
-                <div class="modal__details" id="agendamento-detalhes">
-                    <!-- preenchido via JS -->
+            <div class="overflow-y-auto p-5">
+
+                <div id="agendamento-detalhes" class="mb-5" aria-live="polite">
+
+                    <!-- Conteúdo preenchido pelo JavaScript -->
                 </div>
 
-                <nav class="modal__acoes">
-                    <button class="modal__acao modal__acao--confirmar" data-acao="confirmar">
-                        <i class="fa-solid fa-check"></i> Confirmar
+                <nav class="grid grid-cols-1 gap-2 sm:grid-cols-2" aria-label="Ações disponíveis para o agendamento">
+
+                    <button type="button" data-acao="confirmar"
+                        class="modal__acao inline-flex h-11 items-center gap-2 rounded-lg bg-green-50 px-4 text-sm font-semibold text-green-700 transition hover:bg-green-100">
+
+                        <i class="fa-solid fa-check" aria-hidden="true"></i>
+
+                        Confirmar
                     </button>
-                    <button class="modal__acao modal__acao--espera" data-acao="espera">
-                        <i class="fa-solid fa-hourglass-start"></i> Em Espera
+
+                    <button type="button" data-acao="espera"
+                        class="modal__acao inline-flex h-11 items-center gap-2 rounded-lg bg-amber-50 px-4 text-sm font-semibold text-amber-700 transition hover:bg-amber-100">
+
+                        <i class="fa-solid fa-hourglass-start" aria-hidden="true"></i>
+
+                        Em Espera
                     </button>
-                    <button class="modal__acao modal__acao--atender" data-acao="atender">
-                        <i class="fa-solid fa-stethoscope"></i> Atender
+
+                    <button type="button" data-acao="atender"
+                        class="modal__acao inline-flex h-11 items-center gap-2 rounded-lg bg-cyan-50 px-4 text-sm font-semibold text-cyan-700 transition hover:bg-cyan-100">
+
+                        <i class="fa-solid fa-stethoscope" aria-hidden="true"></i>
+
+                        Atender
                     </button>
-                    <button class="modal__acao modal__acao--teleconsulta" data-acao="teleconsulta">
-                        <i class="fa-solid fa-video"></i> Teleconsulta
+
+                    <button type="button" data-acao="teleconsulta"
+                        class="modal__acao inline-flex h-11 items-center gap-2 rounded-lg bg-indigo-50 px-4 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100">
+
+                        <i class="fa-solid fa-video" aria-hidden="true"></i>
+
+                        Teleconsulta
                     </button>
-                    <button class="modal__acao modal__acao--prontuario" data-acao="prontuario">
-                        <i class="fa-solid fa-file-medical"></i> Prontuário
+
+                    <button type="button" data-acao="prontuario"
+                        class="modal__acao inline-flex h-11 items-center gap-2 rounded-lg bg-blue-50 px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-100">
+
+                        <i class="fa-solid fa-file-medical" aria-hidden="true"></i>
+
+                        Prontuário
                     </button>
-                    <button class="modal__acao modal__acao--financeiro" data-acao="financeiro">
-                        <i class="fa-solid fa-dollar-sign"></i> Financeiro
+
+                    <button type="button" data-acao="financeiro"
+                        class="modal__acao inline-flex h-11 items-center gap-2 rounded-lg bg-emerald-50 px-4 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100">
+
+                        <i class="fa-solid fa-dollar-sign" aria-hidden="true"></i>
+
+                        Financeiro
                     </button>
-                    <button class="modal__acao modal__acao--editar" data-acao="editar">
-                        <i class="fa-solid fa-pen"></i> Editar
+
+                    <button type="button" data-acao="editar"
+                        class="modal__acao inline-flex h-11 items-center gap-2 rounded-lg bg-slate-100 px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-200">
+
+                        <i class="fa-solid fa-pen" aria-hidden="true"></i>
+
+                        Editar
                     </button>
-                    <button class="modal__acao modal__acao--cancelar" data-acao="cancelar">
-                        <i class="fa-solid fa-ban"></i> Cancelar
+
+                    <button type="button" data-acao="cancelar"
+                        class="modal__acao inline-flex h-11 items-center gap-2 rounded-lg bg-orange-50 px-4 text-sm font-semibold text-orange-700 transition hover:bg-orange-100">
+
+                        <i class="fa-solid fa-ban" aria-hidden="true"></i>
+
+                        Cancelar
                     </button>
-                    <button class="modal__acao modal__acao--excluir" data-acao="excluir">
-                        <i class="fa-solid fa-trash"></i> Excluir
+
+                    <button type="button" data-acao="excluir"
+                        class="modal__acao inline-flex h-11 items-center gap-2 rounded-lg bg-red-50 px-4 text-sm font-semibold text-red-700 transition hover:bg-red-100 sm:col-span-2">
+
+                        <i class="fa-solid fa-trash" aria-hidden="true"></i>
+
+                        Excluir Agendamento
                     </button>
                 </nav>
             </div>
@@ -350,10 +1032,14 @@
     </div>
 
     <!-- =====================================================
-         TOAST CONTAINER
+         TOASTS
          ===================================================== -->
-    <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
+    <div id="toast-container" aria-live="polite" aria-atomic="true"
+        class="fixed bottom-4 right-4 z-[100] flex w-[calc(100%-2rem)] max-w-sm flex-col gap-3">
+    </div>
+
+    <!-- JavaScript da agenda -->
     <script src="agenda-geral.js"></script>
 </body>
 

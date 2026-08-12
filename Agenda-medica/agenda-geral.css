@@ -1156,3 +1156,513 @@ body {
     }
 }
 
+/* =========================================================
+   ESTRUTURA DINÂMICA DA GRADE
+   ========================================================= */
+
+.agenda__calendar {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.agenda__calendar-header,
+.agenda__calendar-row {
+    display: grid;
+    grid-template-columns:
+        84px repeat(var(--quantidade-medicos, 3),
+            minmax(220px, 1fr));
+    min-width: 760px;
+}
+
+.agenda__calendar-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #f8fafc;
+    border-bottom: 1px solid #cbd5e1;
+}
+
+.agenda__col-time,
+.agenda__col-prof {
+    min-height: 72px;
+    padding: 12px;
+    border-right: 1px solid #e2e8f0;
+}
+
+.agenda__col-time {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.agenda__col-prof {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+}
+
+.agenda__prof-nome {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.agenda__prof-esp {
+    color: #64748b;
+    font-size: 0.8rem;
+}
+
+.agenda__calendar-row {
+    min-height: 64px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.agenda__calendar-row:last-child {
+    border-bottom: 0;
+}
+
+.agenda__time-cell {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 10px 6px;
+    border-right: 1px solid #e2e8f0;
+    color: #64748b;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.agenda__slot {
+    position: relative;
+    min-height: 64px;
+    padding: 4px;
+    border-right: 1px solid #e2e8f0;
+}
+
+.agenda__slot:last-child {
+    border-right: 0;
+}
+
+/* =========================================================
+   CARDS DE AGENDAMENTO
+   ========================================================= */
+
+.agenda__appointment {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    gap: 8px;
+    min-height: 54px;
+    height: var(--appointment-height, 100%);
+    overflow: hidden;
+    padding: 8px;
+    border-left: 4px solid currentColor;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgb(15 23 42 / 10%);
+    cursor: pointer;
+    transition:
+        transform 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.agenda__appointment:hover,
+.agenda__appointment:focus-visible {
+    z-index: 4;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgb(15 23 42 / 18%);
+    outline: 3px solid rgb(59 130 246 / 25%);
+    outline-offset: 1px;
+}
+
+.agenda__appointment-time {
+    flex: 0 0 auto;
+    color: currentColor;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.agenda__appointment-content {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.agenda__appointment-content strong,
+.agenda__appointment-content span,
+.agenda__appointment-content small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.agenda__appointment-content strong {
+    color: #0f172a;
+    font-size: 0.83rem;
+}
+
+.agenda__appointment-content span,
+.agenda__appointment-content small {
+    color: #64748b;
+    font-size: 0.73rem;
+}
+
+.agenda__appointment-icon {
+    margin-left: auto;
+    color: currentColor;
+}
+
+/* Cores semânticas dos status */
+
+.agenda__appointment--agendado {
+    color: #2563eb;
+    background: #eff6ff;
+}
+
+.agenda__appointment--confirmado {
+    color: #16a34a;
+    background: #f0fdf4;
+}
+
+.agenda__appointment--espera {
+    color: #d97706;
+    background: #fffbeb;
+}
+
+.agenda__appointment--atendido {
+    color: #0891b2;
+    background: #ecfeff;
+}
+
+.agenda__appointment--cancelado {
+    color: #dc2626;
+    background: #fef2f2;
+    opacity: 0.72;
+}
+
+.agenda__appointment--nao-compareceu {
+    color: #7c3aed;
+    background: #f5f3ff;
+}
+
+/* =========================================================
+   MODAIS
+   ========================================================= */
+
+body.modal-open {
+    overflow: hidden;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.modal.is-open {
+    display: flex;
+}
+
+.modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgb(15 23 42 / 58%);
+    backdrop-filter: blur(2px);
+}
+
+.modal__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: min(760px, 100%);
+    max-height: calc(100vh - 32px);
+    flex-direction: column;
+    overflow: auto;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 20px 60px rgb(15 23 42 / 25%);
+}
+
+.modal--sm .modal__content {
+    width: min(480px, 100%);
+}
+
+.modal__header,
+.modal__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 22px;
+}
+
+.modal__header {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modal__footer {
+    justify-content: flex-end;
+    border-top: 1px solid #e2e8f0;
+}
+
+.modal__close {
+    display: inline-grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.modal__close:hover,
+.modal__close:focus-visible {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.modal__body,
+.modal__form {
+    padding: 22px;
+}
+
+.modal__form {
+    overflow-y: auto;
+}
+
+.modal__input.is-invalid {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgb(220 38 38 / 12%);
+}
+
+.modal__detail-main {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.modal__detail-main strong {
+    color: #0f172a;
+    font-size: 1.1rem;
+}
+
+.modal__detail-main span {
+    height: fit-content;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.modal__detail-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+}
+
+.modal__detail-list div {
+    padding: 10px;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.modal__detail-list dt {
+    margin-bottom: 3px;
+    color: #64748b;
+    font-size: 0.75rem;
+}
+
+.modal__detail-list dd {
+    margin: 0;
+    color: #0f172a;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.modal__detail-observacao {
+    margin: 18px 0 0;
+    color: #475569;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   TOASTS
+   ========================================================= */
+
+.toast-container {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 2000;
+    display: flex;
+    width: min(380px, calc(100vw - 32px));
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 14px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 8px 25px rgb(15 23 42 / 16%);
+    color: #334155;
+    animation: toast-enter 180ms ease-out;
+}
+
+.toast>span {
+    flex: 1;
+    font-size: 0.87rem;
+}
+
+.toast--success {
+    border-color: #bbf7d0;
+    color: #15803d;
+}
+
+.toast--warning {
+    border-color: #fde68a;
+    color: #a16207;
+}
+
+.toast--error {
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+
+.toast--info {
+    border-color: #bfdbfe;
+    color: #1d4ed8;
+}
+
+.toast__close {
+    border: 0;
+    background: transparent;
+    color: currentColor;
+    cursor: pointer;
+}
+
+.toast.is-leaving {
+    animation: toast-leave 250ms ease-in forwards;
+}
+
+.agenda__empty {
+    padding: 48px 20px;
+    color: #64748b;
+    text-align: center;
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 900px) {
+    .agenda__header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .agenda__header-left,
+    .agenda__header-right,
+    .agenda__filtros {
+        flex-wrap: wrap;
+    }
+
+    .agenda__header-right {
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 640px) {
+    .agenda__nav-data {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .agenda__data-display {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .agenda__filtros {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .agenda__select-wrap,
+    .agenda__select,
+    #btn-novo-agendamento {
+        width: 100%;
+    }
+
+    .modal {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .modal__content {
+        max-height: 92vh;
+        border-radius: 16px 16px 0 0;
+    }
+
+    .modal__row,
+    .modal__detail-list {
+        grid-template-columns: 1fr;
+    }
+
+    .modal__body,
+    .modal__form {
+        padding: 16px;
+    }
+
+    .modal__header,
+    .modal__footer {
+        padding: 14px 16px;
+    }
+
+    .toast-container {
+        right: 16px;
+        bottom: 16px;
+    }
+}
+
+@keyframes toast-enter {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes toast-leave {
+    to {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+}
