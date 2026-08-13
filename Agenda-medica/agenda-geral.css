@@ -1,37 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 
 /* =========================================================
-   G4med Agenda — Design System Teal
+   G4Med Agenda — Design System Teal
    ========================================================= */
 
 :root {
-    /* Identidade visual principal */
     --color-primary: #0D9488;
-    /* teal-600 */
     --color-primary-hover: #0F766E;
-    /* teal-700 */
     --color-primary-dark: #115E59;
-    /* teal-800 */
     --color-primary-light: #14B8A6;
-    /* teal-500 */
     --color-primary-bg: #F0FDFA;
-    /* teal-50 */
     --color-primary-soft: #CCFBF1;
-    /* teal-100 */
 
-    /* Compatibilidade com nomes antigos */
-    --color-navy: var(--color-primary-dark);
-    --color-navy-700: var(--color-primary-hover);
-    --color-orange: var(--color-primary);
-    --color-orange-600: var(--color-primary-hover);
-    --color-turquesa: var(--color-primary);
-
-    --color-grafite: #333333;
     --color-white: #FFFFFF;
+    --color-text: #111827;
+    --color-text-muted: #6B7280;
+    --color-text-light: #9CA3AF;
 
-    /* Status */
-    --status-agendado: #3B82F6;
-    --status-agendado-bg: #EFF6FF;
+    --color-bg: #F8FAFC;
+    --color-surface: #FFFFFF;
+    --color-border: #E5E7EB;
+    --color-border-light: #F1F5F9;
+
+    --status-agendado: #0D9488;
+    --status-agendado-bg: #F0FDFA;
 
     --status-confirmado: #16A34A;
     --status-confirmado-bg: #F0FDF4;
@@ -48,7 +41,6 @@
     --status-nao-compareceu: #7C3AED;
     --status-nao-compareceu-bg: #F5F3FF;
 
-    /* Tipos de atendimento */
     --tipo-presencial-bg: #DBEAFE;
     --tipo-presencial-text: #1E40AF;
 
@@ -61,18 +53,13 @@
     --tipo-procedimento-bg: #EDE9FE;
     --tipo-procedimento-text: #5B21B6;
 
-    /* Neutros */
-    --color-bg: #F8FAFC;
-    --color-surface: #FFFFFF;
-    --color-border: #E5E7EB;
-    --color-border-light: #F1F5F9;
+    --font-family:
+        'Plus Jakarta Sans',
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        sans-serif;
 
-    --color-text: #111827;
-    --color-text-muted: #6B7280;
-    --color-text-light: #9CA3AF;
-
-    /* Tipografia */
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --font-xs: 0.625rem;
     --font-sm: 0.75rem;
     --font-base: 0.875rem;
@@ -80,7 +67,6 @@
     --font-lg: 1.125rem;
     --font-xl: 1.25rem;
 
-    /* Espaçamento */
     --space-1: 0.25rem;
     --space-2: 0.5rem;
     --space-3: 0.75rem;
@@ -88,26 +74,23 @@
     --space-5: 1.25rem;
     --space-6: 1.5rem;
 
-    /* Bordas */
     --radius-sm: 6px;
     --radius: 10px;
     --radius-lg: 14px;
     --radius-xl: 18px;
 
-    /* Sombras */
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 4%);
     --shadow: 0 1px 3px rgb(0 0 0 / 6%), 0 1px 2px rgb(0 0 0 / 4%);
     --shadow-md: 0 4px 12px rgb(0 0 0 / 6%);
     --shadow-lg: 0 10px 30px rgb(0 0 0 / 8%);
 
-    /* Transições */
     --transition-fast: 150ms ease;
     --transition-base: 200ms ease;
     --transition-slow: 300ms ease;
 
-    /* Grade dinâmica */
     --quantidade-medicos: 3;
 }
+
 
 /* =========================================================
    RESET E BASE
@@ -122,6 +105,7 @@
 }
 
 html {
+    min-width: 320px;
     font-size: 16px;
     scroll-behavior: smooth;
 }
@@ -149,10 +133,18 @@ select {
     cursor: pointer;
 }
 
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
 a {
     color: var(--color-primary);
     text-decoration: none;
-    transition: color var(--transition-fast);
+    transition:
+        color var(--transition-fast),
+        background-color var(--transition-fast),
+        border-color var(--transition-fast);
 }
 
 a:hover {
@@ -163,6 +155,28 @@ a:hover {
     outline: 3px solid rgb(13 148 136 / 28%);
     outline-offset: 2px;
 }
+
+[hidden] {
+    display: none !important;
+}
+
+
+/* =========================================================
+   ACESSIBILIDADE
+   ========================================================= */
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 
 /* =========================================================
    HEADER E TOOLBAR
@@ -194,7 +208,6 @@ a:hover {
     flex-wrap: wrap;
 }
 
-/* Botão genérico */
 .agenda__btn {
     display: inline-flex;
     align-items: center;
@@ -218,14 +231,19 @@ a:hover {
         transform var(--transition-fast);
 }
 
-.agenda__btn:hover {
+.agenda__btn:hover:not(:disabled) {
     background: #F9FAFB;
     border-color: #D1D5DB;
     transform: translateY(-1px);
 }
 
-.agenda__btn:active {
+.agenda__btn:active:not(:disabled) {
     transform: translateY(0);
+}
+
+.agenda__btn:focus-visible {
+    outline: 3px solid rgb(13 148 136 / 28%);
+    outline-offset: 2px;
 }
 
 .agenda__btn--voltar,
@@ -243,21 +261,20 @@ a:hover {
     flex-shrink: 0;
 }
 
-/* Botão primário */
 .agenda__btn--primary {
     height: 2.5rem;
     padding: 0.625rem 1rem;
-    background: var(--color-primary);
     border-color: var(--color-primary);
+    background: var(--color-primary);
     color: var(--color-white);
     font-weight: 700;
     box-shadow: 0 2px 8px rgb(13 148 136 / 25%);
 }
 
-.agenda__btn--primary:hover,
+.agenda__btn--primary:hover:not(:disabled),
 .agenda__btn--primary:focus-visible {
-    background: var(--color-primary-hover);
     border-color: var(--color-primary-hover);
+    background: var(--color-primary-hover);
     color: var(--color-white);
     box-shadow: 0 4px 12px rgb(13 148 136 / 35%);
 }
@@ -265,8 +282,8 @@ a:hover {
 .agenda__btn--secondary {
     height: 2.5rem;
     padding: 0.625rem 1rem;
-    background: var(--color-surface);
     border-color: var(--color-border);
+    background: var(--color-surface);
     color: var(--color-text-muted);
     font-weight: 600;
 }
@@ -275,6 +292,7 @@ a:hover {
     background: #F9FAFB;
     color: var(--color-text);
 }
+
 
 /* =========================================================
    NAVEGAÇÃO DE DATA
@@ -317,6 +335,7 @@ a:hover {
     font-weight: 500;
 }
 
+
 /* =========================================================
    FILTROS
    ========================================================= */
@@ -348,6 +367,10 @@ a:hover {
         box-shadow var(--transition-fast);
 }
 
+.agenda__select:hover {
+    border-color: #CBD5E1;
+}
+
 .agenda__select:focus {
     outline: none;
     border-color: var(--color-primary);
@@ -363,6 +386,7 @@ a:hover {
     pointer-events: none;
     transform: translateY(-50%);
 }
+
 
 /* =========================================================
    LEGENDA DE STATUS
@@ -416,14 +440,15 @@ a:hover {
     background: var(--status-nao-compareceu);
 }
 
+
 /* =========================================================
    CALENDÁRIO
    ========================================================= */
 
 .agenda__calendar {
-    width: 100%;
+    width: calc(100% - (var(--space-5) * 2));
     margin: 0 var(--space-5) var(--space-6);
-    overflow-x: auto;
+    overflow: auto;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-surface);
@@ -432,7 +457,8 @@ a:hover {
 .agenda__calendar-header,
 .agenda__calendar-row {
     display: grid;
-    grid-template-columns: 84px repeat(var(--quantidade-medicos),
+    grid-template-columns:
+        84px repeat(var(--quantidade-medicos),
             minmax(220px, 1fr));
     min-width: 760px;
 }
@@ -464,7 +490,6 @@ a:hover {
     border-bottom: 0;
 }
 
-/* Cabeçalho das colunas */
 .agenda__col-time,
 .agenda__col-prof {
     min-height: 72px;
@@ -508,7 +533,6 @@ a:hover {
     font-weight: 500;
 }
 
-/* Células da grade */
 .agenda__time-cell,
 .agenda__slot-time {
     display: flex;
@@ -566,6 +590,7 @@ a:hover {
     font-weight: 500;
     text-align: center;
 }
+
 
 /* =========================================================
    CARDS DE AGENDAMENTO
@@ -687,7 +712,11 @@ a:hover {
     color: currentColor;
 }
 
-/* Status dos cards */
+
+/* =========================================================
+   STATUS DOS AGENDAMENTOS
+   ========================================================= */
+
 .agenda__card--agendado,
 .agenda__appointment--agendado {
     background: var(--status-agendado-bg);
@@ -751,7 +780,11 @@ a:hover {
     color: var(--status-nao-compareceu);
 }
 
-/* Badges por tipo */
+
+/* =========================================================
+   BADGES POR TIPO
+   ========================================================= */
+
 .agenda__card-badge--presencial {
     background: var(--tipo-presencial-bg);
     color: var(--tipo-presencial-text);
@@ -772,6 +805,7 @@ a:hover {
     color: var(--tipo-procedimento-text);
 }
 
+
 /* =========================================================
    MODAIS
    ========================================================= */
@@ -790,7 +824,7 @@ body.modal-open {
     padding: var(--space-4);
 }
 
-.modal[aria-hidden='false'],
+.modal[aria-hidden="false"],
 .modal.is-open {
     display: flex;
 }
@@ -965,7 +999,9 @@ body.modal-open {
     color: var(--color-primary-dark);
 }
 
-/* Checkbox */
+
+/* Checkbox do modal */
+
 .modal__checkbox {
     display: inline-flex;
     align-items: center;
@@ -985,9 +1021,6 @@ body.modal-open {
     border-radius: 4px;
     cursor: pointer;
     flex-shrink: 0;
-    transition:
-        border-color var(--transition-fast),
-        background var(--transition-fast);
 }
 
 .modal__checkbox input:checked {
@@ -1003,7 +1036,7 @@ body.modal-open {
     height: 8px;
     border: solid var(--color-white);
     border-width: 0 2px 2px 0;
-    content: '';
+    content: "";
     transform: rotate(45deg);
 }
 
@@ -1012,7 +1045,9 @@ body.modal-open {
     outline-offset: 2px;
 }
 
+
 /* Detalhes */
+
 .modal__details {
     margin-bottom: var(--space-4);
     padding: var(--space-4);
@@ -1083,7 +1118,9 @@ body.modal-open {
     line-height: 1.5;
 }
 
-/* Ações */
+
+/* Ações do modal */
+
 .modal__acoes {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1120,7 +1157,8 @@ body.modal-open {
     font-size: var(--font-md);
 }
 
-.modal__acao:hover {
+.modal__acao:hover,
+.modal__acao:focus-visible {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
 }
@@ -1185,6 +1223,7 @@ body.modal-open {
 .modal__acao--excluir:hover {
     background: var(--status-cancelado-bg);
 }
+
 
 /* =========================================================
    TOASTS
@@ -1254,8 +1293,9 @@ body.modal-open {
     animation: toast-leave 250ms ease-in forwards;
 }
 
+
 /* =========================================================
-   SCROLLBAR
+   SCROLLBAR E ANIMAÇÕES
    ========================================================= */
 
 ::-webkit-scrollbar {
@@ -1275,10 +1315,6 @@ body.modal-open {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--color-primary-light);
 }
-
-/* =========================================================
-   ANIMAÇÕES
-   ========================================================= */
 
 @keyframes fade-in {
     from {
@@ -1320,6 +1356,7 @@ body.modal-open {
         transform: translateY(10px);
     }
 }
+
 
 /* =========================================================
    RESPONSIVIDADE
@@ -1376,6 +1413,7 @@ body.modal-open {
     }
 
     .agenda__calendar {
+        width: calc(100% - (var(--space-3) * 2));
         margin-right: var(--space-3);
         margin-left: var(--space-3);
     }
@@ -1487,7 +1525,11 @@ body.modal-open {
     }
 }
 
-/* Preferência do usuário por menos movimento */
+
+/* =========================================================
+   REDUÇÃO DE MOVIMENTO
+   ========================================================= */
+
 @media (prefers-reduced-motion: reduce) {
 
     *,

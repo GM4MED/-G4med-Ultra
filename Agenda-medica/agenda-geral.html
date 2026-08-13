@@ -5,17 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="description" content="Agenda médica do sistema G4med">
+    <meta name="description" content="Agenda médica do sistema G4Med">
 
-    <title>G4med - Agenda Médica</title>
+    <title>G4Med - Agenda Médica</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-    <!-- Configuração do Tailwind -->
     <script>
         tailwind.config = {
             theme: {
@@ -34,6 +30,14 @@
                             900: '#134E4A'
                         }
                     },
+                    fontFamily: {
+                        sans: [
+                            'Plus Jakarta Sans',
+                            'ui-sans-serif',
+                            'system-ui',
+                            'sans-serif'
+                        ]
+                    },
                     boxShadow: {
                         soft: '0 8px 24px rgb(15 23 42 / 8%)'
                     }
@@ -42,189 +46,18 @@
         };
     </script>
 
-    <!-- CSS principal -->
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- CSS externo -->
     <link rel="stylesheet" href="agenda-geral.css">
-
-    <!-- CSS complementar do HTML e dos elementos gerados pelo JavaScript -->
-    <style>
-        [hidden] {
-            display: none !important;
-        }
-
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
-
-        body.modal-open {
-            overflow: hidden;
-        }
-
-        .modal.is-open {
-            display: flex;
-        }
-
-        .agenda__calendar {
-            --quantidade-medicos: 3;
-        }
-
-        .agenda__calendar-header,
-        .agenda__calendar-row {
-            display: grid;
-            grid-template-columns:
-                84px repeat(var(--quantidade-medicos, 3),
-                    minmax(220px, 1fr));
-            min-width: 760px;
-        }
-
-        .agenda__calendar-header {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-        }
-
-        .agenda__calendar-row {
-            min-height: 64px;
-        }
-
-        .agenda__appointment {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            gap: 8px;
-            min-height: 54px;
-            height: var(--appointment-height, 100%);
-            overflow: hidden;
-            padding: 8px;
-            border-left: 4px solid currentColor;
-            border-radius: 8px;
-            background: #ffffff;
-            box-shadow: 0 2px 8px rgb(15 23 42 / 10%);
-            cursor: pointer;
-            transition:
-                transform 160ms ease,
-                box-shadow 160ms ease;
-        }
-
-        .agenda__appointment:hover,
-        .agenda__appointment:focus-visible {
-            z-index: 30;
-            transform: translateY(-1px);
-            box-shadow: 0 5px 14px rgb(15 23 42 / 18%);
-            outline: 3px solid rgb(13 148 136 / 25%);
-            outline-offset: 1px;
-        }
-
-        .agenda__appointment-time {
-            flex: 0 0 auto;
-            color: currentColor;
-            font-size: 0.75rem;
-            font-weight: 800;
-        }
-
-        .agenda__appointment-content {
-            display: flex;
-            min-width: 0;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .agenda__appointment-content strong,
-        .agenda__appointment-content span,
-        .agenda__appointment-content small {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .agenda__appointment-content strong {
-            color: #0f172a;
-            font-size: 0.83rem;
-        }
-
-        .agenda__appointment-content span,
-        .agenda__appointment-content small {
-            color: #64748b;
-            font-size: 0.73rem;
-        }
-
-        .agenda__appointment-icon {
-            margin-left: auto;
-            color: currentColor;
-        }
-
-        .agenda__appointment--agendado {
-            color: #0D9488;
-            background: #F0FDFA;
-        }
-
-        .agenda__appointment--confirmado {
-            color: #059669;
-            background: #F0FDF4;
-        }
-
-        .agenda__appointment--espera {
-            color: #D97706;
-            background: #FFFBEB;
-        }
-
-        .agenda__appointment--atendido {
-            color: #0891B2;
-            background: #ECFEFF;
-        }
-
-        .agenda__appointment--cancelado {
-            color: #DC2626;
-            background: #FEF2F2;
-            opacity: 0.72;
-        }
-
-        .agenda__appointment--nao-compareceu {
-            color: #7C3AED;
-            background: #F5F3FF;
-        }
-
-        .agenda__empty {
-            min-width: 760px;
-            padding: 48px 20px;
-            color: #64748B;
-            text-align: center;
-        }
-
-        .toast {
-            animation: toast-enter 180ms ease-out;
-        }
-
-        .toast.is-leaving {
-            animation: toast-leave 250ms ease-in forwards;
-        }
-
-        @keyframes toast-enter {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes toast-leave {
-            to {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-        }
-    </style>
 </head>
 
 <body>
@@ -233,12 +66,14 @@
          CABEÇALHO
          ===================================================== -->
 
-    <header class="agenda__header sticky top-0 z-40">
+    <header class="agenda__header">
 
         <div class="agenda__header-left">
 
             <a href="../Menu-Principal.html" class="agenda__btn agenda__btn--voltar">
+
                 <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+
                 <span>Voltar</span>
             </a>
 
@@ -272,6 +107,7 @@
                 <button type="button" id="btn-today" class="agenda__btn agenda__btn--hoje">
 
                     <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+
                     <span>Hoje</span>
                 </button>
             </div>
@@ -283,6 +119,7 @@
 
                 <div class="agenda__select-wrap">
                     <label for="filter-medico" class="sr-only">
+
                         Filtrar por médico
                     </label>
 
@@ -310,6 +147,7 @@
 
                 <div class="agenda__select-wrap">
                     <label for="filter-especialidade" class="sr-only">
+
                         Filtrar por especialidade
                     </label>
 
@@ -321,107 +159,38 @@
                         </option>
 
                         <optgroup label="Clínicas e Consultas">
-                            <option value="alergia">
-                                Alergologia e Imunologia
-                            </option>
-                            <option value="cardio">
-                                Cardiologia
-                            </option>
-                            <option value="clinica">
-                                Clínica Médica
-                            </option>
-                            <option value="derma">
-                                Dermatologia
-                            </option>
-                            <option value="endo">
-                                Endocrinologia e Metabologia
-                            </option>
-                            <option value="gastro">
-                                Gastroenterologia
-                            </option>
-                            <option value="geriatria">
-                                Geriatria
-                            </option>
-                            <option value="infecto">
-                                Infectologia
-                            </option>
-                            <option value="med-familia">
-                                Medicina de Família e Comunidade
-                            </option>
-                            <option value="med-esporte">
-                                Medicina do Esporte
-                            </option>
-                            <option value="nefro">
-                                Nefrologia
-                            </option>
-                            <option value="neuro">
-                                Neurologia
-                            </option>
-                            <option value="nutrologia">
-                                Nutrologia
-                            </option>
-                            <option value="pediatria">
-                                Pediatria
-                            </option>
-                            <option value="pneumo">
-                                Pneumologia
-                            </option>
-                            <option value="psiquiatria">
-                                Psiquiatria
-                            </option>
-                            <option value="reumato">
-                                Reumatologia
-                            </option>
+                            <option value="alergia">Alergologia e Imunologia</option>
+                            <option value="cardio">Cardiologia</option>
+                            <option value="clinica">Clínica Médica</option>
+                            <option value="derma">Dermatologia</option>
+                            <option value="endo">Endocrinologia e Metabologia</option>
+                            <option value="gastro">Gastroenterologia</option>
+                            <option value="geriatria">Geriatria</option>
+                            <option value="infecto">Infectologia</option>
+                            <option value="med-familia">Medicina de Família e Comunidade</option>
+                            <option value="med-esporte">Medicina do Esporte</option>
+                            <option value="nefro">Nefrologia</option>
+                            <option value="neuro">Neurologia</option>
+                            <option value="nutrologia">Nutrologia</option>
+                            <option value="pediatria">Pediatria</option>
+                            <option value="pneumo">Pneumologia</option>
+                            <option value="psiquiatria">Psiquiatria</option>
+                            <option value="reumato">Reumatologia</option>
                         </optgroup>
 
                         <optgroup label="Cirurgias">
-                            <option value="cirurgia-cabeca">
-                                Cirurgia de Cabeça e Pescoço
-                            </option>
-
-                            <option value="cirurgia-cardio">
-                                Cirurgia Cardiovascular
-                            </option>
-
-                            <option value="cirurgia-geral">
-                                Cirurgia Geral
-                            </option>
-
-                            <option value="cirurgia-plastica">
-                                Cirurgia Plástica
-                            </option>
-
-                            <option value="cirurgia-toracica">
-                                Cirurgia Torácica
-                            </option>
-
-                            <option value="cirurgia-vascular">
-                                Cirurgia Vascular
-                            </option>
-
-                            <option value="coloprocto">
-                                Coloproctologia
-                            </option>
-
-                            <option value="mastologia">
-                                Mastologia
-                            </option>
-
-                            <option value="oftalmo">
-                                Oftalmologia
-                            </option>
-
-                            <option value="orto">
-                                Ortopedia e Traumatologia
-                            </option>
-
-                            <option value="otorrino">
-                                Otorrinolaringologia
-                            </option>
-
-                            <option value="urologia">
-                                Urologia
-                            </option>
+                            <option value="cirurgia-cabeca">Cirurgia de Cabeça e Pescoço</option>
+                            <option value="cirurgia-cardio">Cirurgia Cardiovascular</option>
+                            <option value="cirurgia-geral">Cirurgia Geral</option>
+                            <option value="cirurgia-plastica">Cirurgia Plástica</option>
+                            <option value="cirurgia-toracica">Cirurgia Torácica</option>
+                            <option value="cirurgia-vascular">Cirurgia Vascular</option>
+                            <option value="coloprocto">Coloproctologia</option>
+                            <option value="mastologia">Mastologia</option>
+                            <option value="oftalmo">Oftalmologia</option>
+                            <option value="orto">Ortopedia e Traumatologia</option>
+                            <option value="otorrino">Otorrinolaringologia</option>
+                            <option value="urologia">Urologia</option>
                         </optgroup>
 
                         <optgroup label="Diagnóstico e Outros">
@@ -437,9 +206,7 @@
                             <option value="med-trafego">Medicina de Tráfego</option>
                             <option value="oncologia">Oncologia</option>
                             <option value="patologia">Patologia</option>
-                            <option value="radiologia">
-                                Radiologia e Diagnóstico por Imagem
-                            </option>
+                            <option value="radiologia">Radiologia e Diagnóstico por Imagem</option>
                         </optgroup>
                     </select>
 
@@ -450,6 +217,7 @@
             <button type="button" id="btn-novo-agendamento" class="agenda__btn agenda__btn--primary">
 
                 <i class="fa-solid fa-plus" aria-hidden="true"></i>
+
                 <span>Novo Agendamento</span>
             </button>
         </div>
@@ -493,7 +261,7 @@
     </section>
 
     <!-- =====================================================
-         CONTEÚDO PRINCIPAL
+         CALENDÁRIO
          ===================================================== -->
 
     <main>
@@ -721,29 +489,12 @@
 
                         <select id="agendamento-status" class="modal__input">
 
-                            <option value="agendado" selected>
-                                Agendado
-                            </option>
-
-                            <option value="confirmado">
-                                Confirmado
-                            </option>
-
-                            <option value="espera">
-                                Em Espera
-                            </option>
-
-                            <option value="atendido">
-                                Atendido
-                            </option>
-
-                            <option value="cancelado">
-                                Cancelado
-                            </option>
-
-                            <option value="nao-compareceu">
-                                Não Compareceu
-                            </option>
+                            <option value="agendado" selected>Agendado</option>
+                            <option value="confirmado">Confirmado</option>
+                            <option value="espera">Em Espera</option>
+                            <option value="atendido">Atendido</option>
+                            <option value="cancelado">Cancelado</option>
+                            <option value="nao-compareceu">Não Compareceu</option>
                         </select>
                     </div>
                 </div>
@@ -888,14 +639,11 @@
         </div>
     </div>
 
-    <!-- =====================================================
-         CONTAINER DE NOTIFICAÇÕES
-         ===================================================== -->
-
+    <!-- Toasts -->
     <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true">
     </div>
 
-    <!-- JavaScript principal da agenda -->
+    <!-- JavaScript externo -->
     <script src="agenda-geral.js"></script>
 </body>
 
