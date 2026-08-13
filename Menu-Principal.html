@@ -4,200 +4,478 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Sistema G4Med de gestão médica, pacientes, agenda e atendimentos">
+
     <title>Sistema Médico - G4Med</title>
 
-    <!-- Tailwind CSS (CDN) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!--- Configuração Customizada do Tailwind --->
+    <!-- Configuração customizada do Tailwind -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
+                        primary: {
+                            50: '#F0FDFA',
+                            100: '#CCFBF1',
+                            200: '#99F6E4',
+                            300: '#5EEAD4',
+                            400: '#2DD4BF',
+                            500: '#14B8A6',
+                            600: '#0D9488',
+                            700: '#0F766E',
+                            800: '#115E59',
+                            900: '#134E4A'
+                        },
+
                         sidebar: {
-                            blue: '#1f5f84',
-                            light: '#2c7aa3'
+                            teal: '#134E4A',
+                            light: '#0F766E'
                         },
+
                         topbar: {
-                            blue: '#2b80aa',
-                            light: '#3f98c5'
-                        },
-                        primary: '#1f5f84',
-                        secondary: '#2b80aa'
+                            teal: '#0D9488',
+                            light: '#14B8A6'
+                        }
                     },
+
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['Courier New', 'monospace']
+                        sans: [
+                            'Plus Jakarta Sans',
+                            'ui-sans-serif',
+                            'system-ui',
+                            'sans-serif'
+                        ],
+
+                        mono: [
+                            'Courier New',
+                            'monospace'
+                        ]
                     },
+
                     boxShadow: {
-                        soft: '0 12px 30px rgba(0, 0, 0, 0.08)',
-                        sidebar: '4px 0 25px rgba(0, 0, 0, 0.12)'
+                        soft: '0 12px 30px rgb(15 23 42 / 8%)',
+                        sidebar: '4px 0 25px rgb(15 23 42 / 16%)'
                     }
                 }
             }
-        }
+        };
     </script>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-    <!-- CSS Customizado -->
+    <!-- CSS customizado -->
     <link rel="stylesheet" href="Menu-Principal.css">
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --primary: #0D9488;
+            --primary-hover: #0F766E;
+            --primary-dark: #115E59;
+            --primary-soft: #CCFBF1;
+            --primary-light: #F0FDFA;
+            --primary-medium: #14B8A6;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .menu-item.is-active {
+            background: rgb(255 255 255 / 16%);
+            box-shadow: inset 3px 0 0 #5EEAD4;
+        }
+
+        .submenu.is-open {
+            display: flex;
+            animation: submenu-enter 180ms ease-out;
+        }
+
+        .submenu-toggle[aria-expanded="true"] .arrow {
+            transform: rotate(180deg);
+        }
+
+        .submenu-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-radius: 0.875rem;
+            padding: 0.625rem 0.875rem;
+            color: #FFFFFF;
+            font-size: 0.875rem;
+            opacity: 0.9;
+            text-decoration: none;
+            transition:
+                background-color 160ms ease,
+                opacity 160ms ease;
+        }
+
+        .submenu-link:hover,
+        .submenu-link:focus-visible {
+            background: rgb(255 255 255 / 15%);
+            opacity: 1;
+        }
+
+        .submenu-link i {
+            width: 1.5rem;
+            text-align: center;
+        }
+
+        .mobile-menu-button {
+            display: none;
+        }
+
+        .sidebar-overlay {
+            display: none;
+        }
+
+        @keyframes submenu-enter {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.is-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                width: 100%;
+                margin-left: 0;
+            }
+
+            .footer {
+                left: 0;
+                width: 100%;
+            }
+
+            .mobile-menu-button {
+                position: fixed;
+                top: 1rem;
+                left: 1rem;
+                z-index: 150;
+                display: grid;
+                width: 2.75rem;
+                height: 2.75rem;
+                place-items: center;
+                border: 1px solid rgb(255 255 255 / 20%);
+                border-radius: 0.75rem;
+                background: var(--primary);
+                color: #FFFFFF;
+                box-shadow: 0 8px 18px rgb(15 23 42 / 18%);
+            }
+
+            .mobile-menu-button:hover,
+            .mobile-menu-button:focus-visible {
+                background: var(--primary-hover);
+            }
+
+            .sidebar-overlay.is-visible {
+                position: fixed;
+                inset: 0;
+                z-index: 90;
+                display: block;
+                background: rgb(15 23 42 / 52%);
+                backdrop-filter: blur(2px);
+            }
+
+            .topbar {
+                min-height: 72px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .topbar {
+                min-height: auto;
+                border-radius: 18px;
+            }
+
+            .topbar-left,
+            .topbar-right {
+                width: 100%;
+            }
+
+            .topbar-right {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .datetime-box,
+            .user-session {
+                width: 100%;
+            }
+
+            .welcome-card {
+                padding: 1.5rem;
+            }
+
+            .welcome-card h1 {
+                font-size: 1.5rem;
+            }
+
+            .footer {
+                position: static;
+                width: 100%;
+                margin-top: 1rem;
+                padding-bottom: 1rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-gray-100 font-sans antialiased min-h-screen overflow-x-hidden">
-    <!-- Background Glow -->
-    <div class="background-glow"></div>
+<body class="min-h-screen overflow-x-hidden bg-slate-100 font-sans antialiased">
+
+    <!-- Botão mobile -->
+    <button type="button" id="mobileMenuButton" class="mobile-menu-button" aria-label="Abrir menu principal"
+        aria-controls="mainSidebar" aria-expanded="false">
+
+        <i class="fa-solid fa-bars" aria-hidden="true"></i>
+    </button>
+
+    <!-- Overlay mobile -->
+    <div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true">
+    </div>
 
     <!-- Sidebar -->
-    <aside
-        class="sidebar fixed top-0 left-0 w-[290px] h-screen flex flex-col bg-gradient-to-b from-sidebar-blue to-sidebar-light shadow-sidebar p-5 overflow-y-auto overflow-x-hidden transition-transform duration-300 ease-in-out z-[100]">
-        <nav class="flex flex-col gap-2.5">
-            <!-- Header -->
-            <div class="sidebar-header w-full flex-shrink-0 text-center mb-7 pb-7 border-b border-white/15">
+    <aside id="mainSidebar"
+        class="sidebar fixed left-0 top-0 z-[100] flex h-screen w-[290px] flex-col overflow-x-hidden overflow-y-auto bg-gradient-to-b from-sidebar-teal to-sidebar-light p-5 shadow-sidebar transition-transform duration-300 ease-in-out">
+
+        <nav class="flex flex-col gap-2.5" aria-label="Menu principal">
+
+            <!-- Identidade -->
+            <div class="sidebar-header mb-7 w-full flex-shrink-0 border-b border-white/15 pb-7 text-center">
+
                 <div class="flex items-center justify-center gap-3">
-                    <i data-lucide="stethoscope" class="heart-pulse medical-icon w-11 h-11 text-[#7fd8ff]"></i>
-                    <div class="brand-container">
-                        <h1 class="brand-name text-3xl font-extrabold text-white mt-2.5">G4Med</h1>
-                        <p class="brand-slogan text-xs text-white/95 mt-1">Intelligent Health System</p>
+
+                    <i data-lucide="stethoscope" class="medical-icon h-11 w-11 text-primary-200" aria-hidden="true">
+                    </i>
+
+                    <div>
+                        <h1 class="brand-name mt-2.5 text-3xl font-extrabold text-white">
+                            G4Med
+                        </h1>
+
+                        <p class="brand-slogan mt-1 text-xs text-primary-100">
+                            Intelligent Health System
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <!-- Menu Items -->
+            <!-- Agenda -->
             <a href="Agenda-medica/agenda-geral.html"
-                class="menu-item flex items-center gap-3.5 px-4 py-3.5 text-white text-base font-semibold rounded-[14px] hover:bg-white/8 transition-all duration-300">
-                <i class="fa-solid fa-calendar-days w-6 text-center text-lg"></i>
+                class="menu-item flex items-center gap-3.5 rounded-[14px] px-4 py-3.5 text-base font-semibold text-white transition-all duration-300 hover:bg-white/10 focus:outline-none focus:ring-4 focus:ring-primary-200/30">
+
+                <i class="fa-solid fa-calendar-days w-6 text-center text-lg" aria-hidden="true">
+                </i>
+
                 <span>Agenda</span>
             </a>
 
+            <!-- Atendimento -->
             <a href="Atendimento-do-paciente-na-recepcao/atendimento-recepcao.html"
-                class="menu-item flex items-center gap-3.5 px-4 py-3.5 text-white text-base font-semibold rounded-[14px] hover:bg-white/8 transition-all duration-300">
-                <i class="fa-solid fa-clipboard-user w-6 text-center text-lg"></i>
+                class="menu-item flex items-center gap-3.5 rounded-[14px] px-4 py-3.5 text-base font-semibold text-white transition-all duration-300 hover:bg-white/10 focus:outline-none focus:ring-4 focus:ring-primary-200/30">
+
+                <i class="fa-solid fa-clipboard-user w-6 text-center text-lg" aria-hidden="true">
+                </i>
+
                 <span>Atendimento Recepção</span>
             </a>
 
-            <!-- Menu Group: Cadastro -->
+            <!-- Cadastro -->
             <div class="menu-group">
-                <div class="menu-item submenu-toggle flex items-center gap-3.5 px-4 py-3.5 text-white text-base font-semibold rounded-[14px] hover:bg-white/8 transition-all duration-300 cursor-pointer"
-                    aria-expanded="false">
-                    <div class="flex items-center gap-3.5">
-                        <i class="fa-solid fa-folder-open w-6 text-center text-lg"></i>
+
+                <button type="button"
+                    class="menu-item submenu-toggle flex w-full items-center gap-3.5 rounded-[14px] px-4 py-3.5 text-left text-base font-semibold text-white transition-all duration-300 hover:bg-white/10 focus:outline-none focus:ring-4 focus:ring-primary-200/30"
+                    aria-expanded="false" aria-controls="submenu-cadastro">
+
+                    <span class="flex items-center gap-3.5">
+                        <i class="fa-solid fa-folder-open w-6 text-center text-lg" aria-hidden="true">
+                        </i>
+
                         <span>Cadastro</span>
-                    </div>
-                    <i class="fa-solid fa-chevron-down arrow ml-auto transition-transform duration-300"></i>
-                </div>
-                <div class="submenu hidden flex-col mt-1.5 ml-10.5 gap-1">
-                    <a href="Cadastro-paciente/cadastro-paciente.html"
-                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
-                        <i class="fa-solid fa-user w-6 text-center"></i>
+                    </span>
+
+                    <i class="fa-solid fa-chevron-down arrow ml-auto transition-transform duration-300"
+                        aria-hidden="true">
+                    </i>
+                </button>
+
+                <div id="submenu-cadastro" class="submenu hidden flex-col gap-1 pl-10 pt-1.5">
+
+                    <a href="Cadastro-paciente/cadastro-paciente.html" class="submenu-link">
+
+                        <i class="fa-solid fa-user" aria-hidden="true">
+                        </i>
+
                         Paciente
                     </a>
-                    <a href="Cadastros-medicos/cadastro-medicos.html"
-                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
-                        <i class="fa-solid fa-user-doctor w-6 text-center"></i>
+
+                    <a href="Cadastros-medicos/cadastro-medicos.html" class="submenu-link">
+
+                        <i class="fa-solid fa-user-doctor" aria-hidden="true">
+                        </i>
+
                         Médico
                     </a>
                 </div>
             </div>
 
-            <!-- Menu Group: Relatório -->
+            <!-- Relatórios -->
             <div class="menu-group">
-                <div class="menu-item submenu-toggle flex items-center gap-3.5 px-4 py-3.5 text-white text-base font-semibold rounded-[14px] hover:bg-white/8 transition-all duration-300 cursor-pointer"
-                    aria-expanded="false">
-                    <div class="flex items-center gap-3.5">
-                        <i class="fa-solid fa-chart-column w-6 text-center text-lg"></i>
-                        <span>Relatório</span>
-                    </div>
-                    <i class="fa-solid fa-chevron-down arrow ml-auto transition-transform duration-300"></i>
-                </div>
-                <div class="submenu hidden flex-col mt-1.5 ml-10.5 gap-1">
-                    <a href="Relatorios/relatorio-atendimento.html"
-                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
-                        <i class="fa-solid fa-file-lines w-6 text-center"></i>
+
+                <button type="button"
+                    class="menu-item submenu-toggle flex w-full items-center gap-3.5 rounded-[14px] px-4 py-3.5 text-left text-base font-semibold text-white transition-all duration-300 hover:bg-white/10 focus:outline-none focus:ring-4 focus:ring-primary-200/30"
+                    aria-expanded="false" aria-controls="submenu-relatorios">
+
+                    <span class="flex items-center gap-3.5">
+
+                        <i class="fa-solid fa-chart-column w-6 text-center text-lg" aria-hidden="true">
+                        </i>
+
+                        <span>Relatórios</span>
+                    </span>
+
+                    <i class="fa-solid fa-chevron-down arrow ml-auto transition-transform duration-300"
+                        aria-hidden="true">
+                    </i>
+                </button>
+
+                <div id="submenu-relatorios" class="submenu hidden flex-col gap-1 pl-10 pt-1.5">
+
+                    <a href="Relatorios/relatorio-atendimento.html" class="submenu-link">
+
+                        <i class="fa-solid fa-file-lines" aria-hidden="true">
+                        </i>
+
                         Atendimentos
                     </a>
-                    <a href="Relatorios/relatorio-paciente.html"
-                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
-                        <i class="fa-solid fa-users w-6 text-center"></i>
+
+                    <a href="Relatorios/relatorio-paciente.html" class="submenu-link">
+
+                        <i class="fa-solid fa-users" aria-hidden="true">
+                        </i>
+
                         Pacientes
                     </a>
                 </div>
             </div>
 
-            <!-- Menu Group: Utilitários -->
+            <!-- Utilitários -->
             <div class="menu-group">
-                <div class="menu-item submenu-toggle flex items-center gap-3.5 px-4 py-3.5 text-white text-base font-semibold rounded-[14px] hover:bg-white/8 transition-all duration-300 cursor-pointer"
-                    aria-expanded="false">
-                    <div class="flex items-center gap-3.5">
-                        <i class="fa-solid fa-screwdriver-wrench w-6 text-center text-lg"></i>
+
+                <button type="button"
+                    class="menu-item submenu-toggle flex w-full items-center gap-3.5 rounded-[14px] px-4 py-3.5 text-left text-base font-semibold text-white transition-all duration-300 hover:bg-white/10 focus:outline-none focus:ring-4 focus:ring-primary-200/30"
+                    aria-expanded="false" aria-controls="submenu-utilitarios">
+
+                    <span class="flex items-center gap-3.5">
+
+                        <i class="fa-solid fa-screwdriver-wrench w-6 text-center text-lg" aria-hidden="true">
+                        </i>
+
                         <span>Utilitários</span>
-                    </div>
-                    <i class="fa-solid fa-chevron-down arrow ml-auto transition-transform duration-300"></i>
-                </div>
-                <div class="submenu hidden flex-col mt-1.5 ml-10.5 gap-1">
-                    <a href="Grupo-de-exames/grupo-exames.html"
-                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
-                        <i class="fa-solid fa-file-medical w-6 text-center"></i>
-                        Grupo De Exames
+                    </span>
+
+                    <i class="fa-solid fa-chevron-down arrow ml-auto transition-transform duration-300"
+                        aria-hidden="true">
+                    </i>
+                </button>
+
+                <div id="submenu-utilitarios" class="submenu hidden flex-col gap-1 pl-10 pt-1.5">
+
+                    <a href="Grupo-de-exames/grupo-exames.html" class="submenu-link">
+                        <i class="fa-solid fa-file-medical" aria-hidden="true"></i>
+                        Grupo de Exames
                     </a>
-                    <a href="Grupo-de-procedimentos/grupo-procedimentos.html"
-                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
-                        <i class="fa-solid fa-stethoscope w-6 text-center"></i>
-                        Grupo De Procedimentos
+
+                    <a href="Grupo-de-procedimentos/grupo-procedimentos.html" class="submenu-link">
+                        <i class="fa-solid fa-stethoscope" aria-hidden="true"></i>
+                        Grupo de Procedimentos
                     </a>
-                    <a href="Grupo-de-atendimento/grupo-de-atendimento.html"
-                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
-                        <i class="fa-solid fa-notes-medical w-6 text-center"></i>
-                        Grupo De Atendimento
+
+                    <a href="Grupo-de-atendimento/grupo-de-atendimento.html" class="submenu-link">
+                        <i class="fa-solid fa-notes-medical" aria-hidden="true"></i>
+                        Grupo de Atendimento
                     </a>
-                    <a href="Grupo-de-tipos-de-atendimento/grupo-de-tipos-de-atendimento.html"
-                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
-                        <i class="fa-solid fa-layer-group w-6 text-center"></i>
-                        Grupo De Tipos De Atendimento
+
+                    <a href="Grupo-de-tipos-de-atendimento/grupo-de-tipos-de-atendimento.html" class="submenu-link">
+                        <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                        Tipos de Atendimento
                     </a>
-                    <a href="Procedimento-médico/procedimento-medico.html"
-                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
-                        <i class="fa-solid fa-syringe w-6 text-center"></i>
+
+                    <a href="Procedimento-médico/procedimento-medico.html" class="submenu-link">
+                        <i class="fa-solid fa-syringe" aria-hidden="true"></i>
                         Procedimento Médico
                     </a>
-                    <a href="Cadastro-exame/cadastro-exames.html"
-                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
-                        <i class="fa-solid fa-microscope w-6 text-center"></i>
+
+                    <a href="Cadastro-exame/cadastro-exames.html" class="submenu-link">
+                        <i class="fa-solid fa-microscope" aria-hidden="true"></i>
                         Exames
                     </a>
-                    <a href="convenios/convenios.html"
-                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
-                        <i class="fa-solid fa-id-card-clip w-6 text-center"></i>
+
+                    <a href="convenios/convenios.html" class="submenu-link">
+                        <i class="fa-solid fa-id-card-clip" aria-hidden="true"></i>
                         Convênios
                     </a>
-                    <a href="Utilitarios/utilitario-logs.html"
-                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
-                        <i class="fa-solid fa-clock-rotate-left w-6 text-center"></i>
+
+                    <a href="Utilitarios/utilitario-logs.html" class="submenu-link">
+                        <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
                         Logs
                     </a>
-                    <a href="Siglas/siglas.html"
-                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
-                        <i class="fa-solid fa-list-ul w-6 text-center"></i>
+
+                    <a href="Siglas/siglas.html" class="submenu-link">
+                        <i class="fa-solid fa-list-ul" aria-hidden="true"></i>
                         Siglas
                     </a>
-                    <a href="Utilitarios/utilitario-usuario.html"
-                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
-                        <i class="fa-solid fa-users-gear w-6 text-center"></i>
+
+                    <a href="Utilitarios/utilitario-usuario.html" class="submenu-link">
+                        <i class="fa-solid fa-users-gear" aria-hidden="true"></i>
                         Usuários
                     </a>
-                    <a href="Utilitarios/utilitario-especialidade.html"
-                        class="flex items-center gap-3 px-3.5 py-2.5 text-white text-sm opacity-90 rounded-[14px] hover:bg-white/15 hover:opacity-100 transition-all duration-300">
-                        <i class="fa-solid fa-user-doctor w-6 text-center"></i>
+
+                    <a href="Utilitarios/utilitario-especialidade.html" class="submenu-link">
+                        <i class="fa-solid fa-user-doctor" aria-hidden="true"></i>
                         Especialidade Médica
                     </a>
                 </div>
@@ -205,95 +483,127 @@
 
             <!-- Suporte -->
             <a href="Suporte/suporte.html"
-                class="menu-item flex items-center gap-3.5 px-4 py-3.5 text-white text-base font-semibold rounded-[14px] hover:bg-white/8 transition-all duration-300">
-                <i class="fa-solid fa-headset w-6 text-center text-lg"></i>
+                class="menu-item flex items-center gap-3.5 rounded-[14px] px-4 py-3.5 text-base font-semibold text-white transition-all duration-300 hover:bg-white/10 focus:outline-none focus:ring-4 focus:ring-primary-200/30">
+
+                <i class="fa-solid fa-headset w-6 text-center text-lg" aria-hidden="true">
+                </i>
+
                 <span>Suporte</span>
             </a>
 
-            <!-- Logout -->
+            <!-- Sair -->
             <a href="Sair/sair-sair.html"
-                class="menu-item logout flex items-center gap-3.5 px-4 py-3.5 text-white text-base font-semibold rounded-[14px] hover:bg-red-500/20 transition-all duration-300">
-                <i class="fa-solid fa-right-from-bracket w-6 text-center text-lg"></i>
+                class="menu-item logout flex items-center gap-3.5 rounded-[14px] px-4 py-3.5 text-base font-semibold text-white transition-all duration-300 hover:bg-red-500/20 focus:outline-none focus:ring-4 focus:ring-red-300/30">
+
+                <i class="fa-solid fa-right-from-bracket w-6 text-center text-lg" aria-hidden="true">
+                </i>
+
                 <span>Sair</span>
             </a>
         </nav>
     </aside>
 
-    <!-- Main Content -->
-    <main class="main-content flex-1 min-h-screen ml-[290px] p-1.5 pb-20">
-        <header
-            class="topbar flex items-center justify-between w-full min-h-[80px] px-4.5 text-white bg-gradient-to-r from-topbar-blue to-topbar-light rounded-[24px] shadow-lg">
-            <div class="topbar-left flex items-center gap-4 flex-1">
-                <div class="system-info text-base font-medium">
-                    <h3>GM4 — Home V - 1.0.0</h3>
+    <!-- Conteúdo principal -->
+    <main class="main-content ml-[290px] min-h-screen flex-1 overflow-x-hidden p-1.5 pb-20">
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+                <div class="system-info">
+                    <span class="system-label">Sistema</span>
+                    <h2>G4Med — Home V - 1.0.0</h2>
                 </div>
             </div>
 
-            <div class="topbar-right flex items-center gap-3 justify-end">
-                <!-- DateTime Box -->
-                <div
-                    class="datetime-box flex items-center gap-3 text-white bg-white/14 border border-white/12 backdrop-blur-md rounded-[18px] px-4 py-2.5 min-w-[220px]">
-                    <i class="fa fa-calendar text-sm"></i>
-                    <span id="relogio-dinamico"
-                        class="monospace-text font-mono text-sm min-w-[140px] text-center">Carregando...</span>
+            <div class="topbar-right">
+
+                <div class="datetime-box">
+                    <i class="fa-solid fa-calendar" aria-hidden="true">
+                    </i>
+
+                    <time id="relogio-dinamico">
+                        Carregando...
+                    </time>
                 </div>
 
-                <!-- User Session -->
-                <div
-                    class="user-session flex items-center gap-3 text-white bg-white/14 border border-white/12 backdrop-blur-md rounded-[18px] px-3.5 py-2">
-                    <svg class="user-icon w-8 h-8 p-1.5 rounded-full bg-white/20" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2">
-                        <path d="M20 21a8 8 0 0 0-16 0"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                    <div class="user-info flex flex-col">
-                        <div class="username text-xs text-white">admin</div>
-                        <div class="status flex items-center gap-2 mt-0.5">
-                            <div
-                                class="status-dot relative w-2 h-2 rounded-full bg-[#22c55e] flex-shrink-0 shadow-[0_0_0_3px_rgba(34,197,94,0.2),0_0_10px_rgba(34,197,94,0.9),0_0_20px_rgba(34,197,94,0.5)]">
-                            </div>
-                            <span class="status-text text-xs text-white">Online</span>
-                        </div>
-                        <div class="session-time text-xs text-white">
+                <div class="user-session">
+
+                    <div class="user-avatar" aria-hidden="true">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+
+                    <div class="user-info">
+                        <strong class="username">
+                            admin
+                        </strong>
+
+                        <span class="status">
+                            <span class="status-dot"></span>
+                            Online
+                        </span>
+
+                        <span class="session-time">
                             Tempo logado:
-                            <span id="tempoLogado"
-                                class="monospace-text font-mono text-xs min-w-[140px] text-center">00h 00m 00s</span>
-                        </div>
+                            <time id="tempoLogado">
+                                00h 00m 00s
+                            </time>
+                        </span>
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- Dashboard Content -->
-        <div class="dashboard-home mt-6">
-            <div class="welcome-card bg-white rounded-[24px] p-10 shadow-soft flex flex-col gap-4">
-                <h1 class="text-3xl font-extrabold text-gray-800">Bem-vindo ao G4Med</h1>
-                <p class="text-base leading-relaxed text-gray-600 max-w-[700px]">
-                    Sistema inteligente de gestão médica. Gerencie pacientes, agenda, atendimentos e muito mais em um só
-                    lugar.
+        <!-- Conteúdo da página -->
+        <section class="dashboard-home mt-6">
+
+            <div class="welcome-card flex flex-col gap-4 rounded-[24px] bg-white p-6 shadow-soft sm:p-10">
+
+                <div class="flex items-center gap-3 text-primary-600">
+                    <i class="fa-solid fa-heart-pulse text-2xl" aria-hidden="true">
+                    </i>
+
+                    <span class="text-sm font-bold uppercase tracking-wide">
+                        Gestão inteligente em saúde
+                    </span>
+                </div>
+
+                <h1 class="text-2xl font-extrabold tracking-tight text-gray-800 sm:text-3xl">
+                    Bem-vindo ao G4Med
+                </h1>
+
+                <p class="max-w-[700px] text-sm leading-relaxed text-gray-600 sm:text-base">
+                    Sistema inteligente de gestão médica. Gerencie pacientes, agenda,
+                    atendimentos e informações clínicas em um só lugar.
                 </p>
 
-                <!-- BOTÃO ATUALIZADO COM LINK -->
                 <a href="catalogo-exames/catalogo-exames.html"
-                    class="btn-primary self-start inline-flex px-7 py-3.5 border-none rounded-[14px] bg-gradient-to-br from-topbar-blue to-topbar-light text-white text-base font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(43,128,170,0.30)] active:translate-y-0 no-underline">
-                    <!-- Começar Agora -->
+                    class="inline-flex w-fit items-center gap-2 rounded-[14px] bg-gradient-to-r from-primary-600 to-primary-500 px-6 py-3.5 text-sm font-bold text-white no-underline shadow-sm transition duration-300 hover:-translate-y-1 hover:from-primary-700 hover:to-primary-600 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-primary-200">
+
+                    <i class="fa-solid fa-microscope" aria-hidden="true">
+                    </i>
+
                     Catálogo de Exames
                 </a>
             </div>
-        </div>
+        </section>
     </main>
 
-    <!-- Footer -->
+    <!-- Rodapé -->
     <footer
         class="footer fixed bottom-2.5 left-[290px] w-[calc(100%-290px)] text-center text-xs text-gray-400 opacity-85">
+
         © 2026 G4Med - Intelligent Health System. Todos os direitos reservados.
     </footer>
 
-    <!--- Scripts -->
+    <!-- Scripts externos -->
     <script src="Menu-Principal.js"></script>
+
     <script>
-        // Inicializa ícones Lucide
-        lucide.createIcons();
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
     </script>
 </body>
 

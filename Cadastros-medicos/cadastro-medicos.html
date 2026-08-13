@@ -1,80 +1,143 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Cadastro de médicos profissionais do Sistema GM4">
+
     <title>Cadastro de Médicos | Sistema GM4</title>
+
     <link rel="stylesheet" href="cadastro-medicos.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
 </head>
 
 <body>
-    <div class="container">
-        <header>
+
+    <div class="app-container">
+
+        <header class="page-header">
+
             <div class="header-title">
-                <i class="fas fa-user-md"></i>
-                <h1>Cadastro de Médicos Profissionais</h1>
-            </div>
-            <div class="toolbar">
-                <button id="btnNovo" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Novo Médico
-                </button>
-                <button id="btnSalvar" class="btn btn-success" disabled>
-                    <i class="fas fa-save"></i> Gravar
-                </button>
-                <button id="btnEditar" class="btn btn-warning" disabled>
-                    <i class="fas fa-edit"></i> Editar
-                </button>
-                <button id="btnExcluir" class="btn btn-danger" disabled>
-                    <i class="fas fa-trash"></i> Excluir
-                </button>
-                <div class="toolbar">
-                    <button id="btnSair" class="btn btn-dark" onclick="window.location.href='../Menu-Principal.html'">
-                        <i class="fas fa-arrow-left"></i> Voltar
-                    </button>
+                <div class="header-icon">
+                    <i class="fa-solid fa-user-doctor" aria-hidden="true"></i>
                 </div>
+
+                <div>
+                    <h1>Cadastro de Médicos Profissionais</h1>
+                    <p>Gerencie profissionais, especialidades e configurações de agenda.</p>
+                </div>
+            </div>
+
+            <div class="toolbar">
+
+                <button type="button" id="btnNovo" class="btn btn-primary">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    <span>Novo Médico</span>
+                </button>
+
+                <button type="button" id="btnSalvar" class="btn btn-success" disabled>
+                    <i class="fa-solid fa-save" aria-hidden="true"></i>
+                    <span>Gravar</span>
+                </button>
+
+                <button type="button" id="btnEditar" class="btn btn-warning" disabled>
+                    <i class="fa-solid fa-edit" aria-hidden="true"></i>
+                    <span>Editar</span>
+                </button>
+
+                <button type="button" id="btnExcluir" class="btn btn-danger" disabled>
+                    <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                    <span>Excluir</span>
+                </button>
+
+                <button type="button" id="btnSair" class="btn btn-outline">
+                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                    <span>Voltar</span>
+                </button>
             </div>
         </header>
 
-        <main>
+        <main class="main-layout">
+
             <section class="form-area">
-                <nav class="tabs-nav">
-                    <button class="tab-link active" onclick="openTab(event, 'dados-pessoais')">1. Dados
-                        BÁSICOS</button>
-                    <button class="tab-link" onclick="openTab(event, 'especialidades')">2. Especialidades & CRM</button>
-                    <button class="tab-link" onclick="openTab(event, 'agenda-config')">3. Config. Agenda</button>
-                    <button class="tab-link" onclick="openTab(event, 'financeiro')">4. Financeiro</button>
+
+                <nav class="tabs-nav" aria-label="Seções do cadastro">
+
+                    <button type="button" class="tab-button active" aria-selected="true"
+                        onclick="openTab(event, 'dados-pessoais')">
+
+                        <i class="fa-solid fa-id-card" aria-hidden="true"></i>
+                        <span>Dados Básicos</span>
+                    </button>
+
+                    <button type="button" class="tab-button" aria-selected="false"
+                        onclick="openTab(event, 'especialidades')">
+
+                        <i class="fa-solid fa-certificate" aria-hidden="true"></i>
+                        <span>Especialidades & CRM</span>
+                    </button>
+
+                    <button type="button" class="tab-button" aria-selected="false"
+                        onclick="openTab(event, 'agenda-config')">
+
+                        <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+                        <span>Config. Agenda</span>
+                    </button>
+
+                    <button type="button" class="tab-button" aria-selected="false"
+                        onclick="openTab(event, 'financeiro')">
+
+                        <i class="fa-solid fa-wallet" aria-hidden="true"></i>
+                        <span>Financeiro</span>
+                    </button>
                 </nav>
 
                 <div class="form-content">
-                    <form id="medicoForm">
-                        <div id="dados-pessoais" class="tab-content active">
+
+                    <form id="medicoForm" novalidate>
+
+                        <!-- Dados pessoais -->
+                        <section id="dados-pessoais" class="tab-content active">
+
                             <div class="form-grid">
+
                                 <div class="form-group col-2">
-                                    <label>ID</label>
+                                    <label for="medicoId">ID</label>
                                     <input type="text" id="medicoId" readonly placeholder="Auto">
                                 </div>
+
                                 <div class="form-group col-10">
-                                    <label>Nome Completo do Profissional</label>
-                                    <input type="text" id="nome" class="uppercase" disabled required>
+                                    <label for="nome">Nome Completo do Profissional *</label>
+                                    <input type="text" id="nome" class="uppercase" required disabled>
                                 </div>
+
                                 <div class="form-group col-4">
-                                    <label>CPF</label>
-                                    <input type="text" id="cpf" disabled>
+                                    <label for="cpf">CPF</label>
+                                    <input type="text" id="cpf" disabled placeholder="000.000.000-00">
                                 </div>
+
                                 <div class="form-group col-4">
-                                    <label>Data de Nascimento</label>
+                                    <label for="dataNasc">Data de Nascimento</label>
                                     <input type="date" id="dataNasc" disabled>
                                 </div>
+
                                 <div class="form-group col-4">
-                                    <label>Idade / Tempo de vida</label>
+                                    <label for="idadeTempoVida">Idade</label>
                                     <input type="text" id="idadeTempoVida" readonly placeholder="Auto">
                                 </div>
+
                                 <div class="form-group col-4">
-                                    <label>Sexo</label>
+                                    <label for="sexo">Sexo</label>
+
                                     <select id="sexo" disabled>
                                         <option value="">Selecione...</option>
                                         <option value="masculino">Masculino</option>
@@ -82,287 +145,325 @@
                                         <option value="nao_binario">Não-binário</option>
                                         <option value="transgenero">Transgênero</option>
                                         <option value="outro">Outro</option>
-                                        <option value="prefiro_nao_informar">Prefiro não informar</option>
+                                        <option value="prefiro_nao_informar">
+                                            Prefiro não informar
+                                        </option>
                                     </select>
                                 </div>
-                                <div class="form-group col-6">
-                                    <label>E-mail Profissional</label>
+
+                                <div class="form-group col-4">
+                                    <label for="email">E-mail Profissional</label>
                                     <input type="email" id="email" disabled>
                                 </div>
-                                <div class="form-group col-6">
-                                    <label>Celular/WhatsApp</label>
-                                    <input type="text" id="celular" disabled>
+
+                                <div class="form-group col-4">
+                                    <label for="celular">Celular/WhatsApp</label>
+                                    <input type="tel" id="celular" disabled>
                                 </div>
                             </div>
-                        </div>
+                        </section>
 
-                        <div id="especialidades" class="tab-content">
+                        <!-- Especialidades -->
+                        <section id="especialidades" class="tab-content">
+
                             <div class="form-grid">
+
                                 <div class="form-group col-4">
-                                    <label>Sigla Conselho (Ex: CRM)</label>
+                                    <label for="siglaConselho">Sigla do Conselho</label>
+
                                     <select id="siglaConselho" disabled>
                                         <option value="">Selecione...</option>
-                                        <option value="COREN">COREN (Enfermagem)</option>
-                                        <option value="CRAS">CRAS (Assistência Social)</option>
-                                        <option value="CRBio">CRBio (Biologia)</option>
-                                        <option value="CRBM">CRBM (Biomedicina)</option>
-                                        <option value="CRC">CRC (Contabilidade - auditoria hospitalar)</option>
-                                        <option value="CREF">CREF (Educação Física)</option>
-                                        <option value="CREFITO">CREFITO (Fisioterapia e Terapia Ocupacional)</option>
-                                        <option value="CRFA">CRFA (Fonoaudiologia)</option>
-                                        <option value="CRM">CRM (Medicina)</option>
-                                        <option value="CRN">CRN (Nutrição)</option>
-                                        <option value="CRO">CRO (Odontologia)</option>
-                                        <option value="CRP">CRP (Psicologia)</option>
-                                        <option value="CRQ">CRQ (Química - análises clínicas)</option>
-                                        <option value="CRTR">CRTR (Radiologia)</option>
-                                        <option value="CRV">CRV (Veterinária)</option>
-                                        <option value="CNS">CNS (Saúde - Cartão Nacional de Saúde)</option>
+                                        <option value="CRM">CRM — Medicina</option>
+                                        <option value="COREN">COREN — Enfermagem</option>
+                                        <option value="CRBM">CRBM — Biomedicina</option>
+                                        <option value="CREFITO">CREFITO — Fisioterapia</option>
+                                        <option value="CRFA">CRFA — Fonoaudiologia</option>
+                                        <option value="CRN">CRN — Nutrição</option>
+                                        <option value="CRO">CRO — Odontologia</option>
+                                        <option value="CRP">CRP — Psicologia</option>
+                                        <option value="CRTR">CRTR — Radiologia</option>
                                     </select>
                                 </div>
+
                                 <div class="form-group col-4">
-                                    <label>Número Registro</label>
+                                    <label for="numeroConselho">Número do Registro</label>
                                     <input type="text" id="numeroConselho" disabled>
                                 </div>
+
                                 <div class="form-group col-4">
-                                    <label>UF Conselho</label>
+                                    <label for="ufConselho">UF do Conselho</label>
+
                                     <select id="ufConselho" disabled>
                                         <option value="">Selecione...</option>
-                                        <option value="AC">Acre</option>
-                                        <option value="AL">Alagoas</option>
-                                        <option value="AP">Amapá</option>
-                                        <option value="AM">Amazonas</option>
-                                        <option value="BA">Bahia</option>
-                                        <option value="CE">Ceará</option>
-                                        <option value="DF">Distrito Federal</option>
-                                        <option value="ES">Espírito Santo</option>
                                         <option value="GO">Goiás</option>
-                                        <option value="MA">Maranhão</option>
-                                        <option value="MT">Mato Grosso</option>
-                                        <option value="MS">Mato Grosso do Sul</option>
+                                        <option value="DF">Distrito Federal</option>
                                         <option value="MG">Minas Gerais</option>
-                                        <option value="PA">Pará</option>
-                                        <option value="PB">Paraíba</option>
-                                        <option value="PR">Paraná</option>
-                                        <option value="PE">Pernambuco</option>
-                                        <option value="PI">Piauí</option>
-                                        <option value="RJ">Rio de Janeiro</option>
-                                        <option value="RN">Rio Grande do Norte</option>
-                                        <option value="RS">Rio Grande do Sul</option>
-                                        <option value="RO">Rondônia</option>
-                                        <option value="RR">Roraima</option>
-                                        <option value="SC">Santa Catarina</option>
                                         <option value="SP">São Paulo</option>
-                                        <option value="SE">Sergipe</option>
-                                        <option value="TO">Tocantins</option>
+                                        <option value="RJ">Rio de Janeiro</option>
+                                        <option value="BA">Bahia</option>
+                                        <option value="PR">Paraná</option>
+                                        <option value="RS">Rio Grande do Sul</option>
+                                        <option value="SC">Santa Catarina</option>
                                     </select>
                                 </div>
+
                                 <div class="form-group col-12">
-                                    <label>Especialidades (RQE)</label>
-                                    <textarea id="especialidadesTexto" rows="3" disabled
+                                    <label for="especialidadesTexto">
+                                        Especialidades e registros RQE
+                                    </label>
+
+                                    <textarea id="especialidadesTexto" rows="4" disabled
                                         placeholder="Descreva as especialidades e registros RQE..."></textarea>
                                 </div>
                             </div>
-                        </div>
+                        </section>
 
-                        <div id="agenda-config" class="tab-content">
+                        <!-- Configuração da agenda -->
+                        <section id="agenda-config" class="tab-content">
+
                             <div class="form-grid">
-                                <div class="col-12">
-                                    <h3 class="section-title">Dias de Atendimento</h3>
+
+                                <div class="section-title col-12">
+                                    Dias de Atendimento
                                 </div>
+
                                 <div class="form-group col-12">
                                     <div class="checkbox-group">
-                                        <label><input type="checkbox" id="dom"> Domingo</label>
-                                        <label><input type="checkbox" id="seg"> Segunda</label>
-                                        <label><input type="checkbox" id="ter"> Terça</label>
-                                        <label><input type="checkbox" id="qua"> Quarta</label>
-                                        <label><input type="checkbox" id="qui"> Quinta</label>
-                                        <label><input type="checkbox" id="sex"> Sexta</label>
-                                        <label><input type="checkbox" id="sab"> Sábado</label>
+                                        <label>
+                                            <input type="checkbox" id="dom">
+                                            Domingo
+                                        </label>
+
+                                        <label>
+                                            <input type="checkbox" id="seg">
+                                            Segunda
+                                        </label>
+
+                                        <label>
+                                            <input type="checkbox" id="ter">
+                                            Terça
+                                        </label>
+
+                                        <label>
+                                            <input type="checkbox" id="qua">
+                                            Quarta
+                                        </label>
+
+                                        <label>
+                                            <input type="checkbox" id="qui">
+                                            Quinta
+                                        </label>
+
+                                        <label>
+                                            <input type="checkbox" id="sex">
+                                            Sexta
+                                        </label>
+
+                                        <label>
+                                            <input type="checkbox" id="sab">
+                                            Sábado
+                                        </label>
                                     </div>
                                 </div>
 
-                                <div class="col-12">
-                                    <h3 class="section-title">Períodos de Atendimento</h3>
+                                <div class="section-title col-12">
+                                    Períodos de Atendimento
                                 </div>
+
                                 <div class="form-group col-12">
                                     <div class="checkbox-group">
-                                        <label><input type="checkbox" id="periodoMatutino"> Matutino</label>
-                                        <label><input type="checkbox" id="periodoVespertino"> Vespertino</label>
-                                        <label><input type="checkbox" id="periodoNoturno"> Noturno</label>
+                                        <label>
+                                            <input type="checkbox" id="periodoMatutino">
+                                            Matutino
+                                        </label>
+
+                                        <label>
+                                            <input type="checkbox" id="periodoVespertino">
+                                            Vespertino
+                                        </label>
+
+                                        <label>
+                                            <input type="checkbox" id="periodoNoturno">
+                                            Noturno
+                                        </label>
                                     </div>
                                 </div>
 
-                                <div class="col-12">
-                                    <h3 class="section-title">Hora do Agendamento</h3>
-                                </div>
-                                <div class="form-group col-4">
-                                    <label>Primeiro Horário</label>
-                                    <input type="time" id="horaAgendamentoInicio">
-                                </div>
-                                <div class="form-group col-4">
-                                    <label>Último Horário</label>
-                                    <input type="time" id="horaAgendamentoFim">
-                                </div>
-                                <div class="form-group col-4">
-                                    <label>Intervalo da Grade (min)</label>
-                                    <input type="number" id="intervaloGradeAgendamento" value="30" min="1">
+                                <div class="section-title col-12">
+                                    Horários de Atendimento
                                 </div>
 
-                                <div class="col-12">
-                                    <h3 class="section-title">Horários de Atendimento</h3>
+                                <div class="periodo-card form-group col-4">
+                                    <h3>Matutino</h3>
+
+                                    <label for="matInicio">Início</label>
+                                    <input type="time" id="matInicio">
+
+                                    <label for="matFim">Fim</label>
+                                    <input type="time" id="matFim">
                                 </div>
 
-                                <div class="form-group col-4">
-                                    <div class="periodo-card">
-                                        <h4>Matutino</h4>
-                                        <label>Início</label>
-                                        <input type="time" id="matInicio">
-                                        <label>Fim</label>
-                                        <input type="time" id="matFim">
-                                    </div>
+                                <div class="periodo-card form-group col-4">
+                                    <h3>Vespertino</h3>
+
+                                    <label for="vespInicio">Início</label>
+                                    <input type="time" id="vespInicio">
+
+                                    <label for="vespFim">Fim</label>
+                                    <input type="time" id="vespFim">
                                 </div>
 
-                                <div class="form-group col-4">
-                                    <div class="periodo-card">
-                                        <h4>Vespertino</h4>
-                                        <label>Início</label>
-                                        <input type="time" id="vespInicio">
-                                        <label>Fim</label>
-                                        <input type="time" id="vespFim">
-                                    </div>
+                                <div class="periodo-card form-group col-4">
+                                    <h3>Noturno</h3>
+
+                                    <label for="notInicio">Início</label>
+                                    <input type="time" id="notInicio">
+
+                                    <label for="notFim">Fim</label>
+                                    <input type="time" id="notFim">
+                                </div>
+
+                                <div class="section-title col-12">
+                                    Configurações da Consulta
                                 </div>
 
                                 <div class="form-group col-4">
-                                    <div class="periodo-card">
-                                        <h4>Noturno</h4>
-                                        <label>Início</label>
-                                        <input type="time" id="notInicio">
-                                        <label>Fim</label>
-                                        <input type="time" id="notFim">
-                                    </div>
-                                </div>
-
-                                <div class="col-12">
-                                    <h3 class="section-title">Configurações da Consulta</h3>
-                                </div>
-                                <div class="form-group col-4">
-                                    <label>Tempo Médio da Consulta (min)</label>
+                                    <label for="tempoConsulta">Tempo Médio da Consulta</label>
                                     <input type="number" id="tempoConsulta" value="30">
                                 </div>
+
                                 <div class="form-group col-4">
-                                    <label>Intervalo entre Consultas (min)</label>
+                                    <label for="intervaloConsulta">Intervalo entre Consultas</label>
                                     <input type="number" id="intervaloConsulta" value="0">
                                 </div>
+
                                 <div class="form-group col-4">
-                                    <label>Máximo de Encaixes</label>
+                                    <label for="maxEncaixes">Máximo de Encaixes</label>
                                     <input type="number" id="maxEncaixes" value="0">
                                 </div>
 
                                 <div class="form-group col-4">
-                                    <label>Máximo Pacientes/Dia</label>
+                                    <label for="maxPacientesDia">Máximo de Pacientes/Dia</label>
                                     <input type="number" id="maxPacientesDia">
                                 </div>
+
                                 <div class="form-group col-8">
-                                    <label>Unidade / Consultório</label>
+                                    <label for="unidade">Unidade / Consultório</label>
+
                                     <select id="unidade">
                                         <option value="">Selecione...</option>
-                                        <option>Matriz</option>
-                                        <option>Filial 01</option>
-                                        <option>Filial 02</option>
+                                        <option value="matriz">Matriz</option>
+                                        <option value="filial-01">Filial 01</option>
+                                        <option value="filial-02">Filial 02</option>
                                     </select>
                                 </div>
 
-                                <div class="col-12">
-                                    <h3 class="section-title">Bloqueio Total da Agenda</h3>
+                                <div class="section-title col-12">
+                                    Bloqueio da Agenda
                                 </div>
+
                                 <div class="form-group col-4">
-                                    <label>Data Inicial</label>
+                                    <label for="bloqueioInicio">Data Inicial</label>
                                     <input type="date" id="bloqueioInicio">
                                 </div>
+
                                 <div class="form-group col-4">
-                                    <label>Data Final</label>
+                                    <label for="bloqueioFim">Data Final</label>
                                     <input type="date" id="bloqueioFim">
                                 </div>
+
                                 <div class="form-group col-4">
-                                    <label>Motivo</label>
+                                    <label for="motivoBloqueio">Motivo</label>
                                     <input type="text" id="motivoBloqueio">
                                 </div>
 
-                                <div class="col-12">
-                                    <h3 class="section-title">Bloqueio Parcial da Agenda</h3>
-                                </div>
-                                <div class="form-group col-3">
-                                    <label>Data</label>
-                                    <input type="date" id="bloqueioParcialData">
-                                </div>
-                                <div class="form-group col-3">
-                                    <label>Hora Inicial</label>
-                                    <input type="time" id="bloqueioParcialInicio">
-                                </div>
-                                <div class="form-group col-3">
-                                    <label>Hora Final</label>
-                                    <input type="time" id="bloqueioParcialFim">
-                                </div>
-                                <div class="form-group col-3">
-                                    <label>Motivo</label>
-                                    <input type="text" id="motivoBloqueioParcial">
-                                </div>
-
-                                <div class="col-12">
-                                    <h3 class="section-title">Observações</h3>
-                                </div>
                                 <div class="form-group col-12">
+                                    <label for="observacoesAgenda">Observações</label>
+
                                     <textarea id="observacoesAgenda" rows="4"
-                                        placeholder="Ex.: atende apenas convênio X nas quartas-feiras"></textarea>
+                                        placeholder="Informações adicionais da agenda"></textarea>
                                 </div>
                             </div>
-                        </div>
+                        </section>
 
-                        <div id="financeiro" class="tab-content">
+                        <!-- Financeiro -->
+                        <section id="financeiro" class="tab-content">
+
                             <div class="form-grid">
+
                                 <div class="form-group col-4">
-                                    <label>Valor Consulta Particular</label>
-                                    <input type="text" id="valorConsulta" placeholder="R$ 0,00" disabled>
+                                    <label for="valorConsulta">Valor da Consulta Particular</label>
+                                    <input type="text" id="valorConsulta" disabled placeholder="R$ 0,00">
                                 </div>
+
                                 <div class="form-group col-8">
-                                    <label>Status no Sistema</label>
+                                    <label for="status">Status no Sistema</label>
+
                                     <select id="status" disabled>
-                                        <option value="A">Ativo (Aparece na Agenda)</option>
-                                        <option value="I">Inativo (Bloqueado)</option>
+                                        <option value="A">
+                                            Ativo — aparece na agenda
+                                        </option>
+
+                                        <option value="I">
+                                            Inativo — bloqueado
+                                        </option>
                                     </select>
                                 </div>
                             </div>
-                        </div>
+                        </section>
                     </form>
                 </div>
             </section>
 
+            <!-- Lista de médicos -->
             <section class="grid-area">
+
                 <div class="grid-header">
-                    <span><i class="fas fa-list"></i> Médicos Cadastrados</span>
-                    <div class="grid-search">
-                        <input type="text" placeholder="Filtrar por nome ou CRM...">
-                    </div>
+                    <h2>
+                        <i class="fa-solid fa-list" aria-hidden="true"></i>
+                        Médicos Cadastrados
+                    </h2>
+
+                    <label class="search-box">
+                        <span class="sr-only">Filtrar médicos</span>
+
+                        <i class="fa-solid fa-search" aria-hidden="true"></i>
+
+                        <input type="search" id="filtroMedicos" placeholder="Filtrar por nome, CRM ou especialidade">
+                    </label>
                 </div>
+
                 <div class="table-wrapper">
                     <table id="tabelaMedicos">
+
+                        <caption class="sr-only">
+                            Lista de médicos cadastrados
+                        </caption>
+
                         <thead>
                             <tr>
-                                <th width="80">ID</th>
+                                <th>ID</th>
                                 <th>Nome do Médico</th>
-                                <th width="150">CRM/Conselho</th>
-                                <th width="200">Especialidade</th>
-                                <th width="100">Status</th>
+                                <th>CRM/Conselho</th>
+                                <th>Especialidade</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody id="corpoTabelaMedicos">
-                        </tbody>
+
+                        <tbody id="corpoTabelaMedicos"></tbody>
                     </table>
                 </div>
             </section>
         </main>
+
+        <footer class="footer">
+            Sistema G4med ©· Cadastro de Médicos
+        </footer>
     </div>
+
+    <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true">
+    </div>
+
     <script src="cadastro-medicos.js"></script>
 </body>
 

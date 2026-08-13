@@ -1,84 +1,92 @@
-/* =========================================================
-   G4med Agenda - CSS Pixel-Perfect (Standalone)
-   Baseado no print de referência
-   ========================================================= */
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-/* ----------------------------------------------------------
-   VARIÁVEIS GLOBAIS
-   ---------------------------------------------------------- */
+/* =========================================================
+   G4med Agenda — Design System Teal
+   ========================================================= */
+
 :root {
-    /* Cores institucionais */
-    --color-navy: #0B1F3A;
-    --color-navy-700: #142d4f;
-    --color-orange: #FF6B00;
-    --color-orange-600: #e65f00;
-    --color-turquesa: #00B8A9;
+    /* Identidade visual principal */
+    --color-primary: #0D9488;
+    /* teal-600 */
+    --color-primary-hover: #0F766E;
+    /* teal-700 */
+    --color-primary-dark: #115E59;
+    /* teal-800 */
+    --color-primary-light: #14B8A6;
+    /* teal-500 */
+    --color-primary-bg: #F0FDFA;
+    /* teal-50 */
+    --color-primary-soft: #CCFBF1;
+    /* teal-100 */
+
+    /* Compatibilidade com nomes antigos */
+    --color-navy: var(--color-primary-dark);
+    --color-navy-700: var(--color-primary-hover);
+    --color-orange: var(--color-primary);
+    --color-orange-600: var(--color-primary-hover);
+    --color-turquesa: var(--color-primary);
+
     --color-grafite: #333333;
     --color-white: #FFFFFF;
 
-    /* Cores de status */
-    --status-agendado: #3b82f6;
-    --status-agendado-bg: #eff6ff;
-    --status-confirmado: #10b981;
-    --status-confirmado-bg: #ecfdf5;
-    --status-espera: #f59e0b;
-    --status-espera-bg: #fffbeb;
-    --status-atendido: #8b5cf6;
-    --status-atendido-bg: #f5f3ff;
-    --status-cancelado: #ef4444;
-    --status-cancelado-bg: #fef2f2;
-    --status-nao-compareceu: #6b7280;
-    --status-nao-compareceu-bg: #f3f4f6;
+    /* Status */
+    --status-agendado: #3B82F6;
+    --status-agendado-bg: #EFF6FF;
+
+    --status-confirmado: #16A34A;
+    --status-confirmado-bg: #F0FDF4;
+
+    --status-espera: #D97706;
+    --status-espera-bg: #FFFBEB;
+
+    --status-atendido: #0891B2;
+    --status-atendido-bg: #ECFEFF;
+
+    --status-cancelado: #DC2626;
+    --status-cancelado-bg: #FEF2F2;
+
+    --status-nao-compareceu: #7C3AED;
+    --status-nao-compareceu-bg: #F5F3FF;
 
     /* Tipos de atendimento */
-    --tipo-presencial-bg: #dbeafe;
-    --tipo-presencial-text: #1e40af;
-    --tipo-online-bg: #d1fae5;
-    --tipo-online-text: #065f46;
-    --tipo-retorno-bg: #fef3c7;
-    --tipo-retorno-text: #92400e;
-    --tipo-procedimento-bg: #ede9fe;
-    --tipo-procedimento-text: #5b21b6;
+    --tipo-presencial-bg: #DBEAFE;
+    --tipo-presencial-text: #1E40AF;
+
+    --tipo-online-bg: #D1FAE5;
+    --tipo-online-text: #065F46;
+
+    --tipo-retorno-bg: #FEF3C7;
+    --tipo-retorno-text: #92400E;
+
+    --tipo-procedimento-bg: #EDE9FE;
+    --tipo-procedimento-text: #5B21B6;
 
     /* Neutros */
-    --color-bg: #f8fafc;
-    --color-surface: #ffffff;
-    --color-border: #e5e7eb;
-    --color-border-light: #f1f5f9;
+    --color-bg: #F8FAFC;
+    --color-surface: #FFFFFF;
+    --color-border: #E5E7EB;
+    --color-border-light: #F1F5F9;
+
     --color-text: #111827;
-    --color-text-muted: #6b7280;
-    --color-text-light: #9ca3af;
+    --color-text-muted: #6B7280;
+    --color-text-light: #9CA3AF;
 
     /* Tipografia */
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --font-xs: 0.625rem;
-    /* 10px */
     --font-sm: 0.75rem;
-    /* 12px */
     --font-base: 0.875rem;
-    /* 14px */
     --font-md: 1rem;
-    /* 16px */
     --font-lg: 1.125rem;
-    /* 18px */
     --font-xl: 1.25rem;
-    /* 20px */
 
     /* Espaçamento */
     --space-1: 0.25rem;
-    /* 4px  */
     --space-2: 0.5rem;
-    /* 8px  */
     --space-3: 0.75rem;
-    /* 12px */
     --space-4: 1rem;
-    /* 16px */
     --space-5: 1.25rem;
-    /* 20px */
     --space-6: 1.5rem;
-    /* 24px */
 
     /* Bordas */
     --radius-sm: 6px;
@@ -87,54 +95,88 @@
     --radius-xl: 18px;
 
     /* Sombras */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-    --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 4%);
+    --shadow: 0 1px 3px rgb(0 0 0 / 6%), 0 1px 2px rgb(0 0 0 / 4%);
+    --shadow-md: 0 4px 12px rgb(0 0 0 / 6%);
+    --shadow-lg: 0 10px 30px rgb(0 0 0 / 8%);
 
     /* Transições */
     --transition-fast: 150ms ease;
     --transition-base: 200ms ease;
     --transition-slow: 300ms ease;
+
+    /* Grade dinâmica */
+    --quantidade-medicos: 3;
 }
 
-/* ----------------------------------------------------------
-   RESET & BASE
-   ---------------------------------------------------------- */
+/* =========================================================
+   RESET E BASE
+   ========================================================= */
+
 *,
 *::before,
 *::after {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
 html {
     font-size: 16px;
+    scroll-behavior: smooth;
 }
 
 body {
+    min-height: 100vh;
+    background: var(--color-bg);
+    color: var(--color-text);
     font-family: var(--font-family);
     font-size: var(--font-base);
-    color: var(--color-text);
-    background: var(--color-bg);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* ----------------------------------------------------------
-   HEADER / TOOLBAR
-   ---------------------------------------------------------- */
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button,
+select {
+    cursor: pointer;
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    color: var(--color-primary-hover);
+}
+
+:focus-visible {
+    outline: 3px solid rgb(13 148 136 / 28%);
+    outline-offset: 2px;
+}
+
+/* =========================================================
+   HEADER E TOOLBAR
+   ========================================================= */
+
 .agenda__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
     padding: var(--space-4) var(--space-5);
     background: var(--color-surface);
     border-bottom: 1px solid var(--color-border-light);
-    gap: var(--space-4);
-    flex-wrap: wrap;
 }
 
 .agenda__header-left,
@@ -144,30 +186,41 @@ body {
     gap: var(--space-4);
 }
 
+.agenda__header-left {
+    min-width: 0;
+}
+
+.agenda__header-right {
+    flex-wrap: wrap;
+}
+
 /* Botão genérico */
 .agenda__btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-2);
+    height: 2.5rem;
+    padding: 0.625rem 1rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     background: var(--color-surface);
     color: var(--color-text);
-    font-family: inherit;
     font-size: var(--font-sm);
     font-weight: 600;
-    padding: 0.625rem 1rem;
-    cursor: pointer;
-    transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
-    white-space: nowrap;
-    height: 2.5rem;
     line-height: 1.25;
+    white-space: nowrap;
+    transition:
+        background var(--transition-fast),
+        border-color var(--transition-fast),
+        color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        transform var(--transition-fast);
 }
 
 .agenda__btn:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
+    background: #F9FAFB;
+    border-color: #D1D5DB;
     transform: translateY(-1px);
 }
 
@@ -175,10 +228,11 @@ body {
     transform: translateY(0);
 }
 
-.agenda__btn--voltar {
+.agenda__btn--voltar,
+.agenda__btn--hoje {
+    height: 2.5rem;
     padding: 0.625rem 1rem;
     font-weight: 600;
-    height: 2.5rem;
 }
 
 .agenda__btn--icon {
@@ -189,7 +243,43 @@ body {
     flex-shrink: 0;
 }
 
-/* Navegação de data */
+/* Botão primário */
+.agenda__btn--primary {
+    height: 2.5rem;
+    padding: 0.625rem 1rem;
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-white);
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgb(13 148 136 / 25%);
+}
+
+.agenda__btn--primary:hover,
+.agenda__btn--primary:focus-visible {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    color: var(--color-white);
+    box-shadow: 0 4px 12px rgb(13 148 136 / 35%);
+}
+
+.agenda__btn--secondary {
+    height: 2.5rem;
+    padding: 0.625rem 1rem;
+    background: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--color-text-muted);
+    font-weight: 600;
+}
+
+.agenda__btn--secondary:hover {
+    background: #F9FAFB;
+    color: var(--color-text);
+}
+
+/* =========================================================
+   NAVEGAÇÃO DE DATA
+   ========================================================= */
+
 .agenda__nav-data {
     display: flex;
     align-items: center;
@@ -203,9 +293,10 @@ body {
     padding: var(--space-2) var(--space-4);
 }
 
-.agenda__data-display>i {
+.agenda__data-display>i,
+.agenda__btn--hoje i {
+    color: var(--color-primary);
     font-size: var(--font-md);
-    color: var(--color-navy);
 }
 
 .agenda__data-texto {
@@ -215,28 +306,21 @@ body {
 }
 
 .agenda__data-texto strong {
+    color: var(--color-primary-dark);
     font-size: var(--font-md);
     font-weight: 700;
-    color: var(--color-navy);
 }
 
 .agenda__data-texto span {
-    font-size: var(--font-sm);
     color: var(--color-text-muted);
+    font-size: var(--font-sm);
     font-weight: 500;
 }
 
-.agenda__btn--hoje {
-    padding: 0.625rem 1rem;
-    font-weight: 600;
-    height: 2.5rem;
-}
+/* =========================================================
+   FILTROS
+   ========================================================= */
 
-.agenda__btn--hoje i {
-    color: var(--color-navy);
-}
-
-/* Filtros */
 .agenda__filtros {
     display: flex;
     align-items: center;
@@ -248,89 +332,57 @@ body {
 }
 
 .agenda__select {
+    min-width: 10rem;
+    height: 2.5rem;
     appearance: none;
-    -webkit-appearance: none;
     padding: 0.625rem 2.5rem 0.625rem 1rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     background: var(--color-surface);
-    font-family: inherit;
+    color: var(--color-text);
     font-size: var(--font-sm);
     font-weight: 500;
-    color: var(--color-text);
-    cursor: pointer;
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-    min-width: 10rem;
-    height: 2.5rem;
     line-height: 1.25;
+    transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
 }
 
 .agenda__select:focus {
     outline: none;
-    border-color: var(--color-turquesa);
-    box-shadow: 0 0 0 3px rgba(0, 184, 169, 0.12);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgb(13 148 136 / 12%);
 }
 
 .agenda__select-arrow {
     position: absolute;
-    right: var(--space-3);
     top: 50%;
-    transform: translateY(-50%);
+    right: var(--space-3);
+    color: var(--color-text-muted);
     font-size: 0.625rem;
-    color: var(--color-text-muted);
     pointer-events: none;
+    transform: translateY(-50%);
 }
 
-/* Botão primário (laranja) */
-.agenda__btn--primary {
-    background: var(--color-orange);
-    border-color: var(--color-orange);
-    color: var(--color-white);
-    padding: 0.625rem 1rem;
-    font-weight: 700;
-    box-shadow: 0 2px 8px rgba(255, 107, 0, 0.25);
-    height: 2.5rem;
-}
-
-.agenda__btn--primary:hover {
-    background: var(--color-orange-600);
-    border-color: var(--color-orange-600);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 107, 0, 0.35);
-}
-
-.agenda__btn--secondary {
-    background: var(--color-surface);
-    border-color: var(--color-border);
-    color: var(--color-text-muted);
-    font-weight: 600;
-    height: 2.5rem;
-    padding: 0.625rem 1rem;
-}
-
-.agenda__btn--secondary:hover {
-    background: #f9fafb;
-    color: var(--color-text);
-}
-
-/* ----------------------------------------------------------
+/* =========================================================
    LEGENDA DE STATUS
-   ---------------------------------------------------------- */
+   ========================================================= */
+
 .agenda__legend {
     display: flex;
     align-items: center;
     gap: var(--space-5);
-    padding: var(--space-4) var(--space-5);
     flex-wrap: wrap;
+    padding: var(--space-4) var(--space-5);
 }
 
 .agenda__legend-item {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
+    color: var(--color-text-muted);
     font-size: var(--font-sm);
     font-weight: 500;
-    color: var(--color-text-muted);
 }
 
 .agenda__dot {
@@ -364,144 +416,215 @@ body {
     background: var(--status-nao-compareceu);
 }
 
-/* ----------------------------------------------------------
-   GRADE DE AGENDA
-   ---------------------------------------------------------- */
+/* =========================================================
+   CALENDÁRIO
+   ========================================================= */
+
 .agenda__calendar {
+    width: 100%;
     margin: 0 var(--space-5) var(--space-6);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border-light);
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-    overflow: hidden;
+    background: var(--color-surface);
+}
+
+.agenda__calendar-header,
+.agenda__calendar-row {
+    display: grid;
+    grid-template-columns: 84px repeat(var(--quantidade-medicos),
+            minmax(220px, 1fr));
+    min-width: 760px;
 }
 
 .agenda__calendar-header {
-    display: grid;
-    grid-template-columns: 5rem repeat(3, 1fr);
-    background: #fafbfc;
-    border-bottom: 1px solid var(--color-border-light);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #F8FAFC;
+    border-bottom: 1px solid #CBD5E1;
 }
 
-.agenda__col-time {
-    padding: var(--space-4) var(--space-3);
-    font-size: var(--font-sm);
-    font-weight: 700;
-    color: var(--color-navy);
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-right: 1px solid var(--color-border-light);
-}
-
-.agenda__col-prof {
-    padding: var(--space-3) var(--space-2);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-right: 1px solid var(--color-border-light);
-    gap: 1px;
-}
-
-.agenda__col-prof:last-child {
-    border-right: none;
-}
-
-.agenda__prof-nome {
-    font-size: var(--font-sm);
-    font-weight: 700;
-    color: var(--color-navy);
-}
-
-.agenda__prof-esp {
-    font-size: var(--font-xs);
-    font-weight: 500;
-    color: var(--color-text-muted);
-}
-
-/* Corpo da grade */
 .agenda__calendar-body {
     max-height: 32rem;
     overflow-y: auto;
 }
 
-.agenda__row {
-    display: grid;
-    grid-template-columns: 5rem repeat(3, 1fr);
+.agenda__calendar-row {
+    min-height: 64px;
     border-bottom: 1px solid var(--color-border-light);
-    min-height: 4.5rem;
     transition: background var(--transition-fast);
 }
 
-.agenda__row:last-child {
-    border-bottom: none;
+.agenda__calendar-row:hover {
+    background: #FAFBFC;
 }
 
-.agenda__row:hover {
-    background: #fafbfc;
+.agenda__calendar-row:last-child {
+    border-bottom: 0;
 }
 
-.agenda__slot-time {
-    padding: var(--space-3);
-    text-align: center;
-    font-size: var(--font-sm);
-    font-weight: 600;
-    color: var(--color-text-muted);
-    background: #fcfcfd;
-    border-right: 1px solid var(--color-border-light);
+/* Cabeçalho das colunas */
+.agenda__col-time,
+.agenda__col-prof {
+    min-height: 72px;
+    padding: 12px;
+    border-right: 1px solid var(--color-border);
+}
+
+.agenda__col-time {
     display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--color-primary-dark);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.agenda__col-prof {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-align: center;
+}
+
+.agenda__col-prof:last-child {
+    border-right: 0;
+}
+
+.agenda__prof-nome {
+    color: var(--color-primary-dark);
+    font-size: var(--font-sm);
+    font-weight: 700;
+}
+
+.agenda__prof-esp {
+    color: var(--color-text-muted);
+    font-size: var(--font-xs);
+    font-weight: 500;
+}
+
+/* Células da grade */
+.agenda__time-cell,
+.agenda__slot-time {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 10px 6px;
+    border-right: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.agenda__slot-time {
+    align-items: center;
+    background: #FCFCFD;
+}
+
+.agenda__slot,
+.agenda__slot-cell {
+    position: relative;
+    min-height: 64px;
+    padding: 4px;
+    border-right: 1px solid var(--color-border);
+}
+
+.agenda__slot:last-child,
+.agenda__slot-cell:last-child {
+    border-right: 0;
 }
 
 .agenda__slot-cell {
-    padding: var(--space-2);
-    border-right: 1px solid var(--color-border-light);
-    position: relative;
-    min-height: 4.5rem;
     display: flex;
     align-items: stretch;
-}
-
-.agenda__slot-cell:last-child {
-    border-right: none;
+    padding: var(--space-2);
 }
 
 .agenda__slot-cell--dragover {
-    background: rgba(0, 184, 169, 0.06);
-    box-shadow: inset 0 0 0 2px var(--color-turquesa);
+    background: rgb(13 148 136 / 6%);
+    box-shadow: inset 0 0 0 2px var(--color-primary);
 }
 
-/* Card de agendamento */
-.agenda__card {
-    width: 100%;
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-xs);
-    cursor: pointer;
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+.agenda__slot-cell--empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-6);
+}
+
+.agenda__empty,
+.agenda__empty-msg {
+    padding: 48px 20px;
+    color: var(--color-text-muted);
+    font-size: var(--font-sm);
+    font-weight: 500;
+    text-align: center;
+}
+
+/* =========================================================
+   CARDS DE AGENDAMENTO
+   ========================================================= */
+
+.agenda__card,
+.agenda__appointment {
     position: relative;
-    border-left: 3px solid transparent;
+    z-index: 2;
+    width: 100%;
+    min-height: 54px;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    box-shadow: 0 2px 8px rgb(15 23 42 / 10%);
+    cursor: pointer;
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.agenda__card {
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: 2px;
+    padding: var(--space-2) var(--space-3);
+    border-left: 3px solid transparent;
+    font-size: var(--font-xs);
 }
 
-.agenda__card:hover {
+.agenda__appointment {
+    display: flex;
+    height: var(--appointment-height, 100%);
+    gap: 8px;
+    padding: 8px;
+    border-left: 4px solid currentColor;
+}
+
+.agenda__card:hover,
+.agenda__appointment:hover,
+.agenda__appointment:focus-visible {
+    z-index: 4;
+    box-shadow: 0 5px 14px rgb(15 23 42 / 18%);
     transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+}
+
+.agenda__appointment:focus-visible {
+    outline: 3px solid rgb(13 148 136 / 25%);
+    outline-offset: 1px;
 }
 
 .agenda__card-paciente {
-    font-weight: 700;
-    color: var(--color-navy);
-    font-size: var(--font-sm);
     display: flex;
     align-items: center;
     gap: var(--space-2);
+    color: var(--color-primary-dark);
+    font-size: var(--font-sm);
+    font-weight: 700;
 }
 
 .agenda__card-paciente i {
@@ -510,59 +633,122 @@ body {
 }
 
 .agenda__card-info {
-    font-size: var(--font-xs);
     color: var(--color-text-muted);
+    font-size: var(--font-xs);
     font-weight: 500;
 }
 
 .agenda__card-badge {
     display: inline-flex;
     align-self: flex-start;
+    margin-top: 2px;
     padding: 1px 6px;
     border-radius: 4px;
     font-size: 0.5625rem;
-    /* 9px */
     font-weight: 700;
     text-transform: capitalize;
-    margin-top: 2px;
 }
 
-/* Cores por status */
-.agenda__card--agendado {
+.agenda__appointment-time {
+    flex: 0 0 auto;
+    color: currentColor;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.agenda__appointment-content {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.agenda__appointment-content strong,
+.agenda__appointment-content span,
+.agenda__appointment-content small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.agenda__appointment-content strong {
+    color: #0F172A;
+    font-size: 0.83rem;
+}
+
+.agenda__appointment-content span,
+.agenda__appointment-content small {
+    color: #64748B;
+    font-size: 0.73rem;
+}
+
+.agenda__appointment-icon {
+    margin-left: auto;
+    color: currentColor;
+}
+
+/* Status dos cards */
+.agenda__card--agendado,
+.agenda__appointment--agendado {
     background: var(--status-agendado-bg);
     border-left-color: var(--status-agendado);
 }
 
-.agenda__card--confirmado {
+.agenda__appointment--agendado {
+    color: var(--status-agendado);
+}
+
+.agenda__card--confirmado,
+.agenda__appointment--confirmado {
     background: var(--status-confirmado-bg);
     border-left-color: var(--status-confirmado);
 }
 
-.agenda__card--espera {
+.agenda__appointment--confirmado {
+    color: var(--status-confirmado);
+}
+
+.agenda__card--espera,
+.agenda__appointment--espera {
     background: var(--status-espera-bg);
     border-left-color: var(--status-espera);
 }
 
-.agenda__card--atendido {
+.agenda__appointment--espera {
+    color: var(--status-espera);
+}
+
+.agenda__card--atendido,
+.agenda__appointment--atendido {
     background: var(--status-atendido-bg);
     border-left-color: var(--status-atendido);
 }
 
-.agenda__card--cancelado {
+.agenda__appointment--atendido {
+    color: var(--status-atendido);
+}
+
+.agenda__card--cancelado,
+.agenda__appointment--cancelado {
     background: var(--status-cancelado-bg);
     border-left-color: var(--status-cancelado);
-    opacity: 0.75;
+    opacity: 0.72;
 }
 
 .agenda__card--cancelado .agenda__card-paciente {
-    text-decoration: line-through;
     color: var(--color-text-muted);
+    text-decoration: line-through;
 }
 
-.agenda__card--nao-compareceu {
+.agenda__card--nao-compareceu,
+.agenda__appointment--nao-compareceu {
     background: var(--status-nao-compareceu-bg);
     border-left-color: var(--status-nao-compareceu);
     opacity: 0.75;
+}
+
+.agenda__appointment--nao-compareceu {
+    color: var(--status-nao-compareceu);
 }
 
 /* Badges por tipo */
@@ -586,9 +772,14 @@ body {
     color: var(--tipo-procedimento-text);
 }
 
-/* ----------------------------------------------------------
-   MODAL
-   ---------------------------------------------------------- */
+/* =========================================================
+   MODAIS
+   ========================================================= */
+
+body.modal-open {
+    overflow: hidden;
+}
+
 .modal {
     position: fixed;
     inset: 0;
@@ -599,80 +790,91 @@ body {
     padding: var(--space-4);
 }
 
-.modal[aria-hidden="false"] {
+.modal[aria-hidden='false'],
+.modal.is-open {
     display: flex;
 }
 
 .modal__overlay {
     position: absolute;
     inset: 0;
-    background: rgba(11, 31, 58, 0.45);
-    backdrop-filter: blur(4px);
-    animation: fadeIn var(--transition-base);
+    background: rgb(15 23 42 / 58%);
+    backdrop-filter: blur(3px);
+    animation: fade-in var(--transition-base);
 }
 
 .modal__content {
     position: relative;
-    background: var(--color-surface);
-    border-radius: var(--radius-lg);
-    width: 100%;
-    max-width: 42rem;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: var(--shadow-lg);
-    animation: slideUp var(--transition-slow);
+    z-index: 1;
     display: flex;
+    width: min(760px, 100%);
+    max-height: 90vh;
     flex-direction: column;
+    overflow: auto;
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: 0 20px 60px rgb(15 23 42 / 25%);
+    animation: slide-up var(--transition-slow);
 }
 
 .modal--sm .modal__content {
-    max-width: 24rem;
+    width: min(480px, 100%);
 }
 
-.modal__header {
+.modal__header,
+.modal__footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--space-4) var(--space-5);
-    border-bottom: 1px solid var(--color-border-light);
-    flex-shrink: 0;
+    gap: 12px;
+    padding: 18px 22px;
+}
+
+.modal__header {
+    border-bottom: 1px solid var(--color-border);
 }
 
 .modal__header h2 {
-    font-size: var(--font-md);
-    font-weight: 700;
-    color: var(--color-navy);
     display: flex;
     align-items: center;
     gap: var(--space-2);
+    color: var(--color-primary-dark);
+    font-size: var(--font-md);
+    font-weight: 700;
+}
+
+.modal__footer {
+    justify-content: flex-end;
+    border-top: 1px solid var(--color-border);
 }
 
 .modal__close {
-    width: 2rem;
-    height: 2rem;
-    border: none;
-    border-radius: var(--radius-sm);
-    background: #f1f5f9;
+    display: inline-grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
     color: var(--color-text-muted);
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background var(--transition-fast), color var(--transition-fast);
+    transition:
+        background var(--transition-fast),
+        color var(--transition-fast);
 }
 
-.modal__close:hover {
-    background: #e2e8f0;
-    color: var(--color-text);
+.modal__close:hover,
+.modal__close:focus-visible {
+    background: var(--color-primary-bg);
+    color: var(--color-primary-dark);
+}
+
+.modal__body,
+.modal__form {
+    padding: 22px;
 }
 
 .modal__form {
-    padding: var(--space-5);
-    overflow-y: auto;
-}
-
-.modal__body {
-    padding: var(--space-5);
     overflow-y: auto;
 }
 
@@ -688,10 +890,10 @@ body {
 }
 
 .modal__field {
-    flex: 1;
     display: flex;
-    flex-direction: column;
     min-width: 0;
+    flex: 1;
+    flex-direction: column;
 }
 
 .modal__field--2 {
@@ -703,33 +905,39 @@ body {
 }
 
 .modal__label {
+    margin-bottom: var(--space-1);
+    color: #374151;
     font-size: var(--font-xs);
     font-weight: 600;
-    color: #374151;
-    margin-bottom: var(--space-1);
 }
 
 .modal__input {
+    width: 100%;
     padding: var(--space-2) var(--space-3);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
-    font-family: inherit;
-    font-size: var(--font-sm);
+    background: #F8FAFC;
     color: var(--color-text);
-    background: #f8fafc;
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-    width: 100%;
+    font-size: var(--font-sm);
+    transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
 }
 
 .modal__input:focus {
     outline: none;
-    border-color: var(--color-turquesa);
-    box-shadow: 0 0 0 3px rgba(0, 184, 169, 0.12);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgb(13 148 136 / 12%);
+}
+
+.modal__input.is-invalid {
+    border-color: #DC2626 !important;
+    box-shadow: 0 0 0 3px rgb(220 38 38 / 12%);
 }
 
 .modal__input--area {
-    resize: vertical;
     min-height: 4rem;
+    resize: vertical;
 }
 
 .modal__input-group {
@@ -737,91 +945,145 @@ body {
 }
 
 .modal__input-group .modal__input {
+    border-right: 0;
     border-radius: var(--radius-sm) 0 0 var(--radius-sm);
-    border-right: none;
 }
 
 .modal__input-btn {
     padding: 0 var(--space-3);
     border: 1px solid var(--color-border);
-    border-left: none;
+    border-left: 0;
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    background: #f1f5f9;
+    background: #F1F5F9;
     color: var(--color-text-muted);
     cursor: pointer;
     transition: background var(--transition-fast);
 }
 
 .modal__input-btn:hover {
-    background: #e2e8f0;
+    background: var(--color-primary-bg);
+    color: var(--color-primary-dark);
 }
 
-/* Checkbox customizado */
+/* Checkbox */
 .modal__checkbox {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    cursor: pointer;
-    font-size: var(--font-sm);
     color: #374151;
+    font-size: var(--font-sm);
     font-weight: 500;
+    cursor: pointer;
 }
 
 .modal__checkbox input {
-    appearance: none;
+    position: relative;
     width: 1rem;
     height: 1rem;
+    appearance: none;
     border: 2px solid var(--color-border);
     border-radius: 4px;
     cursor: pointer;
-    position: relative;
-    transition: border-color var(--transition-fast), background var(--transition-fast);
     flex-shrink: 0;
+    transition:
+        border-color var(--transition-fast),
+        background var(--transition-fast);
 }
 
 .modal__checkbox input:checked {
-    background: var(--color-turquesa);
-    border-color: var(--color-turquesa);
+    background: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 .modal__checkbox input:checked::after {
-    content: '';
     position: absolute;
-    left: 4px;
     top: 1px;
+    left: 4px;
     width: 4px;
     height: 8px;
     border: solid var(--color-white);
     border-width: 0 2px 2px 0;
+    content: '';
     transform: rotate(45deg);
 }
 
-.modal__footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--space-3);
-    padding: var(--space-4) var(--space-5);
-    border-top: 1px solid var(--color-border-light);
-    flex-shrink: 0;
+.modal__checkbox input:focus-visible {
+    outline: 3px solid rgb(13 148 136 / 25%);
+    outline-offset: 2px;
 }
 
-/* Detalhes do agendamento */
+/* Detalhes */
 .modal__details {
-    background: #f8fafc;
-    border-radius: var(--radius);
-    padding: var(--space-4);
     margin-bottom: var(--space-4);
+    padding: var(--space-4);
+    border-radius: var(--radius);
+    background: #F8FAFC;
+    color: var(--color-text-muted);
     font-size: var(--font-sm);
     line-height: 1.6;
-    color: var(--color-text-muted);
 }
 
-.modal__details strong {
-    color: var(--color-navy);
+.modal__details strong,
+.modal__detail-main strong {
+    color: var(--color-primary-dark);
     font-weight: 700;
 }
 
-/* Grid de ações */
+.modal__detail-main {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.modal__detail-main strong {
+    font-size: 1.1rem;
+}
+
+.modal__detail-main span {
+    height: fit-content;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: var(--color-primary-soft);
+    color: var(--color-primary-dark);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.modal__detail-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+}
+
+.modal__detail-list div {
+    padding: 10px;
+    border-radius: 8px;
+    background: #F8FAFC;
+}
+
+.modal__detail-list dt {
+    margin-bottom: 3px;
+    color: #64748B;
+    font-size: 0.75rem;
+}
+
+.modal__detail-list dd {
+    margin: 0;
+    color: #0F172A;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.modal__detail-observacao {
+    margin: 18px 0 0;
+    color: #475569;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* Ações */
 .modal__acoes {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -830,18 +1092,28 @@ body {
 
 .modal__acao {
     display: flex;
-    flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: var(--space-2);
+    min-height: 76px;
     padding: var(--space-4) var(--space-2);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     background: var(--color-surface);
-    font-family: inherit;
+    color: var(--color-text-muted);
     font-size: var(--font-xs);
     font-weight: 600;
     cursor: pointer;
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+    transition:
+        background var(--transition-fast),
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        color var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+.modal__acao {
+    flex-direction: column;
 }
 
 .modal__acao i {
@@ -849,22 +1121,27 @@ body {
 }
 
 .modal__acao:hover {
-    transform: translateY(-2px);
     box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
 }
 
-.modal__acao--confirmar {
-    color: var(--status-confirmado);
-    border-color: #a7f3d0;
+.modal__acao--confirmar,
+.modal__acao--prontuario,
+.modal__acao--financeiro {
+    border-color: var(--color-primary-soft);
+    color: var(--color-primary);
 }
 
-.modal__acao--confirmar:hover {
-    background: var(--status-confirmado-bg);
+.modal__acao--confirmar:hover,
+.modal__acao--prontuario:hover,
+.modal__acao--financeiro:hover {
+    background: var(--color-primary-bg);
+    color: var(--color-primary-hover);
 }
 
 .modal__acao--espera {
+    border-color: #FDE68A;
     color: var(--status-espera);
-    border-color: #fde68a;
 }
 
 .modal__acao--espera:hover {
@@ -872,126 +1149,138 @@ body {
 }
 
 .modal__acao--atender {
-    color: var(--status-atendido);
-    border-color: #ddd6fe;
+    border-color: #DDD6FE;
+    color: var(--status-nao-compareceu);
 }
 
 .modal__acao--atender:hover {
-    background: var(--status-atendido-bg);
+    background: var(--status-nao-compareceu-bg);
 }
 
 .modal__acao--teleconsulta {
-    color: #0ea5e9;
-    border-color: #bae6fd;
+    border-color: #BAE6FD;
+    color: #0284C7;
 }
 
 .modal__acao--teleconsulta:hover {
-    background: #f0f9ff;
-}
-
-.modal__acao--prontuario {
-    color: var(--color-navy);
-    border-color: #cbd5e1;
-}
-
-.modal__acao--prontuario:hover {
-    background: #f1f5f9;
-}
-
-.modal__acao--financeiro {
-    color: var(--color-orange);
-    border-color: #fed7aa;
-}
-
-.modal__acao--financeiro:hover {
-    background: #fff7ed;
+    background: #F0F9FF;
 }
 
 .modal__acao--editar {
+    border-color: #E2E8F0;
     color: var(--color-text-muted);
-    border-color: #e2e8f0;
 }
 
 .modal__acao--editar:hover {
-    background: #f8fafc;
+    background: #F8FAFC;
 }
 
-.modal__acao--cancelar {
-    color: var(--status-cancelado);
-    border-color: #fecaca;
-}
-
-.modal__acao--cancelar:hover {
-    background: var(--status-cancelado-bg);
-}
-
+.modal__acao--cancelar,
 .modal__acao--excluir {
-    color: #991b1b;
-    border-color: #fecaca;
+    border-color: #FECACA;
+    color: var(--status-cancelado);
 }
 
+.modal__acao--cancelar:hover,
 .modal__acao--excluir:hover {
     background: var(--status-cancelado-bg);
 }
 
-/* ----------------------------------------------------------
-   TOAST
-   ---------------------------------------------------------- */
+/* =========================================================
+   TOASTS
+   ========================================================= */
+
 .toast-container {
     position: fixed;
-    top: var(--space-4);
-    right: var(--space-4);
+    right: 20px;
+    bottom: 20px;
     z-index: 3000;
     display: flex;
+    width: min(380px, calc(100vw - 32px));
     flex-direction: column;
-    gap: var(--space-2);
+    gap: 10px;
 }
 
 .toast {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-3) var(--space-4);
-    border-radius: var(--radius);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-md);
-    font-size: var(--font-sm);
-    font-weight: 500;
-    animation: slideInRight var(--transition-base), fadeOut var(--transition-base) 3.5s forwards;
+    gap: 10px;
     min-width: 16rem;
     max-width: 24rem;
+    padding: 13px 14px;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    box-shadow: 0 8px 25px rgb(15 23 42 / 16%);
+    color: #334155;
+    font-size: var(--font-sm);
+    font-weight: 500;
+    animation: toast-enter 180ms ease-out;
+}
+
+.toast>span {
+    flex: 1;
+    font-size: 0.87rem;
 }
 
 .toast--success {
-    border-left: 3px solid var(--status-confirmado);
-}
-
-.toast--error {
-    border-left: 3px solid var(--status-cancelado);
+    border-color: var(--color-primary-soft);
+    color: var(--color-primary-dark);
 }
 
 .toast--info {
-    border-left: 3px solid var(--status-agendado);
+    border-color: var(--color-primary-soft);
+    color: var(--color-primary-dark);
 }
 
-.agenda__slot-cell--empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-6);
+.toast--warning {
+    border-color: #FDE68A;
+    color: #A16207;
 }
 
-.agenda__empty-msg {
-    font-size: var(--font-sm);
-    color: var(--color-text-muted);
-    font-weight: 500;
-    text-align: center;
+.toast--error {
+    border-color: #FECACA;
+    color: #B91C1C;
 }
 
-/* ----------------------------------------------------------
+.toast__close {
+    border: 0;
+    background: transparent;
+    color: currentColor;
+    cursor: pointer;
+}
+
+.toast.is-leaving {
+    animation: toast-leave 250ms ease-in forwards;
+}
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: #CBD5E1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-light);
+}
+
+/* =========================================================
    ANIMAÇÕES
-   ---------------------------------------------------------- */
-@keyframes fadeIn {
+   ========================================================= */
+
+@keyframes fade-in {
     from {
         opacity: 0;
     }
@@ -1001,7 +1290,7 @@ body {
     }
 }
 
-@keyframes slideUp {
+@keyframes slide-up {
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -1013,52 +1302,33 @@ body {
     }
 }
 
-@keyframes slideInRight {
+@keyframes toast-enter {
     from {
         opacity: 0;
-        transform: translateX(100%);
+        transform: translateY(10px);
     }
 
     to {
         opacity: 1;
-        transform: translateX(0);
+        transform: translateY(0);
     }
 }
 
-@keyframes fadeOut {
+@keyframes toast-leave {
     to {
         opacity: 0;
-        transform: translateX(100%);
+        transform: translateY(10px);
     }
 }
 
-/* ----------------------------------------------------------
-   SCROLLBAR
-   ---------------------------------------------------------- */
-::-webkit-scrollbar {
-    width: 5px;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
-
-/* ----------------------------------------------------------
+/* =========================================================
    RESPONSIVIDADE
-   ---------------------------------------------------------- */
+   ========================================================= */
+
 @media (max-width: 1024px) {
     .agenda__header {
-        flex-direction: column;
         align-items: stretch;
+        flex-direction: column;
     }
 
     .agenda__header-left,
@@ -1073,6 +1343,19 @@ body {
     .agenda__select {
         flex: 1;
         min-width: auto;
+    }
+}
+
+@media (max-width: 900px) {
+
+    .agenda__header-left,
+    .agenda__header-right,
+    .agenda__filtros {
+        flex-wrap: wrap;
+    }
+
+    .agenda__header-right {
+        justify-content: space-between;
     }
 }
 
@@ -1093,18 +1376,14 @@ body {
     }
 
     .agenda__calendar {
-        margin: 0 var(--space-3) var(--space-4);
-    }
-
-    .agenda__calendar-header,
-    .agenda__row {
-        grid-template-columns: 3.5rem repeat(3, 1fr);
+        margin-right: var(--space-3);
+        margin-left: var(--space-3);
     }
 
     .agenda__col-time,
     .agenda__slot-time {
-        font-size: var(--font-xs);
         padding: var(--space-2) var(--space-1);
+        font-size: var(--font-xs);
     }
 
     .agenda__prof-nome {
@@ -1134,464 +1413,6 @@ body {
     .modal__row {
         flex-direction: column;
         gap: var(--space-3);
-    }
-}
-
-@media (max-width: 480px) {
-    .agenda__header-right {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .agenda__filtros {
-        flex-direction: column;
-    }
-
-    .agenda__btn--primary {
-        width: 100%;
-    }
-
-    .modal__acoes {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-/* =========================================================
-   ESTRUTURA DINÂMICA DA GRADE
-   ========================================================= */
-
-.agenda__calendar {
-    width: 100%;
-    overflow-x: auto;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    background: #ffffff;
-}
-
-.agenda__calendar-header,
-.agenda__calendar-row {
-    display: grid;
-    grid-template-columns:
-        84px repeat(var(--quantidade-medicos, 3),
-            minmax(220px, 1fr));
-    min-width: 760px;
-}
-
-.agenda__calendar-header {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    background: #f8fafc;
-    border-bottom: 1px solid #cbd5e1;
-}
-
-.agenda__col-time,
-.agenda__col-prof {
-    min-height: 72px;
-    padding: 12px;
-    border-right: 1px solid #e2e8f0;
-}
-
-.agenda__col-time {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #64748b;
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.agenda__col-prof {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 4px;
-}
-
-.agenda__prof-nome {
-    color: #0f172a;
-    font-weight: 700;
-}
-
-.agenda__prof-esp {
-    color: #64748b;
-    font-size: 0.8rem;
-}
-
-.agenda__calendar-row {
-    min-height: 64px;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.agenda__calendar-row:last-child {
-    border-bottom: 0;
-}
-
-.agenda__time-cell {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 10px 6px;
-    border-right: 1px solid #e2e8f0;
-    color: #64748b;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.agenda__slot {
-    position: relative;
-    min-height: 64px;
-    padding: 4px;
-    border-right: 1px solid #e2e8f0;
-}
-
-.agenda__slot:last-child {
-    border-right: 0;
-}
-
-/* =========================================================
-   CARDS DE AGENDAMENTO
-   ========================================================= */
-
-.agenda__appointment {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    gap: 8px;
-    min-height: 54px;
-    height: var(--appointment-height, 100%);
-    overflow: hidden;
-    padding: 8px;
-    border-left: 4px solid currentColor;
-    border-radius: 8px;
-    background: #ffffff;
-    box-shadow: 0 2px 8px rgb(15 23 42 / 10%);
-    cursor: pointer;
-    transition:
-        transform 160ms ease,
-        box-shadow 160ms ease;
-}
-
-.agenda__appointment:hover,
-.agenda__appointment:focus-visible {
-    z-index: 4;
-    transform: translateY(-1px);
-    box-shadow: 0 5px 14px rgb(15 23 42 / 18%);
-    outline: 3px solid rgb(59 130 246 / 25%);
-    outline-offset: 1px;
-}
-
-.agenda__appointment-time {
-    flex: 0 0 auto;
-    color: currentColor;
-    font-size: 0.75rem;
-    font-weight: 800;
-}
-
-.agenda__appointment-content {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.agenda__appointment-content strong,
-.agenda__appointment-content span,
-.agenda__appointment-content small {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.agenda__appointment-content strong {
-    color: #0f172a;
-    font-size: 0.83rem;
-}
-
-.agenda__appointment-content span,
-.agenda__appointment-content small {
-    color: #64748b;
-    font-size: 0.73rem;
-}
-
-.agenda__appointment-icon {
-    margin-left: auto;
-    color: currentColor;
-}
-
-/* Cores semânticas dos status */
-
-.agenda__appointment--agendado {
-    color: #2563eb;
-    background: #eff6ff;
-}
-
-.agenda__appointment--confirmado {
-    color: #16a34a;
-    background: #f0fdf4;
-}
-
-.agenda__appointment--espera {
-    color: #d97706;
-    background: #fffbeb;
-}
-
-.agenda__appointment--atendido {
-    color: #0891b2;
-    background: #ecfeff;
-}
-
-.agenda__appointment--cancelado {
-    color: #dc2626;
-    background: #fef2f2;
-    opacity: 0.72;
-}
-
-.agenda__appointment--nao-compareceu {
-    color: #7c3aed;
-    background: #f5f3ff;
-}
-
-/* =========================================================
-   MODAIS
-   ========================================================= */
-
-body.modal-open {
-    overflow: hidden;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-}
-
-.modal.is-open {
-    display: flex;
-}
-
-.modal__overlay {
-    position: absolute;
-    inset: 0;
-    background: rgb(15 23 42 / 58%);
-    backdrop-filter: blur(2px);
-}
-
-.modal__content {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    width: min(760px, 100%);
-    max-height: calc(100vh - 32px);
-    flex-direction: column;
-    overflow: auto;
-    border-radius: 14px;
-    background: #ffffff;
-    box-shadow: 0 20px 60px rgb(15 23 42 / 25%);
-}
-
-.modal--sm .modal__content {
-    width: min(480px, 100%);
-}
-
-.modal__header,
-.modal__footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 18px 22px;
-}
-
-.modal__header {
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.modal__footer {
-    justify-content: flex-end;
-    border-top: 1px solid #e2e8f0;
-}
-
-.modal__close {
-    display: inline-grid;
-    width: 36px;
-    height: 36px;
-    place-items: center;
-    border: 0;
-    border-radius: 8px;
-    background: transparent;
-    color: #64748b;
-    cursor: pointer;
-}
-
-.modal__close:hover,
-.modal__close:focus-visible {
-    background: #f1f5f9;
-    color: #0f172a;
-}
-
-.modal__body,
-.modal__form {
-    padding: 22px;
-}
-
-.modal__form {
-    overflow-y: auto;
-}
-
-.modal__input.is-invalid {
-    border-color: #dc2626 !important;
-    box-shadow: 0 0 0 3px rgb(220 38 38 / 12%);
-}
-
-.modal__detail-main {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 18px;
-}
-
-.modal__detail-main strong {
-    color: #0f172a;
-    font-size: 1.1rem;
-}
-
-.modal__detail-main span {
-    height: fit-content;
-    padding: 4px 8px;
-    border-radius: 999px;
-    background: #eff6ff;
-    color: #2563eb;
-    font-size: 0.75rem;
-    font-weight: 700;
-}
-
-.modal__detail-list {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin: 0;
-}
-
-.modal__detail-list div {
-    padding: 10px;
-    border-radius: 8px;
-    background: #f8fafc;
-}
-
-.modal__detail-list dt {
-    margin-bottom: 3px;
-    color: #64748b;
-    font-size: 0.75rem;
-}
-
-.modal__detail-list dd {
-    margin: 0;
-    color: #0f172a;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.modal__detail-observacao {
-    margin: 18px 0 0;
-    color: #475569;
-    font-size: 0.85rem;
-    line-height: 1.5;
-}
-
-/* =========================================================
-   TOASTS
-   ========================================================= */
-
-.toast-container {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    z-index: 2000;
-    display: flex;
-    width: min(380px, calc(100vw - 32px));
-    flex-direction: column;
-    gap: 10px;
-}
-
-.toast {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 13px 14px;
-    border: 1px solid transparent;
-    border-radius: 10px;
-    background: #ffffff;
-    box-shadow: 0 8px 25px rgb(15 23 42 / 16%);
-    color: #334155;
-    animation: toast-enter 180ms ease-out;
-}
-
-.toast>span {
-    flex: 1;
-    font-size: 0.87rem;
-}
-
-.toast--success {
-    border-color: #bbf7d0;
-    color: #15803d;
-}
-
-.toast--warning {
-    border-color: #fde68a;
-    color: #a16207;
-}
-
-.toast--error {
-    border-color: #fecaca;
-    color: #b91c1c;
-}
-
-.toast--info {
-    border-color: #bfdbfe;
-    color: #1d4ed8;
-}
-
-.toast__close {
-    border: 0;
-    background: transparent;
-    color: currentColor;
-    cursor: pointer;
-}
-
-.toast.is-leaving {
-    animation: toast-leave 250ms ease-in forwards;
-}
-
-.agenda__empty {
-    padding: 48px 20px;
-    color: #64748b;
-    text-align: center;
-}
-
-/* =========================================================
-   RESPONSIVIDADE
-   ========================================================= */
-
-@media (max-width: 900px) {
-    .agenda__header {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .agenda__header-left,
-    .agenda__header-right,
-    .agenda__filtros {
-        flex-wrap: wrap;
-    }
-
-    .agenda__header-right {
-        justify-content: space-between;
     }
 }
 
@@ -1627,7 +1448,6 @@ body.modal-open {
         border-radius: 16px 16px 0 0;
     }
 
-    .modal__row,
     .modal__detail-list {
         grid-template-columns: 1fr;
     }
@@ -1648,21 +1468,34 @@ body.modal-open {
     }
 }
 
-@keyframes toast-enter {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
+@media (max-width: 480px) {
+    .agenda__header-right {
+        align-items: stretch;
+        flex-direction: column;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    .agenda__filtros {
+        flex-direction: column;
+    }
+
+    .agenda__btn--primary {
+        width: 100%;
+    }
+
+    .modal__acoes {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
-@keyframes toast-leave {
-    to {
-        opacity: 0;
-        transform: translateY(10px);
+/* Preferência do usuário por menos movimento */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }

@@ -1,51 +1,72 @@
 /* =========================================================
    Sistema GM4 - Atendimento da Recepção
    Design system para interface HealthTech
+   Identidade visual: Tailwind teal-600
    ========================================================= */
+
 
 /* =========================================================
    Variáveis do design system
    ========================================================= */
 
 :root {
-    --color-primary: #2563eb;
-    --color-primary-dark: #1d4ed8;
-    --color-primary-light: #eff6ff;
+    /* Identidade visual principal */
+    --color-primary: #0D9488;
+    /* teal-600 */
+    --color-primary-dark: #0F766E;
+    /* teal-700 */
+    --color-primary-darker: #115E59;
+    /* teal-800 */
+    --color-primary-light: #F0FDFA;
+    /* teal-50 */
+    --color-primary-soft: #CCFBF1;
+    /* teal-100 */
+    --color-primary-medium: #14B8A6;
+    /* teal-500 */
 
-    --color-success: #16a34a;
-    --color-success-dark: #15803d;
+    /* Estados semânticos */
+    --color-success: #16A34A;
+    --color-success-dark: #15803D;
+    --color-success-light: #F0FDF4;
 
-    --color-warning: #d97706;
-    --color-warning-dark: #b45309;
+    --color-warning: #D97706;
+    --color-warning-dark: #B45309;
+    --color-warning-light: #FFFBEB;
 
-    --color-danger: #dc2626;
-    --color-danger-dark: #b91c1c;
+    --color-danger: #DC2626;
+    --color-danger-dark: #B91C1C;
+    --color-danger-light: #FEF2F2;
 
+    /* Cores neutras */
     --color-dark: #344054;
-    --color-dark-dark: #1f2937;
+    --color-dark-dark: #1F2937;
 
     --color-text: #172033;
     --color-text-secondary: #667085;
-    --color-text-muted: #98a2b3;
+    --color-text-muted: #98A2B3;
 
-    --color-border: #dce2eb;
-    --color-border-dark: #cbd5e1;
+    --color-border: #DCE2EB;
+    --color-border-dark: #CBD5E1;
 
-    --color-background: #f4f7fb;
-    --color-surface: #ffffff;
-    --color-surface-muted: #f8fafc;
+    --color-background: #F4F7FB;
+    --color-surface: #FFFFFF;
+    --color-surface-muted: #F8FAFC;
 
-    --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.08);
-    --shadow-md: 0 8px 24px rgba(16, 24, 40, 0.08);
-    --shadow-lg: 0 16px 36px rgba(16, 24, 40, 0.1);
+    /* Sombras */
+    --shadow-sm: 0 1px 3px rgb(16 24 40 / 8%);
+    --shadow-md: 0 8px 24px rgb(16 24 40 / 8%);
+    --shadow-lg: 0 16px 36px rgb(16 24 40 / 10%);
 
+    /* Bordas */
     --radius-sm: 6px;
     --radius-md: 9px;
     --radius-lg: 14px;
 
+    /* Transições */
     --transition-fast: 160ms ease;
     --transition-normal: 220ms ease;
 }
+
 
 /* =========================================================
    Reset e configurações globais
@@ -70,9 +91,9 @@ body {
     color: var(--color-text);
     background:
         linear-gradient(135deg,
-            #f8fbff 0%,
+            #F8FFFE 0%,
             var(--color-background) 50%,
-            #eef3f9 100%);
+            #EEF8F7 100%);
     font-family:
         "Plus Jakarta Sans",
         -apple-system,
@@ -108,11 +129,18 @@ textarea {
 }
 
 ::selection {
-    color: #ffffff;
+    color: #FFFFFF;
     background: var(--color-primary);
 }
 
+:focus-visible {
+    outline: 3px solid rgb(13 148 136 / 30%);
+    outline-offset: 2px;
+}
+
+
 /* Classe para conteúdo acessível a leitores de tela */
+
 .sr-only {
     position: absolute;
     width: 1px;
@@ -125,6 +153,7 @@ textarea {
     border: 0;
 }
 
+
 /* =========================================================
    Estrutura principal
    ========================================================= */
@@ -135,7 +164,7 @@ textarea {
     margin: 0 auto;
     overflow: hidden;
     background: var(--color-surface);
-    border: 1px solid rgba(203, 213, 225, 0.8);
+    border: 1px solid rgb(203 213 225 / 80%);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
 }
@@ -148,12 +177,12 @@ header {
     gap: 24px;
     min-height: 86px;
     padding: 18px 24px;
-    color: #ffffff;
+    color: #FFFFFF;
     background:
         linear-gradient(135deg,
-            #172b4d 0%,
-            #1e3a5f 55%,
-            #24527d 100%);
+            #134E4A 0%,
+            #115E59 55%,
+            #0F766E 100%);
 }
 
 .header-title {
@@ -169,21 +198,22 @@ header {
     height: 42px;
     flex: 0 0 42px;
     place-items: center;
-    color: #bfdbfe;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #99F6E4;
+    background: rgb(255 255 255 / 12%);
+    border: 1px solid rgb(255 255 255 / 16%);
     border-radius: 10px;
     font-size: 20px;
 }
 
 .header-title h1 {
     margin: 0;
-    color: #ffffff;
+    color: #FFFFFF;
     font-size: clamp(1rem, 2vw, 1.3rem);
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.3;
 }
+
 
 /* =========================================================
    Toolbar e botões
@@ -204,10 +234,10 @@ header {
     justify-content: center;
     gap: 8px;
     padding: 9px 13px;
-    color: #ffffff;
+    color: #FFFFFF;
     border: 1px solid transparent;
     border-radius: var(--radius-sm);
-    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.1);
+    box-shadow: 0 1px 2px rgb(16 24 40 / 10%);
     font-size: 0.8rem;
     font-weight: 700;
     line-height: 1;
@@ -226,7 +256,7 @@ header {
 
 .btn:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(16, 24, 40, 0.16);
+    box-shadow: 0 4px 10px rgb(16 24 40 / 16%);
 }
 
 .btn:active:not(:disabled) {
@@ -241,15 +271,20 @@ header {
     filter: grayscale(0.25);
 }
 
+/* Botão principal — teal-600 */
+
 .btn-primary {
     background: var(--color-primary);
     border-color: var(--color-primary);
 }
 
-.btn-primary:hover:not(:disabled) {
+.btn-primary:hover:not(:disabled),
+.btn-primary:focus-visible {
     background: var(--color-primary-dark);
     border-color: var(--color-primary-dark);
 }
+
+/* Botões semânticos */
 
 .btn-success {
     background: var(--color-success);
@@ -262,7 +297,7 @@ header {
 }
 
 .btn-warning {
-    color: #ffffff;
+    color: #FFFFFF;
     background: var(--color-warning);
     border-color: var(--color-warning);
 }
@@ -298,6 +333,7 @@ header {
     font-size: 0.78rem;
 }
 
+
 /* =========================================================
    Conteúdo principal
    ========================================================= */
@@ -330,6 +366,7 @@ main {
     overflow: hidden;
 }
 
+
 /* =========================================================
    Navegação por abas
    ========================================================= */
@@ -340,7 +377,7 @@ main {
     gap: 2px;
     overflow-x: auto;
     padding: 0 18px;
-    background: #ffffff;
+    background: #FFFFFF;
     border-bottom: 1px solid var(--color-border);
     scrollbar-width: thin;
 }
@@ -408,6 +445,7 @@ main {
         transform: translateY(0);
     }
 }
+
 
 /* =========================================================
    Grid do formulário
@@ -491,7 +529,7 @@ main {
     min-height: 40px;
     padding: 9px 11px;
     color: var(--color-text);
-    background: #ffffff;
+    background: #FFFFFF;
     border: 1px solid var(--color-border-dark);
     border-radius: var(--radius-sm);
     outline: none;
@@ -517,7 +555,7 @@ main {
 .form-group select:hover:not(:disabled):not(:focus),
 .form-group textarea:hover:not(:disabled):not(:focus),
 .grid-search input:hover:not(:focus) {
-    border-color: #94a3b8;
+    border-color: #94A3B8;
 }
 
 .form-group input:focus,
@@ -525,22 +563,22 @@ main {
 .form-group textarea:focus,
 .grid-search input:focus {
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+    box-shadow: 0 0 0 3px rgb(13 148 136 / 14%);
 }
 
 .form-group input:disabled,
 .form-group select:disabled,
 .form-group textarea:disabled {
     color: #667085;
-    background: #f3f5f8;
-    border-color: #e2e8f0;
+    background: #F3F5F8;
+    border-color: #E2E8F0;
     cursor: not-allowed;
 }
 
 .form-group input[readonly] {
     color: #344054;
-    background: #eef2f7;
-    border-color: #d7dee8;
+    background: #EEF2F7;
+    border-color: #D7DEE8;
     font-weight: 700;
 }
 
@@ -592,7 +630,7 @@ select {
     gap: 8px;
     padding: 10px;
     color: #475467;
-    background: #ffffff;
+    background: #FFFFFF;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     cursor: pointer;
@@ -604,8 +642,8 @@ select {
 }
 
 .checkbox-group label:hover {
-    background: #f8fbff;
-    border-color: #93c5fd;
+    background: var(--color-primary-light);
+    border-color: var(--color-primary-medium);
 }
 
 .checkbox-group input {
@@ -620,6 +658,7 @@ select {
     cursor: not-allowed;
 }
 
+
 /* =========================================================
    Cabeçalho da fila e busca
    ========================================================= */
@@ -631,8 +670,8 @@ select {
     gap: 16px;
     min-height: 68px;
     padding: 14px 16px;
+    background: #FFFFFF;
     border-bottom: 1px solid var(--color-border);
-    background: #ffffff;
 }
 
 .grid-header h2 {
@@ -664,6 +703,7 @@ select {
     font-size: 0.78rem;
 }
 
+
 /* =========================================================
    Tabela de atendimentos
    ========================================================= */
@@ -671,8 +711,8 @@ select {
 .table-wrapper {
     flex: 1;
     overflow: auto;
-    background: #ffffff;
-    scrollbar-color: #cbd5e1 transparent;
+    background: #FFFFFF;
+    scrollbar-color: #CBD5E1 transparent;
     scrollbar-width: thin;
 }
 
@@ -690,7 +730,7 @@ select {
     height: 44px;
     padding: 10px 12px;
     color: #667085;
-    background: #f8fafc;
+    background: #F8FAFC;
     border-bottom: 1px solid var(--color-border);
     font-size: 0.7rem;
     font-weight: 800;
@@ -704,7 +744,7 @@ select {
     height: 58px;
     padding: 10px 12px;
     color: #475467;
-    border-bottom: 1px solid #edf0f4;
+    border-bottom: 1px solid #EDF0F4;
     font-size: 0.78rem;
     vertical-align: middle;
 }
@@ -718,16 +758,16 @@ select {
 }
 
 #tabelaAtendimentos tbody tr:hover {
-    background: #f6f9fd;
+    background: var(--color-primary-light);
 }
 
 #tabelaAtendimentos tbody tr.selected {
-    background: #eaf2ff;
+    background: var(--color-primary-soft);
     box-shadow: inset 4px 0 0 var(--color-primary);
 }
 
 #tabelaAtendimentos tbody tr:focus-visible {
-    outline: 3px solid rgba(37, 99, 235, 0.28);
+    outline: 3px solid rgb(13 148 136 / 28%);
     outline-offset: -3px;
 }
 
@@ -757,6 +797,7 @@ select {
     text-align: center;
 }
 
+
 /* =========================================================
    Badges da fila
    ========================================================= */
@@ -779,17 +820,17 @@ select {
 
 .senha-normal {
     color: #075985;
-    background: #e0f2fe;
+    background: #E0F2FE;
 }
 
 .senha-preferencial {
-    color: #92400e;
-    background: #fef3c7;
+    color: #92400E;
+    background: #FEF3C7;
 }
 
 .senha-emergencial {
-    color: #991b1b;
-    background: #fee2e2;
+    color: #991B1B;
+    background: #FEE2E2;
 }
 
 .status-badge {
@@ -798,26 +839,27 @@ select {
 
 .status-aguardando {
     color: #075985;
-    background: #e0f2fe;
+    background: #E0F2FE;
 }
 
 .status-atendimento {
     color: #166534;
-    background: #dcfce7;
+    background: #DCFCE7;
 }
 
 .status-finalizado {
     color: #475467;
-    background: #eaecf0;
+    background: #EAECF0;
 }
 
 .status-cancelado {
-    color: #991b1b;
-    background: #fee2e2;
+    color: #991B1B;
+    background: #FEE2E2;
 }
 
+
 /* =========================================================
-   Foco e acessibilidade
+   Estados de foco e acessibilidade
    ========================================================= */
 
 .btn:focus-visible,
@@ -826,9 +868,10 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
 .table-wrapper:focus-visible {
-    outline: 3px solid rgba(37, 99, 235, 0.32);
+    outline: 3px solid rgb(13 148 136 / 30%);
     outline-offset: 2px;
 }
+
 
 /* =========================================================
    Responsividade
@@ -960,19 +1003,12 @@ textarea:focus-visible,
     .grid-search {
         width: 100%;
         min-width: 0;
-    }
-
-    .grid-search input {
-        min-width: 0;
+        flex-direction: column;
     }
 
     .grid-search input,
     .grid-search .btn {
         width: 100%;
-    }
-
-    .grid-search {
-        flex-direction: column;
     }
 
     .grid-area {
@@ -1000,8 +1036,9 @@ textarea:focus-visible,
     }
 }
 
+
 /* =========================================================
-   Redução de movimento
+   Preferência por menos movimento
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
