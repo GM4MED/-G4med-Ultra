@@ -834,6 +834,192 @@
                 </a>
             </div>
         </section> -->
+
+        <!-- Conteúdo da página com Carrossel Avançado (5 Slides) -->
+        <section class="dashboard-home mt-6">
+            <div class="welcome-card flex flex-col gap-6 rounded-[24px] bg-white p-6 shadow-soft sm:p-10">
+
+                <div class="flex flex-col gap-2">
+                    <h1 class="text-2xl font-extrabold tracking-tight text-gray-800 sm:text-3xl">
+                        Bem-vindo ao G4Med
+                    </h1>
+
+                    <div class="flex items-center gap-3 text-primary-600">
+                        <i class="fa-solid fa-heart-pulse text-2xl" aria-hidden="true"></i>
+                        <span class="text-sm font-bold uppercase tracking-wide">
+                            Gestão Inteligente em Saúde
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Carrossel com Imagens Médicas -->
+                <div class="relative w-full overflow-hidden rounded-[20px] bg-gray-900 shadow-lg">
+                    <!-- Container dos slides -->
+                    <div id="medical-image-carousel" class="flex transition-transform duration-700 ease-in-out">
+
+                        <!-- Slide 1: Análise e Laboratório -->
+                        <div class="min-w-full relative h-[320px] sm:h-[380px] flex items-center">
+                            <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1200&q=80"
+                                alt="Laboratório e Exames"
+                                class="absolute inset-0 w-full h-full object-cover opacity-45">
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-900/60 to-transparent">
+                            </div>
+                            <div class="relative z-10 p-6 sm:p-10 max-w-xl flex flex-col gap-3 text-white">
+                                <span
+                                    class="bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full w-fit uppercase tracking-wider">Diagnóstico
+                                    Preciso</span>
+                                <h2 class="text-2xl sm:text-3xl font-extrabold">Catálogo de Exames Integrado</h2>
+                                <p class="text-xs sm:text-sm text-gray-200 leading-relaxed">
+                                    Acesse diretrizes, prazos e preparos de exames laboratoriais e de imagem
+                                    instantaneamente durante o atendimento clínico.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Slide 2: Recepção e Atendimento -->
+                        <div class="min-w-full relative h-[320px] sm:h-[380px] flex items-center">
+                            <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80"
+                                alt="Recepção Hospitalar"
+                                class="absolute inset-0 w-full h-full object-cover opacity-45">
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-900/60 to-transparent">
+                            </div>
+                            <div class="relative z-10 p-6 sm:p-10 max-w-xl flex flex-col gap-3 text-white">
+                                <span
+                                    class="bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full w-fit uppercase tracking-wider">Fluxo
+                                    Otimizado</span>
+                                <h2 class="text-2xl sm:text-3xl font-extrabold">Atendimento e Recepção Ágil</h2>
+                                <p class="text-xs sm:text-sm text-gray-200 leading-relaxed">
+                                    Reduza o tempo de espera na recepção com registros rápidos em CRM, controle de filas
+                                    e triagem humanizada.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Slide 3: Prontuário e Tecnologia -->
+                        <div class="min-w-full relative h-[320px] sm:h-[380px] flex items-center">
+                            <img src="https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=1200&q=80"
+                                alt="Tecnologia Médica" class="absolute inset-0 w-full h-full object-cover opacity-45">
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-900/60 to-transparent">
+                            </div>
+                            <div class="relative z-10 p-6 sm:p-10 max-w-xl flex flex-col gap-3 text-white">
+                                <span
+                                    class="bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full w-fit uppercase tracking-wider">Inovação
+                                    em Saúde</span>
+                                <h2 class="text-2xl sm:text-3xl font-extrabold">Agenda e Prontuários Inteligentes</h2>
+                                <p class="text-xs sm:text-sm text-gray-200 leading-relaxed">
+                                    Centralize o histórico médico, consultas e retornos em uma interface moderna
+                                    desenvolvida para profissionais exigentes.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Slide 4: Telemedicina / Consulta Online -->
+                        <div class="min-w-full relative h-[320px] sm:h-[380px] flex items-center">
+                            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80"
+                                alt="Telemedicina" class="absolute inset-0 w-full h-full object-cover opacity-45">
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-900/60 to-transparent">
+                            </div>
+                            <div class="relative z-10 p-6 sm:p-10 max-w-xl flex flex-col gap-3 text-white">
+                                <span
+                                    class="bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full w-fit uppercase tracking-wider">Atendimento
+                                    Remoto</span>
+                                <h2 class="text-2xl sm:text-3xl font-extrabold">Telemedicina e Consultas Online</h2>
+                                <p class="text-xs sm:text-sm text-gray-200 leading-relaxed">
+                                    Conecte-se com pacientes à distância com segurança de ponta, chamadas de vídeo
+                                    integradas e emissão de receitas digitais.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Slide 5: Gestão Financeira / Relatórios Clínicos -->
+                        <div class="min-w-full relative h-[320px] sm:h-[380px] flex items-center">
+                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80"
+                                alt="Gestão Financeira e Relatórios"
+                                class="absolute inset-0 w-full h-full object-cover opacity-45">
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-900/60 to-transparent">
+                            </div>
+                            <div class="relative z-10 p-6 sm:p-10 max-w-xl flex flex-col gap-3 text-white">
+                                <span
+                                    class="bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full w-fit uppercase tracking-wider">Controle
+                                    Total</span>
+                                <h2 class="text-2xl sm:text-3xl font-extrabold">Gestão Financeira e Relatórios</h2>
+                                <p class="text-xs sm:text-sm text-gray-200 leading-relaxed">
+                                    Monitore o faturamento, fluxo de caixa e métricas de desempenho da clínica através
+                                    de relatórios detalhados e intuitivos.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Setas ocultas -->
+                    <button onclick="prevAdvancedSlide()" class="hidden" aria-label="Slide anterior"></button>
+                    <button onclick="nextAdvancedSlide()" class="hidden" aria-label="Próximo slide"></button>
+
+                    <!-- Indicadores (Dots) na parte inferior (5 Dots) -->
+                    <div class="absolute bottom-4 right-6 z-10 flex gap-2">
+                        <button onclick="goToAdvancedSlide(0)"
+                            class="advanced-dot w-3 h-3 rounded-full bg-white/55 hover:bg-white transition"
+                            aria-label="Slide 1"></button>
+                        <button onclick="goToAdvancedSlide(1)"
+                            class="advanced-dot w-3 h-3 rounded-full bg-white/55 hover:bg-white transition"
+                            aria-label="Slide 2"></button>
+                        <button onclick="goToAdvancedSlide(2)"
+                            class="advanced-dot w-3 h-3 rounded-full bg-white/55 hover:bg-white transition"
+                            aria-label="Slide 3"></button>
+                        <button onclick="goToAdvancedSlide(3)"
+                            class="advanced-dot w-3 h-3 rounded-full bg-white/55 hover:bg-white transition"
+                            aria-label="Slide 4"></button>
+                        <button onclick="goToAdvancedSlide(4)"
+                            class="advanced-dot w-3 h-3 rounded-full bg-white/55 hover:bg-white transition"
+                            aria-label="Slide 5"></button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Script de Controle do Carrossel Atualizado -->
+        <script>
+            let advCurrentIdx = 0;
+            const advTotalSlides = 5;
+            const advCarousel = document.getElementById('medical-image-carousel');
+            const advDots = document.querySelectorAll('.advanced-dot');
+
+            function updateAdvancedCarousel() {
+                if (!advCarousel) return;
+                advCarousel.style.transform = `translateX(-${advCurrentIdx * 100}%)`;
+                advDots.forEach((dot, idx) => {
+                    if (idx === advCurrentIdx) {
+                        dot.classList.remove('bg-white/55');
+                        dot.classList.add('bg-white', 'w-6');
+                    } else {
+                        dot.classList.remove('bg-white', 'w-6');
+                        dot.classList.add('bg-white/55', 'w-3');
+                    }
+                });
+            }
+
+            function nextAdvancedSlide() {
+                advCurrentIdx = (advCurrentIdx + 1) % advTotalSlides;
+                updateAdvancedCarousel();
+            }
+
+            function prevAdvancedSlide() {
+                advCurrentIdx = (advCurrentIdx - 1 + advTotalSlides) % advTotalSlides;
+                updateAdvancedCarousel();
+            }
+
+            function goToAdvancedSlide(idx) {
+                advCurrentIdx = idx;
+                updateAdvancedCarousel();
+            }
+
+            updateAdvancedCarousel();
+
+            // Passa automaticamente a cada 6 segundos
+            setInterval(nextAdvancedSlide, 6000);
+        </script>
     </main>
 
     <!-- Rodapé -->
