@@ -89,6 +89,7 @@
             --primary-soft: #CCFBF1;
             --primary-light: #F0FDFA;
             --primary-medium: #14B8A6;
+            --sidebar-width: 290px;
         }
 
         html {
@@ -96,17 +97,176 @@
         }
 
         body {
+            min-height: 100vh;
+            overflow-x: hidden;
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        .menu-item.is-active {
+        body.menu-mobile-open {
+            overflow: hidden;
+        }
+
+        /* Sidebar fixa */
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 100;
+            display: flex;
+            width: var(--sidebar-width);
+            height: 100dvh;
+            max-height: 100dvh;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 1.25rem;
+            background:
+                linear-gradient(180deg,
+                    #134E4A 0%,
+                    #0F766E 100%);
+            box-shadow: 4px 0 25px rgb(15 23 42 / 16%);
+            transition: transform 240ms ease;
+        }
+
+        /* Cabeçalho fixo da sidebar */
+        .sidebar-header {
+            flex: 0 0 auto;
+            width: 100%;
+            margin-bottom: 1rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid rgb(255 255 255 / 15%);
+        }
+
+        /* Somente esta área recebe rolagem */
+        .sidebar-menu-scroll {
+            min-height: 0;
+            flex: 1 1 auto;
+            overflow-x: hidden;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-color: rgb(204 251 241 / 45%) transparent;
+            scrollbar-width: thin;
+        }
+
+        .sidebar-menu-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar-menu-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar-menu-scroll::-webkit-scrollbar-thumb {
+            border-radius: 999px;
+            background: rgb(204 251 241 / 45%);
+        }
+
+        .sidebar-menu-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgb(204 251 241 / 75%);
+        }
+
+        .sidebar-nav {
+            display: flex;
+            min-height: 100%;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding-right: 0.25rem;
+        }
+
+        /* Itens do menu */
+        .menu-item {
+            display: flex;
+            width: 100%;
+            min-height: 44px;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border: 0;
+            border-radius: 14px;
+            background: transparent;
+            color: #FFFFFF;
+            font-size: 0.875rem;
+            font-weight: 600;
+            line-height: 1.3;
+            text-align: left;
+            text-decoration: none;
+            cursor: pointer;
+            transition:
+                background-color 160ms ease,
+                box-shadow 160ms ease,
+                color 160ms ease,
+                transform 160ms ease;
+        }
+
+        .menu-item:hover {
+            background: rgb(255 255 255 / 10%);
+        }
+
+        .menu-item:focus-visible {
+            outline: 3px solid rgb(153 246 228 / 45%);
+            outline-offset: 2px;
+        }
+
+        .menu-item>i,
+        .menu-item>span>i {
+            display: inline-flex;
+            width: 24px;
+            min-width: 24px;
+            height: 20px;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 24px;
+            color: #CCFBF1;
+            font-size: 17px;
+            line-height: 1;
+            text-align: center;
+        }
+
+        .menu-item>span {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .menu-item>span>span,
+        .menu-item>span:not(:has(i)) {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .menu-item .arrow {
+            width: auto;
+            min-width: auto;
+            height: auto;
+            margin-left: auto;
+            flex: 0 0 auto;
+            color: rgb(255 255 255 / 72%);
+            font-size: 11px;
+            transition: transform 160ms ease;
+        }
+
+        .menu-item.is-active,
+        .submenu-link.is-active {
             background: rgb(255 255 255 / 16%);
             box-shadow: inset 3px 0 0 #5EEAD4;
+        }
+
+        /* Submenus */
+        .submenu {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            padding-top: 6px;
+            padding-left: 40px;
         }
 
         .submenu.is-open {
             display: flex;
             animation: submenu-enter 180ms ease-out;
+        }
+
+        .submenu.hidden {
+            display: none !important;
         }
 
         .submenu-toggle[aria-expanded="true"] .arrow {
@@ -115,30 +275,44 @@
 
         .submenu-link {
             display: flex;
+            width: 100%;
+            min-height: 40px;
             align-items: center;
-            gap: 0.75rem;
-            border-radius: 0.875rem;
-            padding: 0.625rem 0.875rem;
-            color: #FFFFFF;
-            font-size: 0.875rem;
-            opacity: 0.9;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            color: rgb(255 255 255 / 78%);
+            font-size: 0.78rem;
+            line-height: 1.3;
             text-decoration: none;
             transition:
                 background-color 160ms ease,
+                color 160ms ease,
                 opacity 160ms ease;
         }
 
         .submenu-link:hover,
         .submenu-link:focus-visible {
             background: rgb(255 255 255 / 15%);
+            color: #FFFFFF;
             opacity: 1;
         }
 
         .submenu-link i {
-            width: 1.5rem;
+            display: inline-flex;
+            width: 20px;
+            min-width: 20px;
+            height: 18px;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 20px;
+            color: #99F6E4;
+            font-size: 14px;
+            line-height: 1;
             text-align: center;
         }
 
+        /* Menu mobile */
         .mobile-menu-button {
             display: none;
         }
@@ -161,6 +335,7 @@
 
         @media (max-width: 1024px) {
             .sidebar {
+                width: min(290px, 86vw);
                 transform: translateX(-100%);
             }
 
@@ -214,9 +389,40 @@
         }
 
         @media (max-width: 640px) {
+            .sidebar {
+                width: min(290px, 88vw);
+                padding: 1rem;
+            }
+
+            .sidebar-header {
+                padding-bottom: 1rem;
+            }
+
+            .sidebar-menu-scroll {
+                padding-right: 0;
+            }
+
+            .menu-item {
+                min-height: 42px;
+                padding: 11px 14px;
+            }
+
+            .menu-item>span {
+                gap: 12px;
+            }
+
+            .submenu {
+                padding-left: 32px;
+            }
+
+            .submenu-link {
+                min-height: 38px;
+                gap: 10px;
+                padding: 9px 12px;
+            }
+
             .topbar {
                 min-height: auto;
-                border-radius: 18px;
             }
 
             .topbar-left,
@@ -270,237 +476,267 @@
     <button type="button" id="mobileMenuButton" class="mobile-menu-button" aria-label="Abrir menu principal"
         aria-controls="mainSidebar" aria-expanded="false">
 
-        <i class="fa-solid fa-bars" aria-hidden="true"></i>
+        <i class="fa-solid fa-bars" aria-hidden="true">
+        </i>
     </button>
 
     <!-- Overlay mobile -->
     <div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true">
     </div>
 
-    <!-- Sidebar -->
-    <aside id="mainSidebar"
-        class="sidebar fixed left-0 top-0 z-[100] flex h-screen w-[290px] flex-col overflow-x-hidden overflow-y-auto bg-gradient-to-b from-sidebar-teal to-sidebar-light p-5 shadow-sidebar transition-transform duration-300 ease-in-out">
+    <!-- Sidebar fixa -->
+    <aside id="mainSidebar" class="sidebar">
 
-        <nav class="flex flex-col gap-2.5" aria-label="Menu principal">
+        <!-- Cabeçalho fixo -->
+        <div class="sidebar-header">
 
-            <!-- Identidade -->
-            <div class="sidebar-header mb-7 w-full flex-shrink-0 border-b border-white/15 pb-7 text-center">
+            <div class="flex items-center justify-center gap-3">
 
-                <div class="flex items-center justify-center gap-3">
+                <i data-lucide="stethoscope" class="medical-icon h-11 w-11 text-primary-200" aria-hidden="true">
+                </i>
 
-                    <i data-lucide="stethoscope" class="medical-icon h-11 w-11 text-primary-200" aria-hidden="true">
+                <div>
+                    <h1 class="brand-name mt-2.5 text-3xl font-extrabold text-white">
+                        G4Med
+                    </h1>
+
+                    <p class="brand-slogan mt-1 text-xs text-primary-100">
+                        Intelligent Health System
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área com rolagem interna -->
+        <div class="sidebar-menu-scroll">
+
+            <nav class="sidebar-nav" aria-label="Menu principal">
+
+                <!-- Agenda -->
+                <a href="Agenda-medica/agenda-geral.html" class="menu-item">
+
+                    <i class="fa-solid fa-calendar-days" aria-hidden="true">
                     </i>
 
-                    <div>
-                        <h1 class="brand-name mt-2.5 text-3xl font-extrabold text-white">
-                            G4Med
-                        </h1>
+                    <span>Agenda</span>
+                </a>
 
-                        <p class="brand-slogan mt-1 text-xs text-primary-100">
-                            Intelligent Health System
-                        </p>
+                <!-- Atendimento -->
+                <a href="Atendimento-do-paciente-na-recepcao/atendimento-recepcao.html" class="menu-item">
+
+                    <i class="fa-solid fa-clipboard-user" aria-hidden="true">
+                    </i>
+
+                    <span>Atendimento Recepção</span>
+                </a>
+
+                <!-- Cadastro -->
+                <div class="menu-group">
+
+                    <button type="button" class="menu-item submenu-toggle" aria-expanded="false"
+                        aria-controls="submenu-cadastro">
+
+                        <span>
+                            <i class="fa-solid fa-folder-open" aria-hidden="true">
+                            </i>
+
+                            <span>Cadastro</span>
+                        </span>
+
+                        <i class="fa-solid fa-chevron-down arrow" aria-hidden="true">
+                        </i>
+                    </button>
+
+                    <div id="submenu-cadastro" class="submenu hidden" aria-hidden="true">
+
+                        <a href="Cadastro-paciente/cadastro-paciente.html" class="submenu-link">
+
+                            <i class="fa-solid fa-user" aria-hidden="true">
+                            </i>
+
+                            <span>Paciente</span>
+                        </a>
+
+                        <a href="Cadastros-medicos/cadastro-medicos.html" class="submenu-link">
+
+                            <i class="fa-solid fa-user-doctor" aria-hidden="true">
+                            </i>
+
+                            <span>Médico</span>
+                        </a>
                     </div>
                 </div>
-            </div>
 
-            <!-- Agenda -->
-            <a href="Agenda-medica/agenda-geral.html"
-                class="menu-item flex items-center gap-3.5 rounded-[14px] px-4 py-3.5 text-base font-semibold text-white transition-all duration-300 hover:bg-white/10 focus:outline-none focus:ring-4 focus:ring-primary-200/30">
+                <!-- Relatórios -->
+                <div class="menu-group">
 
-                <i class="fa-solid fa-calendar-days w-6 text-center text-lg" aria-hidden="true">
-                </i>
+                    <button type="button" class="menu-item submenu-toggle" aria-expanded="false"
+                        aria-controls="submenu-relatorios">
 
-                <span>Agenda</span>
-            </a>
+                        <span>
+                            <i class="fa-solid fa-chart-column" aria-hidden="true">
+                            </i>
 
-            <!-- Atendimento -->
-            <a href="Atendimento-do-paciente-na-recepcao/atendimento-recepcao.html"
-                class="menu-item flex items-center gap-3.5 rounded-[14px] px-4 py-3.5 text-base font-semibold text-white transition-all duration-300 hover:bg-white/10 focus:outline-none focus:ring-4 focus:ring-primary-200/30">
+                            <span>Relatórios</span>
+                        </span>
 
-                <i class="fa-solid fa-clipboard-user w-6 text-center text-lg" aria-hidden="true">
-                </i>
-
-                <span>Atendimento Recepção</span>
-            </a>
-
-            <!-- Cadastro -->
-            <div class="menu-group">
-
-                <button type="button"
-                    class="menu-item submenu-toggle flex w-full items-center gap-3.5 rounded-[14px] px-4 py-3.5 text-left text-base font-semibold text-white transition-all duration-300 hover:bg-white/10 focus:outline-none focus:ring-4 focus:ring-primary-200/30"
-                    aria-expanded="false" aria-controls="submenu-cadastro">
-
-                    <span class="flex items-center gap-3.5">
-                        <i class="fa-solid fa-folder-open w-6 text-center text-lg" aria-hidden="true">
+                        <i class="fa-solid fa-chevron-down arrow" aria-hidden="true">
                         </i>
+                    </button>
 
-                        <span>Cadastro</span>
-                    </span>
+                    <div id="submenu-relatorios" class="submenu hidden" aria-hidden="true">
 
-                    <i class="fa-solid fa-chevron-down arrow ml-auto transition-transform duration-300"
-                        aria-hidden="true">
-                    </i>
-                </button>
+                        <a href="Relatorios/relatorio-atendimento.html" class="submenu-link">
 
-                <div id="submenu-cadastro" class="submenu hidden flex-col gap-1 pl-10 pt-1.5">
+                            <i class="fa-solid fa-file-lines" aria-hidden="true">
+                            </i>
 
-                    <a href="Cadastro-paciente/cadastro-paciente.html" class="submenu-link">
+                            <span>Atendimentos</span>
+                        </a>
 
-                        <i class="fa-solid fa-user" aria-hidden="true">
-                        </i>
+                        <a href="Relatorios/relatorio-paciente.html" class="submenu-link">
 
-                        Paciente
-                    </a>
+                            <i class="fa-solid fa-users" aria-hidden="true">
+                            </i>
 
-                    <a href="Cadastros-medicos/cadastro-medicos.html" class="submenu-link">
-
-                        <i class="fa-solid fa-user-doctor" aria-hidden="true">
-                        </i>
-
-                        Médico
-                    </a>
+                            <span>Pacientes</span>
+                        </a>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Relatórios -->
-            <div class="menu-group">
+                <!-- Utilitários -->
+                <div class="menu-group">
 
-                <button type="button"
-                    class="menu-item submenu-toggle flex w-full items-center gap-3.5 rounded-[14px] px-4 py-3.5 text-left text-base font-semibold text-white transition-all duration-300 hover:bg-white/10 focus:outline-none focus:ring-4 focus:ring-primary-200/30"
-                    aria-expanded="false" aria-controls="submenu-relatorios">
+                    <button type="button" class="menu-item submenu-toggle" aria-expanded="false"
+                        aria-controls="submenu-utilitarios">
 
-                    <span class="flex items-center gap-3.5">
+                        <span>
+                            <i class="fa-solid fa-screwdriver-wrench" aria-hidden="true">
+                            </i>
 
-                        <i class="fa-solid fa-chart-column w-6 text-center text-lg" aria-hidden="true">
+                            <span>Utilitários</span>
+                        </span>
+
+                        <i class="fa-solid fa-chevron-down arrow" aria-hidden="true">
                         </i>
+                    </button>
 
-                        <span>Relatórios</span>
-                    </span>
+                    <div id="submenu-utilitarios" class="submenu hidden" aria-hidden="true">
 
-                    <i class="fa-solid fa-chevron-down arrow ml-auto transition-transform duration-300"
-                        aria-hidden="true">
-                    </i>
-                </button>
+                        <a href="Grupo-de-exames/grupo-exames.html" class="submenu-link">
 
-                <div id="submenu-relatorios" class="submenu hidden flex-col gap-1 pl-10 pt-1.5">
+                            <i class="fa-solid fa-file-medical" aria-hidden="true">
+                            </i>
 
-                    <a href="Relatorios/relatorio-atendimento.html" class="submenu-link">
+                            <span>Grupo de Exames</span>
+                        </a>
 
-                        <i class="fa-solid fa-file-lines" aria-hidden="true">
-                        </i>
+                        <a href="Grupo-de-procedimentos/grupo-procedimentos.html" class="submenu-link">
 
-                        Atendimentos
-                    </a>
+                            <i class="fa-solid fa-stethoscope" aria-hidden="true">
+                            </i>
 
-                    <a href="Relatorios/relatorio-paciente.html" class="submenu-link">
+                            <span>Grupo de Procedimentos</span>
+                        </a>
 
-                        <i class="fa-solid fa-users" aria-hidden="true">
-                        </i>
+                        <a href="Grupo-de-atendimento/grupo-de-atendimento.html" class="submenu-link">
 
-                        Pacientes
-                    </a>
+                            <i class="fa-solid fa-notes-medical" aria-hidden="true">
+                            </i>
+
+                            <span>Grupo de Atendimento</span>
+                        </a>
+
+                        <a href="Grupo-de-tipos-de-atendimento/grupo-de-tipos-de-atendimento.html" class="submenu-link">
+
+                            <i class="fa-solid fa-layer-group" aria-hidden="true">
+                            </i>
+
+                            <span>Tipos de Atendimento</span>
+                        </a>
+
+                        <a href="Procedimento-médico/procedimento-medico.html" class="submenu-link">
+
+                            <i class="fa-solid fa-syringe" aria-hidden="true">
+                            </i>
+
+                            <span>Procedimento Médico</span>
+                        </a>
+
+                        <a href="Cadastro-exame/cadastro-exames.html" class="submenu-link">
+
+                            <i class="fa-solid fa-microscope" aria-hidden="true">
+                            </i>
+
+                            <span>Exames</span>
+                        </a>
+
+                        <a href="convenios/convenios.html" class="submenu-link">
+
+                            <i class="fa-solid fa-id-card-clip" aria-hidden="true">
+                            </i>
+
+                            <span>Convênios</span>
+                        </a>
+
+                        <a href="Utilitarios/utilitario-logs.html" class="submenu-link">
+
+                            <i class="fa-solid fa-clock-rotate-left" aria-hidden="true">
+                            </i>
+
+                            <span>Logs</span>
+                        </a>
+
+                        <a href="Siglas/siglas.html" class="submenu-link">
+
+                            <i class="fa-solid fa-list-ul" aria-hidden="true">
+                            </i>
+
+                            <span>Siglas</span>
+                        </a>
+
+                        <a href="Utilitarios/utilitario-usuario.html" class="submenu-link">
+
+                            <i class="fa-solid fa-users-gear" aria-hidden="true">
+                            </i>
+
+                            <span>Usuários</span>
+                        </a>
+
+                        <a href="Utilitarios/utilitario-especialidade.html" class="submenu-link">
+
+                            <i class="fa-solid fa-user-doctor" aria-hidden="true">
+                            </i>
+
+                            <span>Especialidade Médica</span>
+                        </a>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Utilitários -->
-            <div class="menu-group">
+                <!-- Suporte -->
+                <a href="Suporte/suporte.html" class="menu-item">
 
-                <button type="button"
-                    class="menu-item submenu-toggle flex w-full items-center gap-3.5 rounded-[14px] px-4 py-3.5 text-left text-base font-semibold text-white transition-all duration-300 hover:bg-white/10 focus:outline-none focus:ring-4 focus:ring-primary-200/30"
-                    aria-expanded="false" aria-controls="submenu-utilitarios">
-
-                    <span class="flex items-center gap-3.5">
-
-                        <i class="fa-solid fa-screwdriver-wrench w-6 text-center text-lg" aria-hidden="true">
-                        </i>
-
-                        <span>Utilitários</span>
-                    </span>
-
-                    <i class="fa-solid fa-chevron-down arrow ml-auto transition-transform duration-300"
-                        aria-hidden="true">
+                    <i class="fa-solid fa-headset" aria-hidden="true">
                     </i>
-                </button>
 
-                <div id="submenu-utilitarios" class="submenu hidden flex-col gap-1 pl-10 pt-1.5">
+                    <span>Suporte</span>
+                </a>
+                <!-- Catalogo -->
+                <a href="Catalogo/catalogo-exames.html" class="menu-item">
+                    <i class="fa-solid fa-book" aria-hidden="true">
+                    </i>
+                    <span>Catálogo</span>
+                </a>
+                <!-- Sair -->
+                <a href="Sair/sair-sair.html" class="menu-item logout">
 
-                    <a href="Grupo-de-exames/grupo-exames.html" class="submenu-link">
-                        <i class="fa-solid fa-file-medical" aria-hidden="true"></i>
-                        Grupo de Exames
-                    </a>
+                    <i class="fa-solid fa-right-from-bracket" aria-hidden="true">
+                    </i>
 
-                    <a href="Grupo-de-procedimentos/grupo-procedimentos.html" class="submenu-link">
-                        <i class="fa-solid fa-stethoscope" aria-hidden="true"></i>
-                        Grupo de Procedimentos
-                    </a>
-
-                    <a href="Grupo-de-atendimento/grupo-de-atendimento.html" class="submenu-link">
-                        <i class="fa-solid fa-notes-medical" aria-hidden="true"></i>
-                        Grupo de Atendimento
-                    </a>
-
-                    <a href="Grupo-de-tipos-de-atendimento/grupo-de-tipos-de-atendimento.html" class="submenu-link">
-                        <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
-                        Tipos de Atendimento
-                    </a>
-
-                    <a href="Procedimento-médico/procedimento-medico.html" class="submenu-link">
-                        <i class="fa-solid fa-syringe" aria-hidden="true"></i>
-                        Procedimento Médico
-                    </a>
-
-                    <a href="Cadastro-exame/cadastro-exames.html" class="submenu-link">
-                        <i class="fa-solid fa-microscope" aria-hidden="true"></i>
-                        Exames
-                    </a>
-
-                    <a href="convenios/convenios.html" class="submenu-link">
-                        <i class="fa-solid fa-id-card-clip" aria-hidden="true"></i>
-                        Convênios
-                    </a>
-
-                    <a href="Utilitarios/utilitario-logs.html" class="submenu-link">
-                        <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
-                        Logs
-                    </a>
-
-                    <a href="Siglas/siglas.html" class="submenu-link">
-                        <i class="fa-solid fa-list-ul" aria-hidden="true"></i>
-                        Siglas
-                    </a>
-
-                    <a href="Utilitarios/utilitario-usuario.html" class="submenu-link">
-                        <i class="fa-solid fa-users-gear" aria-hidden="true"></i>
-                        Usuários
-                    </a>
-
-                    <a href="Utilitarios/utilitario-especialidade.html" class="submenu-link">
-                        <i class="fa-solid fa-user-doctor" aria-hidden="true"></i>
-                        Especialidade Médica
-                    </a>
-                </div>
-            </div>
-
-            <!-- Suporte -->
-            <a href="Suporte/suporte.html"
-                class="menu-item flex items-center gap-3.5 rounded-[14px] px-4 py-3.5 text-base font-semibold text-white transition-all duration-300 hover:bg-white/10 focus:outline-none focus:ring-4 focus:ring-primary-200/30">
-
-                <i class="fa-solid fa-headset w-6 text-center text-lg" aria-hidden="true">
-                </i>
-
-                <span>Suporte</span>
-            </a>
-
-            <!-- Sair -->
-            <a href="Sair/sair-sair.html"
-                class="menu-item logout flex items-center gap-3.5 rounded-[14px] px-4 py-3.5 text-base font-semibold text-white transition-all duration-300 hover:bg-red-500/20 focus:outline-none focus:ring-4 focus:ring-red-300/30">
-
-                <i class="fa-solid fa-right-from-bracket w-6 text-center text-lg" aria-hidden="true">
-                </i>
-
-                <span>Sair</span>
-            </a>
-        </nav>
+                    <span>Sair</span>
+                </a>
+            </nav>
+        </div>
     </aside>
 
     <!-- Conteúdo principal -->
@@ -510,14 +746,21 @@
 
             <div class="topbar-left">
                 <div class="system-info">
-                    <span class="system-label">Sistema</span>
-                    <h2>G4Med — Home V - 1.0.0</h2>
+
+                    <span class="system-label">
+                        Sistema
+                    </span>
+
+                    <h2>
+                        G4Med — Home V - 1.0.0
+                    </h2>
                 </div>
             </div>
 
             <div class="topbar-right">
 
                 <div class="datetime-box">
+
                     <i class="fa-solid fa-calendar" aria-hidden="true">
                     </i>
 
@@ -529,10 +772,12 @@
                 <div class="user-session">
 
                     <div class="user-avatar" aria-hidden="true">
+
                         <i class="fa-solid fa-user"></i>
                     </div>
 
                     <div class="user-info">
+
                         <strong class="username">
                             admin
                         </strong>
@@ -544,6 +789,7 @@
 
                         <span class="session-time">
                             Tempo logado:
+
                             <time id="tempoLogado">
                                 00h 00m 00s
                             </time>
@@ -554,11 +800,13 @@
         </header>
 
         <!-- Conteúdo da página -->
-        <section class="dashboard-home mt-6">
+
+        <!-- <section class="dashboard-home mt-6">
 
             <div class="welcome-card flex flex-col gap-4 rounded-[24px] bg-white p-6 shadow-soft sm:p-10">
 
                 <div class="flex items-center gap-3 text-primary-600">
+
                     <i class="fa-solid fa-heart-pulse text-2xl" aria-hidden="true">
                     </i>
 
@@ -585,7 +833,7 @@
                     Catálogo de Exames
                 </a>
             </div>
-        </section>
+        </section> -->
     </main>
 
     <!-- Rodapé -->
@@ -595,7 +843,7 @@
         © 2026 G4Med - Intelligent Health System. Todos os direitos reservados.
     </footer>
 
-    <!-- Scripts externos -->
+    <!-- JavaScript externo -->
     <script src="Menu-Principal.js"></script>
 
     <script>

@@ -1,483 +1,608 @@
 'use strict';
 
-/* ==========================================================
-   CONSTANTES E CONFIGURAÇÕES
-========================================================== */
-const CONFIG = {
-    MOBILE_BREAKPOINT: 991,
-    SESSION_KEY: 'g4med_session_seconds',
-    STORAGE_KEY: 'g4med_sidebar_state',
-    DEBOUNCE_DELAY: 250,
-    ANIMATION_DURATION: 300
-};
-
-/* ==========================================================
-   ESTADO GLOBAL
-========================================================== */
-const AppState = {
-    sessionSeconds: 0,
-    isMobile: false,
-    sidebarOpen: false,
-    clockInterval: null,
-    sessionInterval: null
-};
-
-/* ==========================================================
-   INICIALIZAÇÃO
-========================================================== */
 document.addEventListener('DOMContentLoaded', () => {
-    try {
-        initializeAll();
-    } catch (error) {
-        console.error('[G4Med] Erro na inicialização:', error);
-    }
-});
+    const SELECTORS = {
+        submenuToggle: '.submenu-toggle',
+        submenu: '.submenu',
+        menuLink: '.sidebar a[href]',
+        submenuLink: '.submenu-link'
+    };
 
-function initializeAll() {
-    initializeIcons();
-    initializeSidebar();
-    initializeClockAndSession();
-    initializeMobileMenu();
-    initializeResponsiveHandler();
+    const elements = {
+        submenuToggles: [
+            ...document.querySelectorAll(SELECTORS.submenuToggle)
+        ],
 
-    console.log('[G4Med] Sistema inicializado com sucesso.');
-}
+        submenus: [
+            ...document.querySelectorAll(SELECTORS.submenu)
+        ],
 
-/* ==========================================================
-   1. ÍCONES LUCIDE
-========================================================== */
-function initializeIcons() {
-    if (!window.lucide) {
-        console.warn('[G4Med] Lucide icons não encontrado.');
-        return;
-    }
+        menuLinks: [
+            ...document.querySelectorAll(SELECTORS.menuLink)
+        ],
 
-    try {
-        lucide.createIcons();
-        console.log('[G4Med] Ícones Lucide inicializados.');
-    } catch (error) {
-        console.error('[G4Med] Erro ao criar ícones:', error);
-    }
-}
+        sidebar: document.querySelector('#mainSidebar'),
+        mobileMenuButton: document.querySelector('#mobileMenuButton'),
+        sidebarOverlay: document.querySelector('#sidebarOverlay'),
+        clock: document.querySelector('#relogio-dinamico'),
+        sessionTime: document.querySelector('#tempoLogado')
+    };
 
-/* ==========================================================
-   2. MENU SIDEBAR (ACCORDION)
-========================================================== */
-function initializeSidebar() {
-    const menuGroups = document.querySelectorAll('.menu-group');
-    const toggles = document.querySelectorAll('.submenu-toggle');
+    const state = {
+        mobileMenuOpen: false,
+        timers: [],
+        sessionStorageAvailable: verificarStorage(sessionStorage)
+    };
 
-    if (!menuGroups.length || !toggles.length) {
-        console.warn('[G4Med] Elementos do menu não encontrados.');
-        return;
-    }
+    inicializar();
 
-    // Restaura estado salvo
-    restoreSidebarState();
+    function inicializar() {
+        inicializarSubmenus();
+        inicializarMenuMobile();
+        inicializarLinksAtivos();
+        inicializarRelogio();
+        inicializarTempoSessao();
+        inicializarLinksDeNavegacao();
 
-    toggles.forEach(toggle => {
-        toggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleSubmenuToggle(toggle, menuGroups);
-        });
-    });
-
-    // Fecha submenu ao clicar fora
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.menu-group')) {
-            closeAllSubmenus(menuGroups);
+        if (window.lucide) {
+            window.lucide.createIcons();
         }
-    });
-
-    console.log('[G4Med] Menu sidebar inicializado.');
-}
-
-function handleSubmenuToggle(toggle, menuGroups) {
-    const currentGroup = toggle.closest('.menu-group');
-    if (!currentGroup) return;
-
-    const isActive = currentGroup.classList.contains('active');
-    const submenu = currentGroup.querySelector('.submenu');
-
-    // Fecha todos
-    closeAllSubmenus(menuGroups);
-
-    // Se não estava ativo, abre o atual
-    if (!isActive && submenu) {
-        currentGroup.classList.add('active');
-        toggle.setAttribute('aria-expanded', 'true');
-        saveSidebarState(currentGroup);
-
-        // Animação de entrada
-        animateSubmenu(submenu, true);
-    } else {
-        saveSidebarState(null);
     }
-}
 
-function closeAllSubmenus(menuGroups) {
-    menuGroups.forEach(group => {
-        const submenu = group.querySelector('.submenu');
-        const button = group.querySelector('.submenu-toggle');
+    /*
+     * =========================================================
+     * SUBMENUS
+     * =========================================================
+     */
 
-        if (group.classList.contains('active')) {
-            group.classList.remove('active');
+    function inicializarSubmenus() {
+        elements.submenuToggles.forEach(toggle => {
+            const submenu = obterSubmenuDoToggle(toggle);
 
-            if (button) {
-                button.setAttribute('aria-expanded', 'false');
+            if (!submenu) {
+                return;
             }
+
+            configurarEstadoInicial(toggle, submenu);
+
+            toggle.addEventListener('click', event => {
+                event.preventDefault();
+
+                const estaAberto =
+                    toggle.getAttribute('aria-expanded') === 'true';
+
+                fecharTodosOsSubmenus(toggle);
+
+                if (estaAberto) {
+                    fecharSubmenu(toggle, submenu);
+                } else {
+                    abrirSubmenu(toggle, submenu);
+                }
+            });
+
+            toggle.addEventListener('keydown', event => {
+                if (
+                    event.key === 'Enter' ||
+                    event.key === ' '
+                ) {
+                    event.preventDefault();
+                    toggle.click();
+                }
+
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    abrirSubmenu(toggle, submenu);
+
+                    const primeiroLink =
+                        submenu.querySelector('a[href]');
+
+                    primeiroLink?.focus();
+                }
+
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    fecharSubmenu(toggle, submenu);
+                    toggle.focus();
+                }
+            });
+        });
+    }
+
+    function obterSubmenuDoToggle(toggle) {
+        const submenuId =
+            toggle.getAttribute('aria-controls');
+
+        if (!submenuId) {
+            return null;
+        }
+
+        const submenu =
+            document.getElementById(submenuId);
+
+        return submenu instanceof HTMLElement
+            ? submenu
+            : null;
+    }
+
+    function configurarEstadoInicial(toggle, submenu) {
+        const estaAberto =
+            toggle.getAttribute('aria-expanded') === 'true';
+
+        toggle.setAttribute(
+            'aria-expanded',
+            String(estaAberto)
+        );
+
+        submenu.setAttribute(
+            'aria-hidden',
+            String(!estaAberto)
+        );
+
+        if (estaAberto) {
+            submenu.classList.remove('hidden');
+            submenu.classList.add('is-open');
+        } else {
+            submenu.classList.remove('is-open');
+            submenu.classList.add('hidden');
+        }
+    }
+
+    function abrirSubmenu(toggle, submenu) {
+        if (!toggle || !submenu) {
+            return;
+        }
+
+        toggle.setAttribute('aria-expanded', 'true');
+        submenu.setAttribute('aria-hidden', 'false');
+
+        /*
+         * É necessário remover hidden porque essa classe do
+         * Tailwind aplica display: none !important.
+         */
+        submenu.classList.remove('hidden');
+        submenu.classList.add('is-open');
+    }
+
+    function fecharSubmenu(toggle, submenu) {
+        if (!toggle || !submenu) {
+            return;
+        }
+
+        toggle.setAttribute('aria-expanded', 'false');
+        submenu.setAttribute('aria-hidden', 'true');
+
+        submenu.classList.remove('is-open');
+        submenu.classList.add('hidden');
+    }
+
+    function fecharTodosOsSubmenus(toggleAtual = null) {
+        elements.submenuToggles.forEach(toggle => {
+            if (toggle === toggleAtual) {
+                return;
+            }
+
+            const submenu = obterSubmenuDoToggle(toggle);
 
             if (submenu) {
-                animateSubmenu(submenu, false);
+                fecharSubmenu(toggle, submenu);
             }
-        }
-    });
-}
-
-function animateSubmenu(submenu, isOpen) {
-    if (!submenu) return;
-
-    if (isOpen) {
-        submenu.style.maxHeight = '0';
-        submenu.style.opacity = '0';
-        submenu.style.overflow = 'hidden';
-
-        requestAnimationFrame(() => {
-            submenu.style.transition = `max-height ${CONFIG.ANIMATION_DURATION}ms ease, opacity ${CONFIG.ANIMATION_DURATION}ms ease`;
-            submenu.style.maxHeight = `${submenu.scrollHeight}px`;
-            submenu.style.opacity = '1';
-
-            setTimeout(() => {
-                submenu.style.maxHeight = '';
-                submenu.style.overflow = '';
-            }, CONFIG.ANIMATION_DURATION);
-        });
-    } else {
-        submenu.style.maxHeight = `${submenu.scrollHeight}px`;
-        submenu.style.opacity = '1';
-        submenu.style.overflow = 'hidden';
-
-        requestAnimationFrame(() => {
-            submenu.style.transition = `max-height ${CONFIG.ANIMATION_DURATION}ms ease, opacity ${CONFIG.ANIMATION_DURATION}ms ease`;
-            submenu.style.maxHeight = '0';
-            submenu.style.opacity = '0';
         });
     }
-}
 
-function saveSidebarState(activeGroup) {
-    try {
-        if (activeGroup) {
-            const submenuLink = activeGroup.querySelector('.submenu a');
-            if (submenuLink) {
-                localStorage.setItem(CONFIG.STORAGE_KEY, submenuLink.href);
-            }
+    /*
+     * =========================================================
+     * MENU MOBILE
+     * =========================================================
+     */
+
+    function inicializarMenuMobile() {
+        const {
+            sidebar,
+            mobileMenuButton,
+            sidebarOverlay
+        } = elements;
+
+        if (
+            !sidebar ||
+            !mobileMenuButton ||
+            !sidebarOverlay
+        ) {
+            return;
+        }
+
+        mobileMenuButton.addEventListener(
+            'click',
+            alternarMenuMobile
+        );
+
+        sidebarOverlay.addEventListener(
+            'click',
+            fecharMenuMobile
+        );
+
+        document.addEventListener(
+            'keydown',
+            tratarTeclaEscape
+        );
+
+        window.addEventListener(
+            'resize',
+            tratarRedimensionamento
+        );
+    }
+
+    function alternarMenuMobile() {
+        if (state.mobileMenuOpen) {
+            fecharMenuMobile();
         } else {
-            localStorage.removeItem(CONFIG.STORAGE_KEY);
+            abrirMenuMobile();
         }
-    } catch (error) {
-        console.warn('[G4Med] Erro ao salvar estado:', error);
     }
-}
 
-function restoreSidebarState() {
-    try {
-        const savedHref = localStorage.getItem(CONFIG.STORAGE_KEY);
-        if (!savedHref) return;
+    function abrirMenuMobile() {
+        const {
+            sidebar,
+            mobileMenuButton,
+            sidebarOverlay
+        } = elements;
 
-        const activeLink = document.querySelector(`.submenu a[href="${savedHref}"]`);
-        if (activeLink) {
-            const menuGroup = activeLink.closest('.menu-group');
-            if (menuGroup) {
-                const toggle = menuGroup.querySelector('.submenu-toggle');
-                menuGroup.classList.add('active');
+        if (
+            !sidebar ||
+            !mobileMenuButton ||
+            !sidebarOverlay
+        ) {
+            return;
+        }
 
-                if (toggle) {
-                    toggle.setAttribute('aria-expanded', 'true');
+        state.mobileMenuOpen = true;
+
+        sidebar.classList.add('is-open');
+        sidebarOverlay.classList.add('is-visible');
+
+        mobileMenuButton.setAttribute(
+            'aria-expanded',
+            'true'
+        );
+
+        mobileMenuButton.setAttribute(
+            'aria-label',
+            'Fechar menu principal'
+        );
+
+        atualizarIconeMenuMobile(true);
+
+        document.body.classList.add(
+            'menu-mobile-open'
+        );
+    }
+
+    function fecharMenuMobile() {
+        const {
+            sidebar,
+            mobileMenuButton,
+            sidebarOverlay
+        } = elements;
+
+        if (
+            !sidebar ||
+            !mobileMenuButton ||
+            !sidebarOverlay
+        ) {
+            return;
+        }
+
+        state.mobileMenuOpen = false;
+
+        sidebar.classList.remove('is-open');
+        sidebarOverlay.classList.remove('is-visible');
+
+        mobileMenuButton.setAttribute(
+            'aria-expanded',
+            'false'
+        );
+
+        mobileMenuButton.setAttribute(
+            'aria-label',
+            'Abrir menu principal'
+        );
+
+        atualizarIconeMenuMobile(false);
+
+        document.body.classList.remove(
+            'menu-mobile-open'
+        );
+    }
+
+    function atualizarIconeMenuMobile(menuAberto) {
+        const button = elements.mobileMenuButton;
+
+        if (!button) {
+            return;
+        }
+
+        const icon = button.querySelector('i');
+
+        if (!icon) {
+            return;
+        }
+
+        icon.classList.toggle(
+            'fa-bars',
+            !menuAberto
+        );
+
+        icon.classList.toggle(
+            'fa-xmark',
+            menuAberto
+        );
+    }
+
+    function tratarTeclaEscape(event) {
+        if (
+            event.key === 'Escape' &&
+            state.mobileMenuOpen
+        ) {
+            fecharMenuMobile();
+            elements.mobileMenuButton?.focus();
+        }
+    }
+
+    function tratarRedimensionamento() {
+        if (
+            window.innerWidth > 1024 &&
+            state.mobileMenuOpen
+        ) {
+            fecharMenuMobile();
+        }
+    }
+
+    /*
+     * =========================================================
+     * LINKS ATIVOS
+     * =========================================================
+     */
+
+    function inicializarLinksAtivos() {
+        const paginaAtual =
+            obterNomeDaPagina(
+                window.location.pathname
+            );
+
+        elements.menuLinks.forEach(link => {
+            const href = link.getAttribute('href');
+
+            if (!href || href.startsWith('#')) {
+                return;
+            }
+
+            const paginaDoLink =
+                obterNomeDaPagina(href);
+
+            if (
+                paginaDoLink &&
+                paginaDoLink === paginaAtual
+            ) {
+                ativarLink(link);
+            }
+        });
+    }
+
+    function ativarLink(link) {
+        link.classList.add('is-active');
+
+        const submenu =
+            link.closest('.submenu');
+
+        if (!submenu) {
+            return;
+        }
+
+        const grupo =
+            submenu.closest('.menu-group');
+
+        const toggle =
+            grupo?.querySelector('.submenu-toggle');
+
+        if (toggle) {
+            abrirSubmenu(toggle, submenu);
+            toggle.classList.add('is-active');
+        }
+    }
+
+    function obterNomeDaPagina(caminho) {
+        try {
+            const url = new URL(
+                caminho,
+                window.location.origin
+            );
+
+            const nome =
+                url.pathname.split('/').pop();
+
+            return (
+                nome ||
+                'index.html'
+            ).toLowerCase();
+        } catch {
+            return '';
+        }
+    }
+
+    function inicializarLinksDeNavegacao() {
+        elements.menuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (
+                    window.innerWidth <= 1024
+                ) {
+                    fecharMenuMobile();
                 }
-            }
-        }
-    } catch (error) {
-        console.warn('[G4Med] Erro ao restaurar estado:', error);
-    }
-}
-
-/* ==========================================================
-   3. RELÓGIO E TEMPO DE SESSÃO
-========================================================== */
-function initializeClockAndSession() {
-    const clockEl = document.getElementById('relogio-dinamico');
-    const sessionEl = document.getElementById('tempoLogado');
-
-    if (!clockEl && !sessionEl) {
-        console.warn('[G4Med] Elementos do relógio não encontrados.');
-        return;
-    }
-
-    // Inicializa segundos da sessão
-    AppState.sessionSeconds = parseInt(
-        sessionStorage.getItem(CONFIG.SESSION_KEY), 10
-    ) || 0;
-
-    // Formatter de data/hora
-    const formatter = new Intl.DateTimeFormat('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-    });
-
-    // Atualiza imediatamente
-    updateClock(clockEl, formatter);
-    updateSession(sessionEl);
-
-    // Limpa intervalos anteriores
-    if (AppState.clockInterval) clearInterval(AppState.clockInterval);
-    if (AppState.sessionInterval) clearInterval(AppState.sessionInterval);
-
-    // Inicia intervalos
-    AppState.clockInterval = setInterval(() => {
-        updateClock(clockEl, formatter);
-    }, 1000);
-
-    AppState.sessionInterval = setInterval(() => {
-        updateSession(sessionEl);
-    }, 1000);
-
-    // Salva sessão ao fechar/abrir
-    window.addEventListener('beforeunload', saveSession);
-    window.addEventListener('unload', saveSession);
-
-    console.log('[G4Med] Relógio e sessão inicializados.');
-}
-
-function updateClock(clockEl, formatter) {
-    if (!clockEl) return;
-
-    try {
-        clockEl.textContent = formatter.format(new Date());
-    } catch (error) {
-        console.error('[G4Med] Erro ao formatar data:', error);
-    }
-}
-
-function updateSession(sessionEl) {
-    if (!sessionEl) return;
-
-    try {
-        const hours = Math.floor(AppState.sessionSeconds / 3600)
-            .toString()
-            .padStart(2, '0');
-
-        const minutes = Math.floor((AppState.sessionSeconds % 3600) / 60)
-            .toString()
-            .padStart(2, '0');
-
-        const seconds = (AppState.sessionSeconds % 60)
-            .toString()
-            .padStart(2, '0');
-
-        sessionEl.textContent = `${hours}h ${minutes}m ${seconds}s`;
-
-        AppState.sessionSeconds++;
-
-        sessionStorage.setItem(CONFIG.SESSION_KEY, AppState.sessionSeconds);
-    } catch (error) {
-        console.error('[G4Med] Erro ao atualizar sessão:', error);
-    }
-}
-
-function saveSession() {
-    try {
-        sessionStorage.setItem(CONFIG.SESSION_KEY, AppState.sessionSeconds);
-    } catch (error) {
-        console.warn('[G4Med] Erro ao salvar sessão:', error);
-    }
-}
-
-/* ==========================================================
-   4. MENU MOBILE
-========================================================== */
-function initializeMobileMenu() {
-    const menuButton = document.querySelector('.menu-toggle');
-    const sidebar = document.querySelector('.sidebar');
-
-    if (!menuButton || !sidebar) {
-        console.warn('[G4Med] Elementos do menu mobile não encontrados.');
-        return;
-    }
-
-    // Verifica se é mobile
-    checkMobile();
-
-    // Event listeners
-    menuButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleSidebar(sidebar, menuButton);
-    });
-
-    // Fecha ao clicar fora
-    document.addEventListener('click', (e) => {
-        if (AppState.isMobile && AppState.sidebarOpen &&
-            !sidebar.contains(e.target) &&
-            !menuButton.contains(e.target)) {
-            closeSidebar(sidebar, menuButton);
-        }
-    });
-
-    // Fecha ao clicar em link do submenu
-    const submenuLinks = sidebar.querySelectorAll('.submenu a');
-    submenuLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            if (AppState.isMobile && AppState.sidebarOpen) {
-                closeSidebar(sidebar, menuButton);
-            }
+            });
         });
-    });
-
-    console.log('[G4Med] Menu mobile inicializado.');
-}
-
-function initializeResponsiveHandler() {
-    let resizeTimeout;
-
-    window.addEventListener('resize', () => {
-        // Debounce para performance
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            checkMobile();
-
-            const menuButton = document.querySelector('.menu-toggle');
-            const sidebar = document.querySelector('.sidebar');
-
-            // Fecha sidebar se saiu do mobile
-            if (!AppState.isMobile && AppState.sidebarOpen && sidebar && menuButton) {
-                closeSidebar(sidebar, menuButton);
-            }
-        }, CONFIG.DEBOUNCE_DELAY);
-    });
-}
-
-function checkMobile() {
-    AppState.isMobile = window.innerWidth <= CONFIG.MOBILE_BREAKPOINT;
-}
-
-function toggleSidebar(sidebar, menuButton) {
-    if (!sidebar || !menuButton) return;
-
-    const isOpen = sidebar.classList.contains('active');
-
-    if (isOpen) {
-        closeSidebar(sidebar, menuButton);
-    } else {
-        openSidebar(sidebar, menuButton);
     }
-}
 
-function openSidebar(sidebar, menuButton) {
-    if (!sidebar || !menuButton) return;
+    /*
+     * =========================================================
+     * RELÓGIO
+     * =========================================================
+     */
 
-    sidebar.classList.add('active');
-    menuButton.setAttribute('aria-label', 'Fechar menu');
-    menuButton.setAttribute('aria-expanded', 'true');
-    AppState.sidebarOpen = true;
+    function inicializarRelogio() {
+        const clock = elements.clock;
 
-    // Previne scroll do body
-    document.body.style.overflow = 'hidden';
+        if (!clock) {
+            return;
+        }
 
-    // Foca no primeiro link para acessibilidade
-    const firstLink = sidebar.querySelector('a');
-    if (firstLink) {
-        firstLink.focus();
+        atualizarRelogio(clock);
+
+        const timer = window.setInterval(() => {
+            atualizarRelogio(clock);
+        }, 1000);
+
+        state.timers.push(timer);
     }
-}
 
-function closeSidebar(sidebar, menuButton) {
-    if (!sidebar || !menuButton) return;
+    function atualizarRelogio(elemento) {
+        const agora = new Date();
 
-    sidebar.classList.remove('active');
-    menuButton.setAttribute('aria-label', 'Abrir menu');
-    menuButton.setAttribute('aria-expanded', 'false');
-    AppState.sidebarOpen = false;
+        try {
+            const dataHora =
+                new Intl.DateTimeFormat(
+                    'pt-BR',
+                    {
+                        dateStyle: 'short',
+                        timeStyle: 'medium'
+                    }
+                ).format(agora);
 
-    // Restaura scroll do body
-    document.body.style.overflow = '';
-}
+            elemento.textContent = dataHora;
+        } catch {
+            elemento.textContent =
+                agora.toLocaleString('pt-BR');
+        }
+    }
 
-/* ==========================================================
-   5. FUNÇÕES UTILITÁRIAS
-========================================================== */
+    /*
+     * =========================================================
+     * TEMPO DE SESSÃO
+     * =========================================================
+     */
 
-// Debounce para performance
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
+    function inicializarTempoSessao() {
+        const elemento = elements.sessionTime;
 
-// Detecta se está em dispositivo móvel
-function isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-}
+        if (!elemento) {
+            return;
+        }
 
-// Detecta se está em tablet
-function isTablet() {
-    return /iPad|Android(?!.*Mobile)/i.test(navigator.userAgent);
-}
+        const chaveSessao =
+            'g4med.session.inicio';
 
-/* ==========================================================
-   6. LIMPEZA E OTIMIZAÇÃO
-========================================================== */
-window.addEventListener('beforeunload', () => {
-    // Limpa intervalos
-    if (AppState.clockInterval) clearInterval(AppState.clockInterval);
-    if (AppState.sessionInterval) clearInterval(AppState.sessionInterval);
+        let inicioSessao =
+            obterInicioDaSessao(chaveSessao);
 
-    // Salva sessão
-    saveSession();
+        atualizarTempoSessao(
+            elemento,
+            inicioSessao
+        );
+
+        const timer = window.setInterval(() => {
+            atualizarTempoSessao(
+                elemento,
+                inicioSessao
+            );
+        }, 1000);
+
+        state.timers.push(timer);
+    }
+
+    function obterInicioDaSessao(chave) {
+        if (!state.sessionStorageAvailable) {
+            return Date.now();
+        }
+
+        const valorSalvo =
+            sessionStorage.getItem(chave);
+
+        const valorNumerico =
+            Number(valorSalvo);
+
+        if (
+            Number.isFinite(valorNumerico) &&
+            valorNumerico > 0
+        ) {
+            return valorNumerico;
+        }
+
+        const novoInicio = Date.now();
+
+        try {
+            sessionStorage.setItem(
+                chave,
+                String(novoInicio)
+            );
+        } catch {
+            return novoInicio;
+        }
+
+        return novoInicio;
+    }
+
+    function atualizarTempoSessao(elemento, inicio) {
+        const inicioValido =
+            Number.isFinite(inicio) &&
+                inicio > 0
+                ? inicio
+                : Date.now();
+
+        const tempoDecorrido =
+            Math.max(
+                0,
+                Date.now() - inicioValido
+            );
+
+        const totalSegundos =
+            Math.floor(
+                tempoDecorrido / 1000
+            );
+
+        const horas =
+            Math.floor(
+                totalSegundos / 3600
+            );
+
+        const minutos =
+            Math.floor(
+                (totalSegundos % 3600) / 60
+            );
+
+        const segundos =
+            totalSegundos % 60;
+
+        elemento.textContent = [
+            `${String(horas).padStart(2, '0')}h`,
+            `${String(minutos).padStart(2, '0')}m`,
+            `${String(segundos).padStart(2, '0')}s`
+        ].join(' ');
+    }
+
+    /*
+     * =========================================================
+     * UTILITÁRIOS
+     * =========================================================
+     */
+
+    function verificarStorage(storage) {
+        try {
+            const chaveTeste =
+                '__g4med_storage_test__';
+
+            storage.setItem(chaveTeste, 'ok');
+            storage.removeItem(chaveTeste);
+
+            return true;
+        } catch {
+            return false;
+        }
+    }
 });
-
-// Service Worker para offline (opcional)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => {
-            console.warn('[G4Med] Service Worker não registrado.');
-        });
-    });
-}
-
-// Detecta conexão offline/online
-window.addEventListener('offline', () => {
-    console.warn('[G4Med] Sistema offline.');
-    // Pode mostrar notificação ao usuário
-});
-
-window.addEventListener('online', () => {
-    console.log('[G4Med] Sistema online.');
-    // Pode sincronizar dados
-});
-
-/* ==========================================================
-   EXPORTAÇÕES (para uso global se necessário)
-========================================================== */
-window.G4Med = {
-    AppState,
-    CONFIG,
-    closeSidebar,
-    openSidebar,
-    toggleSidebar,
-    saveSession,
-    isMobileDevice,
-    isTablet
-};
