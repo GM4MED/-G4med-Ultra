@@ -1,561 +1,233 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suporte G4med - Intelligent Health System</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Central de suporte do sistema G4Med">
+    <title>G4Med Suporte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: ['class', '[data-theme="dark"]'], theme: { extend: { colors: { teal: { 50: '#f0fdfa', 100: '#ccfbf1', 200: '#99f6e4', 300: '#5eead4', 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 800: '#115e59', 900: '#134e4a' } }, fontFamily: { sans: ['Plus Jakarta Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'] }, boxShadow: { soft: '0 1px 2px rgb(15 23 42 / .05), 0 8px 24px rgb(15 23 42 / .06)' } } } };</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <!-- <link rel="stylesheet" href="css/style.css"> -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="suporte.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js" defer></script>
 </head>
 
-<body>
-    <!-- =====================================================
-         APP CONTAINER
-         ===================================================== -->
-    <div class="app" id="app">
-
-        <!-- =====================================================
-             HEADER
-             ===================================================== -->
-        <header class="header">
-            <div class="header__brand">
-                <a href="../Menu-Principal.html" class="header__btn header__btn--voltar"
-                    aria-label="Voltar para o Menu Principal"
-                    style="text-decoration: none; display: inline-flex; align-items: center; margin-right: 12px; font-size: 1.1rem;">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </a>
-                <i class="fa-solid fa-stethoscope header__logo"></i>
-                <div class="header__title-group">
-                    <span class="header__logo-text">G4med</span>
-                    <span class="header__system-name">Sistema de Suporte</span>
-                </div>
-            </div>
-
-            <div class="header__actions">
-                <button class="header__btn header__btn--theme" id="btn-theme" aria-label="Alternar tema">
-                    <i class="fa-solid fa-moon"></i>
-                </button>
-                <button class="header__btn header__btn--notif" id="btn-notif" aria-label="Notificações">
-                    <i class="fa-solid fa-bell"></i>
-                    <span class="header__badge">2</span>
-                </button>
-                <div class="header__profile">
-                    <div class="header__avatar">A</div>
-                    <span class="header__username">admin</span>
-                </div>
-            </div>
-
-            <button class="header__menu-toggle" id="menu-toggle" aria-label="Abrir menu">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-        </header>
-
-        <!-- =====================================================
-             LAYOUT PRINCIPAL
-             ===================================================== -->
-        <div class="layout">
-
-            <!-- =====================================================
-                 SIDEBAR
-                 ===================================================== -->
-            <aside class="sidebar" id="sidebar">
-                <nav class="sidebar__nav">
-                    <a href="#ajuda" class="sidebar__link sidebar__link--active" data-section="ajuda">
-                        <i class="fa-solid fa-house"></i>
-                        <span>Central de Ajuda</span>
-                    </a>
-                    <a href="#suporte" class="sidebar__link" data-section="suporte">
-                        <i class="fa-solid fa-wrench"></i>
-                        <span>Suporte Técnico</span>
-                    </a>
-                    <a href="#sobre" class="sidebar__link" data-section="sobre">
-                        <i class="fa-solid fa-book"></i>
-                        <span>Sobre o Sistema</span>
-                    </a>
-                    <a href="#atualizacoes" class="sidebar__link" data-section="atualizacoes">
-                        <i class="fa-solid fa-rocket"></i>
-                        <span>Atualizações</span>
-                    </a>
-                </nav>
-
-                <div class="sidebar__footer">
-                    <div class="sidebar__version">
-                        <i class="fa-solid fa-code-branch"></i>
-                        <span>Versão 1.0.0</span>
+<body class="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
+    <div class="app-shell">
+        <header class="sticky top-0 z-40 border-b border-teal-900/20 bg-teal-900 text-white shadow-sm">
+            <div class="mx-auto flex h-16 max-w-[1600px] items-center justify-between gap-4 px-4 sm:px-6">
+                <div class="flex min-w-0 items-center gap-3">
+                    <div class="grid size-10 shrink-0 place-items-center rounded-xl bg-teal-600 text-lg shadow-sm"><i
+                            class="fa-solid fa-headset" aria-hidden="true"></i></div>
+                    <div class="min-w-0">
+                        <div class="truncate text-lg font-extrabold tracking-tight">G4Med</div>
+                        <div class="hidden text-xs text-teal-100/80 sm:block">Central de Suporte</div>
                     </div>
+                </div>
+                <div class="flex items-center gap-2"><button class="icon-button" id="themeToggle" type="button"
+                        aria-label="Ativar modo escuro"><i class="fa-solid fa-moon"
+                            aria-hidden="true"></i></button><button class="icon-button relative" type="button"
+                        aria-label="Notificações"><i class="fa-solid fa-bell" aria-hidden="true"></i><span
+                            class="notification-badge">3</span></button>
+                    <div class="hidden items-center gap-2 pl-2 sm:flex"><span
+                            class="grid size-9 place-items-center rounded-full bg-teal-600 font-bold">AD</span><span
+                            class="text-sm font-semibold">Admin</span></div><button class="icon-button md:hidden"
+                        id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false"><i
+                            class="fa-solid fa-bars" aria-hidden="true"></i></button>
+                </div>
+            </div>
+        </header>
+        <div class="layout">
+            <aside class="sidebar" id="sidebar">
+                <nav class="space-y-1" aria-label="Navegação principal"><button class="nav-link is-active"
+                        data-tab="overview" type="button"><i class="fa-solid fa-house"
+                            aria-hidden="true"></i><span>Visão geral</span></button><button class="nav-link"
+                        data-tab="faq" type="button"><i class="fa-solid fa-circle-question"
+                            aria-hidden="true"></i><span>Perguntas frequentes</span></button><button class="nav-link"
+                        data-tab="contact" type="button"><i class="fa-solid fa-envelope"
+                            aria-hidden="true"></i><span>Fale conosco</span></button><button class="nav-link"
+                        data-tab="updates" type="button"><i class="fa-solid fa-clock-rotate-left"
+                            aria-hidden="true"></i><span>Atualizações</span></button><button class="nav-link"
+                        data-tab="about" type="button"><i class="fa-solid fa-circle-info"
+                            aria-hidden="true"></i><span>Sobre o sistema</span></button></nav>
+                <div class="mt-auto border-t border-slate-200 pt-4 dark:border-slate-800">
+                    <p class="text-xs text-slate-500 dark:text-slate-400">G4Med Suporte</p>
+                    <p class="mt-1 text-xs text-slate-400">v1.0.0</p>
                 </div>
             </aside>
-
-            <!-- =====================================================
-                 CONTEÚDO DINÂMICO
-                 ===================================================== -->
-            <main class="main" id="main">
-
-                <!-- BREADCRUMB -->
-                <nav class="breadcrumb" id="breadcrumb">
-                    <a href="#ajuda">Início</a>
-                    <i class="fa-solid fa-chevron-right"></i>
-                    <span>Central de Ajuda</span>
-                </nav>
-
-                <!-- =====================================================
-                     SEÇÃO: CENTRAL DE AJUDA
-                     ===================================================== -->
-                <section class="section section--active" id="section-ajuda">
-                    <header class="section__header">
-                        <h1 class="section__title"><i class="fa-solid fa-house"></i> Central de Ajuda</h1>
-                        <p class="section__subtitle">Encontre respostas rápidas e tutoriais sobre o G4med</p>
-                    </header>
-
-                    <div class="search">
-                        <i class="fa-solid fa-magnifying-glass search__icon"></i>
-                        <input type="text" class="search__input" id="search-ajuda" placeholder="Pesquisar..."
-                            autocomplete="off">
-                        <button class="search__clear" id="search-clear"><i class="fa-solid fa-xmark"></i></button>
+            <main class="main-content">
+                <div class="mb-6 flex items-center justify-between text-sm text-slate-500">
+                    <div class="flex items-center gap-2">
+                        <a href="#" class="text-teal-700 hover:underline dark:text-teal-300">Início</a>
+                        <i class="fa-solid fa-chevron-right text-[10px]" aria-hidden="true"></i>
+                        <span id="breadcrumbCurrent">Visão geral</span>
                     </div>
-
-                    <div class="cards" id="cards-ajuda">
-                        <!-- Card 1 -->
-                        <article class="card" data-keywords="prontuário prontuario paciente histórico médico">
-                            <div class="card__icon"><i class="fa-solid fa-file-medical"></i></div>
-                            <h3 class="card__title">Como acessar o prontuário</h3>
-                            <p class="card__desc">Aprenda como localizar rapidamente um prontuário médico no sistema.
-                            </p>
-                            <button class="card__btn" data-modal="modal-prontuario">Saiba Mais</button>
-                        </article>
-
-                        <!-- Card 2 -->
-                        <article class="card" data-keywords="receituário receituario receita medicamento prescricao">
-                            <div class="card__icon"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
-                            <h3 class="card__title">Configuração do receituário</h3>
-                            <p class="card__desc">Configure modelos personalizados de receituário médico.</p>
-                            <button class="card__btn" data-modal="modal-receituario">Saiba Mais</button>
-                        </article>
-
-                        <!-- Card 3 -->
-                        <article class="card" data-keywords="agenda agendamento consulta horário médico">
-                            <div class="card__icon"><i class="fa-solid fa-calendar-days"></i></div>
-                            <h3 class="card__title">Agendamento</h3>
-                            <p class="card__desc">Criando e gerenciando uma nova agenda médica.</p>
-                            <button class="card__btn" data-modal="modal-agenda">Saiba Mais</button>
-                        </article>
-
-                        <!-- Card 4 -->
-                        <article class="card" data-keywords="paciente cadastro ficha dados pessoal">
-                            <div class="card__icon"><i class="fa-solid fa-user"></i></div>
-                            <h3 class="card__title">Cadastro de Paciente</h3>
-                            <p class="card__desc">Como cadastrar e atualizar dados de pacientes no sistema.</p>
-                            <button class="card__btn" data-modal="modal-paciente">Saiba Mais</button>
-                        </article>
-
-                        <!-- Card 5 -->
-                        <article class="card" data-keywords="convênio convenio plano saúde cobertura">
-                            <div class="card__icon"><i class="fa-solid fa-id-card-clip"></i></div>
-                            <h3 class="card__title">Convênios</h3>
-                            <p class="card__desc">Gerenciamento de convênios e planos de saúde.</p>
-                            <button class="card__btn" data-modal="modal-convenio">Saiba Mais</button>
-                        </article>
-
-                        <!-- Card 6 -->
-                        <article class="card" data-keywords="relatório relatorio estatistica dashboard indicador">
-                            <div class="card__icon"><i class="fa-solid fa-chart-column"></i></div>
-                            <h3 class="card__title">Relatórios</h3>
-                            <p class="card__desc">Geração e exportação de relatórios administrativos e clínicos.</p>
-                            <button class="card__btn" data-modal="modal-relatorio">Saiba Mais</button>
-                        </article>
+                    <button class="btn btn-secondary !py-1 !px-2.5 !text-xs" type="button" onclick="history.back()">
+                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Voltar
+                    </button>
+                </div>
+                <section class="tab-panel is-active" data-panel="overview">
+                    <div class="page-heading">
+                        <div>
+                            <h1>Como podemos ajudar?</h1>
+                            <p>Encontre respostas e orientações para aproveitar melhor o G4Med.</p>
+                        </div><button class="btn btn-primary" data-open-tab="contact" type="button"><i
+                                class="fa-solid fa-headset" aria-hidden="true"></i>Falar com suporte</button>
                     </div>
-
-                    <div class="empty-state" id="empty-ajuda" style="display:none;">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <p>Nenhum resultado encontrado para sua pesquisa.</p>
+                    <div class="search-box"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input
+                            id="globalSearch" type="search" placeholder="Busque por uma dúvida ou recurso..."
+                            aria-label="Buscar no suporte"><button id="clearSearch" type="button"
+                            aria-label="Limpar busca"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="cards-grid">
+                        <article class="support-card">
+                            <div class="card-icon"><i class="fa-solid fa-circle-question" aria-hidden="true"></i></div>
+                            <h2>Perguntas frequentes</h2>
+                            <p>Respostas rápidas para as dúvidas mais comuns da plataforma.</p><button
+                                class="btn btn-outline" data-open-tab="faq" type="button">Ver perguntas <i
+                                    class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+                        </article>
+                        <article class="support-card">
+                            <div class="card-icon"><i class="fa-solid fa-envelope" aria-hidden="true"></i></div>
+                            <h2>Fale conosco</h2>
+                            <p>Envie uma mensagem para nossa equipe de atendimento.</p><button class="btn btn-outline"
+                                data-open-tab="contact" type="button">Abrir solicitação <i
+                                    class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+                        </article>
+                        <article class="support-card">
+                            <div class="card-icon"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+                            </div>
+                            <h2>Atualizações</h2>
+                            <p>Acompanhe novidades, melhorias e correções recentes.</p><button class="btn btn-outline"
+                                data-open-tab="updates" type="button">Ver atualizações <i
+                                    class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+                        </article>
                     </div>
                 </section>
-
-                <!-- =====================================================
-                     SEÇÃO: SUPORTE TÉCNICO
-                     ===================================================== -->
-                <section class="section" id="section-suporte">
-                    <header class="section__header">
-                        <h1 class="section__title"><i class="fa-solid fa-wrench"></i> Suporte Técnico</h1>
-                        <p class="section__subtitle">Abra um chamado técnico para relatórios de problemas</p>
-                    </header>
-
-                    <form class="form" id="form-chamado" novalidate>
-                        <div class="form__row">
-                            <div class="form__field">
-                                <label class="form__label" for="chamado-nome">Nome *</label>
-                                <input type="text" id="chamado-nome" class="form__input"
-                                    placeholder="Seu nome completo">
-                                <span class="form__error">Campo obrigatório</span>
-                            </div>
-                            <div class="form__field">
-                                <label class="form__label" for="chamado-crm">CRM *</label>
-                                <input type="text" id="chamado-crm" class="form__input" placeholder="Número do CRM">
-                                <span class="form__error">Campo obrigatório</span>
-                            </div>
+                <section class="tab-panel" data-panel="faq">
+                    <div class="page-heading">
+                        <div>
+                            <h1>Perguntas frequentes</h1>
+                            <p>Consulte respostas organizadas por assunto.</p>
                         </div>
-
-                        <div class="form__row">
-                            <div class="form__field">
-                                <label class="form__label" for="chamado-hospital">Hospital / Clínica *</label>
-                                <input type="text" id="chamado-hospital" class="form__input"
-                                    placeholder="Nome da instituição">
-                                <span class="form__error">Campo obrigatório</span>
-                            </div>
-                            <div class="form__field">
-                                <label class="form__label" for="chamado-urgencia">Urgência *</label>
-                                <select id="chamado-urgencia" class="form__input">
-                                    <option value="" disabled selected>Selecione</option>
-                                    <option value="baixo">Baixo</option>
-                                    <option value="medio">Médio</option>
-                                    <option value="alto">Alto</option>
-                                </select>
-                                <span class="form__error">Campo obrigatório</span>
-                            </div>
+                    </div>
+                    <div class="search-box"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input
+                            class="faq-search" type="search" placeholder="Filtrar perguntas..."
+                            aria-label="Filtrar perguntas"></div>
+                    <div class="faq-list" id="faqList">
+                        <details class="faq-item" open>
+                            <summary>Como acesso o cadastro de pacientes?<i class="fa-solid fa-chevron-down"
+                                    aria-hidden="true"></i></summary>
+                            <p>Acesse o menu Cadastro e selecione Paciente. Use os campos obrigatórios para concluir o
+                                registro.</p>
+                        </details>
+                        <details class="faq-item">
+                            <summary>Como acompanho meus atendimentos?<i class="fa-solid fa-chevron-down"
+                                    aria-hidden="true"></i></summary>
+                            <p>Na Agenda, você pode consultar horários, status e informações dos atendimentos.</p>
+                        </details>
+                        <details class="faq-item">
+                            <summary>Como solicito suporte técnico?<i class="fa-solid fa-chevron-down"
+                                    aria-hidden="true"></i></summary>
+                            <p>Abra a aba Fale conosco, preencha o formulário e envie sua solicitação.</p>
+                        </details>
+                    </div>
+                </section>
+                <section class="tab-panel" data-panel="contact">
+                    <div class="page-heading">
+                        <div>
+                            <h1>Fale conosco</h1>
+                            <p>Descreva sua necessidade e retornaremos em breve.</p>
                         </div>
-
-                        <div class="form__field">
-                            <label class="form__label" for="chamado-problema">Descrição do Problema *</label>
-                            <textarea id="chamado-problema" class="form__input form__input--area" rows="5"
-                                placeholder="Descreva o problema com detalhes..."></textarea>
-                            <span class="form__error">Campo obrigatório</span>
-                        </div>
-
-                        <div class="form__actions">
-                            <button type="button" class="btn btn--secondary" id="btn-limpar">Limpar</button>
-                            <button type="submit" class="btn btn--primary">
-                                <i class="fa-solid fa-paper-plane"></i> Abrir Chamado
-                            </button>
-                        </div>
+                    </div>
+                    <form class="form-card" id="supportForm" novalidate>
+                        <div class="form-grid"><label class="form-field"><span>Nome</span><input class="form-input"
+                                    name="name" required autocomplete="name"><small class="form-error">Informe seu
+                                    nome.</small></label><label class="form-field"><span>E-mail</span><input
+                                    class="form-input" name="email" type="email" required autocomplete="email"><small
+                                    class="form-error">Informe um e-mail válido.</small></label></div><label
+                            class="form-field"><span>Assunto</span><input class="form-input" name="subject"
+                                required><small class="form-error">Informe o assunto.</small></label><label
+                            class="form-field"><span>Mensagem</span><textarea class="form-input min-h-32 resize-y"
+                                name="message" required></textarea><small class="form-error">Escreva uma
+                                mensagem.</small></label>
+                        <div class="form-actions"><button class="btn btn-primary" type="submit"><i
+                                    class="fa-solid fa-paper-plane" aria-hidden="true"></i>Enviar
+                                solicitação</button><button class="btn btn-secondary" type="reset">Limpar</button></div>
                     </form>
                 </section>
-
-                <!-- =====================================================
-                     SEÇÃO: SOBRE O SISTEMA
-                     ===================================================== -->
-                <section class="section" id="section-sobre">
-                    <header class="section__header">
-                        <div class="section__header-top">
-                            <button class="btn-back" data-section="ajuda"><i class="fa-solid fa-arrow-left"></i>
-                                Voltar</button>
+                <section class="tab-panel" data-panel="updates">
+                    <div class="page-heading">
+                        <div>
+                            <h1>Atualizações</h1>
+                            <p>Histórico das últimas melhorias do G4Med.</p>
                         </div>
-                        <h1 class="section__title"><i class="fa-solid fa-book"></i> Sobre o Sistema</h1>
-                        <p class="section__subtitle">Conheça mais sobre o G4med Intelligent Health System</p>
-                    </header>
-
-                    <div class="about">
-                        <div class="about__card">
-                            <div class="about__icon"><i class="fa-solid fa-heart-pulse"></i></div>
-                            <h2 class="about__title">Sobre o G4med</h2>
-                            <div class="about__text">
-                                <p>O <strong>G4med Intelligent Health System</strong> é uma plataforma desenvolvida para
-                                    clínicas, hospitais e consultórios médicos.</p>
-                                <p>Seu objetivo é simplificar processos administrativos e clínicos, oferecendo maior
-                                    <strong>segurança</strong>, <strong>produtividade</strong> e
-                                    <strong>organização</strong>.
-                                </p>
-                                <p>O sistema contempla módulos como:</p>
-                                <ul class="about__list">
-                                    <li><i class="fa-solid fa-check"></i> Cadastro de Pacientes</li>
-                                    <li><i class="fa-solid fa-check"></i> Agenda Médica</li>
-                                    <li><i class="fa-solid fa-check"></i> Atendimento</li>
-                                    <li><i class="fa-solid fa-check"></i> Financeiro</li>
-                                    <li><i class="fa-solid fa-check"></i> Convênios</li>
-                                    <li><i class="fa-solid fa-check"></i> Prontuário Eletrônico</li>
-                                    <li><i class="fa-solid fa-check"></i> Relatórios</li>
-                                    <li><i class="fa-solid fa-check"></i> Auditoria</li>
-                                    <li><i class="fa-solid fa-check"></i> Gestão Administrativa</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="about__card about__card--lgpd">
-                            <div class="about__icon about__icon--shield"><i class="fa-solid fa-shield-halved"></i></div>
-                            <h2 class="about__title">Privacidade de Dados</h2>
-                            <div class="about__text">
-                                <p>Todos os dados médicos são tratados conforme a <strong>Lei Geral de Proteção de Dados
-                                        (LGPD)</strong>.</p>
-                                <p>As informações são protegidas por mecanismos de <strong>autenticação</strong>,
-                                    <strong>criptografia</strong> e <strong>controle de acesso</strong>.
-                                </p>
-                                <p>O sistema registra <strong>auditoria completa</strong> de alterações para garantir
-                                    rastreabilidade.</p>
-                            </div>
-                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="updates-table">
+                            <thead>
+                                <tr>
+                                    <th>Versão</th>
+                                    <th>Data</th>
+                                    <th>Alteração</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr tabindex="0">
+                                    <td>1.0.0</td>
+                                    <td>14/08/2026</td>
+                                    <td>Nova central de suporte</td>
+                                    <td><span class="badge badge-success">Novo</span></td>
+                                </tr>
+                                <tr tabindex="0">
+                                    <td>0.9.5</td>
+                                    <td>01/08/2026</td>
+                                    <td>Melhorias na agenda médica</td>
+                                    <td><span class="badge badge-info">Melhoria</span></td>
+                                </tr>
+                                <tr tabindex="0">
+                                    <td>0.9.4</td>
+                                    <td>22/07/2026</td>
+                                    <td>Correções de estabilidade</td>
+                                    <td><span class="badge badge-warning">Correção</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </section>
-
-                <!-- =====================================================
-                     SEÇÃO: ATUALIZAÇÕES
-                     ===================================================== -->
-                <section class="section" id="section-atualizacoes">
-                    <header class="section__header">
-                        <div class="section__header-top">
-                            <button class="btn-back" data-section="ajuda"><i class="fa-solid fa-arrow-left"></i>
-                                Voltar</button>
+                <section class="tab-panel" data-panel="about">
+                    <div class="page-heading">
+                        <div>
+                            <h1>Sobre o sistema</h1>
+                            <p>Conheça o G4Med e seus recursos.</p>
                         </div>
-                        <h1 class="section__title"><i class="fa-solid fa-rocket"></i> Atualizações</h1>
-                        <p class="section__subtitle">Histórico de versões e novidades do sistema</p>
-                    </header>
-
-                    <div class="timeline" id="timeline">
-                        <!-- Versão 1.0.0 -->
-                        <div class="timeline__item">
-                            <div class="timeline__dot"></div>
-                            <div class="timeline__content">
-                                <div class="timeline__header">
-                                    <h3 class="timeline__title">Versão 1.0.0</h3>
-                                    <span class="timeline__date">20 Abr 2026</span>
-                                </div>
-                                <p class="timeline__desc">Início do projeto e estruturação do sistema base.</p>
-                                <span class="badge badge--new">Novo</span>
-                            </div>
-                        </div>
-
-                        <!-- Versão 1.0.1 -->
-                        <div class="timeline__item">
-                            <div class="timeline__dot"></div>
-                            <div class="timeline__content">
-                                <div class="timeline__header">
-                                    <h3 class="timeline__title">Versão 1.0.1</h3>
-                                    <span class="timeline__date">02 Jun 2026</span>
-                                </div>
-                                <p class="timeline__desc">Correção no fluxo de login e autenticação de dois fatores.
-                                    Melhoria na performance do dashboard.</p>
-                                <span class="badge badge--fix">Correção</span>
-                            </div>
-                        </div>
-
-                        <!-- Versão 1.9.8 -->
-                        <div class="timeline__item">
-                            <div class="timeline__dot"></div>
-                            <div class="timeline__content">
-                                <div class="timeline__header">
-                                    <h3 class="timeline__title">Versão 1.9.8</h3>
-                                    <span class="timeline__date">10 Abr 2026</span>
-                                </div>
-                                <p class="timeline__desc">Novo cadastro de médicos com controle de especialidades,
-                                    horários de atendimento e vinculação a múltiplas unidades.</p>
-                                <span class="badge badge--new">Novo</span>
-                            </div>
-                        </div>
-
-                        <!-- Versão 2.0.0 -->
-                        <div class="timeline__item">
-                            <div class="timeline__dot"></div>
-                            <div class="timeline__content">
-                                <div class="timeline__header">
-                                    <h3 class="timeline__title">Versão 2.0.0</h3>
-                                    <span class="timeline__date">01 Mai 2026</span>
-                                </div>
-                                <p class="timeline__desc">Nova interface completamente redesenhada com design moderno,
-                                    responsivo e acessível. Suporte a tema escuro.</p>
-                                <span class="badge badge--new">Novo</span>
-                            </div>
-                        </div>
-
-                        <!-- Versão 2.0.5 -->
-                        <div class="timeline__item">
-                            <div class="timeline__dot"></div>
-                            <div class="timeline__content">
-                                <div class="timeline__header">
-                                    <h3 class="timeline__title">Versão 2.0.5</h3>
-                                    <span class="timeline__date">20 Mai 2026</span>
-                                </div>
-                                <p class="timeline__desc">Melhorias no módulo financeiro: novos relatórios de receita,
-                                    controle de inadimplência e integração com gateways de pagamento.</p>
-                                <span class="badge badge--improvement">Melhoria</span>
-                            </div>
-                        </div>
-
-                        <!-- Versão 2.1.0 -->
-                        <div class="timeline__item">
-                            <div class="timeline__dot"></div>
-                            <div class="timeline__content">
-                                <div class="timeline__header">
-                                    <h3 class="timeline__title">Versão 2.1.0</h3>
-                                    <span class="timeline__date">20 Jul 2026</span>
-                                </div>
-                                <p class="timeline__desc">Novo módulo de Agenda Médica com suporte a múltiplos
-                                    profissionais, filtros por especialidade e status coloridos.</p>
-                                <span class="badge badge--new">Novo</span>
-                            </div>
-                        </div>
+                    </div>
+                    <div class="about-card">
+                        <div class="card-icon"><i class="fa-solid fa-shield-heart" aria-hidden="true"></i></div>
+                        <h2>Gestão inteligente em saúde</h2>
+                        <p>O G4Med reúne agenda, pacientes, atendimentos e relatórios em uma experiência segura e
+                            intuitiva para equipes de saúde.</p>
+                        <ul>
+                            <li><i class="fa-solid fa-check" aria-hidden="true"></i>Interface simples e responsiva</li>
+                            <li><i class="fa-solid fa-check" aria-hidden="true"></i>Fluxos organizados para sua equipe
+                            </li>
+                            <li><i class="fa-solid fa-check" aria-hidden="true"></i>Suporte contínuo</li>
+                        </ul>
                     </div>
                 </section>
-
-                <!-- =====================================================
-                     RODAPÉ
-                     ===================================================== -->
-                <footer class="footer">
-                    <div class="footer__content">
-                        <div class="footer__brand">
-                            <i class="fa-solid fa-stethoscope"></i>
-                            <span>G4med Intelligent Health System</span>
-                        </div>
-                        <div class="footer__info">
-                            <span>Versão 1.0.0</span>
-                            <span class="footer__sep">·</span>
-                            <span>© 2026</span>
-                            <span class="footer__sep">·</span>
-                            <span>Todos os direitos reservados.</span>
-                        </div>
-                    </div>
-                </footer>
-
-                <!-- =====================================================
-                     BOTÃO VOLTAR AO TOPO
-                     ===================================================== -->
-                <button class="back-to-top" id="back-to-top" aria-label="Voltar ao topo">
-                    <i class="fa-solid fa-arrow-up"></i>
-                </button>
-
             </main>
         </div>
-
-        <!-- =====================================================
-             MODAIS
-             ===================================================== -->
-
-        <!-- Modal: Prontuário -->
-        <div class="modal" id="modal-prontuario" aria-hidden="true">
-            <div class="modal__overlay"></div>
-            <div class="modal__content">
-                <header class="modal__header">
-                    <h2><i class="fa-solid fa-file-medical"></i> Como acessar o prontuário</h2>
-                    <button class="modal__close" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
-                </header>
-                <div class="modal__body">
-                    <p>Para acessar o prontuário de um paciente no G4med, siga os passos:</p>
-                    <ol>
-                        <li>Acesse o menu <strong>Atendimento</strong> na barra lateral.</li>
-                        <li>Clique em <strong>Prontuário Eletrônico</strong>.</li>
-                        <li>Utilize a barra de pesquisa para buscar pelo nome ou CPF do paciente.</li>
-                        <li>Clique no nome do paciente para visualizar o histórico completo.</li>
-                    </ol>
-                    <p>Você também pode acessar o prontuário diretamente pela <strong>Agenda</strong>, clicando no nome
-                        do paciente no horário agendado.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal: Receituário -->
-        <div class="modal" id="modal-receituario" aria-hidden="true">
-            <div class="modal__overlay"></div>
-            <div class="modal__content">
-                <header class="modal__header">
-                    <h2><i class="fa-solid fa-prescription-bottle-medical"></i> Configuração do receituário</h2>
-                    <button class="modal__close" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
-                </header>
-                <div class="modal__body">
-                    <p>O G4med permite configurar modelos personalizados de receituário:</p>
-                    <ol>
-                        <li>Acesse <strong>Utilitários > Configurações</strong>.</li>
-                        <li>Selecione a aba <strong>Receituário</strong>.</li>
-                        <li>Clique em <strong>Novo Modelo</strong>.</li>
-                        <li>Defina o cabeçalho, campos e assinatura digital.</li>
-                        <li>Salve e vincule ao perfil do médico.</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal: Agenda -->
-        <div class="modal" id="modal-agenda" aria-hidden="true">
-            <div class="modal__overlay"></div>
-            <div class="modal__content">
-                <header class="modal__header">
-                    <h2><i class="fa-solid fa-calendar-days"></i> Agendamento</h2>
-                    <button class="modal__close" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
-                </header>
-                <div class="modal__body">
-                    <p>Para criar uma nova agenda médica:</p>
-                    <ol>
-                        <li>Acesse o menu <strong>Agenda</strong>.</li>
-                        <li>Clique no botão <strong>Novo Agendamento</strong>.</li>
-                        <li>Selecione o paciente, médico, data e horário.</li>
-                        <li>Escolha o tipo de atendimento (Presencial, Online, Retorno ou Procedimento).</li>
-                        <li>Confirme e envie lembretes automáticos por WhatsApp/SMS.</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal: Paciente -->
-        <div class="modal" id="modal-paciente" aria-hidden="true">
-            <div class="modal__overlay"></div>
-            <div class="modal__content">
-                <header class="modal__header">
-                    <h2><i class="fa-solid fa-user"></i> Cadastro de Paciente</h2>
-                    <button class="modal__close" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
-                </header>
-                <div class="modal__body">
-                    <p>Para cadastrar um novo paciente:</p>
-                    <ol>
-                        <li>Acesse <strong>Cadastro > Paciente</strong>.</li>
-                        <li>Clique em <strong>Novo</strong>.</li>
-                        <li>Preencha os dados pessoais, endereço e contato.</li>
-                        <li>Adicione informações de convênio, se houver.</li>
-                        <li>Salve o cadastro.</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal: Convênio -->
-        <div class="modal" id="modal-convenio" aria-hidden="true">
-            <div class="modal__overlay"></div>
-            <div class="modal__content">
-                <header class="modal__header">
-                    <h2><i class="fa-solid fa-id-card-clip"></i> Convênios</h2>
-                    <button class="modal__close" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
-                </header>
-                <div class="modal__body">
-                    <p>Gerenciamento de convênios e planos de saúde:</p>
-                    <ol>
-                        <li>Acesse <strong>Utilitários > Convênio</strong>.</li>
-                        <li>Cadastre o plano com nome, CNPJ e dados de contato.</li>
-                        <li>Configure tabelas de procedimentos e valores.</li>
-                        <li>Vincule o convênio aos pacientes no cadastro.</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal: Relatório -->
-        <div class="modal" id="modal-relatorio" aria-hidden="true">
-            <div class="modal__overlay"></div>
-            <div class="modal__content">
-                <header class="modal__header">
-                    <h2><i class="fa-solid fa-chart-column"></i> Relatórios</h2>
-                    <button class="modal__close" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
-                </header>
-                <div class="modal__body">
-                    <p>Geração e exportação de relatórios:</p>
-                    <ol>
-                        <li>Acesse <strong>Relatório</strong> no menu lateral.</li>
-                        <li>Escolha o tipo: Atendimentos, Pacientes, Financeiro ou Médico.</li>
-                        <li>Defina o período e filtros desejados.</li>
-                        <li>Visualize na tela ou exporte em PDF/Excel.</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-
-        <!-- =====================================================
-        TOAST CONTAINER
-        ===================================================== -->
-        <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
-
+        <footer class="site-footer"><span><i class="fa-solid fa-heart-pulse" aria-hidden="true"></i> G4Med</span><span
+                class="hidden sm:inline">•</span><span>Intelligent Health System</span><span
+                class="hidden sm:inline">•</span><span>© 2026</span></footer>
+        <div class="toast-container" id="toastContainer" aria-live="polite"></div>
     </div>
-
-    <!-- <script src="js/app.js"></script> -->
-    <script src="suporte.js"></script>
+    <script src="suporte.js" defer></script>
 </body>
 
 </html>

@@ -1670,3 +1670,24 @@ button:disabled {
         padding: 9px 12px;
     }
 }
+
+/* Animação personalizada de pulsação suave para o ícone de estetoscópio */
+@keyframes pulse-stethoscope {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.85;
+    }
+}
+
+/* Aplica a animação de pulsação continuamente a cada 2 segundos no ícone médico */
+.medical-icon {
+    animation: pulse-stethoscope 2s ease-in-out infinite;
+    transform-origin: center;
+}
