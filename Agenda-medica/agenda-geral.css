@@ -791,22 +791,24 @@ a:hover {
    ========================================================= */
 
 body.modal-open {
-    overflow: hidden;
+    overflow: hidden !important;
 }
+
 
 .modal {
     position: fixed;
     inset: 0;
     z-index: 2000;
-    display: none;
+    display: none !important;
     align-items: center;
     justify-content: center;
     padding: var(--space-4);
 }
 
+
 .modal[aria-hidden="false"],
 .modal.is-open {
-    display: flex;
+    display: flex !important;
 }
 
 .modal__overlay {

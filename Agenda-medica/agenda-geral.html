@@ -239,16 +239,21 @@
     <!-- =====================================================
          MODAL: NOVO OU EDITAR AGENDAMENTO
          ===================================================== -->
+    <!-- =====================================================
+     MODAL: NOVO OU EDITAR AGENDAMENTO
+     ===================================================== -->
     <div id="modal-agendamento" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo"
         aria-hidden="true">
+
         <div class="modal__overlay" aria-hidden="true"></div>
+
         <div class="modal__content">
             <header class="modal__header">
-                <h2 id="modal-titulo" class="text-lg font-semibold text-primary-800">
+                <h2 id="modal-titulo">
                     <i class="fa-solid fa-calendar-plus" aria-hidden="true"></i>
                     <span>Novo Agendamento</span>
                 </h2>
-                <button type="button" id="modal-close" class="modal__close" aria-label="Fechar">
+                <button type="button" id="modal-close" class="modal__close" aria-label="Fechar modal">
                     <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </header>
@@ -298,10 +303,10 @@
 
                     <div class="modal__field">
                         <label for="agendamento-hora" class="modal__label">
-                            Horário da Chegada <span aria-hidden="true">*</span>
+                            Horário <span aria-hidden="true">*</span>
                             <span class="sr-only">(obrigatório)</span>
                         </label>
-                        <input type="time" id="agendamento-hora" class="modal__input" min="00:00" max="23:59" step="300"
+                        <input type="time" id="agendamento-hora" class="modal__input" min="08:00" max="18:00" step="300"
                             required aria-required="true">
                     </div>
 
