@@ -1,11 +1,28 @@
 'use strict';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const STORAGE_KEY = 'g4med.agenda.agendamentos.v2';
+    /*
+     * =========================================================================
+     * CONFIGURAÇÕES
+     * =========================================================================
+     */
 
-    const HORARIO_INICIAL = 8 * 60;
-    const HORARIO_FINAL = 18 * 60;
-    const INTERVALO = 30;
+    const CONFIG = {
+        storageKey: 'g4med.agenda.agendamentos.v2',
+        chatStorageKey: 'g4med.chat.mensagens',
+        lembretesStorageKey: 'g4med.lembretes',
+
+        horarioInicial: 8 * 60,
+        horarioFinal: 18 * 60,
+        intervalo: 30,
+
+        limiteToasts: 5,
+        duracaoToast: 4000,
+
+        whatsappBaseUrl: 'https://wa.me/',
+        telefoneClinica: '(62) 99999-9999',
+        nomeClinica: 'G4Med - Clínica Médica'
+    };
 
     const STATUS_LABELS = {
         agendado: 'Agendado',
@@ -22,6 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
         retorno: 'Retorno',
         procedimento: 'Procedimento'
     };
+
+    const STATUS_IGNORADOS = new Set([
+        'cancelado',
+        'nao-compareceu'
+    ]);
 
     const MEDICOS = {
         '1': {
@@ -46,10 +68,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    /*
+     * =========================================================================
+     * ELEMENTOS DA INTERFACE
+     * =========================================================================
+     */
+
     const elements = {
         btnPrev: document.querySelector('#btn-prev'),
         btnNext: document.querySelector('#btn-next'),
         btnToday: document.querySelector('#btn-today'),
+        btnNovo: document.querySelector('#btn-novo-agendamento'),
 
         currentDateLabel: document.querySelector('#current-date-label'),
         currentWeekday: document.querySelector('#current-weekday'),
@@ -60,13 +89,12 @@ document.addEventListener('DOMContentLoaded', () => {
         agendaHeader: document.querySelector('#agenda-header'),
         agendaBody: document.querySelector('#agenda-body'),
 
-        btnNovo: document.querySelector('#btn-novo-agendamento'),
-
         modalAgendamento: document.querySelector('#modal-agendamento'),
         modalAcoes: document.querySelector('#modal-acoes'),
+        modalWhatsApp: document.querySelector('#modal-whatsapp'),
 
-        form: document.querySelector('#form-agendamento'),
         modalTitulo: document.querySelector('#modal-titulo'),
+        form: document.querySelector('#form-agendamento'),
 
         btnModalClose: document.querySelector('#modal-close'),
         btnModalAcoesClose: document.querySelector('#modal-acoes-close'),
@@ -74,7 +102,23 @@ document.addEventListener('DOMContentLoaded', () => {
         btnGravar: document.querySelector('#btn-gravar'),
 
         detalhesAgendamento: document.querySelector('#agendamento-detalhes'),
-        toastContainer: document.querySelector('#toast-container')
+        toastContainer: document.querySelector('#toast-container'),
+
+        btnWhatsAppEnviar: document.querySelector('#btn-whatsapp-enviar'),
+        btnWhatsAppCancelar: document.querySelector('#btn-whatsapp-cancelar'),
+        btnWhatsAppClose: document.querySelector('#modal-whatsapp-close'),
+        whatsappPreview: document.querySelector('#whatsapp-preview'),
+        whatsappMensagem: document.querySelector('#whatsapp-mensagem'),
+        whatsappLembrete: document.querySelector('#whatsapp-lembrete'),
+
+        btnChat: document.querySelector('#btn-chat-interno'),
+        janelaChat: document.querySelector('#janela-chat'),
+        btnChatFechar: document.querySelector('#chat-fechar'),
+        btnChatEnviar: document.querySelector('#chat-enviar'),
+        chatInput: document.querySelector('#chat-input'),
+        chatLista: document.querySelector('#chat-lista'),
+        chatMensagens: document.querySelector('#chat-mensagens'),
+        chatBadge: document.querySelector('#chat-badge')
     };
 
     const fields = {
@@ -91,18 +135,101 @@ document.addEventListener('DOMContentLoaded', () => {
         lembrete: document.querySelector('#agendamento-lembrete')
     };
 
-    let dataAtual = inicioDoDia(new Date());
-    let agendamentoSelecionadoId = null;
-    let ultimoElementoFocado = null;
-    let agendamentos = carregarAgendamentos();
+    /*
+     * =========================================================================
+     * ESTADO DA APLICAÇÃO
+     * =========================================================================
+     */
+
+    const state = {
+        dataAtual: inicioDoDia(new Date()),
+        agendamentoSelecionadoId: null,
+        ultimoElementoFocado: null,
+        agendamentos: [],
+        whatsappAgendamento: null,
+
+        chat: {
+            canalAtual: 'geral',
+            mensagens: {
+                geral: [],
+                recepcao: [],
+                medicos: []
+            }
+        }
+    };
+
+    /*
+     * =========================================================================
+     * GERENCIADOR DE TOAST
+     * =========================================================================
+     */
+
+    const ToastManager = {
+        ativos: new Map(),
+
+        criarChave(mensagem, tipo) {
+            return `${tipo}:${mensagem.trim()}`;
+        },
+
+        obter(chave) {
+            return this.ativos.get(chave);
+        },
+
+        adicionar(chave, toast, timer) {
+            this.ativos.set(chave, {
+                elemento: toast,
+                timer
+            });
+        },
+
+        remover(chave) {
+            const toastData = this.ativos.get(chave);
+
+            if (toastData?.timer) {
+                clearTimeout(toastData.timer);
+            }
+
+            this.ativos.delete(chave);
+        },
+
+        removerMaisAntigo() {
+            const primeiraChave = this.ativos.keys().next().value;
+
+            if (!primeiraChave) {
+                return;
+            }
+
+            const toastData = this.ativos.get(primeiraChave);
+
+            if (toastData) {
+                fecharToast(toastData.elemento, primeiraChave);
+            }
+        }
+    };
+
+    /*
+     * =========================================================================
+     * INICIALIZAÇÃO
+     * =========================================================================
+     */
 
     inicializar();
 
     function inicializar() {
+        state.agendamentos = carregarAgendamentos();
+        carregarMensagensChat();
+
         aplicarAcessibilidadeBasica();
         configurarEventos();
         renderizarAgenda();
+        renderizarCanalChat();
     }
+
+    /*
+     * =========================================================================
+     * EVENTOS
+     * =========================================================================
+     */
 
     function configurarEventos() {
         elements.btnPrev?.addEventListener('click', () => alterarData(-1));
@@ -129,14 +256,55 @@ document.addEventListener('DOMContentLoaded', () => {
             fecharModalAgendamento
         );
 
-        elements.btnGravar?.addEventListener(
-            'click',
-            salvarAgendamento
-        );
-
         elements.form?.addEventListener('submit', event => {
             event.preventDefault();
             salvarAgendamento();
+        });
+
+        elements.btnWhatsAppEnviar?.addEventListener(
+            'click',
+            enviarWhatsAppPaciente
+        );
+
+        elements.btnWhatsAppCancelar?.addEventListener(
+            'click',
+            fecharModalWhatsApp
+        );
+
+        elements.btnWhatsAppClose?.addEventListener(
+            'click',
+            fecharModalWhatsApp
+        );
+
+        elements.btnChat?.addEventListener('click', alternarChat);
+
+        elements.btnChatFechar?.addEventListener(
+            'click',
+            fecharChat
+        );
+
+        elements.btnChatEnviar?.addEventListener(
+            'click',
+            enviarMensagemChat
+        );
+
+        elements.chatInput?.addEventListener('keydown', event => {
+            if (event.key !== 'Enter') {
+                return;
+            }
+
+            event.preventDefault();
+            enviarMensagemChat();
+        });
+
+        elements.chatLista?.addEventListener('click', event => {
+            const item = event.target.closest('.chat-interno__item');
+
+            if (!item) {
+                return;
+            }
+
+            selecionarCanalChat(item.dataset.chat);
         });
 
         document.querySelectorAll('.modal__overlay').forEach(overlay => {
@@ -147,25 +315,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                if (modal.id === 'modal-acoes') {
-                    fecharModalAcoes();
-                }
-
-                if (modal.id === 'modal-agendamento') {
-                    fecharModalAgendamento();
-                }
+                fecharModalPorElemento(modal);
             });
         });
 
-        document.addEventListener(
-            'keydown',
-            tratarTecladoGlobal
-        );
-
-        document.addEventListener(
-            'click',
-            tratarCliqueEmAcao
-        );
+        document.addEventListener('keydown', tratarTecladoGlobal);
+        document.addEventListener('click', tratarCliqueEmAcao);
     }
 
     function tratarCliqueEmAcao(event) {
@@ -178,18 +333,23 @@ document.addEventListener('DOMContentLoaded', () => {
         executarAcao(botao.dataset.acao);
     }
 
+    /*
+     * =========================================================================
+     * AGENDA
+     * =========================================================================
+     */
+
     function alterarData(dias) {
-        const novaData = new Date(dataAtual);
+        const novaData = new Date(state.dataAtual);
 
         novaData.setDate(novaData.getDate() + dias);
-
-        dataAtual = inicioDoDia(novaData);
+        state.dataAtual = inicioDoDia(novaData);
 
         renderizarAgenda();
     }
 
     function irParaHoje() {
-        dataAtual = inicioDoDia(new Date());
+        state.dataAtual = inicioDoDia(new Date());
 
         renderizarAgenda();
 
@@ -197,6 +357,12 @@ document.addEventListener('DOMContentLoaded', () => {
             'Agenda posicionada em hoje.',
             'info'
         );
+    }
+
+    function renderizarAgenda() {
+        atualizarCabecalhoData();
+        renderizarCabecalhoMedicos();
+        renderizarCorpoAgenda();
     }
 
     function atualizarCabecalhoData() {
@@ -214,26 +380,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 month: 'long',
                 year: 'numeric'
             }
-        ).format(dataAtual);
+        ).format(state.dataAtual);
 
         const diaSemana = new Intl.DateTimeFormat(
             'pt-BR',
             {
                 weekday: 'long'
             }
-        ).format(dataAtual);
+        ).format(state.dataAtual);
 
         elements.currentDateLabel.textContent =
             capitalizar(dataFormatada);
 
         elements.currentWeekday.textContent =
             capitalizar(diaSemana);
-    }
-
-    function renderizarAgenda() {
-        atualizarCabecalhoData();
-        renderizarCabecalhoMedicos();
-        renderizarCorpoAgenda();
     }
 
     function renderizarCabecalhoMedicos() {
@@ -278,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const medicosVisiveis = obterMedicosFiltrados();
         const agendamentosDoDia = obterAgendamentosDoDia();
 
-        if (medicosVisiveis.length === 0) {
+        if (!medicosVisiveis.length) {
             elements.agendaBody.innerHTML = `
                 <div class="agenda__empty">
                     Nenhum médico corresponde aos filtros selecionados.
@@ -291,11 +451,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const linhas = [];
 
         for (
-            let minutos = HORARIO_INICIAL;
-            minutos <= HORARIO_FINAL;
-            minutos += INTERVALO
+            let minutos = CONFIG.horarioInicial;
+            minutos <= CONFIG.horarioFinal;
+            minutos += CONFIG.intervalo
         ) {
             const horario = minutosParaHora(minutos);
+
+            const colunas = medicosVisiveis.map(medico => {
+                const agendamento = encontrarAgendamentoNoHorario(
+                    agendamentosDoDia,
+                    medico.id,
+                    minutos
+                );
+
+                return `
+                    <div
+                        class="agenda__slot"
+                        data-medico="${escapeHTML(medico.id)}"
+                        data-minutos="${minutos}"
+                    >
+                        ${agendamento
+                        ? criarCardAgendamento(agendamento)
+                        : ''
+                    }
+                    </div>
+                `;
+            }).join('');
 
             linhas.push(`
                 <div
@@ -306,33 +487,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span>${escapeHTML(horario)}</span>
                     </div>
 
-                    ${medicosVisiveis.map(medico => {
-                const agendamento =
-                    encontrarAgendamentoNoHorario(
-                        agendamentosDoDia,
-                        medico.id,
-                        minutos
-                    );
-
-                return `
-                            <div
-                                class="agenda__slot"
-                                data-medico="${escapeHTML(medico.id)}"
-                                data-minutos="${minutos}"
-                            >
-                                ${agendamento
-                        ? criarCardAgendamento(agendamento)
-                        : ''
-                    }
-                            </div>
-                        `;
-            }).join('')}
+                    ${colunas}
                 </div>
             `);
         }
 
         elements.agendaBody.innerHTML = linhas.join('');
-
         configurarInteracaoDosCards();
     }
 
@@ -341,22 +501,16 @@ document.addEventListener('DOMContentLoaded', () => {
             ?.querySelectorAll('[data-agendamento-id]')
             .forEach(card => {
                 card.addEventListener('click', () => {
-                    abrirModalAcoes(
-                        card.dataset.agendamentoId
-                    );
+                    abrirModalAcoes(card.dataset.agendamentoId);
                 });
 
                 card.addEventListener('keydown', event => {
-                    if (
-                        event.key === 'Enter' ||
-                        event.key === ' '
-                    ) {
-                        event.preventDefault();
-
-                        abrirModalAcoes(
-                            card.dataset.agendamentoId
-                        );
+                    if (!['Enter', ' '].includes(event.key)) {
+                        return;
                     }
+
+                    event.preventDefault();
+                    abrirModalAcoes(card.dataset.agendamentoId);
                 });
             });
     }
@@ -366,32 +520,24 @@ document.addEventListener('DOMContentLoaded', () => {
             ? agendamento.status
             : 'agendado';
 
-        const statusLabel =
-            STATUS_LABELS[status];
+        const statusLabel = STATUS_LABELS[status];
+        const tipoLabel = TIPO_LABELS[agendamento.tipo] || 'Atendimento';
+        const duracao = Number(agendamento.duracao) || 30;
+        const linhasOcupadas = Math.max(
+            1,
+            Math.ceil(duracao / CONFIG.intervalo)
+        );
 
-        const tipoLabel =
-            TIPO_LABELS[agendamento.tipo] ||
-            'Atendimento';
-
-        const duracao =
-            Number(agendamento.duracao) || 30;
-
-        const linhasOcupadas =
-            Math.max(1, Math.ceil(duracao / INTERVALO));
-
-        const altura =
-            linhasOcupadas * 100;
-
-        const iconeOnline =
-            agendamento.tipo === 'online'
-                ? `
-                    <i
-                        class="fa-solid fa-video agenda__appointment-icon"
-                        title="Teleconsulta"
-                        aria-label="Teleconsulta"
-                    ></i>
-                `
-                : '';
+        const altura = linhasOcupadas * 100;
+        const iconeOnline = agendamento.tipo === 'online'
+            ? `
+                <i
+                    class="fa-solid fa-video agenda__appointment-icon"
+                    title="Teleconsulta"
+                    aria-label="Teleconsulta"
+                ></i>
+            `
+            : '';
 
         return `
             <article
@@ -439,8 +585,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const correspondeAEspecialidade =
                 !especialidadeSelecionada ||
-                medico.especialidadeId ===
-                especialidadeSelecionada;
+                medico.especialidadeId === especialidadeSelecionada;
 
             return (
                 correspondeAoMedico &&
@@ -450,15 +595,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function obterAgendamentosDoDia() {
-        const data = formatarDataISO(dataAtual);
-
+        const data = formatarDataISO(state.dataAtual);
         const medicoSelecionado =
             elements.filterMedico?.value || '';
-
         const especialidadeSelecionada =
             elements.filterEspecialidade?.value || '';
 
-        return agendamentos.filter(agendamento => {
+        return state.agendamentos.filter(agendamento => {
             const medico = MEDICOS[agendamento.medicoId];
 
             if (!medico) {
@@ -486,9 +629,7 @@ document.addEventListener('DOMContentLoaded', () => {
         minutos
     ) {
         return lista.find(agendamento => {
-            const inicio = horaParaMinutos(
-                agendamento.hora
-            );
+            const inicio = horaParaMinutos(agendamento.hora);
 
             return (
                 agendamento.medicoId === medicoId &&
@@ -497,25 +638,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /*
+     * =========================================================================
+     * FORMULÁRIO DE AGENDAMENTO
+     * =========================================================================
+     */
+
     function abrirModalNovo() {
         limparFormulario();
 
-        fields.data.value =
-            formatarDataISO(dataAtual);
-
+        fields.data.value = formatarDataISO(state.dataAtual);
         fields.status.value = 'agendado';
         fields.duracao.value = '30';
         fields.tipo.value = 'presencial';
         fields.convenio.value = 'particular';
         fields.lembrete.checked = true;
 
-        if (elements.modalTitulo) {
-            elements.modalTitulo.innerHTML = `
-                <i class="fa-solid fa-calendar-plus"
-                    aria-hidden="true"></i>
-                Novo Agendamento
-            `;
-        }
+        definirTituloModal(
+            'Novo Agendamento',
+            'fa-calendar-plus'
+        );
 
         abrirModal(
             elements.modalAgendamento,
@@ -543,18 +685,26 @@ document.addEventListener('DOMContentLoaded', () => {
         fields.lembrete.checked =
             Boolean(agendamento.lembrete);
 
-        if (elements.modalTitulo) {
-            elements.modalTitulo.innerHTML = `
-                <i class="fa-solid fa-pen"
-                    aria-hidden="true"></i>
-                Editar Agendamento
-            `;
-        }
+        definirTituloModal(
+            'Editar Agendamento',
+            'fa-pen'
+        );
 
         abrirModal(
             elements.modalAgendamento,
             '#paciente-nome'
         );
+    }
+
+    function definirTituloModal(texto, icone) {
+        if (!elements.modalTitulo) {
+            return;
+        }
+
+        elements.modalTitulo.innerHTML = `
+            <i class="fa-solid ${escapeHTML(icone)}" aria-hidden="true"></i>
+            <span>${escapeHTML(texto)}</span>
+        `;
     }
 
     function salvarAgendamento() {
@@ -564,14 +714,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const indiceExistente =
-            agendamentos.findIndex(
-                agendamento => agendamento.id === dados.id
-            );
+        const indiceExistente = state.agendamentos.findIndex(
+            agendamento => agendamento.id === dados.id
+        );
 
         if (indiceExistente >= 0) {
-            agendamentos[indiceExistente] = {
-                ...agendamentos[indiceExistente],
+            state.agendamentos[indiceExistente] = {
+                ...state.agendamentos[indiceExistente],
                 ...dados,
                 atualizadoEm: new Date().toISOString()
             };
@@ -594,11 +743,12 @@ document.addEventListener('DOMContentLoaded', () => {
             criadoEm: new Date().toISOString()
         };
 
-        agendamentos.push(novoAgendamento);
+        state.agendamentos.push(novoAgendamento);
         persistirAgendamentos();
 
-        dataAtual =
-            dataStringParaDate(novoAgendamento.data);
+        state.dataAtual = dataStringParaDate(
+            novoAgendamento.data
+        );
 
         fecharModalAgendamento();
         renderizarAgenda();
@@ -607,21 +757,35 @@ document.addEventListener('DOMContentLoaded', () => {
             'Agendamento criado com sucesso.',
             'success'
         );
+
+        oferecerWhatsApp(novoAgendamento);
+    }
+
+    function oferecerWhatsApp(agendamento) {
+        window.setTimeout(() => {
+            const desejaEnviar = window.confirm(
+                'Deseja enviar uma confirmação ao paciente via WhatsApp?'
+            );
+
+            if (desejaEnviar) {
+                abrirModalWhatsApp(agendamento);
+            }
+        }, 500);
     }
 
     function obterDadosFormulario() {
         return {
-            id: fields.id.value.trim(),
-            paciente: fields.paciente.value.trim(),
-            medicoId: fields.medico.value,
-            data: fields.data.value,
-            hora: fields.hora.value,
-            duracao: Number(fields.duracao.value) || 30,
-            tipo: fields.tipo.value,
-            convenio: fields.convenio.value,
-            status: fields.status.value || 'agendado',
-            observacoes: fields.observacoes.value.trim(),
-            lembrete: fields.lembrete.checked
+            id: fields.id?.value.trim() || '',
+            paciente: fields.paciente?.value.trim() || '',
+            medicoId: fields.medico?.value || '',
+            data: fields.data?.value || '',
+            hora: fields.hora?.value || '',
+            duracao: Number(fields.duracao?.value) || 30,
+            tipo: fields.tipo?.value || '',
+            convenio: fields.convenio?.value || 'particular',
+            status: fields.status?.value || 'agendado',
+            observacoes: fields.observacoes?.value.trim() || '',
+            lembrete: Boolean(fields.lembrete?.checked)
         };
     }
 
@@ -629,36 +793,18 @@ document.addEventListener('DOMContentLoaded', () => {
         limparErrosFormulario();
 
         const obrigatorios = [
-            [
-                fields.paciente,
-                'Informe o nome do paciente.'
-            ],
-            [
-                fields.medico,
-                'Selecione um médico.'
-            ],
-            [
-                fields.data,
-                'Informe a data do agendamento.'
-            ],
-            [
-                fields.hora,
-                'Informe o horário.'
-            ],
-            [
-                fields.tipo,
-                'Selecione o tipo de atendimento.'
-            ]
+            [fields.paciente, 'Informe o nome do paciente.'],
+            [fields.medico, 'Selecione um médico.'],
+            [fields.data, 'Informe a data do agendamento.'],
+            [fields.hora, 'Informe o horário.'],
+            [fields.tipo, 'Selecione o tipo de atendimento.']
         ];
 
         let valido = true;
 
         obrigatorios.forEach(([campo, mensagem]) => {
-            if (!campo || !campo.value.trim()) {
-                if (campo) {
-                    marcarErro(campo, mensagem);
-                }
-
+            if (!campo?.value.trim()) {
+                marcarErro(campo, mensagem);
                 valido = false;
             }
         });
@@ -673,58 +819,81 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const inicio = horaParaMinutos(dados.hora);
-        const fim = inicio + dados.duracao;
+        const duracaoNova = Number(dados.duracao) || 30;
+        const fim = inicio + duracaoNova;
 
         if (
             Number.isNaN(inicio) ||
-            inicio < HORARIO_INICIAL ||
-            fim > HORARIO_FINAL
+            inicio < 0 ||
+            inicio >= 1440 ||
+            duracaoNova <= 0 ||
+            fim > 1440
         ) {
-            marcarErro(
-                fields.hora,
-                'Horário fora do funcionamento da agenda.'
-            );
+            marcarErro(fields.hora, 'Horário inválido.');
 
             exibirToast(
-                'Horário fora do funcionamento da agenda.',
+                'Informe um horário válido entre 00:00 e 23:59.',
                 'warning'
             );
 
             return false;
         }
 
-        const existeConflito = agendamentos.some(agendamento => {
-            if (
-                agendamento.id === dados.id ||
-                agendamento.data !== dados.data ||
-                agendamento.medicoId !== dados.medicoId ||
-                agendamento.status === 'cancelado'
-            ) {
-                return false;
+        const temConflito = state.agendamentos.some(
+            agendamento => {
+                if (
+                    dados.id &&
+                    agendamento.id === dados.id
+                ) {
+                    return false;
+                }
+
+                if (
+                    agendamento.medicoId !== dados.medicoId ||
+                    agendamento.data !== dados.data
+                ) {
+                    return false;
+                }
+
+                if (
+                    STATUS_IGNORADOS.has(agendamento.status)
+                ) {
+                    return false;
+                }
+
+                const agendamentoInicio =
+                    horaParaMinutos(agendamento.hora);
+
+                const agendamentoDuracao =
+                    Number(agendamento.duracao) || 30;
+
+                const agendamentoFim =
+                    agendamentoInicio + agendamentoDuracao;
+
+                if (
+                    Number.isNaN(agendamentoInicio) ||
+                    agendamentoInicio < 0
+                ) {
+                    return false;
+                }
+
+                // Sobreposição entre [início, fim).
+                return (
+                    inicio < agendamentoFim &&
+                    agendamentoInicio < fim
+                );
             }
+        );
 
-            const inicioExistente =
-                horaParaMinutos(agendamento.hora);
-
-            const fimExistente =
-                inicioExistente +
-                Number(agendamento.duracao || 30);
-
-            return (
-                inicio < fimExistente &&
-                fim > inicioExistente
-            );
-        });
-
-        if (existeConflito) {
+        if (temConflito) {
             marcarErro(
                 fields.hora,
-                'Existe conflito de horário para este médico.'
+                'Horário já possui agendamento para este médico.'
             );
 
             exibirToast(
-                'Existe conflito de horário para este médico.',
-                'warning'
+                'Horário já possui agendamento para este médico.',
+                'error'
             );
 
             return false;
@@ -733,25 +902,20 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
-    function limparFormulario() {
-        elements.form?.reset();
-
-        if (fields.id) {
-            fields.id.value = '';
-        }
-
-        limparErrosFormulario();
-    }
+    /*
+     * =========================================================================
+     * DETALHES E AÇÕES DO AGENDAMENTO
+     * =========================================================================
+     */
 
     function abrirModalAcoes(id) {
-        const agendamento =
-            obterAgendamentoPorId(id);
+        const agendamento = obterAgendamentoPorId(id);
 
         if (!agendamento) {
             return;
         }
 
-        agendamentoSelecionadoId = id;
+        state.agendamentoSelecionadoId = id;
 
         renderizarDetalhesAgendamento(agendamento);
 
@@ -767,14 +931,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const medico = MEDICOS[agendamento.medicoId];
-
         const statusLabel =
-            STATUS_LABELS[agendamento.status] ||
-            'Agendado';
-
+            STATUS_LABELS[agendamento.status] || 'Agendado';
         const tipoLabel =
-            TIPO_LABELS[agendamento.tipo] ||
-            'Atendimento';
+            TIPO_LABELS[agendamento.tipo] || 'Atendimento';
 
         elements.detalhesAgendamento.innerHTML = `
             <div class="modal__detail-main">
@@ -791,21 +951,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div>
                     <dt>Médico</dt>
                     <dd>
-                        ${escapeHTML(medico?.nome || 'Não informado')}
+                        ${escapeHTML(
+            medico?.nome || 'Não informado'
+        )}
                     </dd>
                 </div>
 
                 <div>
                     <dt>Especialidade</dt>
                     <dd>
-                        ${escapeHTML(medico?.especialidade || 'Não informada')}
+                        ${escapeHTML(
+            medico?.especialidade ||
+            'Não informada'
+        )}
                     </dd>
                 </div>
 
                 <div>
                     <dt>Data e horário</dt>
                     <dd>
-                        ${formatarDataCurta(agendamento.data)}
+                        ${escapeHTML(
+            formatarDataCurta(agendamento.data)
+        )}
                         às
                         ${escapeHTML(agendamento.hora)}
                     </dd>
@@ -821,28 +988,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div>
                     <dt>Convênio</dt>
                     <dd>
-                        ${escapeHTML(agendamento.convenio || 'Particular')}
+                        ${escapeHTML(
+            agendamento.convenio ||
+            'Particular'
+        )}
                     </dd>
                 </div>
             </dl>
 
             ${agendamento.observacoes
                 ? `
-                        <p class="modal__detail-observacao">
-                            <strong>Observações:</strong>
-                            ${escapeHTML(agendamento.observacoes)}
-                        </p>
-                    `
+                    <p class="modal__detail-observacao">
+                        <strong>Observações:</strong>
+                        ${escapeHTML(
+                    agendamento.observacoes
+                )}
+                    </p>
+                `
                 : ''
             }
+
+            <div class="modal__detail-whatsapp">
+                <button
+                    type="button"
+                    class="agenda__btn agenda__btn--primary"
+                    data-acao="whatsapp"
+                >
+                    <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+                    <span>Enviar mensagem ao paciente</span>
+                </button>
+            </div>
         `;
     }
 
     function executarAcao(acao) {
-        const agendamento =
-            obterAgendamentoPorId(
-                agendamentoSelecionadoId
-            );
+        const agendamento = obterAgendamentoPorId(
+            state.agendamentoSelecionadoId
+        );
 
         if (!agendamento) {
             fecharModalAcoes();
@@ -887,6 +1069,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 acessarFinanceiro(agendamento);
                 break;
 
+            case 'whatsapp':
+                abrirModalWhatsApp(agendamento);
+                break;
+
             default:
                 exibirToast(
                     'Ação não reconhecida.',
@@ -919,7 +1105,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        agendamentos = agendamentos.filter(
+        state.agendamentos = state.agendamentos.filter(
             item => item.id !== agendamento.id
         );
 
@@ -946,12 +1132,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         window.dispatchEvent(
-            new CustomEvent(
-                'g4med:teleconsulta',
-                {
-                    detail: agendamento
-                }
-            )
+            new CustomEvent('g4med:teleconsulta', {
+                detail: agendamento
+            })
         );
 
         exibirToast(
@@ -962,12 +1145,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function acessarProntuario(agendamento) {
         window.dispatchEvent(
-            new CustomEvent(
-                'g4med:prontuario',
-                {
-                    detail: agendamento
-                }
-            )
+            new CustomEvent('g4med:prontuario', {
+                detail: agendamento
+            })
         );
 
         exibirToast(
@@ -978,12 +1158,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function acessarFinanceiro(agendamento) {
         window.dispatchEvent(
-            new CustomEvent(
-                'g4med:financeiro',
-                {
-                    detail: agendamento
-                }
-            )
+            new CustomEvent('g4med:financeiro', {
+                detail: agendamento
+            })
         );
 
         exibirToast(
@@ -992,16 +1169,438 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 
+    /*
+     * =========================================================================
+     * WHATSAPP
+     * =========================================================================
+     */
+
+    function abrirModalWhatsApp(agendamento) {
+        if (!agendamento || !elements.modalWhatsApp) {
+            return;
+        }
+
+        state.whatsappAgendamento = agendamento;
+
+        const medico = MEDICOS[agendamento.medicoId];
+        const dataFormatada =
+            formatarDataCurta(agendamento.data);
+
+        const mensagem = criarMensagemWhatsApp({
+            agendamento,
+            medico
+        });
+
+        if (elements.whatsappPreview) {
+            elements.whatsappPreview.innerHTML = `
+                <p>
+                    <strong>Paciente:</strong>
+                    ${escapeHTML(agendamento.paciente)}
+                </p>
+
+                <p>
+                    <strong>Data:</strong>
+                    ${escapeHTML(dataFormatada)}
+                </p>
+
+                <p>
+                    <strong>Horário:</strong>
+                    ${escapeHTML(agendamento.hora)}
+                </p>
+
+                <p>
+                    <strong>Médico:</strong>
+                    ${escapeHTML(
+                medico?.nome || 'Não informado'
+            )}
+                </p>
+
+                <p>
+                    <strong>Convênio:</strong>
+                    ${escapeHTML(
+                agendamento.convenio ||
+                'Particular'
+            )}
+                </p>
+            `;
+        }
+
+        if (elements.whatsappMensagem) {
+            elements.whatsappMensagem.value = mensagem;
+        }
+
+        abrirModal(
+            elements.modalWhatsApp,
+            '#whatsapp-mensagem'
+        );
+    }
+
+    function criarMensagemWhatsApp({ agendamento, medico }) {
+        return [
+            `Olá ${agendamento.paciente}! 👋`,
+            '',
+            '✅ *Agendamento confirmado*',
+            '',
+            `📅 Data: ${formatarDataCurta(agendamento.data)}`,
+            `⏰ Horário: ${agendamento.hora}`,
+            `👨‍⚕️ Médico: ${medico?.nome || 'Não informado'}`,
+            `💳 Convênio: ${agendamento.convenio || 'Particular'}`,
+            '',
+            `📍 Local: ${CONFIG.nomeClinica}`,
+            `📞 Dúvidas: ${CONFIG.telefoneClinica}`,
+            '',
+            'Agradecemos sua confiança!'
+        ].join('\n');
+    }
+
+    function enviarWhatsAppPaciente() {
+        const agendamento = state.whatsappAgendamento;
+        const mensagem =
+            elements.whatsappMensagem?.value.trim() || '';
+
+        if (!agendamento) {
+            exibirToast(
+                'Agendamento não encontrado.',
+                'error'
+            );
+
+            return;
+        }
+
+        if (!mensagem) {
+            exibirToast(
+                'Digite uma mensagem para enviar.',
+                'warning'
+            );
+
+            return;
+        }
+
+        const telefone = obterTelefonePaciente(agendamento);
+
+        if (!telefone) {
+            exibirToast(
+                'Cadastre o telefone do paciente antes de enviar a mensagem.',
+                'warning'
+            );
+
+            return;
+        }
+
+        const link = criarLinkWhatsApp(telefone, mensagem);
+
+        window.open(
+            link,
+            '_blank',
+            'noopener,noreferrer'
+        );
+
+        if (elements.whatsappLembrete?.checked) {
+            salvarLembreteWhatsApp(agendamento, mensagem);
+        }
+
+        fecharModalWhatsApp();
+
+        exibirToast(
+            'WhatsApp aberto. Revise e envie a mensagem ao paciente.',
+            'success'
+        );
+    }
+
+    function obterTelefonePaciente(agendamento) {
+        /*
+         * O campo telefone ainda não existe no formulário original.
+         * Quando ele for adicionado ao cadastro, esta função poderá
+         * usar diretamente agendamento.telefone.
+         */
+        const telefone = agendamento.telefone || '';
+
+        return normalizarTelefone(telefone);
+    }
+
+    function criarLinkWhatsApp(telefone, mensagem) {
+        return [
+            CONFIG.whatsappBaseUrl,
+            telefone,
+            `?text=${encodeURIComponent(mensagem)}`
+        ].join('');
+    }
+
+    function salvarLembreteWhatsApp(agendamento, mensagem) {
+        const lembretes = carregarDoStorage(
+            CONFIG.lembretesStorageKey,
+            []
+        );
+
+        const lembreteExistente = lembretes.some(
+            lembrete =>
+                lembrete.agendamentoId === agendamento.id
+        );
+
+        if (lembreteExistente) {
+            return;
+        }
+
+        lembretes.push({
+            agendamentoId: agendamento.id,
+            paciente: agendamento.paciente,
+            dataEnvio: calcularDataLembrete(
+                agendamento.data,
+                agendamento.hora
+            ),
+            mensagem
+        });
+
+        salvarNoStorage(
+            CONFIG.lembretesStorageKey,
+            lembretes
+        );
+    }
+
+    function calcularDataLembrete(dataConsulta, horaConsulta) {
+        const [ano, mes, dia] =
+            dataConsulta.split('-').map(Number);
+
+        const [horas, minutos] =
+            horaConsulta.split(':').map(Number);
+
+        const consulta = new Date(
+            ano,
+            mes - 1,
+            dia,
+            horas,
+            minutos
+        );
+
+        consulta.setHours(consulta.getHours() - 24);
+
+        return consulta.toISOString();
+    }
+
+    function fecharModalWhatsApp() {
+        fecharModal(elements.modalWhatsApp);
+        state.whatsappAgendamento = null;
+    }
+
+    /*
+     * =========================================================================
+     * CHAT INTERNO
+     * =========================================================================
+     */
+
+    function inicializarChat() {
+        if (!elements.janelaChat) {
+            return;
+        }
+
+        atualizarEstadoChat();
+    }
+
+    function alternarChat() {
+        const aberto =
+            elements.janelaChat?.getAttribute('aria-hidden') === 'false';
+
+        if (aberto) {
+            fecharChat();
+        } else {
+            abrirChat();
+        }
+    }
+
+    function abrirChat() {
+        if (!elements.janelaChat) {
+            return;
+        }
+
+        elements.janelaChat.setAttribute(
+            'aria-hidden',
+            'false'
+        );
+
+        elements.janelaChat.classList.add('is-open');
+        elements.btnChat?.setAttribute(
+            'aria-expanded',
+            'true'
+        );
+
+        if (elements.chatBadge) {
+            elements.chatBadge.hidden = true;
+        }
+
+        window.setTimeout(() => {
+            elements.chatInput?.focus();
+        }, 100);
+    }
+
+    function fecharChat() {
+        if (!elements.janelaChat) {
+            return;
+        }
+
+        elements.janelaChat.setAttribute(
+            'aria-hidden',
+            'true'
+        );
+
+        elements.janelaChat.classList.remove('is-open');
+        elements.btnChat?.setAttribute(
+            'aria-expanded',
+            'false'
+        );
+    }
+
+    function selecionarCanalChat(canal) {
+        if (!state.chat.mensagens[canal]) {
+            return;
+        }
+
+        state.chat.canalAtual = canal;
+        atualizarEstadoChat();
+        renderizarCanalChat();
+    }
+
+    function enviarMensagemChat() {
+        const texto = elements.chatInput?.value.trim() || '';
+
+        if (!texto) {
+            return;
+        }
+
+        const agora = new Date();
+        const canal = state.chat.canalAtual;
+
+        const mensagem = {
+            id: gerarId(),
+            texto,
+            autor: 'Você',
+            hora: agora.toLocaleTimeString(
+                'pt-BR',
+                {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }
+            ),
+            timestamp: agora.toISOString()
+        };
+
+        state.chat.mensagens[canal].push(mensagem);
+
+        salvarMensagensChat();
+        renderizarCanalChat();
+
+        elements.chatInput.value = '';
+        elements.chatInput.focus();
+    }
+
+    function renderizarCanalChat() {
+        if (!elements.chatMensagens) {
+            return;
+        }
+
+        const mensagens =
+            state.chat.mensagens[state.chat.canalAtual] || [];
+
+        elements.chatMensagens.innerHTML = mensagens
+            .map(mensagem => criarMensagemChatHTML(mensagem))
+            .join('');
+
+        elements.chatMensagens.scrollTop =
+            elements.chatMensagens.scrollHeight;
+    }
+
+    function criarMensagemChatHTML(mensagem) {
+        const enviada = mensagem.autor === 'Você';
+        const classe = enviada
+            ? 'chat-interno__msg--enviada'
+            : 'chat-interno__msg--recebida';
+
+        return `
+            <div class="chat-interno__msg ${classe}">
+                <div class="chat-interno__msg-header">
+                    <span class="chat-interno__msg-autor">
+                        ${escapeHTML(mensagem.autor)}
+                    </span>
+
+                    <span class="chat-interno__msg-hora">
+                        ${escapeHTML(mensagem.hora)}
+                    </span>
+                </div>
+
+                <p class="chat-interno__msg-texto">
+                    ${escapeHTML(mensagem.texto)}
+                </p>
+            </div>
+        `;
+    }
+
+    function atualizarEstadoChat() {
+        elements.chatLista
+            ?.querySelectorAll('.chat-interno__item')
+            .forEach(item => {
+                const ativo =
+                    item.dataset.chat === state.chat.canalAtual;
+
+                item.classList.toggle('ativo', ativo);
+            });
+    }
+
+    function salvarMensagensChat() {
+        salvarNoStorage(
+            CONFIG.chatStorageKey,
+            state.chat.mensagens
+        );
+    }
+
+    function carregarMensagensChat() {
+        const mensagens = carregarDoStorage(
+            CONFIG.chatStorageKey,
+            null
+        );
+
+        if (!mensagens || typeof mensagens !== 'object') {
+            return;
+        }
+
+        Object.keys(state.chat.mensagens).forEach(canal => {
+            if (Array.isArray(mensagens[canal])) {
+                state.chat.mensagens[canal] =
+                    mensagens[canal];
+            }
+        });
+    }
+
+    function notificarNovaMensagem() {
+        if (!elements.chatBadge) {
+            return;
+        }
+
+        const quantidade =
+            Number(elements.chatBadge.textContent) || 0;
+
+        elements.chatBadge.textContent = quantidade + 1;
+        elements.chatBadge.hidden = false;
+
+        if ('vibrate' in navigator) {
+            navigator.vibrate(200);
+        }
+    }
+
+    /*
+     * =========================================================================
+     * MODAIS E ACESSIBILIDADE
+     * =========================================================================
+     */
+
     function abrirModal(modal, seletorFoco) {
         if (!modal) {
             return;
         }
 
-        ultimoElementoFocado = document.activeElement;
+        state.ultimoElementoFocado =
+            document.activeElement;
 
         modal.classList.add('is-open');
         modal.setAttribute('aria-hidden', 'false');
-
         document.body.classList.add('modal-open');
 
         window.setTimeout(() => {
@@ -1015,7 +1614,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function fecharModalAcoes() {
         fecharModal(elements.modalAcoes);
-        agendamentoSelecionadoId = null;
+        state.agendamentoSelecionadoId = null;
+    }
+
+    function fecharModalPorElemento(modal) {
+        if (modal.id === 'modal-agendamento') {
+            fecharModalAgendamento();
+            return;
+        }
+
+        if (modal.id === 'modal-acoes') {
+            fecharModalAcoes();
+            return;
+        }
+
+        if (modal.id === 'modal-whatsapp') {
+            fecharModalWhatsApp();
+        }
     }
 
     function fecharModal(modal) {
@@ -1030,11 +1645,14 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.remove('modal-open');
         }
 
+        const elementoAnterior =
+            state.ultimoElementoFocado;
+
         if (
-            ultimoElementoFocado &&
-            typeof ultimoElementoFocado.focus === 'function'
+            elementoAnterior &&
+            typeof elementoAnterior.focus === 'function'
         ) {
-            ultimoElementoFocado.focus();
+            elementoAnterior.focus();
         }
     }
 
@@ -1042,41 +1660,50 @@ document.addEventListener('DOMContentLoaded', () => {
         const modalAberto =
             document.querySelector('.modal.is-open');
 
-        if (!modalAberto) {
-            return;
-        }
-
         if (event.key === 'Escape') {
-            event.preventDefault();
-
-            if (modalAberto.id === 'modal-acoes') {
-                fecharModalAcoes();
-            } else {
-                fecharModalAgendamento();
+            if (elements.janelaChat?.classList.contains('is-open')) {
+                fecharChat();
+                return;
             }
 
+            if (!modalAberto) {
+                return;
+            }
+
+            event.preventDefault();
+            fecharModalPorElemento(modalAberto);
             return;
         }
 
-        if (event.key === 'Tab') {
+        if (
+            event.key === 'Tab' &&
+            modalAberto
+        ) {
             manterFocoNoModal(event, modalAberto);
         }
     }
 
     function manterFocoNoModal(event, modal) {
-        const elementosFocaveis = [
+        const focaveis = [
             ...modal.querySelectorAll(
-                'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+                [
+                    'button:not([disabled])',
+                    'input:not([disabled])',
+                    'select:not([disabled])',
+                    'textarea:not([disabled])',
+                    '[tabindex]:not([tabindex="-1"])'
+                ].join(', ')
             )
-        ].filter(elemento => elemento.offsetParent !== null);
+        ].filter(elemento => {
+            return elemento.offsetParent !== null;
+        });
 
-        if (!elementosFocaveis.length) {
+        if (!focaveis.length) {
             return;
         }
 
-        const primeiro = elementosFocaveis[0];
-        const ultimo =
-            elementosFocaveis[elementosFocaveis.length - 1];
+        const primeiro = focaveis[0];
+        const ultimo = focaveis[focaveis.length - 1];
 
         if (
             event.shiftKey &&
@@ -1104,37 +1731,94 @@ document.addEventListener('DOMContentLoaded', () => {
             'aria-live',
             'polite'
         );
+
+        inicializarChat();
     }
+
+    /*
+     * =========================================================================
+     * TOAST
+     * =========================================================================
+     */
 
     function exibirToast(
         mensagem,
         tipo = 'info',
-        duracao = 3500
+        duracao = CONFIG.duracaoToast
     ) {
-        if (!elements.toastContainer) {
+        const container = elements.toastContainer;
+
+        if (!container || !mensagem?.trim()) {
             return;
+        }
+
+        const mensagemNormalizada = mensagem.trim();
+        const chave = ToastManager.criarChave(
+            mensagemNormalizada,
+            tipo
+        );
+
+        const toastExistente = ToastManager.obter(chave);
+
+        if (toastExistente) {
+            clearTimeout(toastExistente.timer);
+
+            const novoTimer = window.setTimeout(() => {
+                fecharToast(
+                    toastExistente.elemento,
+                    chave
+                );
+            }, duracao);
+
+            ToastManager.adicionar(
+                chave,
+                toastExistente.elemento,
+                novoTimer
+            );
+
+            return;
+        }
+
+        if (
+            ToastManager.ativos.size >=
+            CONFIG.limiteToasts
+        ) {
+            ToastManager.removerMaisAntigo();
         }
 
         const icones = {
             success: 'fa-circle-check',
-            warning: 'fa-triangle-exclamation',
             error: 'fa-circle-xmark',
+            warning: 'fa-triangle-exclamation',
             info: 'fa-circle-info'
+        };
+
+        const labels = {
+            success: 'Sucesso',
+            error: 'Erro',
+            warning: 'Atenção',
+            info: 'Informação'
         };
 
         const toast = document.createElement('div');
 
         toast.className = `toast toast--${escapeHTML(tipo)}`;
-        toast.setAttribute('role', 'status');
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute(
+            'aria-label',
+            `${labels[tipo] || 'Notificação'}: ${mensagemNormalizada}`
+        );
 
         toast.innerHTML = `
-            <i
-                class="fa-solid ${icones[tipo] || icones.info}"
-                aria-hidden="true"
-            ></i>
+            <div class="toast__icon">
+                <i
+                    class="fa-solid ${icones[tipo] || icones.info}"
+                    aria-hidden="true"
+                ></i>
+            </div>
 
-            <span>
-                ${escapeHTML(mensagem)}
+            <span class="toast__content">
+                ${escapeHTML(mensagemNormalizada)}
             </span>
 
             <button
@@ -1142,53 +1826,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 class="toast__close"
                 aria-label="Fechar notificação"
             >
-                <i class="fa-solid fa-xmark"
-                    aria-hidden="true"></i>
+                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
             </button>
         `;
 
-        elements.toastContainer.appendChild(toast);
+        container.appendChild(toast);
 
-        const remover = () => {
-            if (toast.classList.contains('is-leaving')) {
-                return;
-            }
+        const timer = window.setTimeout(() => {
+            fecharToast(toast, chave);
+        }, duracao);
 
-            toast.classList.add('is-leaving');
-
-            window.setTimeout(() => {
-                toast.remove();
-            }, 250);
-        };
+        ToastManager.adicionar(chave, toast, timer);
 
         toast
             .querySelector('.toast__close')
-            .addEventListener('click', remover);
-
-        window.setTimeout(() => {
-            if (document.body.contains(toast)) {
-                remover();
-            }
-        }, duracao);
+            ?.addEventListener('click', () => {
+                fecharToast(toast, chave);
+            });
     }
 
+    function fecharToast(toast, chave) {
+        if (!toast || toast.classList.contains('is-leaving')) {
+            return;
+        }
+
+        toast.classList.add('is-leaving');
+        ToastManager.remover(chave);
+
+        window.setTimeout(() => {
+            toast.remove();
+        }, 350);
+    }
+
+    /*
+     * =========================================================================
+     * PERSISTÊNCIA
+     * =========================================================================
+     */
+
     function carregarAgendamentos() {
-        try {
-            const dadosSalvos =
-                localStorage.getItem(STORAGE_KEY);
+        const agendamentos = carregarDoStorage(
+            CONFIG.storageKey,
+            null
+        );
 
-            if (dadosSalvos) {
-                const dados = JSON.parse(dadosSalvos);
-
-                if (Array.isArray(dados)) {
-                    return dados;
-                }
-            }
-        } catch (erro) {
-            console.warn(
-                'Não foi possível carregar os agendamentos:',
-                erro
-            );
+        if (Array.isArray(agendamentos)) {
+            return agendamentos;
         }
 
         const dadosIniciais =
@@ -1200,18 +1883,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function persistirAgendamentos() {
-        salvarAgendamentos(agendamentos);
+        salvarAgendamentos(state.agendamentos);
     }
 
     function salvarAgendamentos(dados) {
+        salvarNoStorage(CONFIG.storageKey, dados);
+    }
+
+    function carregarDoStorage(chave, valorPadrao) {
+        try {
+            const valor = localStorage.getItem(chave);
+
+            return valor
+                ? JSON.parse(valor)
+                : valorPadrao;
+        } catch (erro) {
+            console.warn(
+                `Não foi possível carregar ${chave}.`,
+                erro
+            );
+
+            return valorPadrao;
+        }
+    }
+
+    function salvarNoStorage(chave, valor) {
         try {
             localStorage.setItem(
-                STORAGE_KEY,
-                JSON.stringify(dados)
+                chave,
+                JSON.stringify(valor)
             );
         } catch (erro) {
             console.warn(
-                'Não foi possível salvar os agendamentos:',
+                `Não foi possível salvar ${chave}.`,
                 erro
             );
 
@@ -1223,8 +1927,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function criarAgendamentosDemonstracao() {
-        const hoje =
-            formatarDataISO(new Date());
+        const hoje = formatarDataISO(new Date());
 
         return [
             {
@@ -1252,7 +1955,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 tipo: 'online',
                 convenio: 'particular',
                 status: 'agendado',
-                observacoes: 'Paciente solicitou teleconsulta.',
+                observacoes:
+                    'Paciente solicitou teleconsulta.',
                 lembrete: true,
                 criadoEm: new Date().toISOString()
             },
@@ -1273,6 +1977,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         ];
     }
+
+    /*
+     * =========================================================================
+     * VALIDAÇÃO E UTILITÁRIOS
+     * =========================================================================
+     */
 
     function marcarErro(campo, mensagem) {
         if (!campo) {
@@ -1295,7 +2005,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function obterAgendamentoPorId(id) {
-        return agendamentos.find(
+        return state.agendamentos.find(
             agendamento => agendamento.id === id
         );
     }
@@ -1322,8 +2032,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function formatarDataISO(data) {
         const ano = data.getFullYear();
-        const mes = String(data.getMonth() + 1).padStart(2, '0');
-        const dia = String(data.getDate()).padStart(2, '0');
+        const mes = String(
+            data.getMonth() + 1
+        ).padStart(2, '0');
+        const dia = String(
+            data.getDate()
+        ).padStart(2, '0');
 
         return `${ano}-${mes}-${dia}`;
     }
@@ -1335,13 +2049,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return new Date();
         }
 
-        const [ano, mes, dia] = partes.map(Number);
+        const [ano, mes, dia] =
+            partes.map(Number);
 
         return new Date(ano, mes - 1, dia);
     }
 
     function formatarDataCurta(dataString) {
-        return new Intl.DateTimeFormat('pt-BR').format(
+        return new Intl.DateTimeFormat(
+            'pt-BR'
+        ).format(
             dataStringParaDate(dataString)
         );
     }
@@ -1356,12 +2073,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (
             Number.isNaN(horas) ||
-            Number.isNaN(minutos)
+            Number.isNaN(minutos) ||
+            horas < 0 ||
+            horas > 23 ||
+            minutos < 0 ||
+            minutos > 59
         ) {
             return Number.NaN;
         }
 
-        return (horas * 60) + minutos;
+        return horas * 60 + minutos;
     }
 
     function minutosParaHora(minutos) {
@@ -1374,12 +2095,18 @@ document.addEventListener('DOMContentLoaded', () => {
         ].join(':');
     }
 
+    function normalizarTelefone(telefone) {
+        return String(telefone || '')
+            .replace(/\D/g, '');
+    }
+
     function capitalizar(texto) {
         if (!texto) {
             return '';
         }
 
-        return texto.charAt(0).toUpperCase() + texto.slice(1);
+        return texto.charAt(0).toUpperCase() +
+            texto.slice(1);
     }
 
     function escapeHTML(valor) {

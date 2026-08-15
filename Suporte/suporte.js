@@ -120,7 +120,11 @@
       showToast('Solicitação enviada com sucesso.');
     }
   });
-
+  // Exemplo de validação restritiva antiga
+  if (horaInput < "08:00" || horaInput > "17:30") {
+    mostrarToast("Horário fora do funcionamento da agenda.");
+    return;
+  }
   $('#supportForm')?.addEventListener('reset', () => $$('.form-field').forEach(field => field.classList.remove('has-error')));
 
   function showToast(message) {

@@ -4,14 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <meta name="description" content="Agenda médica do sistema G4Med">
+    <meta name="description" content="Agenda médica do sistema G4Med - Gerenciamento de consultas e exames">
+    <meta name="theme-color" content="#0D9488">
 
     <title>G4Med - Agenda Médica</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
     <script>
         tailwind.config = {
             theme: {
@@ -49,7 +48,6 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
 
@@ -61,103 +59,62 @@
 </head>
 
 <body>
-
     <!-- =====================================================
          CABEÇALHO
          ===================================================== -->
-
-    <header class="agenda__header">
-
+    <header class="agenda__header" role="banner">
         <div class="agenda__header-left">
-
-            <a href="../Menu-Principal.html" class="agenda__btn agenda__btn--voltar">
-
+            <!-- Botão Voltar -->
+            <a href="../Menu-Principal.html" class="agenda__btn agenda__btn--voltar"
+                aria-label="Voltar para o menu principal">
                 <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-
                 <span>Voltar</span>
             </a>
 
-            <div class="agenda__nav-data">
-
-                <button type="button" id="btn-prev" class="agenda__btn agenda__btn--icon"
-                    aria-label="Visualizar dia anterior">
-
+            <!-- Navegação de Data -->
+            <nav class="agenda__nav-data" aria-label="Navegação por data">
+                <button type="button" id="btn-prev" class="agenda__btn agenda__btn--icon" aria-label="Dia anterior">
                     <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
                 </button>
 
                 <div class="agenda__data-display" aria-live="polite" aria-atomic="true">
-
                     <i class="fa-regular fa-calendar" aria-hidden="true"></i>
-
                     <div class="agenda__data-texto">
-                        <strong id="current-date-label">
-                            Carregando...
-                        </strong>
-
+                        <strong id="current-date-label">Carregando...</strong>
                         <span id="current-weekday"></span>
                     </div>
                 </div>
 
-                <button type="button" id="btn-next" class="agenda__btn agenda__btn--icon"
-                    aria-label="Visualizar próximo dia">
-
+                <button type="button" id="btn-next" class="agenda__btn agenda__btn--icon" aria-label="Próximo dia">
                     <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
                 </button>
 
                 <button type="button" id="btn-today" class="agenda__btn agenda__btn--hoje">
-
                     <i class="fa-regular fa-calendar" aria-hidden="true"></i>
-
                     <span>Hoje</span>
                 </button>
-            </div>
+            </nav>
         </div>
 
         <div class="agenda__header-right">
-
-            <div class="agenda__filtros">
-
+            <!-- Filtros -->
+            <div class="agenda__filtros" role="group" aria-label="Filtros da agenda">
                 <div class="agenda__select-wrap">
-                    <label for="filter-medico" class="sr-only">
-
-                        Filtrar por médico
-                    </label>
-
+                    <label for="filter-medico" class="sr-only">Filtrar por médico</label>
                     <select id="filter-medico" class="agenda__select" aria-label="Filtrar agenda por médico">
-
-                        <option value="">
-                            Todos os Médicos
-                        </option>
-
-                        <option value="1">
-                            Dr. Carlos Silva
-                        </option>
-
-                        <option value="2">
-                            Dra. Ana Paula
-                        </option>
-
-                        <option value="3">
-                            Dr. Roberto Lima
-                        </option>
+                        <option value="">Todos os Médicos</option>
+                        <option value="1">Dr. Carlos Silva</option>
+                        <option value="2">Dra. Ana Paula</option>
+                        <option value="3">Dr. Roberto Lima</option>
                     </select>
-
                     <i class="agenda__select-arrow fa-solid fa-chevron-down" aria-hidden="true"></i>
                 </div>
 
                 <div class="agenda__select-wrap">
-                    <label for="filter-especialidade" class="sr-only">
-
-                        Filtrar por especialidade
-                    </label>
-
+                    <label for="filter-especialidade" class="sr-only">Filtrar por especialidade</label>
                     <select id="filter-especialidade" class="agenda__select"
                         aria-label="Filtrar agenda por especialidade">
-
-                        <option value="">
-                            Todas Especialidades
-                        </option>
-
+                        <option value="">Todas Especialidades</option>
                         <optgroup label="Clínicas e Consultas">
                             <option value="alergia">Alergologia e Imunologia</option>
                             <option value="cardio">Cardiologia</option>
@@ -177,7 +134,6 @@
                             <option value="psiquiatria">Psiquiatria</option>
                             <option value="reumato">Reumatologia</option>
                         </optgroup>
-
                         <optgroup label="Cirurgias">
                             <option value="cirurgia-cabeca">Cirurgia de Cabeça e Pescoço</option>
                             <option value="cirurgia-cardio">Cirurgia Cardiovascular</option>
@@ -192,7 +148,6 @@
                             <option value="otorrino">Otorrinolaringologia</option>
                             <option value="urologia">Urologia</option>
                         </optgroup>
-
                         <optgroup label="Diagnóstico e Outros">
                             <option value="acupuntura">Acupuntura</option>
                             <option value="anestesia">Anestesiologia</option>
@@ -209,110 +164,74 @@
                             <option value="radiologia">Radiologia e Diagnóstico por Imagem</option>
                         </optgroup>
                     </select>
-
                     <i class="agenda__select-arrow fa-solid fa-chevron-down" aria-hidden="true"></i>
                 </div>
             </div>
 
+            <!-- Botão Novo Agendamento -->
             <button type="button" id="btn-novo-agendamento" class="agenda__btn agenda__btn--primary">
-
                 <i class="fa-solid fa-plus" aria-hidden="true"></i>
-
                 <span>Novo Agendamento</span>
             </button>
         </div>
     </header>
 
     <!-- =====================================================
-         LEGENDA
+         LEGENDA DE STATUS
          ===================================================== -->
-
     <section class="agenda__legend" aria-label="Legenda dos status dos agendamentos">
-
         <span class="agenda__legend-item">
-            <span class="agenda__dot agenda__dot--agendado"></span>
+            <span class="agenda__dot agenda__dot--agendado" aria-hidden="true"></span>
             Agendado
         </span>
-
         <span class="agenda__legend-item">
-            <span class="agenda__dot agenda__dot--confirmado"></span>
+            <span class="agenda__dot agenda__dot--confirmado" aria-hidden="true"></span>
             Confirmado
         </span>
-
         <span class="agenda__legend-item">
-            <span class="agenda__dot agenda__dot--espera"></span>
+            <span class="agenda__dot agenda__dot--espera" aria-hidden="true"></span>
             Em Espera
         </span>
-
         <span class="agenda__legend-item">
-            <span class="agenda__dot agenda__dot--atendido"></span>
+            <span class="agenda__dot agenda__dot--atendido" aria-hidden="true"></span>
             Atendido
         </span>
-
         <span class="agenda__legend-item">
-            <span class="agenda__dot agenda__dot--cancelado"></span>
+            <span class="agenda__dot agenda__dot--cancelado" aria-hidden="true"></span>
             Cancelado
         </span>
-
         <span class="agenda__legend-item">
-            <span class="agenda__dot agenda__dot--nao-compareceu"></span>
+            <span class="agenda__dot agenda__dot--nao-compareceu" aria-hidden="true"></span>
             Não Compareceu
         </span>
     </section>
 
     <!-- =====================================================
-         CALENDÁRIO
+         CONTEÚDO PRINCIPAL - CALENDÁRIO
          ===================================================== -->
-
-    <main>
-
+    <main role="main" aria-label="Agenda médica">
         <section class="agenda__calendar" aria-label="Grade de agendamentos médicos">
-
-            <div id="agenda-header" class="agenda__calendar-header" aria-label="Profissionais da agenda">
-
-                <div class="agenda__col-time">
-                    Horário
+            <!-- Cabeçalho do Calendário (Médicos) -->
+            <div id="agenda-header" class="agenda__calendar-header" role="rowgroup"
+                aria-label="Profissionais da agenda">
+                <div class="agenda__col-time" role="columnheader">Horário</div>
+                <div class="agenda__col-prof" data-medico="1" role="columnheader">
+                    <span class="agenda__prof-nome">Dr. Carlos Silva</span>
+                    <span class="agenda__prof-esp">Cardiologia</span>
                 </div>
-
-                <div class="agenda__col-prof" data-medico="1">
-
-                    <span class="agenda__prof-nome">
-                        Dr. Carlos Silva
-                    </span>
-
-                    <span class="agenda__prof-esp">
-                        Cardiologia
-                    </span>
+                <div class="agenda__col-prof" data-medico="2" role="columnheader">
+                    <span class="agenda__prof-nome">Dra. Ana Paula</span>
+                    <span class="agenda__prof-esp">Dermatologia</span>
                 </div>
-
-                <div class="agenda__col-prof" data-medico="2">
-
-                    <span class="agenda__prof-nome">
-                        Dra. Ana Paula
-                    </span>
-
-                    <span class="agenda__prof-esp">
-                        Dermatologia
-                    </span>
-                </div>
-
-                <div class="agenda__col-prof" data-medico="3">
-
-                    <span class="agenda__prof-nome">
-                        Dr. Roberto Lima
-                    </span>
-
-                    <span class="agenda__prof-esp">
-                        Ortopedia e Traumatologia
-                    </span>
+                <div class="agenda__col-prof" data-medico="3" role="columnheader">
+                    <span class="agenda__prof-nome">Dr. Roberto Lima</span>
+                    <span class="agenda__prof-esp">Ortopedia e Traumatologia</span>
                 </div>
             </div>
 
-            <div id="agenda-body" class="agenda__calendar-body" aria-live="polite" aria-atomic="false">
-
-                <div class="agenda__empty">
-                    Carregando agenda...
-                </div>
+            <!-- Corpo do Calendário (Slots de Horário) -->
+            <div id="agenda-body" class="agenda__calendar-body" role="rowgroup" aria-live="polite" aria-atomic="false">
+                <div class="agenda__empty">Carregando agenda...</div>
             </div>
         </section>
     </main>
@@ -320,45 +239,34 @@
     <!-- =====================================================
          MODAL: NOVO OU EDITAR AGENDAMENTO
          ===================================================== -->
-
-    <div id="modal-agendamento" class="modal" aria-hidden="true">
-
+    <div id="modal-agendamento" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo"
+        aria-hidden="true">
         <div class="modal__overlay" aria-hidden="true"></div>
-
-        <div class="modal__content" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
-
+        <div class="modal__content">
             <header class="modal__header">
-
-                <h2 id="modal-titulo">
+                <h2 id="modal-titulo" class="text-lg font-semibold text-primary-800">
                     <i class="fa-solid fa-calendar-plus" aria-hidden="true"></i>
-
                     <span>Novo Agendamento</span>
                 </h2>
-
-                <button type="button" id="modal-close" class="modal__close" aria-label="Fechar modal de agendamento">
-
+                <button type="button" id="modal-close" class="modal__close" aria-label="Fechar">
                     <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </header>
 
             <form id="form-agendamento" class="modal__form" novalidate>
-
                 <input type="hidden" id="agendamento-id">
 
+                <!-- Linha 1: Paciente e Médico -->
                 <div class="modal__row">
-
                     <div class="modal__field modal__field--2">
                         <label for="paciente-nome" class="modal__label">
-
-                            Paciente *
+                            Paciente <span aria-hidden="true">*</span>
+                            <span class="sr-only">(obrigatório)</span>
                         </label>
-
                         <div class="modal__input-group">
                             <input type="text" id="paciente-nome" class="modal__input" required autocomplete="off"
-                                placeholder="Buscar por nome ou CPF">
-
+                                placeholder="Buscar por nome ou CPF" aria-required="true">
                             <button type="button" class="modal__input-btn" aria-label="Buscar paciente">
-
                                 <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
                             </button>
                         </div>
@@ -366,60 +274,40 @@
 
                     <div class="modal__field">
                         <label for="agendamento-medico" class="modal__label">
-
-                            Médico *
+                            Médico <span aria-hidden="true">*</span>
+                            <span class="sr-only">(obrigatório)</span>
                         </label>
-
-                        <select id="agendamento-medico" class="modal__input" required>
-
-                            <option value="">
-                                Selecione
-                            </option>
-
-                            <option value="1">
-                                Dr. Carlos Silva
-                            </option>
-
-                            <option value="2">
-                                Dra. Ana Paula
-                            </option>
-
-                            <option value="3">
-                                Dr. Roberto Lima
-                            </option>
+                        <select id="agendamento-medico" class="modal__input" required aria-required="true">
+                            <option value="">Selecione</option>
+                            <option value="1">Dr. Carlos Silva</option>
+                            <option value="2">Dra. Ana Paula</option>
+                            <option value="3">Dr. Roberto Lima</option>
                         </select>
                     </div>
                 </div>
 
+                <!-- Linha 2: Data, Horário e Duração -->
                 <div class="modal__row">
-
                     <div class="modal__field">
                         <label for="agendamento-data" class="modal__label">
-
-                            Data *
+                            Data <span aria-hidden="true">*</span>
+                            <span class="sr-only">(obrigatório)</span>
                         </label>
-
-                        <input type="date" id="agendamento-data" class="modal__input" required>
+                        <input type="date" id="agendamento-data" class="modal__input" required aria-required="true">
                     </div>
 
                     <div class="modal__field">
                         <label for="agendamento-hora" class="modal__label">
-
-                            Horário da Chegada *
+                            Horário da Chegada <span aria-hidden="true">*</span>
+                            <span class="sr-only">(obrigatório)</span>
                         </label>
-
-                        <input type="time" id="agendamento-hora" class="modal__input" min="08:00" max="17:30" step="300"
-                            required>
+                        <input type="time" id="agendamento-hora" class="modal__input" min="00:00" max="23:59" step="300"
+                            required aria-required="true">
                     </div>
 
                     <div class="modal__field">
-                        <label for="agendamento-duracao" class="modal__label">
-
-                            Duração
-                        </label>
-
+                        <label for="agendamento-duracao" class="modal__label">Duração</label>
                         <select id="agendamento-duracao" class="modal__input">
-
                             <option value="15">15 min</option>
                             <option value="30" selected>30 min</option>
                             <option value="45">45 min</option>
@@ -429,42 +317,24 @@
                     </div>
                 </div>
 
+                <!-- Linha 3: Tipo, Convênio e Status -->
                 <div class="modal__row">
-
                     <div class="modal__field">
                         <label for="agendamento-tipo" class="modal__label">
-
-                            Tipo de Atendimento *
+                            Tipo de Atendimento <span aria-hidden="true">*</span>
+                            <span class="sr-only">(obrigatório)</span>
                         </label>
-
-                        <select id="agendamento-tipo" class="modal__input" required>
-
-                            <option value="presencial">
-                                Presencial
-                            </option>
-
-                            <option value="online">
-                                Online — Teleconsulta
-                            </option>
-
-                            <option value="retorno">
-                                Retorno
-                            </option>
-
-                            <option value="procedimento">
-                                Procedimento
-                            </option>
+                        <select id="agendamento-tipo" class="modal__input" required aria-required="true">
+                            <option value="presencial">Presencial</option>
+                            <option value="online">Online — Teleconsulta</option>
+                            <option value="retorno">Retorno</option>
+                            <option value="procedimento">Procedimento</option>
                         </select>
                     </div>
 
                     <div class="modal__field">
-                        <label for="agendamento-convenio" class="modal__label">
-
-                            Convênio
-                        </label>
-
+                        <label for="agendamento-convenio" class="modal__label">Convênio</label>
                         <select id="agendamento-convenio" class="modal__input">
-
                             <option value="particular">Particular</option>
                             <option value="unimed">Unimed</option>
                             <option value="sulamerica">SulAmérica</option>
@@ -482,13 +352,8 @@
                     </div>
 
                     <div class="modal__field">
-                        <label for="agendamento-status" class="modal__label">
-
-                            Status
-                        </label>
-
+                        <label for="agendamento-status" class="modal__label">Status</label>
                         <select id="agendamento-status" class="modal__input">
-
                             <option value="agendado" selected>Agendado</option>
                             <option value="confirmado">Confirmado</option>
                             <option value="espera">Em Espera</option>
@@ -499,43 +364,30 @@
                     </div>
                 </div>
 
+                <!-- Linha 4: Observações -->
                 <div class="modal__row">
-
                     <div class="modal__field modal__field--full">
-                        <label for="agendamento-obs" class="modal__label">
-
-                            Observações
-                        </label>
-
+                        <label for="agendamento-obs" class="modal__label">Observações</label>
                         <textarea id="agendamento-obs" class="modal__input modal__input--area" rows="4" maxlength="1000"
-                            placeholder="Informações adicionais..."></textarea>
+                            placeholder="Informações adicionais sobre o agendamento..."></textarea>
                     </div>
                 </div>
 
+                <!-- Linha 5: Checkbox de Lembrete -->
                 <div class="modal__row modal__row--checkbox">
-
                     <label class="modal__checkbox" for="agendamento-lembrete">
-
                         <input type="checkbox" id="agendamento-lembrete" checked>
-
-                        <span>
-                            Enviar lembrete automático por WhatsApp/SMS
-                        </span>
+                        <span>Enviar lembrete automático por WhatsApp/SMS</span>
                     </label>
                 </div>
             </form>
 
             <footer class="modal__footer">
-
                 <button type="button" id="btn-cancelar" class="agenda__btn agenda__btn--secondary">
-
                     Cancelar
                 </button>
-
                 <button type="submit" form="form-agendamento" id="btn-gravar" class="agenda__btn agenda__btn--primary">
-
                     <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
-
                     <span>Gravar</span>
                 </button>
             </footer>
@@ -545,93 +397,67 @@
     <!-- =====================================================
          MODAL: AÇÕES DO AGENDAMENTO
          ===================================================== -->
-
-    <div id="modal-acoes" class="modal modal--sm" aria-hidden="true">
-
+    <div id="modal-acoes" class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="modal-acoes-titulo"
+        aria-hidden="true">
         <div class="modal__overlay" aria-hidden="true"></div>
-
-        <div class="modal__content" role="dialog" aria-modal="true" aria-labelledby="modal-acoes-titulo">
-
+        <div class="modal__content">
             <header class="modal__header">
-
-                <h2 id="modal-acoes-titulo">
-                    Ações do Agendamento
-                </h2>
-
-                <button type="button" id="modal-acoes-close" class="modal__close"
-                    aria-label="Fechar ações do agendamento">
-
+                <h2 id="modal-acoes-titulo" class="text-lg font-semibold">Ações do Agendamento</h2>
+                <button type="button" id="modal-acoes-close" class="modal__close" aria-label="Fechar">
                     <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </header>
 
             <div class="modal__body">
-
-                <div id="agendamento-detalhes" class="modal__details" aria-live="polite">
+                <!-- Detalhes do Agendamento -->
+                <div id="agendamento-detalhes" class="modal__details" role="region" aria-live="polite"
+                    aria-atomic="true">
                 </div>
 
+                <!-- Grid de Ações -->
                 <nav class="modal__acoes" aria-label="Ações disponíveis para o agendamento">
-
                     <button type="button" data-acao="confirmar" class="modal__acao modal__acao--confirmar">
-
                         <i class="fa-solid fa-check" aria-hidden="true"></i>
-
                         <span>Confirmar</span>
                     </button>
 
                     <button type="button" data-acao="espera" class="modal__acao modal__acao--espera">
-
                         <i class="fa-solid fa-hourglass-start" aria-hidden="true"></i>
-
                         <span>Em Espera</span>
                     </button>
 
                     <button type="button" data-acao="atender" class="modal__acao modal__acao--atender">
-
                         <i class="fa-solid fa-stethoscope" aria-hidden="true"></i>
-
                         <span>Atender</span>
                     </button>
 
                     <button type="button" data-acao="teleconsulta" class="modal__acao modal__acao--teleconsulta">
-
                         <i class="fa-solid fa-video" aria-hidden="true"></i>
-
                         <span>Teleconsulta</span>
                     </button>
 
                     <button type="button" data-acao="prontuario" class="modal__acao modal__acao--prontuario">
-
                         <i class="fa-solid fa-file-medical" aria-hidden="true"></i>
-
                         <span>Prontuário</span>
                     </button>
 
                     <button type="button" data-acao="financeiro" class="modal__acao modal__acao--financeiro">
-
                         <i class="fa-solid fa-dollar-sign" aria-hidden="true"></i>
-
                         <span>Financeiro</span>
                     </button>
 
                     <button type="button" data-acao="editar" class="modal__acao modal__acao--editar">
-
                         <i class="fa-solid fa-pen" aria-hidden="true"></i>
-
                         <span>Editar</span>
                     </button>
 
                     <button type="button" data-acao="cancelar" class="modal__acao modal__acao--cancelar">
-
                         <i class="fa-solid fa-ban" aria-hidden="true"></i>
-
                         <span>Cancelar</span>
                     </button>
 
                     <button type="button" data-acao="excluir" class="modal__acao modal__acao--excluir">
-
                         <i class="fa-solid fa-trash" aria-hidden="true"></i>
-
                         <span>Excluir Agendamento</span>
                     </button>
                 </nav>
@@ -639,8 +465,127 @@
         </div>
     </div>
 
-    <!-- Toasts -->
-    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true">
+    <!-- =====================================================
+         MODAL: ENVIO DE MENSAGEM WHATSAPP
+         ===================================================== -->
+    <div id="modal-whatsapp" class="modal modal--sm" role="dialog" aria-modal="true"
+        aria-labelledby="modal-whatsapp-titulo" aria-hidden="true">
+        <div class="modal__overlay" aria-hidden="true"></div>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2 id="modal-whatsapp-titulo" class="text-lg font-semibold text-green-600">
+                    <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+                    <span>Enviar Mensagem ao Paciente</span>
+                </h2>
+                <button type="button" id="modal-whatsapp-close" class="modal__close" aria-label="Fechar">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </header>
+
+            <div class="modal__body">
+                <div id="whatsapp-preview" class="modal__details" role="region">
+                    <!-- Preenchido dinamicamente via JS -->
+                </div>
+
+                <div class="modal__field modal__field--full">
+                    <label for="whatsapp-mensagem" class="modal__label">Mensagem Personalizada</label>
+                    <textarea id="whatsapp-mensagem" class="modal__input modal__input--area" rows="6"
+                        maxlength="500"></textarea>
+                </div>
+
+                <div class="modal__row modal__row--checkbox">
+                    <label class="modal__checkbox" for="whatsapp-lembrete">
+                        <input type="checkbox" id="whatsapp-lembrete" checked>
+                        <span>Incluir lembrete 24h antes</span>
+                    </label>
+                </div>
+            </div>
+
+            <footer class="modal__footer">
+                <button type="button" id="btn-whatsapp-cancelar" class="agenda__btn agenda__btn--secondary">
+                    Cancelar
+                </button>
+                <button type="button" id="btn-whatsapp-enviar" class="agenda__btn agenda__btn--primary"
+                    style="background: #25D366; border-color: #25D366;">
+                    <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+                    <span>Enviar via WhatsApp</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         CHAT INTERNO
+         ===================================================== -->
+    <button type="button" id="btn-chat-interno" class="chat-interno__btn" aria-label="Abrir chat interno"
+        aria-expanded="false">
+        <i class="fa-solid fa-comments" aria-hidden="true"></i>
+        <span class="chat-interno__badge" id="chat-badge" hidden>0</span>
+    </button>
+
+    <div id="janela-chat" class="chat-interno__janela" role="dialog" aria-modal="true" aria-labelledby="chat-titulo"
+        aria-hidden="true">
+        <header class="chat-interno__header">
+            <h3 id="chat-titulo" class="chat-interno__titulo">
+                <i class="fa-solid fa-building-medical" aria-hidden="true"></i>
+                Chat da Equipe
+            </h3>
+            <button type="button" id="chat-fechar" class="chat-interno__close" aria-label="Fechar chat">
+                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+            </button>
+        </header>
+
+        <div class="chat-interno__body">
+            <!-- Lista de Conversas -->
+            <div class="chat-interno__lista" id="chat-lista">
+                <div class="chat-interno__item ativo" data-chat="geral">
+                    <div class="chat-interno__item-info">
+                        <span class="chat-interno__item-nome">🏥 Geral</span>
+                        <span class="chat-interno__item-msg">Sala principal da equipe</span>
+                    </div>
+                </div>
+                <div class="chat-interno__item" data-chat="recepcao">
+                    <div class="chat-interno__item-info">
+                        <span class="chat-interno__item-nome">📋 Recepção</span>
+                        <span class="chat-interno__item-msg">Atendimento aos pacientes</span>
+                    </div>
+                </div>
+                <div class="chat-interno__item" data-chat="medicos">
+                    <div class="chat-interno__item-info">
+                        <span class="chat-interno__item-nome">👨‍⚕️ Médicos</span>
+                        <span class="chat-interno__item-msg">Comunicação clínica</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Área de Mensagens -->
+            <div class="chat-interno__mensagens" id="chat-mensagens" role="log" aria-live="polite">
+                <div class="chat-interno__msg chat-interno__msg--recebida">
+                    <div class="chat-interno__msg-header">
+                        <span class="chat-interno__msg-autor">Recepção</span>
+                        <span class="chat-interno__msg-hora">14:30</span>
+                    </div>
+                    <p class="chat-interno__msg-texto">Bom dia! Paciente João Silva chegou para consulta às 15h.</p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="chat-interno__footer">
+            <div class="chat-interno__input-wrap">
+                <input type="text" id="chat-input" class="chat-interno__input" placeholder="Digite sua mensagem..."
+                    aria-label="Mensagem">
+                <button type="button" id="chat-enviar" class="chat-interno__enviar" aria-label="Enviar mensagem">
+                    <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- =====================================================
+         CONTAINER DE TOASTS (NOTIFICAÇÕES)
+         ===================================================== -->
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true" role="status"
+        aria-label="Notificações">
     </div>
 
     <!-- JavaScript externo -->
