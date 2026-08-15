@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G4Med - Gestão Inteligente em Saúde</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-blue: #00aaff;
+            --dark-bg: #051020;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --text-color: #ffffff;
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            color: var(--text-color);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+        }
+
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1587854692152-cbe660dbde88?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.3);
+            z-index: -2;
+        }
+
+        .bg-overlay::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(5, 16, 32, 0.9) 0%, rgba(0, 170, 255, 0.3) 100%);
+            z-index: -1;
+        }
+
+        .main-container {
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 40px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: particleDrift 100s linear infinite;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        @keyframes particleDrift {
+            from {
+                transform: translate(0, 0);
+            }
+
+            to {
+                transform: translate(100px, 100px);
+            }
+        }
+
+        .hero-header {
+            text-align: center;
+        }
+
+        .hero-header h1 {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-header .subtitle {
+            font-size: 1.2em;
+            color: var(--primary-blue);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+
+        .carousel-area {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 450px;
+            perspective: 1000px;
+            margin: 20px 0;
+        }
+
+        .carousel-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .carousel-card {
+            width: 220px;
+            height: 280px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(5px);
+            border-radius: 15px;
+            overflow: hidden;
+            position: absolute;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.3;
+            filter: blur(3px) grayscale(50%);
+            z-index: 1;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .carousel-card:hover {
+            opacity: 0.6;
+            filter: blur(2px) grayscale(30%);
+        }
+
+        .carousel-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .carousel-card .card-title-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: white;
+        }
+
+        /* Cards laterais */
+        .carousel-card[data-index="0"] {
+            transform: translateX(-110%) scale(0.85) rotateY(15deg);
+            z-index: 2;
+        }
+
+        .carousel-card[data-index="1"] {
+            transform: translateX(-55%) scale(0.9) rotateY(10deg);
+            z-index: 3;
+        }
+
+        /* Card central */
+        .carousel-card[data-index="2"] {
+            width: 380px;
+            height: 360px;
+            opacity: 1;
+            filter: blur(0px) grayscale(0%);
+            transform: translateX(0) scale(1) rotateY(0deg);
+            z-index: 10;
+            border-color: var(--primary-blue);
+            box-shadow: 0 15px 40px rgba(0, 170, 255, 0.3);
+            cursor: default;
+        }
+
+        .carousel-card[data-index="3"] {
+            transform: translateX(55%) scale(0.9) rotateY(-10deg);
+            z-index: 3;
+        }
+
+        .carousel-card[data-index="4"] {
+            transform: translateX(110%) scale(0.85) rotateY(-15deg);
+            z-index: 2;
+        }
+
+        .central-card-content {
+            display: none;
+            padding: 40px;
+            text-align: left;
+            background: transparent;
+            height: 100%;
+            position: relative;
+            color: #fff;
+        }
+
+        .carousel-card[data-index="2"] .img-bg,
+        .carousel-card[data-index="2"] .card-title-bottom {
+            display: none;
+        }
+
+        .carousel-card[data-index="2"] .central-card-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .tag {
+            background: var(--primary-blue);
+            color: var(--dark-bg);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.7em;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+            display: inline-block;
+            align-self: flex-start;
+        }
+
+        .central-h2 {
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .central-p {
+            font-size: 0.95em;
+            font-weight: 300;
+            line-height: 1.6;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .dna-icon {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 150px;
+            color: var(--primary-blue);
+            opacity: 0.1;
+            transform: rotate(-15deg);
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            color: white;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.8em;
+            z-index: 20;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-btn.prev {
+            left: 50px;
+        }
+
+        .nav-btn.next {
+            right: 50px;
+        }
+
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .dot.active {
+            background: var(--primary-blue);
+            width: 30px;
+            border-radius: 6px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                height: 90vh;
+            }
+
+            .hero-header h1 {
+                font-size: 2.5em;
+            }
+
+            .nav-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.4em;
+            }
+
+            .nav-btn.prev {
+                left: 20px;
+            }
+
+            .nav-btn.next {
+                right: 20px;
+            }
+
+            .carousel-card[data-index="0"],
+            .carousel-card[data-index="4"] {
+                display: none;
+            }
+
+            .carousel-card[data-index="1"] {
+                transform: translateX(-60%) scale(0.9) rotateY(10deg);
+            }
+
+            .carousel-card[data-index="3"] {
+                transform: translateX(60%) scale(0.9) rotateY(-10deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 20px 0;
+            }
+
+            .hero-header h1 {
+                font-size: 2em;
+            }
+
+            .hero-header .subtitle {
+                font-size: 0.9em;
+            }
+
+            .carousel-area {
+                height: 350px;
+            }
+
+            .carousel-card {
+                width: 150px;
+                height: 200px;
+            }
+
+            .carousel-card[data-index="2"] {
+                width: 280px;
+                height: 280px;
+            }
+
+            .central-h2 {
+                font-size: 1.5em;
+            }
+
+            .central-p {
+                font-size: 0.8em;
+            }
+
+            .dna-icon {
+                font-size: 100px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-overlay"></div>
+
+    <div class="main-container">
+        <header class="hero-header">
+            <h1>Bem-vindo ao G4Med</h1>
+            <div class="subtitle">
+                <i class="fas fa-heartbeat"></i>
+                <span>GESTÃO INTELIGENTE EM SAÚDE</span>
+            </div>
+        </header>
+
+        <section class="carousel-area">
+            <button class="nav-btn prev" id="prevBtn" aria-label="Anterior">&#10094;</button>
+
+            <div class="carousel-container" id="carouselTrack">
+                <!-- Card 1: Recepção -->
+                <div class="carousel-card" data-index="0">
+                    <img src="https://images.unsplash.com/photo-1631217868264-e5b90bb7e833?q=80&w=400&auto=format&fit=crop"
+                        alt="Recepção Hospitalar">
+                    <div class="card-title-bottom">Recepção</div>
+                </div>
+
+                <!-- Card 2: Prontuário -->
+                <div class="carousel-card" data-index="1">
+                    <img src="https://images.unsplash.com/photo-1551076805-e1869033e561?q=80&w=400&auto=format&fit=crop"
+                        alt="Médico usando tablet">
+                    <div class="card-title-bottom">Prontuário</div>
+                </div>
+
+                <!-- Card 3: Central -->
+                <div class="carousel-card" data-index="2">
+                    <div class="central-card-content">
+                        <div class="dna-icon">
+                            <i class="fas fa-dna"></i>
+                        </div>
+                        <span class="tag">DIAGNÓSTICO PRECISO</span>
+                        <h2 class="central-h2">Catálogo de Exames<br>Integrado</h2>
+                        <p class="central-p">Acesse diretrizes, prazos e preparos de exames laboratoriais e de imagem
+                            instantaneamente durante o atendimento clínico.</p>
+                    </div>
+                </div>
+
+                <!-- Card 4: Telemedicina -->
+                <div class="carousel-card" data-index="3">
+                    <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=400&auto=format&fit=crop"
+                        alt="Consulta por vídeo">
+                    <div class="card-title-bottom">Telemedicina</div>
+                </div>
+
+                <!-- Card 5: Financeiro -->
+                <div class="carousel-card" data-index="4">
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=400&auto=format&fit=crop"
+                        alt="Gráficos financeiros">
+                    <div class="card-title-bottom">Financeiro</div>
+                </div>
+            </div>
+
+            <button class="nav-btn next" id="nextBtn" aria-label="Próximo">&#10095;</button>
+        </section>
+
+        <div class="carousel-dots" id="carouselDots">
+            <span class="dot" data-index="0"></span>
+            <span class="dot" data-index="1"></span>
+            <span class="dot active" data-index="2"></span>
+            <span class="dot" data-index="3"></span>
+            <span class="dot" data-index="4"></span>
+        </div>
+    </div>
+
+    <script>
+        const track = document.getElementById('carouselTrack');
+        const cards = Array.from(track.children);
+        const dots = Array.from(document.getElementById('carouselDots').children);
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        let currentIndex = 2;
+        let autoplayInterval;
+        const autoplayDelay = 4000;
+
+        function updateCarousel() {
+            cards.forEach((card, index) => {
+                let newIndex = (index - currentIndex + 5) % 5;
+                card.dataset.index = newIndex;
+            });
+
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentIndex);
+            });
+        }
+
+        function moveSlide(direction) {
+            currentIndex = (currentIndex + direction + 5) % 5;
+            updateCarousel();
+            resetAutoplay();
+        }
+
+        function startAutoplay() {
+            autoplayInterval = setInterval(() => {
+                moveSlide(1);
+            }, autoplayDelay);
+        }
+
+        function stopAutoplay() {
+            clearInterval(autoplayInterval);
+        }
+
+        function resetAutoplay() {
+            stopAutoplay();
+            startAutoplay();
+        }
+
+        prevBtn.addEventListener('click', () => moveSlide(-1));
+        nextBtn.addEventListener('click', () => moveSlide(1));
+
+        cards.forEach((card) => {
+            card.addEventListener('click', () => {
+                if (card.dataset.index !== "2") {
+                    let clickIndex = parseInt(card.dataset.index);
+                    let diff = clickIndex - 2;
+                    moveSlide(diff);
+                }
+            });
+        });
+
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentIndex = index;
+                updateCarousel();
+                resetAutoplay();
+            });
+        });
+
+        const carouselArea = document.querySelector('.carousel-area');
+        carouselArea.addEventListener('mouseenter', stopAutoplay);
+        carouselArea.addEventListener('mouseleave', startAutoplay);
+
+        updateCarousel();
+        startAutoplay();
+    </script>
+</body>
+
+</html>
