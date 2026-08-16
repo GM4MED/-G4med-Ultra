@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>G4Med BI · Inteligência de Pacientes</title>
+    <title>G4Med BI · Inteligência de Pacientess</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -1261,12 +1261,12 @@
                     },
                     scales: {
                         x: {
-                            ticks: { color: theme.muted },
-                            grid: { color: theme.grid }
+                            ticks: {color: theme.muted},
+                            grid: {color: theme.grid}
                         },
                         y: {
-                            ticks: { color: theme.muted },
-                            grid: { color: theme.grid },
+                            ticks: {color: theme.muted},
+                            grid: {color: theme.grid},
                             beginAtZero: true
                         }
                     },
@@ -1682,7 +1682,7 @@
                 $$('.spark').forEach((canvas, index) => {
                     const color = canvas.dataset.color || COLORS.brand;
                     const values = Array.from(
-                        { length: 12 },
+                        {length: 12},
                         (_, position) =>
                             28 + position * 2 + ((position * 11 + index * 5) % 14)
                     );
@@ -1711,12 +1711,12 @@
                             responsive: true,
                             maintainAspectRatio: false,
                             plugins: {
-                                legend: { display: false },
-                                tooltip: { enabled: false }
+                                legend: {display: false},
+                                tooltip: {enabled: false}
                             },
                             scales: {
-                                x: { display: false },
-                                y: { display: false }
+                                x: {display: false},
+                                y: {display: false}
                             }
                         }
                     });
@@ -2302,7 +2302,7 @@
                     // BOM garante acentuacao correta ao abrir no Excel
                     const blob = new Blob(
                         [`\uFEFF${content}`],
-                        { type: 'text/csv;charset=utf-8;' }
+                        {type: 'text/csv;charset=utf-8;'}
                     );
 
                     const url = URL.createObjectURL(blob);
@@ -2371,7 +2371,7 @@
                 document.addEventListener(
                     'DOMContentLoaded',
                     initialize,
-                    { once: true }
+                    {once: true}
                 );
             } else {
                 initialize();
