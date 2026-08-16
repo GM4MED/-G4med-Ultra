@@ -950,13 +950,65 @@
                             </div>
                         </div>
 
+                        <!-- Slide 6: Prescrição Digital -->
+                        <div class="min-w-full relative h-[320px] sm:h-[380px] flex items-center">
+                            <img src="https://images.unsplash.com/photo-1585435557343-3b092031a831?auto=format&fit=crop&w=1200&q=80"
+                                alt="Prescrição Digital" class="absolute inset-0 w-full h-full object-cover opacity-45">
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-900/60 to-transparent">
+                            </div>
+                            <div class="relative z-10 p-6 sm:p-10 max-w-xl flex flex-col gap-3 text-white">
+                                <span
+                                    class="bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full w-fit uppercase tracking-wider">Receitas
+                                    Digitais</span>
+                                <h2 class="text-2xl sm:text-3xl font-extrabold">Prescrição Eletrônica Integrada</h2>
+                                <p class="text-xs sm:text-sm text-gray-200 leading-relaxed">
+                                    Emita receitas digitais com validade jurídica, integração com farmácias e histórico
+                                    completo de medicamentos prescritos.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Slide 7: Agendamento Inteligente -->
+                        <div class="min-w-full relative h-[320px] sm:h-[380px] flex items-center">
+                            <img src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=1200&q=80"
+                                alt="Agendamento Online" class="absolute inset-0 w-full h-full object-cover opacity-45">
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-900/60 to-transparent">
+                            </div>
+                            <div class="relative z-10 p-6 sm:p-10 max-w-xl flex flex-col gap-3 text-white">
+                                <span
+                                    class="bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full w-fit uppercase tracking-wider">Agenda
+                                    Inteligente</span>
+                                <h2 class="text-2xl sm:text-3xl font-extrabold">Agendamento Online 24/7</h2>
+                                <p class="text-xs sm:text-sm text-gray-200 leading-relaxed">
+                                    Permita que pacientes marquem consultas pelo site ou app, com confirmação
+                                    automática,
+                                    lembretes por SMS e redução de faltas.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Slide 8: Segurança de Dados -->
+                        <div class="min-w-full relative h-[320px] sm:h-[380px] flex items-center">
+                            <img src="https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&w=1200&q=80"
+                                alt="Segurança de Dados" class="absolute inset-0 w-full h-full object-cover opacity-45">
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-900/60 to-transparent">
+                            </div>
+                            <div class="relative z-10 p-6 sm:p-10 max-w-xl flex flex-col gap-3 text-white">
+                                <span
+                                    class="bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full w-fit uppercase tracking-wider">LGPD
+                                    Compliance</span>
+                                <h2 class="text-2xl sm:text-3xl font-extrabold">Segurança e Privacidade de Dados</h2>
+                                <p class="text-xs sm:text-sm text-gray-200 leading-relaxed">
+                                    Proteção total dos dados dos pacientes com criptografia de ponta, backups
+                                    automáticos
+                                    e conformidade com a LGPD.
+                                </p>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <!-- Setas ocultas -->
-                    <button onclick="prevAdvancedSlide()" class="hidden" aria-label="Slide anterior"></button>
-                    <button onclick="nextAdvancedSlide()" class="hidden" aria-label="Próximo slide"></button>
-
-                    <!-- Indicadores (Dots) na parte inferior (5 Dots) -->
+                    <!-- Indicadores (Dots) na parte inferior (8 Dots) -->
                     <div class="absolute bottom-4 right-6 z-10 flex gap-2">
                         <button onclick="goToAdvancedSlide(0)"
                             class="advanced-dot w-3 h-3 rounded-full bg-white/55 hover:bg-white transition"
@@ -973,53 +1025,90 @@
                         <button onclick="goToAdvancedSlide(4)"
                             class="advanced-dot w-3 h-3 rounded-full bg-white/55 hover:bg-white transition"
                             aria-label="Slide 5"></button>
+                        <button onclick="goToAdvancedSlide(5)"
+                            class="advanced-dot w-3 h-3 rounded-full bg-white/55 hover:bg-white transition"
+                            aria-label="Slide 6"></button>
+                        <button onclick="goToAdvancedSlide(6)"
+                            class="advanced-dot w-3 h-3 rounded-full bg-white/55 hover:bg-white transition"
+                            aria-label="Slide 7"></button>
+                        <button onclick="goToAdvancedSlide(7)"
+                            class="advanced-dot w-3 h-3 rounded-full bg-white/55 hover:bg-white transition"
+                            aria-label="Slide 8"></button>
                     </div>
                 </div>
 
             </div>
         </section>
 
-        <!-- Script de Controle do Carrossel Atualizado -->
         <script>
-            let advCurrentIdx = 0;
-            const advTotalSlides = 5;
-            const advCarousel = document.getElementById('medical-image-carousel');
-            const advDots = document.querySelectorAll('.advanced-dot');
+            document.addEventListener('DOMContentLoaded', function () {
+                const carousel = document.getElementById('medical-image-carousel');
+                const slides = carousel.querySelectorAll('div.min-w-full');
+                const dots = document.querySelectorAll('.advanced-dot');
+                let currentSlide = 0;
+                const totalSlides = slides.length;
+                let autoplayInterval;
 
-            function updateAdvancedCarousel() {
-                if (!advCarousel) return;
-                advCarousel.style.transform = `translateX(-${advCurrentIdx * 100}%)`;
-                advDots.forEach((dot, idx) => {
-                    if (idx === advCurrentIdx) {
-                        dot.classList.remove('bg-white/55');
-                        dot.classList.add('bg-white', 'w-6');
-                    } else {
-                        dot.classList.remove('bg-white', 'w-6');
-                        dot.classList.add('bg-white/55', 'w-3');
-                    }
-                });
-            }
+                console.log('Total de slides:', totalSlides);
 
-            function nextAdvancedSlide() {
-                advCurrentIdx = (advCurrentIdx + 1) % advTotalSlides;
-                updateAdvancedCarousel();
-            }
+                function updateCarousel() {
+                    carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
 
-            function prevAdvancedSlide() {
-                advCurrentIdx = (advCurrentIdx - 1 + advTotalSlides) % advTotalSlides;
-                updateAdvancedCarousel();
-            }
+                    dots.forEach((dot, index) => {
+                        if (index === currentSlide) {
+                            dot.classList.remove('bg-white/55');
+                            dot.classList.add('bg-white');
+                        } else {
+                            dot.classList.remove('bg-white');
+                            dot.classList.add('bg-white/55');
+                        }
+                    });
+                }
 
-            function goToAdvancedSlide(idx) {
-                advCurrentIdx = idx;
-                updateAdvancedCarousel();
-            }
+                function nextAdvancedSlide() {
+                    currentSlide = (currentSlide + 1) % totalSlides;
+                    updateCarousel();
+                    resetAutoplay();
+                }
 
-            updateAdvancedCarousel();
+                function prevAdvancedSlide() {
+                    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                    updateCarousel();
+                    resetAutoplay();
+                }
 
-            // Passa automaticamente a cada 6 segundos
-            setInterval(nextAdvancedSlide, 6000);
+                function goToAdvancedSlide(index) {
+                    currentSlide = index;
+                    updateCarousel();
+                    resetAutoplay();
+                }
+
+                function startAutoplay() {
+                    autoplayInterval = setInterval(() => {
+                        nextAdvancedSlide();
+                    }, 4000);
+                }
+
+                function stopAutoplay() {
+                    clearInterval(autoplayInterval);
+                }
+
+                function resetAutoplay() {
+                    stopAutoplay();
+                    startAutoplay();
+                }
+
+                // Inicialização
+                updateCarousel();
+                startAutoplay();
+
+                // Pausar autoplay ao passar o mouse
+                const carouselContainer = carousel.parentElement;
+                carouselContainer.addEventListener('mouseenter', stopAutoplay);
+                carouselContainer.addEventListener('mouseleave', startAutoplay);
+            });
         </script>
+
     </main>
 
     <!-- Rodapé -->
