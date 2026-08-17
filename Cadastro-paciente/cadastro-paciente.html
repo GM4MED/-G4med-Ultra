@@ -217,22 +217,136 @@
                                 </div>
                             </div>
 
-                            <div class="paciente-foto-area">
-                                <label class="foto-area-label">
-                                    <h3>Foto:</h3> clique dentro do campo
-                                </label>
-
+                            <!-- <div class="paciente-foto-area">
+                                <div class="foto-area-label">
+                                    <span class="foto-titulo"><strong>Foto:</strong></span>
+                                    <span class="foto-instrucao">clique dentro do campo</span>
+                                </div>
 
                                 <div class="foto-capture-panel">
                                     <img id="fotoPreview"
                                         src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-                                        alt="Foto ">
+                                        alt="Pré-visualização da foto do paciente">
 
                                     <button type="button" class="btn-foto campo-edita" onclick="abrirWebcam()" disabled
+                                        aria-label="Tirar foto" title="Tirar foto">
+                                        <i class="fa-solid fa-camera" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div> -->
+                            <style>
+                                .paciente-foto-area {
+                                    background: #ffffff;
+                                    border: 1px solid #e2e8f0;
+                                    border-radius: 12px;
+                                    padding: 36px 18px;
+                                    width: 100%;
+                                    max-width: 260px;
+                                    text-align: center;
+                                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+                                    font-family: inherit;
+                                    display: flex;
+                                    flex-direction: column;
+                                    justify-content: space-between;
+                                    box-sizing: border-box;
+                                }
+
+                                .foto-area-label {
+                                    margin-bottom: 6px;
+                                    font-size: 0.85rem;
+                                    color: #334155;
+                                    line-height: 1.2;
+                                }
+
+                                .foto-titulo {
+                                    color: #0f172a;
+                                    font-size: 0.9rem;
+                                }
+
+                                .foto-instrucao {
+                                    display: block;
+                                    font-size: 0.7rem;
+                                    color: #64748b;
+                                    margin-top: 2px;
+                                }
+
+                                .foto-capture-panel {
+                                    position: relative;
+                                    width: 130px !important;
+                                    height: 130px !important;
+                                    min-width: 130px !important;
+                                    min-height: 130px !important;
+                                    max-width: 130px !important;
+                                    max-height: 130px !important;
+                                    aspect-ratio: 1 / 1 !important;
+                                    margin: 0 auto;
+                                    border-radius: 50% !important;
+                                    overflow: hidden;
+                                    border: 2px dashed #cbd5e1;
+                                    background: #f8fafc;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    cursor: pointer;
+                                    transition: all 0.25s ease-in-out;
+                                }
+
+                                .foto-capture-panel:hover {
+                                    border-color: #3b82f6;
+                                    background: #f1f5f9;
+                                    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                                }
+
+                                #fotoPreview {
+                                    width: 100%;
+                                    height: 100%;
+                                    object-fit: cover;
+                                }
+
+                                .btn-foto {
+                                    position: absolute;
+                                    bottom: 6px;
+                                    right: 6px;
+                                    background: #3b82f6;
+                                    color: white;
+                                    border: none;
+                                    border-radius: 50%;
+                                    width: 32px;
+                                    height: 32px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    cursor: pointer;
+                                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+                                    transition: all 0.2s ease;
+                                }
+
+                                .btn-foto:hover:not(:disabled) {
+                                    background: #2563eb;
+                                    transform: scale(1.08);
+                                }
+
+                                .btn-foto:disabled {
+                                    background: #94a3b8;
+                                    cursor: not-allowed;
+                                    opacity: 0.8;
+                                }
+                            </style>
+
+                            <div class="paciente-foto-area">
+                                <div class="foto-area-label">
+                                    <span class="foto-titulo"><strong>Foto do Paciente</strong></span>
+                                    <span class="foto-instrucao">Clique no círculo para capturar</span>
+                                </div>
+
+                                <div class="foto-capture-panel" onclick="abrirWebcam()">
+                                    <img id="fotoPreview"
+                                        src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                                        alt="Pré-visualização da foto do paciente">
+
+                                    <button type="button" class="btn-foto campo-edita" disabled aria-label="Tirar foto"
                                         title="Tirar foto">
-                                        <!-- <i class="fa-solid fa-camera-retro"></i> -->
-                                        <!-- <i class="fa-solid fa-user foto-user-icon"></i> -->
-                                        <!-- <span>Tirar Foto</span> -->
+                                        <i class="fa-solid fa-camera" aria-hidden="true" style="font-size: 13px;"></i>
                                     </button>
                                 </div>
                             </div>
