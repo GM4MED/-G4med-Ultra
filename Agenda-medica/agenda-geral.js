@@ -52,14 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
             especialidade: 'Cardiologia',
             especialidadeId: 'cardio'
         },
-
         '2': {
             id: '2',
             nome: 'Dra. Ana Paula',
             especialidade: 'Dermatologia',
             especialidadeId: 'derma'
         },
-
         '3': {
             id: '3',
             nome: 'Dr. Roberto Lima',
@@ -243,17 +241,11 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.filterMedico?.addEventListener('change', renderizarAgenda);
         elements.filterEspecialidade?.addEventListener('change', renderizarAgenda);
 
-        // Botão Novo Agendamento - CORREÇÃO: Busca direta no DOM
-        const btnNovo = document.querySelector('#btn-novo-agendamento');
-        if (btnNovo) {
-            btnNovo.addEventListener('click', function () {
-                console.log('🖱️ Botão Novo Agendamento clicado!');
-                abrirModalNovo();
-            });
-            console.log('✅ Event listener do botão adicionado!');
-        } else {
-            console.error('❌ Botão #btn-novo-agendamento NÃO ENCONTRADO!');
-        }
+        // Botão Novo Agendamento
+        elements.btnNovo?.addEventListener('click', () => {
+            console.log('🖱️ Botão Novo Agendamento clicado!');
+            abrirModalNovo();
+        });
 
         // Modais
         elements.btnModalClose?.addEventListener('click', fecharModalAgendamento);
@@ -292,6 +284,9 @@ document.addEventListener('DOMContentLoaded', () => {
             selecionarCanalChat(item.dataset.chat);
         });
 
+        // Eventos de exclusão do chat
+        configurarEventosChat();
+
         // Overlay dos modais
         document.querySelectorAll('.modal__overlay').forEach(overlay => {
             overlay.addEventListener('click', event => {
@@ -328,18 +323,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function alterarData(dias) {
         const novaData = new Date(state.dataAtual);
-
         novaData.setDate(novaData.getDate() + dias);
         state.dataAtual = inicioDoDia(novaData);
-
         renderizarAgenda();
     }
 
     function irParaHoje() {
         state.dataAtual = inicioDoDia(new Date());
-
         renderizarAgenda();
-
         exibirToast('Agenda posicionada em hoje.', 'info');
     }
 
@@ -379,7 +370,6 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="agenda__col-time">
                 Horário
             </div>
-
             ${medicosVisiveis.map(medico => `
                 <div
                     class="agenda__col-prof"
@@ -388,7 +378,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="agenda__prof-nome">
                         ${escapeHTML(medico.nome)}
                     </span>
-
                     <span class="agenda__prof-esp">
                         ${escapeHTML(medico.especialidade)}
                     </span>
@@ -416,7 +405,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     Nenhum médico corresponde aos filtros selecionados.
                 </div>
             `;
-
             return;
         }
 
@@ -458,7 +446,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="agenda__time-cell">
                         <span>${escapeHTML(horario)}</span>
                     </div>
-
                     ${colunas}
                 </div>
             `);
@@ -480,7 +467,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!['Enter', ' '].includes(event.key)) {
                         return;
                     }
-
                     event.preventDefault();
                     abrirModalAcoes(card.dataset.agendamentoId);
                 });
@@ -520,21 +506,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="agenda__appointment-time">
                     ${escapeHTML(agendamento.hora)}
                 </div>
-
                 <div class="agenda__appointment-content">
                     <strong>
                         ${escapeHTML(agendamento.paciente)}
                     </strong>
-
                     <span>
                         ${escapeHTML(tipoLabel)}
                     </span>
-
                     <small>
                         ${escapeHTML(statusLabel)}
                     </small>
                 </div>
-
                 ${iconeOnline}
             </article>
         `;
@@ -565,31 +547,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const medicoSelecionado = elements.filterMedico?.value || '';
         const especialidadeSelecionada = elements.filterEspecialidade?.value || '';
 
-        return state.agendamentos.filter(agendamento => {
-            const medico = MEDICOS[agendamento.medicoId];
+        return state.agendamentos
+            .filter(agendamento => {
+                const medico = MEDICOS[agendamento.medicoId];
 
-            if (!medico) {
-                return false;
-            }
+                if (!medico) {
+                    return false;
+                }
 
-            return (
-                agendamento.data === data &&
-                (
-                    !medicoSelecionado ||
-                    agendamento.medicoId === medicoSelecionado
-                ) &&
-                (
-                    !especialidadeSelecionada ||
-                    medico.especialidadeId === especialidadeSelecionada
-                )
-            );
-        });
+                return (
+                    agendamento.data === data &&
+                    (!medicoSelecionado || agendamento.medicoId === medicoSelecionado) &&
+                    (!especialidadeSelecionada || medico.especialidadeId === especialidadeSelecionada)
+                );
+            })
+            .sort((a, b) => {
+                return horaParaMinutos(a.hora) - horaParaMinutos(b.hora);
+            });
     }
 
     function encontrarAgendamentoNoHorario(lista, medicoId, minutos) {
         return lista.find(agendamento => {
             const inicio = horaParaMinutos(agendamento.hora);
-
             return (
                 agendamento.medicoId === medicoId &&
                 inicio === minutos
@@ -624,8 +603,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <i class="fa-solid fa-calendar-plus" aria-hidden="true"></i>
                 <span>Novo Agendamento</span>
             `;
-        } else {
-            console.warn('Elemento modal-titulo não encontrado');
         }
 
         abrirModal(elements.modalAgendamento, '#paciente-nome');
@@ -763,13 +740,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (
             Number.isNaN(inicio) ||
-            inicio < 0 ||
-            inicio >= 1440 ||
+            inicio < CONFIG.horarioInicial ||
+            inicio >= CONFIG.horarioFinal ||
             duracaoNova <= 0 ||
-            fim > 1440
+            fim > CONFIG.horarioFinal
         ) {
-            marcarErro(fields.hora, 'Horário inválido.');
-            exibirToast('Informe um horário válido entre 00:00 e 23:59.', 'warning');
+            marcarErro(fields.hora, 'Horário fora do expediente (08:00 - 18:00).');
+            exibirToast('Horário deve estar entre 08:00 e 18:00.', 'warning');
             return false;
         }
 
@@ -845,12 +822,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <strong>
                     ${escapeHTML(agendamento.paciente)}
                 </strong>
-
                 <span>
                     ${escapeHTML(statusLabel)}
                 </span>
             </div>
-
             <dl class="modal__detail-list">
                 <div>
                     <dt>Médico</dt>
@@ -858,14 +833,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${escapeHTML(medico?.nome || 'Não informado')}
                     </dd>
                 </div>
-
                 <div>
                     <dt>Especialidade</dt>
                     <dd>
                         ${escapeHTML(medico?.especialidade || 'Não informada')}
                     </dd>
                 </div>
-
                 <div>
                     <dt>Data e horário</dt>
                     <dd>
@@ -874,14 +847,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${escapeHTML(agendamento.hora)}
                     </dd>
                 </div>
-
                 <div>
                     <dt>Atendimento</dt>
                     <dd>
                         ${escapeHTML(tipoLabel)}
                     </dd>
                 </div>
-
                 <div>
                     <dt>Convênio</dt>
                     <dd>
@@ -889,7 +860,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     </dd>
                 </div>
             </dl>
-
             ${agendamento.observacoes
                 ? `
                     <p class="modal__detail-observacao">
@@ -899,7 +869,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 `
                 : ''
             }
-
             <div class="modal__detail-whatsapp">
                 <button
                     type="button"
@@ -925,44 +894,34 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'confirmar':
                 alterarStatus(agendamento, 'confirmado');
                 break;
-
             case 'espera':
                 alterarStatus(agendamento, 'espera');
                 break;
-
             case 'atender':
                 alterarStatus(agendamento, 'atendido');
                 break;
-
             case 'cancelar':
                 alterarStatus(agendamento, 'cancelado');
                 break;
-
             case 'excluir':
                 excluirAgendamento(agendamento);
                 break;
-
             case 'editar':
                 fecharModalAcoes();
                 abrirModalEdicao(agendamento);
                 break;
-
             case 'teleconsulta':
                 iniciarTeleconsulta(agendamento);
                 break;
-
             case 'prontuario':
                 acessarProntuario(agendamento);
                 break;
-
             case 'financeiro':
                 acessarFinanceiro(agendamento);
                 break;
-
             case 'whatsapp':
                 abrirModalWhatsApp(agendamento);
                 break;
-
             default:
                 exibirToast('Ação não reconhecida.', 'warning');
         }
@@ -1053,22 +1012,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     <strong>Paciente:</strong>
                     ${escapeHTML(agendamento.paciente)}
                 </p>
-
                 <p>
                     <strong>Data:</strong>
                     ${escapeHTML(dataFormatada)}
                 </p>
-
                 <p>
                     <strong>Horário:</strong>
                     ${escapeHTML(agendamento.hora)}
                 </p>
-
                 <p>
                     <strong>Médico:</strong>
                     ${escapeHTML(medico?.nome || 'Não informado')}
                 </p>
-
                 <p>
                     <strong>Convênio:</strong>
                     ${escapeHTML(agendamento.convenio || 'Particular')}
@@ -1181,93 +1136,287 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /*
      * =========================================================================
-     * CHAT INTERNO
+     * CHAT INTERNO - FUNÇÕES DE EXCLUSÃO
      * =========================================================================
      */
 
-    function inicializarChat() {
-        if (!elements.janelaChat) {
+    function configurarEventosChat() {
+        // Botão de limpar canal
+        const btnLimparCanal = document.querySelector('#btn-limpar-canal');
+        if (btnLimparCanal) {
+            btnLimparCanal.addEventListener('click', () => {
+                confirmarLimparCanal();
+            });
+        }
+
+        // Delegação de eventos para botão de apagar mensagem
+        elements.chatMensagens?.addEventListener('click', event => {
+            const btnApagar = event.target.closest('.chat-interno__msg-apagar');
+
+            if (!btnApagar) {
+                return;
+            }
+
+            const mensagemId = btnApagar.dataset.mensagemId;
+            apagarMensagemIndividual(mensagemId);
+        });
+
+        // Prevenir propagação do clique na mensagem quando clicar no botão de apagar
+        elements.chatMensagens?.addEventListener('mousedown', event => {
+            const btnApagar = event.target.closest('.chat-interno__msg-apagar');
+
+            if (btnApagar) {
+                event.stopPropagation();
+            }
+        });
+    }
+
+    function criarMensagemChatHTML(mensagem) {
+        const enviada = mensagem.autor === 'Você';
+        const classe = enviada
+            ? 'chat-interno__msg--enviada'
+            : 'chat-interno__msg--recebida';
+
+        return `
+            <div 
+                class="chat-interno__msg ${classe}" 
+                data-mensagem-id="${escapeHTML(mensagem.id)}"
+                role="article"
+                aria-label="Mensagem de ${escapeHTML(mensagem.autor)} às ${escapeHTML(mensagem.hora)}"
+            >
+                <div class="chat-interno__msg-header">
+                    <span class="chat-interno__msg-autor">
+                        ${escapeHTML(mensagem.autor)}
+                    </span>
+                    <span class="chat-interno__msg-hora">
+                        ${escapeHTML(mensagem.hora)}
+                    </span>
+                </div>
+                <p class="chat-interno__msg-texto">
+                    ${escapeHTML(mensagem.texto)}
+                </p>
+                ${enviada ? `
+                    <button
+                        type="button"
+                        class="chat-interno__msg-apagar"
+                        aria-label="Apagar esta mensagem"
+                        title="Apagar mensagem"
+                        data-mensagem-id="${escapeHTML(mensagem.id)}"
+                    >
+                        <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                    </button>
+                ` : ''}
+            </div>
+        `;
+    }
+
+    function apagarMensagemIndividual(mensagemId) {
+        if (!mensagemId) {
             return;
         }
 
-        atualizarEstadoChat();
-    }
+        const canal = state.chat.canalAtual;
+        const mensagemElemento = document.querySelector(
+            `.chat-interno__msg[data-mensagem-id="${mensagemId}"]`
+        );
 
-    function alternarChat() {
-        const aberto = elements.janelaChat?.getAttribute('aria-hidden') === 'false';
-
-        if (aberto) {
-            fecharChat();
-        } else {
-            abrirChat();
-        }
-    }
-
-    function abrirChat() {
-        if (!elements.janelaChat) {
+        if (!mensagemElemento) {
             return;
         }
 
-        elements.janelaChat.setAttribute('aria-hidden', 'false');
-        elements.janelaChat.classList.add('is-open');
-        elements.btnChat?.setAttribute('aria-expanded', 'true');
+        // Animação de remoção
+        mensagemElemento.classList.add('chat-interno__msg--removendo');
 
-        if (elements.chatBadge) {
-            elements.chatBadge.hidden = true;
-        }
-
+        // Aguarda animação e remove do DOM e do estado
         window.setTimeout(() => {
-            elements.chatInput?.focus();
+            state.chat.mensagens[canal] = state.chat.mensagens[canal].filter(
+                msg => msg.id !== mensagemId
+            );
+
+            salvarMensagensChat();
+            renderizarCanalChat();
+            atualizarInfoCanal();
+
+            exibirToast('Mensagem excluída.', 'info');
+        }, 300);
+    }
+
+    function confirmarLimparCanal() {
+        const canal = state.chat.canalAtual;
+        const mensagens = state.chat.mensagens[canal] || [];
+
+        if (mensagens.length === 0) {
+            exibirToast('Este canal já está vazio.', 'info');
+            return;
+        }
+
+        // Criar modal de confirmação
+        const modalConfirmacao = criarModalConfirmacaoLimpeza(canal, mensagens.length);
+        document.body.appendChild(modalConfirmacao);
+
+        // Focar no botão de cancelar
+        window.setTimeout(() => {
+            modalConfirmacao.querySelector('.chat-confirm-modal__btn--cancelar')?.focus();
         }, 100);
     }
 
-    function fecharChat() {
-        if (!elements.janelaChat) {
-            return;
-        }
+    function criarModalConfirmacaoLimpeza(canal, quantidadeMensagens) {
+        const modal = document.createElement('div');
+        modal.className = 'chat-confirm-modal';
+        modal.setAttribute('role', 'alertdialog');
+        modal.setAttribute('aria-modal', 'true');
+        modal.setAttribute('aria-labelledby', 'chat-confirm-titulo');
+        modal.setAttribute('aria-describedby', 'chat-confirm-desc');
+        modal.setAttribute('aria-hidden', 'false');
 
-        elements.janelaChat.setAttribute('aria-hidden', 'true');
-        elements.janelaChat.classList.remove('is-open');
-        elements.btnChat?.setAttribute('aria-expanded', 'false');
-    }
-
-    function selecionarCanalChat(canal) {
-        if (!state.chat.mensagens[canal]) {
-            return;
-        }
-
-        state.chat.canalAtual = canal;
-        atualizarEstadoChat();
-        renderizarCanalChat();
-    }
-
-    function enviarMensagemChat() {
-        const texto = elements.chatInput?.value.trim() || '';
-
-        if (!texto) {
-            return;
-        }
-
-        const agora = new Date();
-        const canal = state.chat.canalAtual;
-
-        const mensagem = {
-            id: gerarId(),
-            texto,
-            autor: 'Você',
-            hora: agora.toLocaleTimeString('pt-BR', {
-                hour: '2-digit',
-                minute: '2-digit'
-            }),
-            timestamp: agora.toISOString()
+        const nomesCanais = {
+            geral: '🏥 Geral',
+            recepcao: '📋 Recepção',
+            medicos: '👨‍⚕️ Médicos'
         };
 
-        state.chat.mensagens[canal].push(mensagem);
-        salvarMensagensChat();
-        renderizarCanalChat();
+        const nomeCanal = nomesCanais[canal] || canal;
 
-        elements.chatInput.value = '';
-        elements.chatInput.focus();
+        modal.innerHTML = `
+            <div class="chat-confirm-modal__overlay" aria-hidden="true"></div>
+            <div class="chat-confirm-modal__content">
+                <div class="chat-confirm-modal__header">
+                    <div class="chat-confirm-modal__icon">
+                        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                    </div>
+                    <h2 id="chat-confirm-titulo" class="chat-confirm-modal__titulo">
+                        Limpar histórico do canal?
+                    </h2>
+                </div>
+                <div class="chat-confirm-modal__body">
+                    <p id="chat-confirm-desc" class="chat-confirm-modal__texto">
+                        Você está prestes a excluir 
+                        <strong>${quantidadeMensagens} ${quantidadeMensagens === 1 ? 'mensagem' : 'mensagens'}</strong> 
+                        do canal <strong>${nomeCanal}</strong>.
+                    </p>
+                    <div class="chat-confirm-modal__aviso">
+                        <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                        <span>
+                            Esta ação não pode ser desfeita. Todas as mensagens serão permanentemente excluídas.
+                        </span>
+                    </div>
+                </div>
+                <div class="chat-confirm-modal__footer">
+                    <button 
+                        type="button" 
+                        class="chat-confirm-modal__btn chat-confirm-modal__btn--cancelar"
+                        data-acao="cancelar"
+                    >
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                        Cancelar
+                    </button>
+                    <button 
+                        type="button" 
+                        class="chat-confirm-modal__btn chat-confirm-modal__btn--confirmar"
+                        data-acao="confirmar"
+                    >
+                        <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                        Sim, limpar tudo
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Eventos do modal
+        const overlay = modal.querySelector('.chat-confirm-modal__overlay');
+        const btnCancelar = modal.querySelector('[data-acao="cancelar"]');
+        const btnConfirmar = modal.querySelector('[data-acao="confirmar"]');
+
+        overlay?.addEventListener('click', () => {
+            fecharModalConfirmacao(modal);
+        });
+
+        btnCancelar?.addEventListener('click', () => {
+            fecharModalConfirmacao(modal);
+        });
+
+        btnConfirmar?.addEventListener('click', () => {
+            executarLimpezaCanal(canal, modal);
+        });
+
+        // Fechar com Escape
+        const handleEscape = (event) => {
+            if (event.key === 'Escape') {
+                fecharModalConfirmacao(modal);
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+
+        document.addEventListener('keydown', handleEscape);
+
+        return modal;
+    }
+
+    function fecharModalConfirmacao(modal) {
+        if (!modal) {
+            return;
+        }
+
+        modal.setAttribute('aria-hidden', 'true');
+
+        window.setTimeout(() => {
+            modal.remove();
+        }, 200);
+    }
+
+    function executarLimpezaCanal(canal, modal) {
+        const mensagens = state.chat.mensagens[canal] || [];
+        const quantidade = mensagens.length;
+
+        if (quantidade === 0) {
+            fecharModalConfirmacao(modal);
+            return;
+        }
+
+        // Limpar estado
+        state.chat.mensagens[canal] = [];
+
+        // Salvar
+        salvarMensagensChat();
+
+        // Re-renderizar
+        renderizarCanalChat();
+        atualizarInfoCanal();
+
+        // Fechar modal
+        fecharModalConfirmacao(modal);
+
+        // Toast de confirmação
+        exibirToast(
+            `${quantidade} ${quantidade === 1 ? 'mensagem' : 'mensagens'} excluída${quantidade === 1 ? '' : 's'}.`,
+            'success'
+        );
+    }
+
+    function atualizarEstadoChat() {
+        elements.chatLista
+            ?.querySelectorAll('.chat-interno__item')
+            .forEach(item => {
+                const ativo = item.dataset.chat === state.chat.canalAtual;
+                item.classList.toggle('ativo', ativo);
+                item.setAttribute('aria-pressed', String(ativo));
+            });
+
+        atualizarInfoCanal();
+    }
+
+    function atualizarInfoCanal() {
+        const infoTexto = document.querySelector('#chat-info-mensagens');
+
+        if (!infoTexto) {
+            return;
+        }
+
+        const canal = state.chat.canalAtual;
+        const mensagens = state.chat.mensagens[canal] || [];
+        const quantidade = mensagens.length;
+
+        infoTexto.textContent = `${quantidade} ${quantidade === 1 ? 'mensagem' : 'mensagens'}`;
     }
 
     function renderizarCanalChat() {
@@ -1282,73 +1431,18 @@ document.addEventListener('DOMContentLoaded', () => {
             .join('');
 
         elements.chatMensagens.scrollTop = elements.chatMensagens.scrollHeight;
+
+        atualizarInfoCanal();
     }
 
-    function criarMensagemChatHTML(mensagem) {
-        const enviada = mensagem.autor === 'Você';
-        const classe = enviada
-            ? 'chat-interno__msg--enviada'
-            : 'chat-interno__msg--recebida';
-
-        return `
-            <div class="chat-interno__msg ${classe}">
-                <div class="chat-interno__msg-header">
-                    <span class="chat-interno__msg-autor">
-                        ${escapeHTML(mensagem.autor)}
-                    </span>
-
-                    <span class="chat-interno__msg-hora">
-                        ${escapeHTML(mensagem.hora)}
-                    </span>
-                </div>
-
-                <p class="chat-interno__msg-texto">
-                    ${escapeHTML(mensagem.texto)}
-                </p>
-            </div>
-        `;
-    }
-
-    function atualizarEstadoChat() {
-        elements.chatLista
-            ?.querySelectorAll('.chat-interno__item')
-            .forEach(item => {
-                const ativo = item.dataset.chat === state.chat.canalAtual;
-                item.classList.toggle('ativo', ativo);
-            });
-    }
-
-    function salvarMensagensChat() {
-        salvarNoStorage(CONFIG.chatStorageKey, state.chat.mensagens);
-    }
-
-    function carregarMensagensChat() {
-        const mensagens = carregarDoStorage(CONFIG.chatStorageKey, null);
-
-        if (!mensagens || typeof mensagens !== 'object') {
+    function selecionarCanalChat(canal) {
+        if (!state.chat.mensagens[canal]) {
             return;
         }
 
-        Object.keys(state.chat.mensagens).forEach(canal => {
-            if (Array.isArray(mensagens[canal])) {
-                state.chat.mensagens[canal] = mensagens[canal];
-            }
-        });
-    }
-
-    function notificarNovaMensagem() {
-        if (!elements.chatBadge) {
-            return;
-        }
-
-        const quantidade = Number(elements.chatBadge.textContent) || 0;
-
-        elements.chatBadge.textContent = quantidade + 1;
-        elements.chatBadge.hidden = false;
-
-        if ('vibrate' in navigator) {
-            navigator.vibrate(200);
-        }
+        state.chat.canalAtual = canal;
+        atualizarEstadoChat();
+        renderizarCanalChat();
     }
 
     /*
@@ -1401,15 +1495,12 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'modal-agendamento':
                 fecharModalAgendamento();
                 break;
-
             case 'modal-acoes':
                 fecharModalAcoes();
                 break;
-
             case 'modal-whatsapp':
                 fecharModalWhatsApp();
                 break;
-
             default:
                 console.warn('Modal desconhecido:', modal.id);
         }
@@ -1502,6 +1593,99 @@ document.addEventListener('DOMContentLoaded', () => {
         inicializarChat();
     }
 
+    function inicializarChat() {
+        if (!elements.janelaChat) {
+            return;
+        }
+
+        atualizarEstadoChat();
+    }
+
+    function alternarChat() {
+        const aberto = elements.janelaChat?.getAttribute('aria-hidden') === 'false';
+
+        if (aberto) {
+            fecharChat();
+        } else {
+            abrirChat();
+        }
+    }
+
+    function abrirChat() {
+        if (!elements.janelaChat) {
+            return;
+        }
+
+        elements.janelaChat.setAttribute('aria-hidden', 'false');
+        elements.janelaChat.classList.add('is-open');
+        elements.btnChat?.setAttribute('aria-expanded', 'true');
+
+        if (elements.chatBadge) {
+            elements.chatBadge.hidden = true;
+        }
+
+        window.setTimeout(() => {
+            elements.chatInput?.focus();
+        }, 100);
+    }
+
+    function fecharChat() {
+        if (!elements.janelaChat) {
+            return;
+        }
+
+        elements.janelaChat.setAttribute('aria-hidden', 'true');
+        elements.janelaChat.classList.remove('is-open');
+        elements.btnChat?.setAttribute('aria-expanded', 'false');
+    }
+
+    function enviarMensagemChat() {
+        const texto = elements.chatInput?.value.trim() || '';
+
+        if (!texto) {
+            return;
+        }
+
+        const agora = new Date();
+        const canal = state.chat.canalAtual;
+
+        const mensagem = {
+            id: gerarId(),
+            texto,
+            autor: 'Você',
+            hora: agora.toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            }),
+            timestamp: agora.toISOString()
+        };
+
+        state.chat.mensagens[canal].push(mensagem);
+        salvarMensagensChat();
+        renderizarCanalChat();
+
+        elements.chatInput.value = '';
+        elements.chatInput.focus();
+    }
+
+    function salvarMensagensChat() {
+        salvarNoStorage(CONFIG.chatStorageKey, state.chat.mensagens);
+    }
+
+    function carregarMensagensChat() {
+        const mensagens = carregarDoStorage(CONFIG.chatStorageKey, null);
+
+        if (!mensagens || typeof mensagens !== 'object') {
+            return;
+        }
+
+        Object.keys(state.chat.mensagens).forEach(canal => {
+            if (Array.isArray(mensagens[canal])) {
+                state.chat.mensagens[canal] = mensagens[canal];
+            }
+        });
+    }
+
     /*
      * =========================================================================
      * TOAST
@@ -1564,11 +1748,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     aria-hidden="true"
                 ></i>
             </div>
-
             <span class="toast__content">
                 ${escapeHTML(mensagemNormalizada)}
             </span>
-
             <button
                 type="button"
                 class="toast__close"
@@ -1705,6 +1887,22 @@ document.addEventListener('DOMContentLoaded', () => {
      * =========================================================================
      */
 
+    function limparFormulario() {
+        if (fields.id) fields.id.value = '';
+        if (fields.paciente) fields.paciente.value = '';
+        if (fields.medico) fields.medico.value = '';
+        if (fields.data) fields.data.value = '';
+        if (fields.hora) fields.hora.value = '';
+        if (fields.duracao) fields.duracao.value = '30';
+        if (fields.tipo) fields.tipo.value = 'presencial';
+        if (fields.convenio) fields.convenio.value = 'particular';
+        if (fields.status) fields.status.value = 'agendado';
+        if (fields.observacoes) fields.observacoes.value = '';
+        if (fields.lembrete) fields.lembrete.checked = true;
+
+        limparErrosFormulario();
+    }
+
     function marcarErro(campo, mensagem) {
         if (!campo) {
             return;
@@ -1821,41 +2019,3 @@ document.addEventListener('DOMContentLoaded', () => {
             .replaceAll("'", '&#039;');
     }
 });
-
-// =========================================================================
-// SOLUÇÃO EMERGENCIAL - FORÇAR ABERTURA DO MODAL
-// =========================================================================
-
-window.setTimeout(() => {
-    const btn = document.querySelector('#btn-novo-agendamento');
-    const modal = document.querySelector('#modal-agendamento');
-
-    if (!btn || !modal) {
-        console.error('❌ Botão ou modal não encontrados!');
-        return;
-    }
-
-    // Remove listeners antigos
-    btn.replaceWith(btn.cloneNode(true));
-
-    // Adiciona novo listener
-    const novoBtn = document.querySelector('#btn-novo-agendamento');
-    novoBtn.addEventListener('click', () => {
-        console.log('🖱️ Botão clicado!');
-
-        const modal = document.querySelector('#modal-agendamento');
-        if (modal) {
-            console.log('✅ Abrindo modal...');
-            modal.classList.add('is-open');
-            modal.setAttribute('aria-hidden', 'false');
-            document.body.classList.add('modal-open');
-
-            // Foca no primeiro campo
-            window.setTimeout(() => {
-                document.querySelector('#paciente-nome')?.focus();
-            }, 100);
-        }
-    });
-
-    console.log('✅ Listener de emergência adicionado!');
-}, 1000);

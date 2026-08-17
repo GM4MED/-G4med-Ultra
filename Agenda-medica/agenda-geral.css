@@ -2,7 +2,7 @@
    G4Med Agenda — Design System Teal
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+/* REMOVER: @import da fonte (já está no HTML via <link>) */
 
 :root {
     --color-primary: #0D9488;
@@ -54,8 +54,8 @@
 
     --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-    --font-xs: 0.625rem;
-    --font-sm: 0.75rem;
+    --font-xs: 0.6875rem;
+    --font-sm: 0.8125rem;
     --font-base: 0.875rem;
     --font-md: 1rem;
     --font-lg: 1.125rem;
@@ -371,6 +371,7 @@ a:hover {
     transform: translateY(-50%);
 }
 
+
 /* =========================================================
    LEGENDA DE STATUS
    ========================================================= */
@@ -435,6 +436,8 @@ a:hover {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-surface);
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary-light) transparent;
 }
 
 .agenda__calendar-header,
@@ -786,6 +789,7 @@ a:hover {
     color: var(--tipo-procedimento-text);
 }
 
+
 /* =========================================================
    MODAIS
    ========================================================= */
@@ -793,7 +797,6 @@ a:hover {
 body.modal-open {
     overflow: hidden !important;
 }
-
 
 .modal {
     position: fixed;
@@ -804,7 +807,6 @@ body.modal-open {
     justify-content: center;
     padding: var(--space-4);
 }
-
 
 .modal[aria-hidden="false"],
 .modal.is-open {
@@ -981,8 +983,6 @@ body.modal-open {
     color: var(--color-primary-dark);
 }
 
-/* Checkbox do modal */
-
 .modal__checkbox {
     display: inline-flex;
     align-items: center;
@@ -1025,8 +1025,6 @@ body.modal-open {
     outline: 3px solid rgb(13 148 136 / 25%);
     outline-offset: 2px;
 }
-
-/* Detalhes */
 
 .modal__details {
     margin-bottom: var(--space-4);
@@ -1097,8 +1095,6 @@ body.modal-open {
     font-size: 0.85rem;
     line-height: 1.5;
 }
-
-/* Ações do modal */
 
 .modal__acoes {
     display: grid;
@@ -1514,6 +1510,40 @@ body.modal-open {
     font-size: 1.125rem;
 }
 
+.chat-interno__header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.chat-interno__btn-limpar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 6px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.chat-interno__btn-limpar:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.chat-interno__btn-limpar:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+}
+
+.chat-interno__btn-limpar i {
+    font-size: 0.875rem;
+}
+
 .chat-interno__close {
     display: flex;
     align-items: center;
@@ -1528,7 +1558,8 @@ body.modal-open {
     transition: background var(--transition-fast);
 }
 
-.chat-interno__close:hover {
+.chat-interno__close:hover,
+.chat-interno__close:focus-visible {
     background: rgba(255, 255, 255, 0.15);
     color: white;
 }
@@ -1554,10 +1585,19 @@ body.modal-open {
     border-bottom: 1px solid var(--color-border-light);
     cursor: pointer;
     transition: background var(--transition-fast);
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: transparent;
 }
 
 .chat-interno__item:hover {
     background: #F1F5F9;
+}
+
+.chat-interno__item:focus-visible {
+    outline: 3px solid rgb(13 148 136 / 35%);
+    outline-offset: -3px;
 }
 
 .chat-interno__item.ativo {
@@ -1600,6 +1640,7 @@ body.modal-open {
     flex-direction: column;
     gap: 4px;
     max-width: 85%;
+    position: relative;
 }
 
 .chat-interno__msg--enviada {
@@ -1643,15 +1684,101 @@ body.modal-open {
     color: var(--color-white);
 }
 
+/* Botão de apagar mensagem */
+.chat-interno__msg-apagar {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.15);
+    border: none;
+    color: inherit;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-fast);
+    z-index: 2;
+}
+
+.chat-interno__msg:hover .chat-interno__msg-apagar,
+.chat-interno__msg:focus-within .chat-interno__msg-apagar {
+    opacity: 1;
+    visibility: visible;
+}
+
+.chat-interno__msg-apagar:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.chat-interno__msg-apagar:focus-visible {
+    outline: 2px solid #ef4444;
+    outline-offset: 2px;
+}
+
+.chat-interno__msg--enviada .chat-interno__msg-apagar {
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.chat-interno__msg--enviada .chat-interno__msg-apagar:hover {
+    background: rgba(239, 68, 68, 0.3);
+    color: #fff;
+}
+
+/* Animação de mensagem sendo removida */
+.chat-interno__msg--removendo {
+    animation: mensagemRemovendo 0.3s ease forwards;
+}
+
+@keyframes mensagemRemovendo {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* Footer do chat */
 .chat-interno__footer {
-    padding: var(--space-3);
+    padding: 0;
     border-top: 1px solid var(--color-border);
     background: #F8FAFC;
+}
+
+.chat-interno__info-canal {
+    padding: var(--space-2) var(--space-3);
+    background: #F1F5F9;
+    border-bottom: 1px solid var(--color-border);
+}
+
+#chat-info-texto {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: 0.6875rem;
+    font-weight: 500;
+}
+
+#chat-info-texto i {
+    color: var(--color-primary);
 }
 
 .chat-interno__input-wrap {
     display: flex;
     gap: var(--space-2);
+    padding: var(--space-3);
 }
 
 .chat-interno__input {
@@ -1685,12 +1812,156 @@ body.modal-open {
     transition: background var(--transition-fast);
 }
 
-.chat-interno__enviar:hover {
+.chat-interno__enviar:hover,
+.chat-interno__enviar:focus-visible {
     background: var(--color-primary-hover);
 }
 
 .chat-interno__enviar i {
     font-size: 1rem;
+}
+
+
+/* =========================================================
+   MODAL DE CONFIRMAÇÃO - LIMPEZA DE CHAT
+   ========================================================= */
+
+.chat-confirm-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+}
+
+.chat-confirm-modal[aria-hidden="false"] {
+    display: flex;
+}
+
+.chat-confirm-modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgb(15 23 42 / 60%);
+    backdrop-filter: blur(2px);
+}
+
+.chat-confirm-modal__content {
+    position: relative;
+    z-index: 1;
+    width: min(420px, 100%);
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 60px rgb(15 23 42 / 25%);
+    animation: slideUp 0.3s ease;
+}
+
+.chat-confirm-modal__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 20px 22px 0;
+}
+
+.chat-confirm-modal__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: #FEF2F2;
+    color: #ef4444;
+    flex-shrink: 0;
+}
+
+.chat-confirm-modal__icon i {
+    font-size: 1.25rem;
+}
+
+.chat-confirm-modal__titulo {
+    font-size: var(--font-md);
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0;
+}
+
+.chat-confirm-modal__body {
+    padding: 16px 22px 22px;
+}
+
+.chat-confirm-modal__texto {
+    color: var(--color-text-muted);
+    font-size: var(--font-sm);
+    line-height: 1.6;
+    margin: 0 0 20px;
+}
+
+.chat-confirm-modal__aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: 12px;
+    background: #FFF7ED;
+    border-left: 3px solid #F97316;
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    color: #9A3412;
+}
+
+.chat-confirm-modal__aviso i {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.chat-confirm-modal__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    padding: 16px 22px 22px;
+    border-top: 1px solid var(--color-border-light);
+}
+
+.chat-confirm-modal__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    height: 2.5rem;
+    padding: 0 1.25rem;
+    border-radius: var(--radius);
+    font-size: var(--font-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.chat-confirm-modal__btn--cancelar {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+}
+
+.chat-confirm-modal__btn--cancelar:hover {
+    background: #F9FAFB;
+    color: var(--color-text);
+}
+
+.chat-confirm-modal__btn--confirmar {
+    background: #ef4444;
+    border: 1px solid #ef4444;
+    color: #fff;
+}
+
+.chat-confirm-modal__btn--confirmar:hover {
+    background: #dc2626;
+    border-color: #dc2626;
+}
+
+.chat-confirm-modal__btn:focus-visible {
+    outline: 3px solid rgb(13 148 136 / 35%);
+    outline-offset: 2px;
 }
 
 
@@ -1912,6 +2183,19 @@ body.modal-open {
     .chat-interno__item-nome {
         font-size: 0.6875rem;
     }
+
+    .chat-interno__header-actions {
+        gap: var(--space-1);
+    }
+
+    .chat-interno__btn-limpar {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+
+    .chat-interno__info-canal {
+        display: none;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1947,5 +2231,13 @@ body.modal-open {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+    }
+
+    .agenda__btn:hover:not(:disabled),
+    .agenda__card:hover,
+    .agenda__appointment:hover,
+    .modal__acao:hover,
+    .chat-interno__btn:hover {
+        transform: none;
     }
 }

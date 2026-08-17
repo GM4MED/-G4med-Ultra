@@ -9,6 +9,12 @@
 
     <title>G4Med - Agenda Médica</title>
 
+    <!-- Google Fonts (antes do Tailwind para melhor performance) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -44,12 +50,6 @@
             }
         };
     </script>
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -239,9 +239,6 @@
     <!-- =====================================================
          MODAL: NOVO OU EDITAR AGENDAMENTO
          ===================================================== -->
-    <!-- =====================================================
-     MODAL: NOVO OU EDITAR AGENDAMENTO
-     ===================================================== -->
     <div id="modal-agendamento" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo"
         aria-hidden="true">
 
@@ -535,36 +532,50 @@
                 <i class="fa-solid fa-building-medical" aria-hidden="true"></i>
                 Chat da Equipe
             </h3>
-            <button type="button" id="chat-fechar" class="chat-interno__close" aria-label="Fechar chat">
-                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-            </button>
+
+            <div class="chat-interno__header-actions">
+                <button type="button" id="btn-limpar-canal" class="chat-interno__btn-limpar"
+                    aria-label="Limpar todas as mensagens deste canal" title="Limpar histórico do canal">
+                    <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                </button>
+
+                <button type="button" id="chat-fechar" class="chat-interno__close" aria-label="Fechar chat">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
         </header>
 
         <div class="chat-interno__body">
             <!-- Lista de Conversas -->
-            <div class="chat-interno__lista" id="chat-lista">
-                <div class="chat-interno__item ativo" data-chat="geral">
+            <div class="chat-interno__lista" id="chat-lista" role="tablist" aria-label="Canais de conversa">
+                <button type="button" class="chat-interno__item ativo" data-chat="geral" role="tab" aria-selected="true"
+                    aria-controls="chat-mensagens">
                     <div class="chat-interno__item-info">
                         <span class="chat-interno__item-nome">🏥 Geral</span>
                         <span class="chat-interno__item-msg">Sala principal da equipe</span>
                     </div>
-                </div>
-                <div class="chat-interno__item" data-chat="recepcao">
+                </button>
+
+                <button type="button" class="chat-interno__item" data-chat="recepcao" role="tab" aria-selected="false"
+                    aria-controls="chat-mensagens">
                     <div class="chat-interno__item-info">
                         <span class="chat-interno__item-nome">📋 Recepção</span>
                         <span class="chat-interno__item-msg">Atendimento aos pacientes</span>
                     </div>
-                </div>
-                <div class="chat-interno__item" data-chat="medicos">
+                </button>
+
+                <button type="button" class="chat-interno__item" data-chat="medicos" role="tab" aria-selected="false"
+                    aria-controls="chat-mensagens">
                     <div class="chat-interno__item-info">
                         <span class="chat-interno__item-nome">👨‍⚕️ Médicos</span>
                         <span class="chat-interno__item-msg">Comunicação clínica</span>
                     </div>
-                </div>
+                </button>
             </div>
 
             <!-- Área de Mensagens -->
-            <div class="chat-interno__mensagens" id="chat-mensagens" role="log" aria-live="polite">
+            <div class="chat-interno__mensagens" id="chat-mensagens" role="tabpanel" aria-live="polite"
+                aria-label="Mensagens do canal">
                 <div class="chat-interno__msg chat-interno__msg--recebida">
                     <div class="chat-interno__msg-header">
                         <span class="chat-interno__msg-autor">Recepção</span>
@@ -576,9 +587,17 @@
         </div>
 
         <footer class="chat-interno__footer">
+            <div class="chat-interno__info-canal">
+                <small id="chat-info-texto">
+                    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                    <span id="chat-info-mensagens">0 mensagens</span>
+                </small>
+            </div>
+
             <div class="chat-interno__input-wrap">
                 <input type="text" id="chat-input" class="chat-interno__input" placeholder="Digite sua mensagem..."
                     aria-label="Mensagem">
+
                 <button type="button" id="chat-enviar" class="chat-interno__enviar" aria-label="Enviar mensagem">
                     <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
                 </button>
@@ -594,7 +613,7 @@
     </div>
 
     <!-- JavaScript externo -->
-    <script src="agenda-geral.js"></script>
+    <script src="agenda-geral.js" defer></script>
 </body>
 
 </html>
