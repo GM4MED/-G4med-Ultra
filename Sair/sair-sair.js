@@ -1,89 +1,73 @@
-/* ==========================================================
-   LOGOUT
-========================================================== */
+(() => {
+    'use strict';
 
-function abrirModalLogout() {
+    document.addEventListener('DOMContentLoaded', () => {
+        const $ = (selector) => document.querySelector(selector);
+        const modal = $('#modalLogout');
+        const loading = $('#logoutLoading');
+        const openButton = $('#openLogout');
+        const closeButton = $('#closeModal');
+        const cancelButton = $('#cancelModal');
+        const continueButton = $('#cancelLogout');
+        const confirmButton = $('#confirmLogout');
+        const logoutTime = $('#logoutHora');
+        const duration = $('#sessionDuration');
+        const sessionStartedAt = Date.now();
+        let logoutInProgress = false;
 
-    document
-        .getElementById("modalLogout")
-        .classList.add("show");
+        if (!modal || !loading || !openButton || !confirmButton) return;
 
-    document
-        .getElementById("logoutHora")
-        .innerText =
-        new Date().toLocaleString("pt-BR");
-}
+        // Mantém os dados temporais atualizados sem depender de elementos inline.
+        const pad = (value) => String(value).padStart(2, '0');
+        const updateSessionDuration = () => {
+            const elapsed = Math.floor((Date.now() - sessionStartedAt) / 1000);
+            const hours = Math.floor(elapsed / 3600);
+            const minutes = Math.floor((elapsed % 3600) / 60);
+            if (duration) duration.textContent = `${pad(hours)}h ${pad(minutes)}m`;
+        };
+        updateSessionDuration();
+        window.setInterval(updateSessionDuration, 1000);
 
-function fecharModalLogout() {
+        const openModal = () => {
+            if (logoutInProgress) return;
+            if (logoutTime) logoutTime.textContent = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date());
+            modal.hidden = false;
+            document.body.classList.add('modal-open');
+            closeButton?.focus();
+        };
 
-    document
-        .getElementById("modalLogout")
-        .classList.remove("show");
-}
+        const closeModal = () => {
+            if (logoutInProgress) return;
+            modal.hidden = true;
+            document.body.classList.remove('modal-open');
+            openButton.focus();
+        };
 
-/* ==========================================================
-   AUDITORIA
-========================================================== */
+        const continueSession = () => {
+            const target = continueButton?.dataset.redirect || '../Menu-Principal.html';
+            window.location.href = target;
+        };
 
-function registrarLogout() {
+        const performLogout = () => {
+            if (logoutInProgress) return;
+            logoutInProgress = true;
+            modal.hidden = true;
+            loading.hidden = false;
+            document.body.classList.add('logout-in-progress');
+            confirmButton.disabled = true;
 
-    const logs =
-        JSON.parse(
-            localStorage.getItem("gmed_logs")
-        ) || [];
+            // Substitua este atraso pela chamada real de invalidação de sessão da sua API.
+            window.setTimeout(() => {
+                window.location.href = '../index.html';
+            }, 1100);
+        };
 
-    logs.unshift({
-
-        usuario:
-            localStorage.getItem("usuario") ||
-            "Administrador",
-
-        acao: "LOGOUT",
-
-        data:
-            new Date().toLocaleString("pt-BR"),
-
-        descricao:
-            "Usuário encerrou sessão"
-
+        openButton.addEventListener('click', openModal);
+        closeButton?.addEventListener('click', closeModal);
+        cancelButton?.addEventListener('click', closeModal);
+        continueButton?.addEventListener('click', continueSession);
+        confirmButton.addEventListener('click', performLogout);
+        modal.addEventListener('click', (event) => { if (event.target === modal) closeModal(); });
+        document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !modal.hidden) closeModal(); });
     });
-
-    localStorage.setItem(
-        "gmed_logs",
-        JSON.stringify(logs)
-    );
-}
-
-/* ==========================================================
-   SAIR
-========================================================== */
-
-function realizarLogout() {
-
-    registrarLogout();
-
-    document
-        .getElementById("modalLogout")
-        .classList.remove("show");
-
-    document
-        .getElementById("logoutLoading")
-        .classList.add("show");
-
-    setTimeout(() => {
-
-        sessionStorage.clear();
-
-        localStorage.removeItem(
-            "token"
-        );
-
-        localStorage.removeItem(
-            "usuarioLogado"
-        );
-
-        window.location.href =
-            "login.html";
-
-    }, 1500);
-}
+})();

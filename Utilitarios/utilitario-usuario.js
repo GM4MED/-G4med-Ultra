@@ -1,175 +1,553 @@
-/* === G4Med Usuarios PRO =============== ver 2.0 JS =========================== */
-(function () {
-    'use strict';
+/* =============================================
+   GERENCIAMENTO DE USUÁRIOS - G4MED
+   JavaScript Funcional
+   Design System: Shadcn/UI + teal-600
+   ============================================= */
 
-    /* ---- DATA ---- */
-    const seed = [
-        { id: 1001, nome: 'Dr. Ricardo Almeida', login: 'dr.ricardo', email: 'ricardo@g4med.com', perfil: 'Médico', status: 'Ativo', ultimo: Date.now() - 18 * 60000, criado: '2025-01-10' },
-        { id: 1002, nome: 'Ana Paula Costa', login: 'anacosta', email: 'ana@g4med.com', perfil: 'Recepção', status: 'Ativo', ultimo: Date.now() - 120 * 60000, criado: '2025-02-05' },
-        { id: 1003, nome: 'Carlos Mendes Jr.', login: 'cmendes', email: 'carlos@g4med.com', perfil: 'Administrador', status: 'Ativo', ultimo: Date.now() - 5 * 60000, criado: '2024-11-20' },
-        { id: 1004, nome: 'Mariana Torres', login: 'mtorres', email: 'mariana@g4med.com', perfil: 'Financeiro', status: 'Bloqueado', ultimo: Date.now() - 2880 * 60000, criado: '2025-03-01' },
-        { id: 1005, nome: 'Bruno Fernandes', login: 'bruno.f', email: 'bruno@g4med.com', perfil: 'Médico', status: 'Ativo', ultimo: Date.now() - 55 * 60000, criado: '2025-01-28' },
-        { id: 1006, nome: 'Fernanda Lima', login: 'fernanda', email: 'fernanda@g4med.com', perfil: 'Recepção', status: 'Ativo', ultimo: Date.now() - 60000, criado: '2025-03-12' },
-        { id: 1007, nome: 'Roberto Castro', login: 'roberto', email: 'roberto@g4med.com', perfil: 'Médico', status: 'Bloqueado', ultimo: Date.now() - 10080 * 60000, criado: '2024-08-15' },
-        { id: 1008, nome: 'Juliana Pires', login: 'juliana', email: 'juliana@g4med.com', perfil: 'Administrador', status: 'Ativo', ultimo: Date.now() - 10 * 60000, criado: '2024-12-01' },
-        { id: 1009, nome: 'Lucas Machado', login: 'lmachado', email: 'lucas@g4med.com', perfil: 'Financeiro', status: 'Ativo', ultimo: Date.now() - 240 * 60000, criado: '2025-02-20' },
-        { id: 1010, nome: 'Camila Ribeiro', login: 'camila.r', email: 'camila@g4med.com', perfil: 'Recepção', status: 'Ativo', ultimo: Date.now() - 30 * 60000, criado: '2025-04-01' }
-    ];
+// =============================================
+// ESTADO GLOBAL
+// =============================================
+let usuariosData = [];
+let filteredUsers = [];
+let usuarioAtual = null;
+let modoEdicao = false;
+let usuarioParaExcluir = null;
+let currentTheme = 'light';
 
-    /* ---- STORAGE ---- */
-    const LS = 'g4med_usuarios_v2';
-    let usuarios = [];
-    try { usuarios = JSON.parse(localStorage.getItem(LS) || '[]'); } catch (e) { }
-    if (!usuarios.length || usuarios.length < seed.length) usuarios = seed.map(s => ({ ...s }));
-    const sv = () => localStorage.setItem(LS, JSON.stringify(usuarios));
+// Dados simulados (em produção, viriam do backend)
+const mockUsuarios = [
+    { id: 'U-001', nome: 'Dr. Rodrigo Silva', login: 'dr.rodrigo', email: 'rodrigo@g4med.com', perfil: 'Administrador', status: 'Ativo', ultimoAcesso: '2026-08-18T10:30:00' },
+    { id: 'U-002', nome: 'Dra. Ana Costa', login: 'dra.ana', email: 'ana@g4med.com', perfil: 'Médico', status: 'Ativo', ultimoAcesso: '2026-08-18T09:15:00' },
+    { id: 'U-003', nome: 'Carlos Oliveira', login: 'carlos.recepcao', email: 'carlos@g4med.com', perfil: 'Recepção', status: 'Ativo', ultimoAcesso: '2026-08-18T08:45:00' },
+    { id: 'U-004', nome: 'Mariana Santos', login: 'mariana.financeiro', email: 'mariana@g4med.com', perfil: 'Financeiro', status: 'Ativo', ultimoAcesso: '2026-08-17T16:20:00' },
+    { id: 'U-005', nome: 'Dr. Pedro Almeida', login: 'dr.pedro', email: 'pedro@g4med.com', perfil: 'Médico', status: 'Bloqueado', ultimoAcesso: '2026-08-15T14:00:00' },
+    { id: 'U-006', nome: 'Juliana Ferreira', login: 'juliana.adm', email: 'juliana@g4med.com', perfil: 'Administrador', status: 'Ativo', ultimoAcesso: '2026-08-18T07:30:00' },
+];
 
-    /* ---- THEME ---- */
-    let dark = localStorage.getItem('g4med_theme_u') === 'dark';
-    const body = document.body;
-    const tt = document.getElementById('tTheme');
-    function applyT() {
-        body.classList.toggle('dark', dark);
-        const ic = tt.querySelector('i'); ic.setAttribute('data-lucide', dark ? 'sun' : 'moon'); lucide.createIcons();
-    }
-    applyT();
-    tt.addEventListener('click', () => { dark = !dark; localStorage.setItem('g4med_theme_u', dark ? 'dark' : 'light'); applyT(); });
-
-    /* ---- UTILS ---- */
-    const pad = n => ('0' + n).slice(-2);
-    const fmt = d => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    const iso = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
-    const ini = n => n.split(' ').filter(Boolean).slice(0, 2).map(s => s[0]).join('').toUpperCase();
-    const bc = { Administrador: 'purple', Médico: 'ok', 'Recepção': 'warn', Financeiro: 'indigo' };
-    const sc = { Ativo: 'ok', Bloqueado: 'fail' };
-    function ago(ms) { const s = ((Date.now() - ms) / 1000) | 0; if (s < 60) return 'agora'; if (s < 3600) return (s / 60 | 0) + 'm'; if (s < 86400) return (s / 3600 | 0) + 'h'; return (s / 86400 | 0) + 'd'; }
-
-    /* ---- REFS ---- */
-    const e = {
-        tbody: document.getElementById('tableBody'), busca: document.getElementById('buscarUsuario'), filtro: document.getElementById('filtroPerfil'),
-        total: document.getElementById('totalUsuarios'), atv: document.getElementById('usuariosAtivos'), blk: document.getElementById('usuariosBloqueados'),
-        adm: document.getElementById('administradores'), showing: document.getElementById('showing'), trows: document.getElementById('totalRows'),
-        sync: document.getElementById('lastSync'), syncF: document.getElementById('syncFooter'),
-        mCad: document.getElementById('mCadastro'), tTag: document.getElementById('tTag'), tTitle: document.getElementById('tTitle'),
-        bSalvar: document.getElementById('bSalvar'), bClose: document.getElementById('bCloseCad'), bCancel: document.getElementById('bCancelCad'),
-        fCad: document.getElementById('fCadastro'), reqSenha: document.getElementById('reqSenha'),
-        cNome: document.getElementById('cNome'), cLogin: document.getElementById('cLogin'), cEmail: document.getElementById('cEmail'),
-        cPerfil: document.getElementById('cPerfil'), cSenha: document.getElementById('cSenha'), cStatus: document.getElementById('cStatus'),
-        hintSenha: document.getElementById('hintSenha'),
-        mDel: document.getElementById('mExcluir'), dNome: document.getElementById('dNome'),
-        bDel: document.getElementById('bConfirmDel'), bCancelDel: document.getElementById('bCancelDel'),
-        toast: document.getElementById('toastBox'),
-    };
-
-    /* ---- KPI ---- */
-    function refreshKpi() {
-        e.total.textContent = usuarios.length;
-        e.atv.textContent = usuarios.filter(u => u.status === 'Ativo').length;
-        e.blk.textContent = usuarios.filter(u => u.status === 'Bloqueado').length;
-        e.adm.textContent = usuarios.filter(u => u.perfil === 'Administrador').length;
-        const d = fmt(new Date());
-        e.sync.textContent = d; e.syncF.textContent = d;
-    }
-
-    /* ---- RENDER ---- */
-    function render() {
-        const q = e.busca.value.trim().toLowerCase(), f = e.filtro.value;
-        let rows = usuarios.filter(u => (!q || u.nome.toLowerCase().includes(q) || u.login.toLowerCase().includes(q)) && (!f || u.perfil === f));
-        rows.sort((a, b) => (b.ultimo || 0) - (a.ultimo || 0));
-        e.trows.textContent = usuarios.length; e.showing.textContent = rows.length;
-        e.tbody.innerHTML = rows.length ? rows.map(u => `
-    <tr onclick="openEdit(${u.id})">
-      <td><div class="avatar-sm">${ini(u.nome)}</div></td>
-      <td>
-        <div class="cell-user">
-          <span class="cu-name">${u.nome}</span>
-          <span class="cu-mail">${u.email}</span>
-        </div>
-      </td>
-      <td class="mono">@${u.login}</td>
-      <td><span class="badge ${bc[u.perfil] || 'ok'}">${u.perfil}</span></td>
-      <td><span class="badge ${sc[u.status] || 'ok'}">${u.status}</span></td>
-      <td class="num" title="${fmt(new Date(u.ultimo))}">${ago(u.ultimo)}</td>
-      <td>
-        <div class="row-actions" onclick="event.stopPropagation()">
-          <button class="act-btn" onclick="openEdit(${u.id})" title="Editar"><i data-lucide="pencil"></i></button>
-          <button class="act-btn del" onclick="openDel(${u.id})" title="Excluir"><i data-lucide="trash-2"></i></button>
-        </div>
-      </td>
-    </tr>`).join('') : `<tr><td colspan="7" style="text-align:center;padding:48px;color:var(--muted)"><i data-lucide="search-x" style="width:40px;height:40px;margin-bottom:12px;display:block;margin:0 auto 12px"></i>Nenhum usuário encontrado</td></tr>`;
-        lucide.createIcons();
-    }
-
-    /* ---- MODAL ---- */
-    let editId = null, delId = null;
-    function openCad(isEdit, id) {
-        editId = isEdit ? id : null; e.tTag.textContent = isEdit ? 'EDITAR' : 'NOVO'; e.tTag.className = 'm-tag';
-        if (isEdit) { const u = usuarios.find(x => x.id === id); if (!u) return; e.tTitle.textContent = 'Editar Usuário'; e.cNome.value = u.nome; e.cLogin.value = u.login; e.cEmail.value = u.email; e.cPerfil.value = u.perfil; e.cStatus.value = u.status; e.cSenha.value = ''; e.reqSenha.classList.remove('req'); e.hintSenha.innerHTML = 'Senha permanece inalterada ao deixar em branco'; }
-        else { e.tTitle.textContent = 'Novo Usuário'; e.fCad.reset(); e.reqSenha.classList.add('req'); e.hintSenha.innerHTML = 'Força: <b>—</b>'; }
-        e.mCad.hidden = false; e.cNome.focus();
-    }
-    window.openEdit = id => openCad(true, id);
-    window.openDel = id => { delId = id; const u = usuarios.find(x => x.id === id); e.dNome.textContent = u ? u.nome : '—'; e.mDel.hidden = false; };
-    function closeCad() { e.mCad.hidden = true; editId = null; } function closeDel() { e.mDel.hidden = true; delId = null; }
-    [e.mCad, e.mDel].forEach(m => m.addEventListener('click', ev => { if (ev.target === m) m.hidden = true; }));
-    e.bClose.addEventListener('click', closeCad); e.bCancel.addEventListener('click', closeCad); e.bCancelDel.addEventListener('click', closeDel);
-
-    /* ---- SAVE ---- */
-    e.bSalvar.addEventListener('click', () => {
-        const n = e.cNome.value.trim(), l = e.cLogin.value.trim(), em = e.cEmail.value.trim(), p = e.cPerfil.value, s = e.cSenha.value, st = e.cStatus.value;
-        if (!n || !l || !em || !p) { toast('Preencha todos os campos obrigatórios', 'err'); return; }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { toast('E-mail inválido', 'err'); return; }
-        if (!editId && (!s || s.length < 6)) { toast('A senha deve ter no mínimo 6 caracteres', 'err'); return; }
-        if (editId) {
-            const i = usuarios.findIndex(x => x.id === editId);
-            if (i > -1) { Object.assign(usuarios[i], { nome: n, login: l, email: em, perfil: p, status: st, ultimo: Date.now() }); sv(); render(); toast('Usuário atualizado', 'ok'); }
-        } else {
-            const nid = Math.max(...usuarios.map(u => u.id), 1000) + 1;
-            usuarios.unshift({ id: nid, nome: n, login: l, email: em, perfil: p, status: st, ultimo: Date.now(), criado: iso() });
-            sv(); render(); refreshKpi(); toast('Usuário cadastrado', 'ok');
-        }
-        closeCad();
-    });
-
-    /* ---- STRENGTH ---- */
-    e.cSenha.addEventListener('input', () => {
-        const s = e.cSenha.value;
-        if (!s) e.hintSenha.innerHTML = 'Força: <b>—</b>';
-        else if (s.length < 6) e.hintSenha.innerHTML = 'Força: <b style="color:var(--fail)">Fraca</b>';
-        else if (s.length < 8) e.hintSenha.innerHTML = 'Força: <b style="color:var(--warn)">Média</b>';
-        else e.hintSenha.innerHTML = 'Força: <b style="color:var(--ok)">Forte</b>';
-    });
-
-    /* ---- DELETE ---- */
-    e.bDel.addEventListener('click', () => { if (delId) { usuarios = usuarios.filter(x => x.id !== delId); sv(); render(); refreshKpi(); toast('Usuário excluído', 'ok'); } closeDel(); });
-
-    /* ---- TOAST ---- */
-    function toast(msg, type = 'info') {
-        const el = document.createElement('div'); el.className = 'toast ' + type;
-        el.innerHTML = `<i data-lucide="${type === 'ok' ? 'check-circle' : type === 'err' ? 'x-circle' : type === 'warn' ? 'alert-triangle' : 'info'}"></i><b>${msg}</b><i data-lucide="x" class="t-close"></i>`;
-        e.toast.appendChild(el); lucide.createIcons();
-        el.querySelector('.t-close').onclick = () => el.remove(); setTimeout(() => el.remove(), 4000);
-    }
-
-    /* ---- EXPORT ---- */
-    document.getElementById('btnExport').addEventListener('click', () => {
-        const rows = usuarios.map(u => ({ ID: u.id, Nome: u.nome, Login: u.login, Email: u.email, Perfil: u.perfil, Status: u.status, 'Ultimo Acesso': fmt(new Date(u.ultimo)), 'Cadastrado em': u.criado }));
-        if (!rows.length) { toast('Nada para exportar', 'warn'); return; }
-        const h = Object.keys(rows[0]).join(','), d = rows.map(r => Object.values(r).map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
-        const blob = new Blob([h + '\n' + d], { type: 'text/csv;charset=utf-8;' }), a = document.createElement('a');
-        a.href = URL.createObjectURL(blob); a.download = 'usuarios_' + iso() + '.csv'; a.click(); toast(`CSV exportado (${rows.length} registros)`, 'ok');
-    });
-
-    /* ---- PRINT ---- */
-    document.getElementById('btnPrint').addEventListener('click', () => {
-        const h = `<html><head><title>Usuários G4Med</title><style>body{font-family:sans-serif;padding:24px}th,td{padding:8px;text-align:left;border-bottom:1px solid #ddd}h2{font-size:18px;margin-bottom:16px}</style></head><body><h2>Usuários G4Med · ${iso()}</h2><table><thead><tr><th>Nome</th><th>Login</th><th>Perfil</th><th>Status</th><th>Email</th><th>Último Acesso</th></tr></thead><tbody>${usuarios.map(u => `<tr><td>${u.nome}</td><td>@${u.login}</td><td>${u.perfil}</td><td>${u.status}</td><td>${u.email}</td><td>${fmt(new Date(u.ultimo))}</td></tr>`).join('')}</tbody></table></body></html>`;
-        const w = window.open('', 'print'); w.document.write(h); w.document.close(); w.focus(); w.print(); w.close();
-    });
-
-    /* ---- INIT ---- */
-    document.getElementById('btnNovoUsuario').addEventListener('click', () => openCad(false));
-    e.busca.addEventListener('input', render);
-    e.filtro.addEventListener('change', render);
+// =============================================
+// INICIALIZAÇÃO
+// =============================================
+document.addEventListener('DOMContentLoaded', function () {
+    // Inicializar ícones Lucide
     lucide.createIcons();
-    refreshKpi();
-    render();
-})();
+
+    // Carregar dados
+    usuariosData = [...mockUsuarios];
+    filteredUsers = [...usuariosData];
+
+    // Popular tabela
+    renderTable();
+
+    // Atualizar stats
+    updateStats();
+
+    // Configurar event listeners
+    configurarEventListeners();
+
+    // Atualizar footer
+    updateFooter();
+
+    console.log('Sistema de Gerenciamento de Usuários inicializado!');
+});
+
+// =============================================
+// CONFIGURAÇÃO DE EVENT LISTENERS
+// =============================================
+function configurarEventListeners() {
+    // Topbar
+    const tTheme = document.getElementById('tTheme');
+    if (tTheme) {
+        tTheme.addEventListener('click', toggleTheme);
+    }
+
+    // Page actions
+    const btnExport = document.getElementById('btnExport');
+    const btnPrint = document.getElementById('btnPrint');
+
+    if (btnExport) {
+        btnExport.addEventListener('click', exportCSV);
+    }
+
+    if (btnPrint) {
+        btnPrint.addEventListener('click', printPage);
+    }
+
+    // Card actions
+    const buscarUsuario = document.getElementById('buscarUsuario');
+    const filtroPerfil = document.getElementById('filtroPerfil');
+    const btnNovoUsuario = document.getElementById('btnNovoUsuario');
+
+    if (buscarUsuario) {
+        buscarUsuario.addEventListener('input', searchUsers);
+    }
+
+    if (filtroPerfil) {
+        filtroPerfil.addEventListener('change', filterByProfile);
+    }
+
+    if (btnNovoUsuario) {
+        btnNovoUsuario.addEventListener('click', openNewUserModal);
+    }
+
+    // Modal Cadastro
+    const bCloseCad = document.getElementById('bCloseCad');
+    const bCancelCad = document.getElementById('bCancelCad');
+    const bSalvar = document.getElementById('bSalvar');
+    const cSenha = document.getElementById('cSenha');
+
+    if (bCloseCad) {
+        bCloseCad.addEventListener('click', closeCadastroModal);
+    }
+
+    if (bCancelCad) {
+        bCancelCad.addEventListener('click', closeCadastroModal);
+    }
+
+    if (bSalvar) {
+        bSalvar.addEventListener('click', salvarUsuario);
+    }
+
+    if (cSenha) {
+        cSenha.addEventListener('input', checkPasswordStrength);
+    }
+
+    // Modal Excluir
+    const bCancelDel = document.getElementById('bCancelDel');
+    const bConfirmDel = document.getElementById('bConfirmDel');
+
+    if (bCancelDel) {
+        bCancelDel.addEventListener('click', closeExcluirModal);
+    }
+
+    if (bConfirmDel) {
+        bConfirmDel.addEventListener('click', confirmDelete);
+    }
+
+    // Fechar modais ao clicar fora
+    const mCadastro = document.getElementById('mCadastro');
+    const mExcluir = document.getElementById('mExcluir');
+
+    if (mCadastro) {
+        mCadastro.addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeCadastroModal();
+            }
+        });
+    }
+
+    if (mExcluir) {
+        mExcluir.addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeExcluirModal();
+            }
+        });
+    }
+
+    // Form validation
+    const fCadastro = document.getElementById('fCadastro');
+    if (fCadastro) {
+        fCadastro.addEventListener('submit', function (e) {
+            e.preventDefault();
+            salvarUsuario();
+        });
+    }
+}
+
+// =============================================
+// FUNÇÕES DE TABELA
+// =============================================
+function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+
+    if (filteredUsers.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 3rem; color: #94a3b8;">
+                    <i data-lucide="inbox" style="width: 48px; height: 48px; margin: 0 auto 1rem; display: block; opacity: 0.5;"></i>
+                    Nenhum usuário encontrado
+                </td>
+            </tr>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
+    filteredUsers.forEach(user => {
+        const tr = document.createElement('tr');
+        tr.dataset.id = user.id;
+
+        tr.innerHTML = `
+            <td>
+                <div class="avatar" style="width: 32px; height: 32px; font-size: 0.75rem;">
+                    ${getInitials(user.nome)}
+                </div>
+            </td>
+            <td>
+                <div style="font-weight: 500;">${user.nome}</div>
+                <div style="font-size: 0.75rem; color: #64748b;">${user.email}</div>
+            </td>
+            <td>${user.login}</td>
+            <td><span class="status-badge" style="background: #dbeafe; color: #1d4ed8;">${user.perfil}</span></td>
+            <td>
+                <span class="status-badge ${user.status.toLowerCase()}">
+                    <span class="status-dot"></span>
+                    ${user.status}
+                </span>
+            </td>
+            <td>${formatLastAccess(user.ultimoAcesso)}</td>
+            <td>
+                <button class="action-btn" onclick="editUser('${user.id}')" aria-label="Editar" title="Editar">
+                    <i data-lucide="edit-2"></i>
+                </button>
+            </td>
+        `;
+
+        // Adicionar evento de clique na linha
+        tr.addEventListener('click', function (e) {
+            if (!e.target.closest('.action-btn')) {
+                selectUser(user.id);
+            }
+        });
+
+        tbody.appendChild(tr);
+    });
+
+    lucide.createIcons();
+
+    // Atualizar contador
+    document.getElementById('showing').textContent = filteredUsers.length;
+    document.getElementById('totalRows').textContent = usuariosData.length;
+}
+
+function selectUser(userId) {
+    // Remove active de todas as linhas
+    const rows = document.querySelectorAll('#tableBody tr');
+    rows.forEach(row => row.classList.remove('active'));
+
+    // Adiciona active na linha selecionada
+    const selectedRow = document.querySelector(`#tableBody tr[data-id="${userId}"]`);
+    if (selectedRow) {
+        selectedRow.classList.add('active');
+    }
+
+    // Carrega dados para edição
+    editUser(userId);
+}
+
+// =============================================
+// FUNÇÕES DE FILTRO E BUSCA
+// =============================================
+function searchUsers() {
+    const termo = document.getElementById('buscarUsuario').value.toLowerCase();
+    const filtroPerfil = document.getElementById('filtroPerfil').value;
+
+    filteredUsers = usuariosData.filter(user => {
+        const matchSearch = !termo ||
+            user.nome.toLowerCase().includes(termo) ||
+            user.login.toLowerCase().includes(termo) ||
+            user.email.toLowerCase().includes(termo);
+
+        const matchProfile = !filtroPerfil || user.perfil === filtroPerfil;
+
+        return matchSearch && matchProfile;
+    });
+
+    renderTable();
+    updateStats();
+}
+
+function filterByProfile() {
+    searchUsers(); // Reutiliza a lógica de busca
+}
+
+// =============================================
+// FUNÇÕES DE STATS
+// =============================================
+function updateStats() {
+    const total = filteredUsers.length;
+    const ativos = filteredUsers.filter(u => u.status === 'Ativo').length;
+    const bloqueados = filteredUsers.filter(u => u.status === 'Bloqueado').length;
+    const administradores = filteredUsers.filter(u => u.perfil === 'Administrador').length;
+
+    document.getElementById('totalUsuarios').textContent = total;
+    document.getElementById('usuariosAtivos').textContent = ativos;
+    document.getElementById('usuariosBloqueados').textContent = bloqueados;
+    document.getElementById('administradores').textContent = administradores;
+}
+
+function updateFooter() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+    document.getElementById('lastSync').textContent = timeStr;
+    document.getElementById('syncFooter').textContent = `Atualizado em ${timeStr}`;
+}
+
+// =============================================
+// FUNÇÕES DE MODAL (CADASTRO)
+// =============================================
+function openNewUserModal() {
+    modoEdicao = false;
+    usuarioAtual = null;
+
+    // Limpar formulário
+    document.getElementById('fCadastro').reset();
+
+    // Atualizar UI
+    document.getElementById('tTag').textContent = 'NOVO';
+    document.getElementById('tTitle').textContent = 'Novo Usuário';
+    document.getElementById('reqSenha').textContent = '*';
+    document.getElementById('hintSenha').innerHTML = 'Força: <b>—</b>';
+
+    // Abrir modal
+    document.getElementById('mCadastro').hidden = false;
+    document.getElementById('cNome').focus();
+}
+
+function editUser(userId) {
+    const user = usuariosData.find(u => u.id === userId);
+    if (!user) return;
+
+    modoEdicao = true;
+    usuarioAtual = user;
+
+    // Preencher formulário
+    document.getElementById('cNome').value = user.nome;
+    document.getElementById('cLogin').value = user.login;
+    document.getElementById('cEmail').value = user.email;
+    document.getElementById('cPerfil').value = user.perfil;
+    document.getElementById('cStatus').value = user.status;
+    document.getElementById('cSenha').value = '';
+
+    // Atualizar UI
+    document.getElementById('tTag').textContent = 'EDITAR';
+    document.getElementById('tTitle').textContent = 'Editar Usuário';
+    document.getElementById('reqSenha').textContent = '(opcional)';
+    document.getElementById('hintSenha').innerHTML = 'Força: <b>—</b>';
+
+    // Abrir modal
+    document.getElementById('mCadastro').hidden = false;
+    document.getElementById('cNome').focus();
+}
+
+function closeCadastroModal() {
+    document.getElementById('mCadastro').hidden = true;
+}
+
+function salvarUsuario() {
+    const nome = document.getElementById('cNome').value.trim();
+    const login = document.getElementById('cLogin').value.trim();
+    const email = document.getElementById('cEmail').value.trim();
+    const perfil = document.getElementById('cPerfil').value;
+    const senha = document.getElementById('cSenha').value;
+    const status = document.getElementById('cStatus').value;
+
+    // Validação básica
+    if (!nome || !login || !email) {
+        showToast('Preencha todos os campos obrigatórios', 'error');
+        return;
+    }
+
+    // Validação de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showToast('E-mail inválido', 'error');
+        return;
+    }
+
+    // Validação de senha (apenas para novo usuário)
+    if (!modoEdicao && senha.length < 6) {
+        showToast('Senha deve ter pelo menos 6 caracteres', 'error');
+        return;
+    }
+
+    if (modoEdicao && usuarioAtual) {
+        // Atualizar usuário existente
+        usuarioAtual.nome = nome;
+        usuarioAtual.login = login;
+        usuarioAtual.email = email;
+        usuarioAtual.perfil = perfil;
+        usuarioAtual.status = status;
+
+        if (senha) {
+            // Atualizar senha (simulado)
+        }
+
+        showToast('Usuário atualizado com sucesso!', 'success');
+    } else {
+        // Criar novo usuário
+        const novoUsuario = {
+            id: 'U-' + String(usuariosData.length + 1).padStart(3, '0'),
+            nome: nome,
+            login: login,
+            email: email,
+            perfil: perfil,
+            status: status,
+            ultimoAcesso: new Date().toISOString()
+        };
+
+        usuariosData.push(novoUsuario);
+        showToast('Usuário criado com sucesso!', 'success');
+    }
+
+    // Atualizar tabela e stats
+    filteredUsers = [...usuariosData];
+    renderTable();
+    updateStats();
+    updateFooter();
+
+    // Fechar modal
+    closeCadastroModal();
+}
+
+// =============================================
+// FUNÇÕES DE MODAL (EXCLUSÃO)
+// =============================================
+function confirmDelete() {
+    if (!usuarioParaExcluir) return;
+
+    // Remover usuário
+    usuariosData = usuariosData.filter(u => u.id !== usuarioParaExcluir.id);
+    filteredUsers = [...usuariosData];
+
+    // Atualizar tabela e stats
+    renderTable();
+    updateStats();
+    updateFooter();
+
+    // Fechar modal
+    closeExcluirModal();
+
+    showToast('Usuário excluído com sucesso!', 'success');
+}
+
+function closeExcluirModal() {
+    document.getElementById('mExcluir').hidden = true;
+    usuarioParaExcluir = null;
+}
+
+// =============================================
+// FUNÇÕES DE AÇÃO
+// =============================================
+function toggleTheme() {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    const btn = document.getElementById('tTheme');
+
+    if (currentTheme === 'dark') {
+        btn.innerHTML = '<i data-lucide="sun"></i>';
+        document.body.style.background = '#0f172a';
+        document.body.style.color = '#f1f5f9';
+        showToast('Tema escuro ativado', 'info');
+    } else {
+        btn.innerHTML = '<i data-lucide="moon"></i>';
+        document.body.style.background = '#e6f7f5';
+        document.body.style.color = '#1e293b';
+        showToast('Tema claro ativado', 'info');
+    }
+
+    lucide.createIcons();
+}
+
+function exportCSV() {
+    const headers = ['ID', 'Nome', 'Login', 'Email', 'Perfil', 'Status', 'Último Acesso'];
+    const rows = filteredUsers.map(user => [
+        user.id,
+        user.nome,
+        user.login,
+        user.email,
+        user.perfil,
+        user.status,
+        user.ultimoAcesso
+    ]);
+
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'usuarios_' + new Date().toISOString().split('T')[0] + '.csv';
+    a.click();
+
+    showToast('CSV exportado com sucesso!', 'success');
+}
+
+function printPage() {
+    window.print();
+}
+
+// =============================================
+// FUNÇÕES AUXILIARES
+// =============================================
+function getInitials(nome) {
+    const parts = nome.split(' ');
+    if (parts.length >= 2) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return nome.substring(0, 2).toUpperCase();
+}
+
+function formatLastAccess(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) {
+        return 'Hoje';
+    } else if (diffDays === 1) {
+        return 'Ontem';
+    } else if (diffDays < 7) {
+        return `${diffDays} dias atrás`;
+    } else {
+        return date.toLocaleDateString('pt-BR');
+    }
+}
+
+function checkPasswordStrength() {
+    const senha = document.getElementById('cSenha').value;
+    const hint = document.getElementById('hintSenha');
+
+    if (!senha) {
+        hint.innerHTML = 'Força: <b>—</b>';
+        return;
+    }
+
+    let strength = 0;
+    if (senha.length >= 6) strength++;
+    if (senha.length >= 8) strength++;
+    if (/[A-Z]/.test(senha)) strength++;
+    if (/[0-9]/.test(senha)) strength++;
+    if (/[^A-Za-z0-9]/.test(senha)) strength++;
+
+    const labels = ['Muito fraca', 'Fraca', 'Média', 'Forte', 'Muito forte'];
+    const colors = ['#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e'];
+
+    const index = Math.min(strength, 4);
+    hint.innerHTML = `Força: <b style="color: ${colors[index]}">${labels[index]}</b>`;
+}
+
+function showToast(message, type = 'info') {
+    const toastBox = document.getElementById('toastBox');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+
+    const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'alert-circle' : 'info';
+    const color = type === 'success' ? 'ok' : type === 'error' ? 'danger' : 'info';
+
+    toast.innerHTML = `
+        <i data-lucide="${icon}" style="color: var(--${color})"></i>
+        <span>${message}</span>
+    `;
+
+    toastBox.appendChild(toast);
+    lucide.createIcons();
+
+    setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease reverse';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Exportar funções para escopo global
+window.editUser = editUser;

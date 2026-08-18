@@ -4,22 +4,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Logs de Auditoria e Rastreamento - G4Med">
+    <meta name="author" content="G4Med Admin">
+
     <title>Logs de Auditoria · G4Med</title>
+
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
         rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="utilitario-logs.css">
+
+    <!-- Configuração do Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        teal: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- CSS Externo -->
+    <link rel="stylesheet" href="./utilitario-logs.css">
 </head>
 
 <body>
-
+    <!-- Topbar -->
     <header class="topbar">
         <div class="topbar-left">
-            <a href="../Menu-Principal.html" class="back-btn"><i data-lucide="arrow-left"></i></a>
+            <a href="../Menu-Principal.html" class="back-btn" aria-label="Voltar">
+                <i data-lucide="arrow-left"></i>
+            </a>
             <div class="brand">
-                <div class="brand-mark"><i data-lucide="activity"></i></div>
+                <div class="brand-mark">
+                    <i data-lucide="activity"></i>
+                </div>
                 <div>
                     <div class="brand-name">G4Med <span>Admin</span></div>
                     <div class="brand-sub">Logs de Auditoria</div>
@@ -27,62 +72,106 @@
             </div>
         </div>
         <div class="topbar-right">
-            <div class="togglex"><span>Auto-refresh</span><button class="togglex-btn on"
-                    id="btnAuto"><span></span></button></div>
-            <button class="icon-btn" id="toggleTheme"><i data-lucide="moon"></i></button>
-            <button class="icon-btn" id="btnRefresh"><i data-lucide="refresh-cw"></i></button>
+            <div class="togglex">
+                <span>Auto-refresh</span>
+                <button class="togglex-btn on" id="btnAuto" aria-label="Alternar auto-refresh">
+                    <span></span>
+                </button>
+            </div>
+            <button class="icon-btn" id="toggleTheme" aria-label="Alternar tema">
+                <i data-lucide="moon"></i>
+            </button>
+            <button class="icon-btn" id="btnRefresh" aria-label="Atualizar">
+                <i data-lucide="refresh-cw"></i>
+            </button>
             <div class="user-chip">
                 <div class="avatar">DR</div>
-                <div class="user-meta"><span class="user-name">Dr. Rodrigo</span><span
-                        class="user-role">Administrador</span></div>
+                <div class="user-meta">
+                    <span class="user-name">Dr. Rodrigo</span>
+                    <span class="user-role">Administrador</span>
+                </div>
             </div>
         </div>
     </header>
 
+    <!-- Main Content -->
     <main class="page">
+        <!-- Page Header -->
         <section class="page-header">
             <div class="page-title">
-                <span class="crumb"><a href="../index.html">Início</a> · Admin · <strong>Logs</strong></span>
+                <span class="crumb">
+                    <a href="../index.html">Início</a> · Admin · <strong>Logs</strong>
+                </span>
                 <h1>Auditoria e Rastreamento</h1>
                 <p>Todas as ações realizadas no sistema — quem, quando, onde e por quê.</p>
             </div>
             <div class="page-actions">
-                <button class="btn ghost" id="btnExport"><i data-lucide="download"></i> Exportar CSV</button>
-                <button class="btn ghost" id="btnPrint"><i data-lucide="printer"></i> Imprimir</button>
-                <button class="btn primary" id="btnLive"><span class="dot-live"></span> Monitorar em tempo real</button>
+                <button class="btn ghost" id="btnExport">
+                    <i data-lucide="download"></i> Exportar CSV
+                </button>
+                <button class="btn ghost" id="btnPrint">
+                    <i data-lucide="printer"></i> Imprimir
+                </button>
+                <button class="btn primary" id="btnLive">
+                    <span class="dot-live"></span> Monitorar em tempo real
+                </button>
             </div>
         </section>
 
+        <!-- KPI Cards -->
         <section class="kpi-row">
             <div class="kpi-card">
                 <div class="kpi-head">
-                    <div class="kpi-icon brand"><i data-lucide="list"></i></div>
-                </div><span class="kpi-label">Total de Eventos</span><span class="kpi-value" id="kpiTotal">0</span>
+                    <div class="kpi-icon brand">
+                        <i data-lucide="list"></i>
+                    </div>
+                </div>
+                <span class="kpi-label">Total de Eventos</span>
+                <span class="kpi-value" id="kpiTotal">0</span>
             </div>
             <div class="kpi-card">
                 <div class="kpi-head">
-                    <div class="kpi-icon ok"><i data-lucide="zap"></i></div><span class="kpi-trend up">+<span
-                            id="kpiNewToday">0</span></span>
-                </div><span class="kpi-label">Hoje</span><span class="kpi-value" id="kpiToday">0</span>
+                    <div class="kpi-icon ok">
+                        <i data-lucide="zap"></i>
+                    </div>
+                    <span class="kpi-trend up">+<span id="kpiNewToday">0</span></span>
+                </div>
+                <span class="kpi-label">Hoje</span>
+                <span class="kpi-value" id="kpiToday">0</span>
             </div>
             <div class="kpi-card">
                 <div class="kpi-head">
-                    <div class="kpi-icon warn"><i data-lucide="alert-triangle"></i></div>
-                </div><span class="kpi-label">Alertas</span><span class="kpi-value" id="kpiWarn">0</span>
+                    <div class="kpi-icon warn">
+                        <i data-lucide="alert-triangle"></i>
+                    </div>
+                </div>
+                <span class="kpi-label">Alertas</span>
+                <span class="kpi-value" id="kpiWarn">0</span>
             </div>
             <div class="kpi-card">
                 <div class="kpi-head">
-                    <div class="kpi-icon info"><i data-lucide="users"></i></div>
-                </div><span class="kpi-label">Usuários Únicos</span><span class="kpi-value" id="kpiUsers">0</span>
+                    <div class="kpi-icon info">
+                        <i data-lucide="users"></i>
+                    </div>
+                </div>
+                <span class="kpi-label">Usuários Únicos</span>
+                <span class="kpi-value" id="kpiUsers">0</span>
             </div>
         </section>
 
+        <!-- Filter Bar -->
         <section class="filter-bar">
-            <div class="filter-group"><label>Período</label>
-                <div class="date-range"><input type="date" id="dateFrom"><span>—</span><input type="date" id="dateTo">
+            <div class="filter-group">
+                <label>Período</label>
+                <div class="date-range">
+                    <input type="date" id="dateFrom">
+                    <span>—</span>
+                    <input type="date" id="dateTo">
                 </div>
             </div>
-            <div class="filter-group"><label>Tipo</label><select id="fTipo">
+            <div class="filter-group">
+                <label>Tipo</label>
+                <select id="fTipo">
                     <option value="">Todos</option>
                     <option value="create">Criação</option>
                     <option value="update">Edição</option>
@@ -91,8 +180,11 @@
                     <option value="logout">Logout</option>
                     <option value="export">Exportação</option>
                     <option value="error">Erro</option>
-                </select></div>
-            <div class="filter-group"><label>Módulo</label><select id="fModulo">
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Módulo</label>
+                <select id="fModulo">
                     <option value="">Todos</option>
                     <option value="Paciente">Pacientes</option>
                     <option value="Agenda">Agenda</option>
@@ -101,27 +193,40 @@
                     <option value="Estoque">Estoque</option>
                     <option value="Usuário">Usuários</option>
                     <option value="Configuração">Configurações</option>
-                </select></div>
-            <div class="filter-group"><label>Usuário</label><select id="fUser">
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Usuário</label>
+                <select id="fUser">
                     <option value="">Todos</option>
-                </select></div>
-            <div class="filter-group"><label>Severidade</label><select id="fSev">
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Severidade</label>
+                <select id="fSev">
                     <option value="">Todas</option>
                     <option value="info">Info</option>
                     <option value="warn">Aviso</option>
                     <option value="error">Erro</option>
                     <option value="critical">Crítico</option>
-                </select></div>
-            <div class="filter-actions"><button class="btn ghost sm" id="btnClear"><i data-lucide="rotate-ccw"></i>
-                    Limpar</button><button class="btn primary sm" id="btnApply"><i data-lucide="filter"></i>
-                    Aplicar</button></div>
+                </select>
+            </div>
+            <div class="filter-actions">
+                <button class="btn ghost sm" id="btnClear">
+                    <i data-lucide="rotate-ccw"></i> Limpar
+                </button>
+                <button class="btn primary sm" id="btnApply">
+                    <i data-lucide="filter"></i> Aplicar
+                </button>
+            </div>
         </section>
 
+        <!-- Chart Card -->
         <section class="card">
             <div class="card-head">
                 <div>
-                    <h3><i data-lucide="bar-chart-3"></i> Atividade por Hora (últimas 24h)</h3><span
-                        class="card-sub">Volume de eventos discriminado por tipo</span>
+                    <h3><i data-lucide="bar-chart-3"></i> Atividade por Hora (últimas 24h)</h3>
+                    <span class="card-sub">Volume de eventos discriminado por tipo</span>
                 </div>
             </div>
             <div class="bar-hours" id="barHours"></div>
@@ -134,30 +239,35 @@
             </div>
         </section>
 
+        <!-- Data Table Card -->
         <section class="card">
             <div class="card-head">
                 <div>
-                    <h3><i data-lucide="scroll-text"></i> Registro de Eventos</h3><span class="card-sub">Clique em uma
-                        linha ou no olho para ver detalhes</span>
+                    <h3><i data-lucide="scroll-text"></i> Registro de Eventos</h3>
+                    <span class="card-sub">Clique em uma linha ou no olho para ver detalhes</span>
                 </div>
                 <div class="card-actions">
-                    <div class="search-mini"><i data-lucide="search"></i><input id="searchLog"
-                            placeholder="Buscar em logs..."></div>
-                    <span class="step-pill">Mostrando <b id="showing">0</b> de <b id="totalRows">0</b></span>
+                    <div class="search-mini">
+                        <i data-lucide="search"></i>
+                        <input id="searchLog" placeholder="Buscar em logs...">
+                    </div>
+                    <span class="step-pill">
+                        Mostrando <b id="showing">0</b> de <b id="totalRows">0</b>
+                    </span>
                 </div>
             </div>
             <div class="table-wrap">
                 <table class="data-table" id="logTable">
                     <thead>
                         <tr>
-                            <th width="140">Timestamp</th>
-                            <th width="140">Usuário</th>
-                            <th width="90">Ação</th>
-                            <th width="100">Módulo</th>
+                            <th style="width: 140px;">Timestamp</th>
+                            <th style="width: 140px;">Usuário</th>
+                            <th style="width: 90px;">Ação</th>
+                            <th style="width: 100px;">Módulo</th>
                             <th>Descrição</th>
-                            <th width="110">IP</th>
-                            <th width="100">Severidade</th>
-                            <th width="60"></th>
+                            <th style="width: 110px;">IP</th>
+                            <th style="width: 100px;">Severidade</th>
+                            <th style="width: 60px;"></th>
                         </tr>
                     </thead>
                     <tbody id="logBody"></tbody>
@@ -165,44 +275,80 @@
             </div>
         </section>
 
+        <!-- Footer -->
         <footer class="page-footer">
             <span>© 2026 G4Med · Auditoria · SLA de retenção: 7 anos · Última sincronização: <b
                     id="lastSync">agora</b></span>
         </footer>
     </main>
 
+    <!-- Detail Modal -->
     <div class="modal" id="detailModal" hidden>
         <div class="modal-card wide">
             <div class="modal-head">
-                <div><span class="modal-tag" id="mTag">INFO</span>
+                <div>
+                    <span class="modal-tag" id="mTag">INFO</span>
                     <h3 id="mTitle">Detalhes do Evento</h3>
                 </div>
-                <button class="icon-btn" id="mClose"><i data-lucide="x"></i></button>
+                <button class="icon-btn" id="mClose">
+                    <i data-lucide="x"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="detail-grid">
-                    <div><label>ID do Evento</label><span id="mId">—</span></div>
-                    <div><label>Usuário</label><span id="mUser">—</span></div>
-                    <div><label>Ação</label><span id="mAction">—</span></div>
-                    <div><label>Módulo</label><span id="mModule">—</span></div>
-                    <div><label>Timestamp</label><span id="mTime">—</span></div>
-                    <div><label>IP</label><span id="mIP">—</span></div>
-                    <div><label>Sessão</label><span id="mSession">—</span></div>
-                    <div><label>Dispositivo</label><span id="mDevice">—</span></div>
+                    <div>
+                        <label>ID do Evento</label>
+                        <span id="mId">—</span>
+                    </div>
+                    <div>
+                        <label>Usuário</label>
+                        <span id="mUser">—</span>
+                    </div>
+                    <div>
+                        <label>Ação</label>
+                        <span id="mAction">—</span>
+                    </div>
+                    <div>
+                        <label>Módulo</label>
+                        <span id="mModule">—</span>
+                    </div>
+                    <div>
+                        <label>Timestamp</label>
+                        <span id="mTime">—</span>
+                    </div>
+                    <div>
+                        <label>IP</label>
+                        <span id="mIP">—</span>
+                    </div>
+                    <div>
+                        <label>Sessão</label>
+                        <span id="mSession">—</span>
+                    </div>
+                    <div>
+                        <label>Dispositivo</label>
+                        <span id="mDevice">—</span>
+                    </div>
                 </div>
-                <div class="detail-block"><label>Descrição</label>
+                <div class="detail-block">
+                    <label>Descrição</label>
                     <p id="mDesc">—</p>
                 </div>
-                <div class="detail-block"><label>Payload / Dados</label>
+                <div class="detail-block">
+                    <label>Payload / Dados</label>
                     <pre class="code" id="mPayload">{}</pre>
                 </div>
             </div>
-            <div class="modal-foot"><button class="btn ghost" id="mCopy">Copiar JSON</button></div>
+            <div class="modal-foot">
+                <button class="btn ghost" id="mCopy">Copiar JSON</button>
+            </div>
         </div>
     </div>
 
+    <!-- Toast Box -->
     <div id="toastBox" class="toast-box"></div>
-    <script src="utilitario-logs.js"></script>
+
+    <!-- JavaScript Externo -->
+    <script src="./utilitario-logs.js"></script>
 </body>
 
 </html>

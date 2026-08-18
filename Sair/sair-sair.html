@@ -4,89 +4,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Médico - G4med</title>
+    <meta name="description" content="Encerramento seguro da sessão G4Med">
+    <title>Encerrar sessão | G4Med</title>
 
-    <link rel="stylesheet" href="sair-sair.css">
+    <!-- Dependências visuais da página: fonte, ícones e folha de estilo modular. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
-
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="sair-sair.css">
 </head>
 
 <body>
-    <!-- BOTÃO SAIR -->
-
-    <button class="menu-item logout-btn" onclick="abrirModalLogout()">
-
-        <i data-lucide="log-out"></i>
-
-        <span>Sair</span>
-
-    </button>
-
-    <!-- MODAL LOGOUT -->
-
-    <div class="modal-logout" id="modalLogout">
-
-        <div class="modal-logout-content">
-
-            <div class="logout-icon">
-                <i data-lucide="log-out"></i>
+    <main class="logout-page">
+        <section class="logout-shell" aria-labelledby="pageTitle">
+            <div class="brand-lockup" aria-label="G4Med Intelligent Health System">
+                <span class="brand-symbol"><i class="fa-solid fa-stethoscope" aria-hidden="true"></i></span>
+                <span><strong>G4Med</strong><small>Intelligent Health System</small></span>
             </div>
 
-            <h2>Encerrar Sessão</h2>
+            <div class="logout-illustration" aria-hidden="true">
+                <div class="illustration-circle circle-large"></div>
+                <div class="illustration-circle circle-small"></div>
+                <div class="logout-shield"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
+                <span class="illustration-dot dot-one"></span><span class="illustration-dot dot-two"></span>
+            </div>
 
-            <p>
-                Tem certeza que deseja sair do sistema?
-            </p>
+            <div class="logout-copy">
+                <span class="eyebrow"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Sessão segura</span>
+                <h1 id="pageTitle">Pronto para sair?</h1>
+                <p>Ao encerrar sua sessão, o acesso a este ambiente será finalizado com segurança.</p>
+            </div>
 
-            <div class="logout-info">
-
-                <div>
-                    <strong>Usuário:</strong>
-                    <span id="logoutUsuario">
-                        Administrador
-                    </span>
+            <div class="session-summary" aria-label="Resumo da sessão atual">
+                <div class="summary-avatar" aria-hidden="true">AD</div>
+                <div class="summary-details"><strong>Administrador</strong><span><i class="fa-solid fa-circle"
+                            aria-hidden="true"></i> Sessão ativa</span></div>
+                <div class="summary-time"><small>Tempo conectado</small><strong id="sessionDuration">00h 00m</strong>
                 </div>
-
-                <div>
-                    <strong>Horário:</strong>
-                    <span id="logoutHora"></span>
-                </div>
-
             </div>
 
             <div class="logout-actions">
-
-                <button class="btn-cancel" onclick="fecharModalLogout()">
-
-                    Cancelar
-
-                </button>
-
-                <button class="btn-logout" onclick="realizarLogout()">
-
-                    Sim, Sair
-
-                </button>
-
+                <button class="button button-secondary" id="cancelLogout" type="button"
+                    data-redirect="../Menu-Principal.html"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                    Continuar no sistema</button>
+                <button class="button button-danger" id="openLogout" type="button"><i
+                        class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Encerrar sessão</button>
             </div>
 
-        </div>
+            <p class="security-note"><i class="fa-solid fa-lock" aria-hidden="true"></i> Seus dados permanecem
+                protegidos durante todo o processo.</p>
+        </section>
+    </main>
 
+    <!-- Modal com confirmação explícita evita encerramentos acidentais. -->
+    <div class="modal-backdrop" id="modalLogout" hidden>
+        <section class="logout-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"
+            aria-describedby="modalDescription">
+            <button class="modal-close" id="closeModal" type="button" aria-label="Fechar confirmação"><i
+                    class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+            <div class="modal-icon"><i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i></div>
+            <span class="eyebrow">Confirmação necessária</span>
+            <h2 id="modalTitle">Encerrar sessão agora?</h2>
+            <p id="modalDescription">Você será redirecionado para a tela de acesso. Será necessário entrar novamente
+                para continuar.</p>
+            <div class="modal-session"><span>Usuário atual</span><strong>Administrador</strong><span
+                    id="logoutHora"></span></div>
+            <div class="modal-actions"><button class="button button-secondary" id="cancelModal"
+                    type="button">Cancelar</button><button class="button button-danger" id="confirmLogout"
+                    type="button"><i class="fa-solid fa-check" aria-hidden="true"></i> Sim, sair</button></div>
+        </section>
     </div>
 
-    <!-- LOADING -->
-
-    <div class="logout-loading" id="logoutLoading">
-
-        <div class="spinner"></div>
-
-        <h3>Encerrando sessão...</h3>
-
+    <!-- Estado visual exibido enquanto a sessão é finalizada. -->
+    <div class="logout-loading" id="logoutLoading" hidden>
+        <div class="loading-card"><span class="loading-spinner" aria-hidden="true"></span><strong>Encerrando
+                sessão</strong><span>Aguarde um momento...</span></div>
     </div>
-    <script>lucide.createIcons();</script>
+
     <script src="sair-sair.js"></script>
 </body>
 

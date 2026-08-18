@@ -16,12 +16,57 @@ document.addEventListener('DOMContentLoaded', () => {
     const nameError = document.getElementById('groupNameError');
     const modalTitle = document.getElementById('newGroupTitle');
 
+    // Novas referências para importação de catálogo
+    const importCatalogBtn = document.getElementById('importCatalogBtn');
+    const catalogFileInput = document.getElementById('catalogFileInput');
+
+    // Referências para a Central de Ajuda (Help Modal)
+    const helpBtn = document.getElementById('helpBtn');
+    const helpModal = document.getElementById('helpModal');
+    const closeHelpModal = document.getElementById('closeHelpModal');
+    const closeHelpAction = document.getElementById('closeHelpAction');
+    const helpBackdrop = document.getElementById('helpBackdrop');
+
+    // Referências para Notificações (Notification Dropdown)
+    const notificationBtn = document.getElementById('notificationBtn');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    const markAllRead = document.getElementById('markAllRead');
+    const notificationBadge = document.getElementById('notificationBadge');
+
     let lastFocus = null;
     let currentPage = 1;
     const rowsPerPage = 5;
     let filteredRows = [...tableRows];
 
-    // --- Modal Management ---
+    // --- Import Catalog Logic ---
+    if (importCatalogBtn && catalogFileInput) {
+        importCatalogBtn.addEventListener('click', () => {
+            catalogFileInput.click(); // Abre a janela de seleção de arquivos do sistema
+        });
+
+        catalogFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Validação simples de extensão
+            const validExtensions = ['csv', 'xlsx', 'json'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+
+            if (!validExtensions.includes(fileExtension)) {
+                alert('Formato de arquivo inválido. Por favor, selecione um arquivo .csv, .xlsx ou .json.');
+                catalogFileInput.value = '';
+                return;
+            }
+
+            // Simulação de processamento de importação bem-sucedida
+            alert(`Arquivo "${file.name}" carregado com sucesso! Processando importação do catálogo...`);
+
+            // Reseta o input para permitir importar o mesmo arquivo novamente se precisar
+            catalogFileInput.value = '';
+        });
+    }
+
+    // --- Modal Management (Novo/Editar Grupo) ---
     function openModal() {
         lastFocus = document.activeElement;
         modal.classList.remove('hidden');
@@ -68,9 +113,104 @@ document.addEventListener('DOMContentLoaded', () => {
     cancelModalBtn?.addEventListener('click', closeModal);
     backdrop?.addEventListener('click', closeModal);
 
+    // --- Help Modal Logic ---
+    function openHelpModal() {
+        if (!helpModal) return;
+        helpModal.classList.remove('hidden');
+        helpModal.setAttribute('aria-hidden', 'false');
+        requestAnimationFrame(() => {
+            helpModal.classList.remove('opacity-0');
+            const panel = helpModal.querySelector('div.max-w-md');
+            if (panel) {
+                panel.classList.remove('scale-95', 'translate-y-2');
+                panel.classList.add('scale-100', 'translate-y-0');
+            }
+        });
+    }
+
+    function closeHelpModalHandler() {
+        if (!helpModal) return;
+        helpModal.classList.add('opacity-0');
+        const panel = helpModal.querySelector('div.max-w-md');
+        if (panel) {
+            panel.classList.remove('scale-100', 'translate-y-0');
+            panel.classList.add('scale-95', 'translate-y-2');
+        }
+        setTimeout(() => {
+            helpModal.classList.add('hidden');
+            helpModal.setAttribute('aria-hidden', 'true');
+        }, 200);
+    }
+
+    helpBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Fecha notificação se estiver aberta
+        if (notificationDropdown && !notificationDropdown.classList.contains('hidden')) {
+            notificationDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
+        }
+        openHelpModal();
+    });
+
+    closeHelpModal?.addEventListener('click', closeHelpModalHandler);
+    closeHelpAction?.addEventListener('click', closeHelpModalHandler);
+    helpBackdrop?.addEventListener('click', closeHelpModalHandler);
+
+    // --- Notification Dropdown Logic ---
+    function toggleNotifications(e) {
+        e.stopPropagation();
+        if (!notificationDropdown) return;
+
+        // Fecha modal de ajuda se estiver aberto
+        if (helpModal && !helpModal.classList.contains('hidden')) {
+            closeHelpModalHandler();
+        }
+
+        const isHidden = notificationDropdown.classList.contains('hidden');
+        if (isHidden) {
+            notificationDropdown.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                notificationDropdown.classList.remove('opacity-0', 'scale-95');
+                notificationDropdown.classList.add('opacity-100', 'scale-100');
+            });
+        } else {
+            notificationDropdown.classList.remove('opacity-100', 'scale-100');
+            notificationDropdown.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => {
+                notificationDropdown.classList.add('hidden');
+            }, 200);
+        }
+    }
+
+    notificationBtn?.addEventListener('click', toggleNotifications);
+
+    markAllRead?.addEventListener('click', () => {
+        if (notificationBadge) {
+            notificationBadge.style.display = 'none';
+        }
+        const unreadDots = notificationDropdown.querySelectorAll('.bg-teal-600');
+        unreadDots.forEach(dot => dot.remove());
+    });
+
+    // Fechar dropdowns ao clicar fora
+    document.addEventListener('click', (e) => {
+        if (notificationDropdown && !notificationDropdown.contains(e.target) && !notificationBtn?.contains(e.target)) {
+            if (!notificationDropdown.classList.contains('hidden')) {
+                notificationDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
+            }
+        }
+    });
+
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
-            closeModal();
+        if (e.key === 'Escape') {
+            if (modal && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+            if (helpModal && !helpModal.classList.contains('hidden')) {
+                closeHelpModalHandler();
+            }
+            if (notificationDropdown && !notificationDropdown.classList.contains('hidden')) {
+                notificationDropdown.classList.add('hidden', 'opacity-0', 'scale-95');
+            }
         }
     });
 

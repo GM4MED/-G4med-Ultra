@@ -4,23 +4,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cadastro de Siglas de Saúde - G4Med">
+    <meta name="author" content="G4Med Admin">
+
     <title>Cadastro de Siglas · G4Med</title>
+
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
         rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="siglas.css">
+
+    <!-- Configuração do Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        teal: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- CSS Externo -->
+    <link rel="stylesheet" href="./siglas.css">
 </head>
 
 <body>
-
-    <!-- TOPBAR -->
-    <header class="topbar">
+    <!-- Topbar -->
+    <header class="topbar w-full">
         <div class="topbar-left">
-            <a href="../Menu-Principal.html" class="back-btn" title="Voltar"><i data-lucide="arrow-left"></i></a>
+            <a href="../Menu-Principal.html" class="back-btn" title="Voltar" aria-label="Voltar">
+                <i data-lucide="arrow-left"></i>
+            </a>
             <div class="brand">
-                <div class="brand-mark"><i data-lucide="list-todo"></i></div>
+                <div class="brand-mark">
+                    <i data-lucide="list-todo"></i>
+                </div>
                 <div>
                     <div class="brand-name">G4Med <span>Cadastro</span></div>
                     <div class="brand-sub">Siglas de Saúde</div>
@@ -28,65 +72,83 @@
             </div>
         </div>
         <div class="topbar-right">
-            <button class="icon-btn" id="toggleTheme" title="Tema"><i data-lucide="moon"></i></button>
+            <button class="icon-btn" id="toggleTheme" title="Tema" aria-label="Alternar tema">
+                <i data-lucide="moon"></i>
+            </button>
             <div class="user-chip">
                 <div class="avatar">DR</div>
-                <div class="user-meta"><span class="user-name">Dr. Rodrigo</span><span
-                        class="user-role">Administrador</span></div>
+                <div class="user-meta">
+                    <span class="user-name">Dr. Rodrigo</span>
+                    <span class="user-role">Administrador</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="page">
-
-        <!-- PAGE HEADER -->
-        <section class="page-header">
+    <!-- Main Content - Full Width -->
+    <main class="page-full">
+        <!-- Page Header -->
+        <section class="page-header w-full">
             <div class="page-title">
-                <span class="crumb"><a href="../index.html">Início</a> · Cadastros · <strong>Siglas</strong></span>
+                <span class="crumb">
+                    <a href="../index.html">Início</a> · Cadastros · <strong>Siglas</strong>
+                </span>
                 <h1>Cadastro de Siglas de Saúde</h1>
                 <p>Gerencie abreviaturas, códigos e siglas utilizadas no sistema. Tudo centralizado e auditável.</p>
             </div>
             <div class="page-actions">
-                <button class="btn ghost" id="btnExport"><i data-lucide="download"></i> Exportar CSV</button>
-                <button class="btn ghost" id="btnPrint"><i data-lucide="printer"></i> Imprimir</button>
+                <button class="btn ghost" id="btnExport">
+                    <i data-lucide="download"></i> Exportar CSV
+                </button>
+                <button class="btn ghost" id="btnPrint">
+                    <i data-lucide="printer"></i> Imprimir
+                </button>
             </div>
         </section>
 
-        <!-- KPI ROW -->
-        <section class="kpi-row">
+        <!-- KPI Row - Full Width -->
+        <section class="kpi-row w-full">
             <div class="kpi-card">
                 <div class="kpi-head">
-                    <div class="kpi-icon brand"><i data-lucide="list"></i></div>
+                    <div class="kpi-icon brand">
+                        <i data-lucide="list"></i>
+                    </div>
                 </div>
                 <span class="kpi-label">Total de Siglas</span>
                 <span class="kpi-value" id="kpiTotal">0</span>
             </div>
             <div class="kpi-card">
                 <div class="kpi-head">
-                    <div class="kpi-icon ok"><i data-lucide="check-circle-2"></i></div>
+                    <div class="kpi-icon ok">
+                        <i data-lucide="check-circle-2"></i>
+                    </div>
                 </div>
                 <span class="kpi-label">Ativas</span>
                 <span class="kpi-value" id="kpiAtivas">0</span>
             </div>
             <div class="kpi-card">
                 <div class="kpi-head">
-                    <div class="kpi-icon warn"><i data-lucide="x-circle"></i></div>
+                    <div class="kpi-icon warn">
+                        <i data-lucide="x-circle"></i>
+                    </div>
                 </div>
                 <span class="kpi-label">Inativas</span>
                 <span class="kpi-value" id="kpiInativas">0</span>
             </div>
             <div class="kpi-card">
                 <div class="kpi-head">
-                    <div class="kpi-icon info"><i data-lucide="clock"></i></div>
+                    <div class="kpi-icon info">
+                        <i data-lucide="clock"></i>
+                    </div>
                 </div>
                 <span class="kpi-label">Última edição</span>
                 <span class="kpi-value" id="kpiLast">—</span>
             </div>
         </section>
 
-        <!-- FORM CARD -->
-        <section class="card form-card" id="formCard">
-            <div class="card-head">
+        <!-- Form Card - Full Width -->
+        <section class="card form-card w-full" id="formCard">
+            <div class="card-head w-full">
                 <div>
                     <h2><i data-lucide="file-plus"></i> <span id="formTitle">Nova Sigla</span></h2>
                     <span class="card-sub">Preencha os campos e clique em Gravar</span>
@@ -94,54 +156,89 @@
                 <span class="step-pill" id="formMode">Modo: <b>Inserção</b></span>
             </div>
 
-            <form id="siglaForm" novalidate>
-                <div class="form-grid">
+            <form id="siglaForm" novalidate autocomplete="off">
+                <div class="form-grid w-full">
                     <div class="field col-1">
-                        <label>ID</label>
-                        <div class="input-wrap"><i data-lucide="hash"></i><input type="text" id="idSigla" readonly
-                                placeholder="Auto"></div>
+                        <label for="idSigla">ID</label>
+                        <div class="input-wrap">
+                            <i data-lucide="hash"></i>
+                            <input type="text" id="idSigla" readonly placeholder="Auto">
+                        </div>
                     </div>
                     <div class="field col-3">
-                        <label>Sigla <span class="req">*</span></label>
-                        <div class="input-wrap"><i data-lucide="type"></i><input type="text" id="sigla"
-                                class="uppercase" placeholder="Ex: AMB, SUS, TCE" maxlength="20" required></div>
-                        <small class="hint">Máximo 20 caracteres · será convertido para maiúsculas</small>
+                        <label for="sigla">Sigla <span class="req">*</span></label>
+                        <div class="input-wrap sigla-combobox" id="siglaCombobox">
+                            <i data-lucide="type"></i>
+                            <input type="text" id="sigla" class="uppercase"
+                                placeholder="Digite ou selecione uma sigla..." maxlength="20" required
+                                autocomplete="off" spellcheck="false" autocapitalize="characters" role="combobox"
+                                aria-expanded="false" aria-autocomplete="list">
+                            <button type="button" class="combobox-trigger" aria-label="Abrir lista de siglas">
+                                <i data-lucide="chevrons-up-down"></i>
+                            </button>
+
+                            <!-- Dropdown Popover -->
+                            <div class="combobox-dropdown" id="siglaDropdown" hidden>
+                                <div class="combobox-search">
+                                    <i data-lucide="search"></i>
+                                    <input type="text" id="siglaSearch" placeholder="Buscar sigla..."
+                                        autocomplete="off">
+                                </div>
+                                <ul class="combobox-list" id="siglaList" role="listbox">
+                                    <!-- Opções serão preenchidas via JavaScript -->
+                                </ul>
+                                <div class="combobox-footer">
+                                    <small><i data-lucide="info"></i> Digite para filtrar ou selecione uma opção</small>
+                                </div>
+                            </div>
+                        </div>
+                        <small class="hint">Máximo 20 caracteres · apenas letras, números e underline</small>
                     </div>
                     <div class="field col-2">
-                        <label>Status</label>
-                        <div class="input-wrap"><i data-lucide="toggle-left"></i>
-                            <select id="status">
+                        <label for="status">Status</label>
+                        <div class="input-wrap">
+                            <i data-lucide="toggle-left"></i>
+                            <select id="status" name="status">
                                 <option value="ativo">Ativo</option>
                                 <option value="inativo">Inativo</option>
                             </select>
                         </div>
+                        <!-- Toggle será injetado via JavaScript -->
                     </div>
                     <div class="field col-6">
-                        <label>Observação</label>
-                        <div class="input-wrap area"><i data-lucide="align-left"></i><textarea id="obs" rows="3"
-                                placeholder="Descrição completa do significado da sigla..."></textarea></div>
+                        <label for="obs">Observação</label>
+                        <div class="input-wrap area">
+                            <i data-lucide="align-left"></i>
+                            <textarea id="obs" name="obs" rows="3" maxlength="500"
+                                placeholder="Descrição completa do significado da sigla..."></textarea>
+                        </div>
                         <small class="hint"><span id="obsLen">0</span>/500 caracteres</small>
                     </div>
                 </div>
 
                 <div class="form-actions">
-                    <button type="button" class="btn ghost" id="btnCancelar"><i data-lucide="rotate-ccw"></i>
-                        Cancelar</button>
-                    <button type="submit" class="btn primary" id="btnGravar"><i data-lucide="save"></i> Gravar</button>
+                    <button type="button" class="btn ghost" id="btnCancelar">
+                        <i data-lucide="rotate-ccw"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn primary" id="btnGravar">
+                        <i data-lucide="save"></i> Gravar
+                    </button>
                 </div>
             </form>
         </section>
 
-        <!-- TOOLBAR + TABLE -->
-        <section class="card">
-            <div class="card-head">
+        <!-- Toolbar + Table - Full Width -->
+        <section class="card w-full">
+            <div class="card-head w-full">
                 <div>
                     <h2><i data-lucide="table-2"></i> Registros Cadastrados</h2>
                     <span class="card-sub">Clique em uma linha para editar ou excluir</span>
                 </div>
                 <div class="card-actions">
-                    <div class="search-mini"><i data-lucide="search"></i><input id="searchSigla"
-                            placeholder="Buscar sigla..."></div>
+                    <div class="search-mini">
+                        <i data-lucide="search"></i>
+                        <input id="searchSigla" type="text" placeholder="Buscar sigla..." autocomplete="off">
+                    </div>
                     <select id="filtroStatus" class="select-sm">
                         <option value="">Todos</option>
                         <option value="ativo">Ativos</option>
@@ -150,48 +247,55 @@
                 </div>
             </div>
 
-            <div class="table-wrap">
-                <table class="data-table" id="tabelaSiglas">
+            <div class="table-wrap w-full">
+                <table class="data-table w-full" id="tabelaSiglas">
                     <thead>
                         <tr>
-                            <th width="70">ID</th>
-                            <th width="140">Sigla</th>
+                            <th style="width: 70px;">ID</th>
+                            <th style="width: 140px;">Sigla</th>
                             <th>Observação</th>
-                            <th width="110">Status</th>
-                            <th width="120">Criado em</th>
-                            <th width="90">Ações</th>
+                            <th style="width: 110px;">Status</th>
+                            <th style="width: 120px;">Criado em</th>
+                            <th style="width: 90px;">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="corpoTabela"></tbody>
                 </table>
             </div>
 
-            <div class="table-foot" id="tableFoot">
+            <div class="table-foot w-full" id="tableFoot">
                 <span>Mostrando <b id="showing">0</b> de <b id="totalRows">0</b> registros</span>
             </div>
         </section>
 
+        <!-- Footer -->
         <footer class="page-footer">
             <span>© 2026 G4Med · Cadastro de Siglas · Última sincronização: <b id="lastSync">agora</b></span>
         </footer>
     </main>
 
-    <!-- DELETE MODAL -->
+    <!-- Delete Modal -->
     <div class="modal" id="delModal" hidden>
         <div class="modal-card">
-            <div class="modal-icon warn"><i data-lucide="alert-triangle"></i></div>
+            <div class="modal-icon warn">
+                <i data-lucide="alert-triangle"></i>
+            </div>
             <h3>Confirmar exclusão</h3>
             <p>Tem certeza que deseja excluir a sigla <b id="delName">—</b>?<br>Esta ação não pode ser desfeita.</p>
             <div class="modal-actions">
                 <button class="btn ghost" id="delCancel">Cancelar</button>
-                <button class="btn danger" id="delConfirm"><i data-lucide="trash-2"></i> Excluir</button>
+                <button class="btn danger" id="delConfirm">
+                    <i data-lucide="trash-2"></i> Excluir
+                </button>
             </div>
         </div>
     </div>
 
+    <!-- Toast Box -->
     <div id="toastBox" class="toast-box"></div>
 
-    <script src="siglas.js"></script>
+    <!-- JavaScript Externo -->
+    <script src="./siglas.js"></script>
 </body>
 
 </html>

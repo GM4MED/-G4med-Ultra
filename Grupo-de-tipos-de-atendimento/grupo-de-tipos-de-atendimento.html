@@ -19,17 +19,77 @@
             <a id="backBtn" href="../Menu-Principal.html" class="back-btn" aria-label="Voltar para o Menu Principal">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <div class="flex items-center gap-6 text-gray-600">
-                <button class="relative icon-btn w-10 h-10 rounded-full" type="button" aria-label="Notificações">
-                    <i class="fas fa-bell text-lg"></i>
-                    <span class="badge" aria-label="3 notificações">3</span>
-                </button>
-                <button class="icon-btn w-10 h-10 rounded-full" type="button" aria-label="Ajuda">
-                    <i class="fas fa-question-circle text-lg"></i>
-                </button>
-                <div class="user-pill">
-                    <div class="avatar">AD</div>
-                    <span class="font-medium text-gray-700">Administrador</span>
+
+            <div class="flex items-center gap-6 text-gray-600 relative">
+
+                <!-- WRAPPER DE NOTIFICAÇÕES -->
+                <div class="relative">
+                    <button id="notificationBtn"
+                        class="relative icon-btn w-10 h-10 rounded-full flex items-center justify-center hover:bg-slate-100 transition-colors focus-ring"
+                        type="button" aria-label="Notificações">
+                        <i class="fas fa-bell text-lg"></i>
+                        <span id="notificationBadge"
+                            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md animate-pulse">3</span>
+                    </button>
+
+                    <!-- Dropdown de Notificações -->
+                    <div id="notificationDropdown"
+                        class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 hidden z-50 transform opacity-0 scale-95 transition-all duration-200 overflow-hidden">
+                        <div class="px-5 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                            <span class="font-bold text-slate-800 text-sm">Notificações</span>
+                            <button id="markAllRead"
+                                class="text-xs text-teal-600 hover:text-teal-700 font-medium transition-colors">Marcar
+                                lidas</button>
+                        </div>
+                        <div class="divide-y divide-slate-100 max-h-72 overflow-y-auto">
+                            <div
+                                class="p-4 hover:bg-slate-50/80 transition-colors cursor-pointer flex gap-3 items-start">
+                                <span class="w-2 h-2 mt-2 rounded-full bg-teal-600 shrink-0"></span>
+                                <div>
+                                    <p class="text-xs font-semibold text-slate-800">Catálogo atualizado</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">O novo lote de tipos de atendimento foi
+                                        sincronizado.</p>
+                                    <span class="text-[10px] text-slate-400 mt-1 block">Há 5 minutos</span>
+                                </div>
+                            </div>
+                            <div
+                                class="p-4 hover:bg-slate-50/80 transition-colors cursor-pointer flex gap-3 items-start">
+                                <span class="w-2 h-2 mt-2 rounded-full bg-teal-600 shrink-0"></span>
+                                <div>
+                                    <p class="text-xs font-semibold text-slate-800">Novo grupo adicionado</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">O grupo "Exames Laboratoriais" foi criado
+                                        com sucesso.</p>
+                                    <span class="text-[10px] text-slate-400 mt-1 block">Há 2 horas</span>
+                                </div>
+                            </div>
+                            <div
+                                class="p-4 hover:bg-slate-50/80 transition-colors cursor-pointer flex gap-3 items-start">
+                                <span class="w-2 h-2 mt-2 rounded-full bg-teal-600 shrink-0"></span>
+                                <div>
+                                    <p class="text-xs font-semibold text-slate-800">Manutenção do sistema</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">Atualização agendada para o próximo final
+                                        de semana.</p>
+                                    <span class="text-[10px] text-slate-400 mt-1 block">Ontem</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WRAPPER DE AJUDA -->
+                <div class="relative">
+                    <button id="helpBtn"
+                        class="icon-btn w-10 h-10 rounded-full flex items-center justify-center hover:bg-slate-100 transition-colors focus-ring"
+                        type="button" aria-label="Ajuda">
+                        <i class="fas fa-question-circle text-lg"></i>
+                    </button>
+                </div>
+
+                <div class="user-pill flex items-center gap-3 pl-2 border-l border-slate-200">
+                    <div
+                        class="avatar w-9 h-9 rounded-full bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-sm">
+                        AD</div>
+                    <span class="font-medium text-gray-700 text-sm hidden sm:inline">Administrador</span>
                     <i class="fas fa-chevron-down text-xs text-gray-400"></i>
                 </div>
             </div>
@@ -44,10 +104,15 @@
                     controle.</p>
             </div>
             <div class="toolbar-actions">
-                <button class="btn btn-secondary" type="button"><i class="fas fa-file-import"></i> Importar
-                    Catálogo</button>
-                <button id="openNewGroupModal" class="btn btn-primary" type="button"><i class="fas fa-plus"></i> Novo
-                    Grupo</button>
+                <!-- Input de arquivo oculto para gerenciar a importação -->
+                <input type="file" id="catalogFileInput" accept=".csv, .xlsx, .json" class="hidden" />
+
+                <button id="importCatalogBtn" class="btn btn-secondary" type="button">
+                    <i class="fas fa-file-import"></i> Importar Catálogo
+                </button>
+                <button id="openNewGroupModal" class="btn btn-primary" type="button">
+                    <i class="fas fa-plus"></i> Novo Grupo
+                </button>
             </div>
         </div>
 
@@ -134,6 +199,7 @@
         </div>
     </main>
 
+    <!-- Modal de Novo / Editar Grupo -->
     <div id="newGroupModal" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-200"
         aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="newGroupTitle">
         <div id="newGroupBackdrop" class="absolute inset-0 bg-slate-900/50"></div>
@@ -182,6 +248,46 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal de Ajuda / Suporte -->
+    <div id="helpModal" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-200" aria-hidden="true"
+        role="dialog" aria-modal="true">
+        <div id="helpBackdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-xs"></div>
+        <div class="relative z-10 min-h-full flex items-center justify-center p-4">
+            <div
+                class="w-full max-w-md mx-4 rounded-2xl bg-white shadow-2xl transform transition-all duration-200 scale-95 translate-y-2 p-6 overflow-hidden">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">
+                            <i class="fas fa-question-circle text-xl"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-900">Central de Ajuda</h3>
+                    </div>
+                    <button id="closeHelpModal" type="button"
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"><i
+                            class="fas fa-xmark"></i></button>
+                </div>
+                <div class="py-4 space-y-3 text-sm text-slate-600">
+                    <p class="font-medium text-slate-800">Dúvidas frequentes sobre Grupos de Atendimento:</p>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <p class="font-semibold text-slate-700 text-xs">Como criar um novo grupo?</p>
+                        <p class="text-xs text-slate-500 mt-1">Clique no botão "Novo Grupo" no canto superior direito e
+                            preencha as informações solicitadas.</p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <p class="font-semibold text-slate-700 text-xs">Como importar um catálogo?</p>
+                        <p class="text-xs text-slate-500 mt-1">Utilize o botão "Importar Catálogo" para enviar arquivos
+                            compactados nos formatos `.csv`, `.xlsx` ou `.json`.</p>
+                    </div>
+                </div>
+                <div class="pt-2 flex justify-end">
+                    <button id="closeHelpAction" type="button"
+                        class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs transition-colors shadow-sm">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="grupo-de-tipos-de-atendimento.js"></script>
 </body>
 

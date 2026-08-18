@@ -1,266 +1,537 @@
-(() => {
-    'use strict';
-    const $ = (s, r = document) => r.querySelector(s);
-    const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+/* =============================================
+   LOGS DE AUDITORIA - G4MED
+   JavaScript Funcional
+   Design System: Shadcn/UI + teal-600
+   ============================================= */
 
-    /* STATE */
-    const STORAGE_KEY = 'g4med_logs';
-    let LOGS = loadData();
-    let autoRefresh = true;
-    let refreshInterval = null;
+// =============================================
+// ESTADO GLOBAL
+// =============================================
+let logsData = [];
+let filteredLogs = [];
+let autoRefresh = true;
+let refreshInterval = null;
+let currentTheme = 'light';
 
-    /* SEED DATA */
-    function seed() {
-        const ago = (m, h) => { const d = new Date(); d.setMinutes(d.getMinutes() - m); d.setHours(d.getHours() - h); return fmt(d); };
-        const users = ['admin', 'dr.rodrigo', 'dra.ana', 'atendente.joao', 'atendente.maria', 'financeiro.paulo'];
-        const ips = ['192.168.1.10', '192.168.1.22', '192.168.1.34', '10.0.0.45', '10.0.0.51'];
-        const devices = ['Chrome 124 · Windows 11', 'Firefox 126 · macOS 14', 'Safari 17 · iOS 17', 'Edge 124 · Windows 10', 'Chrome 124 · Android 14'];
-        const sessions = ['sess_2a4b8c1d', 'sess_7e9f3a2b', 'sess_1c5d8e4f', 'sess_9b2c7d5e', 'sess_4f8a1c3e'];
-        return [
-            { id: 1001, time: '00:45', datetime: ago(45, 0), user: 'admin', type: 'login', module: 'Sistema', sev: 'info', desc: 'Login realizado com sucesso', ip: ips[0], session: sessions[0], device: devices[0], payload: { user: 'admin', method: 'password', mfa: true } },
-            { id: 1000, time: '00:42', datetime: ago(42, 0), user: 'dr.rodrigo', type: 'update', module: 'Paciente', sev: 'info', desc: 'Paciente #4281 atualizado: telefone alterado', ip: ips[1], session: sessions[1], device: devices[1], payload: { id: 4281, field: 'telefone', old: '(11) 98765-4321', new: '(11) 91234-5678', patient: 'Maria Silva' } },
-            { id: 999, time: '00:38', datetime: ago(38, 0), user: 'atendente.joao', type: 'create', module: 'Agenda', sev: 'info', desc: 'Consulta marcada: Dr. Ricardo → paciente #4156', ip: ips[2], session: sessions[2], device: devices[2], payload: { agendaId: 1247, hora: '14:30', medico: 'Dr. Ricardo', paciente: 'Carlos Souza', data: '05/06/2026' } },
-            { id: 998, time: '00:35', datetime: ago(35, 0), user: 'atendente.maria', type: 'delete', module: 'Atendimento', sev: 'warn', desc: 'Atendimento #1842 cancelado pelo usuário', ip: ips[3], session: sessions[3], device: devices[3], payload: { id: 1842, motivo: 'Cancelamento por paciente', data: '05/06/2026 09:00' } },
-            { id: 997, time: '00:28', datetime: ago(28, 0), user: 'financeiro.paulo', type: 'create', module: 'Financeiro', sev: 'info', desc: 'Pagamento recebido: R$ 384,00 via PIX', ip: ips[4], session: sessions[4], device: devices[4], payload: { valor: 384, forma: 'PIX', paciente: 'Ana Beatriz', protocolo: '#PAG-88342' } },
-            { id: 996, time: '00:22', datetime: ago(22, 0), user: 'dra.ana', type: 'update', module: 'Prontuário', sev: 'info', desc: 'Prontuário #3821 editado: receita adicionada', ip: ips[1], session: sessions[1], device: devices[1], payload: { prontuarioId: 3821, medicamentos: ['Dipirona 500mg', 'Amoxicilina 500mg'], paciente: 'João Pereira' } },
-            { id: 995, time: '00:18', datetime: ago(18, 0), user: 'admin', type: 'create', module: 'Usuário', sev: 'info', desc: 'Usuário "financeiro.lucas" criado com perfil Financeiro', ip: ips[0], session: sessions[0], device: devices[0], payload: { novoUser: 'financeiro.lucas', perfil: 'Financeiro', email: 'lucas@g4med.com' } },
-            { id: 994, time: '00:12', datetime: ago(12, 0), user: 'dr.rodrigo', type: 'export', module: 'Relatório', sev: 'info', desc: 'Exportação CSV: Relatório de Atendimentos (maio/2026)', ip: ips[1], session: sessions[1], device: devices[1], payload: { relatorio: 'Atendimentos', periodo: 'maio/2026', registros: 1248 } },
-            { id: 993, time: '00:08', datetime: ago(8, 0), user: 'admin', type: 'update', module: 'Configuração', sev: 'warn', desc: 'Configuração de notificações alterada: SMS desativado', ip: ips[0], session: sessions[0], device: devices[0], payload: { modulo: 'notificacoes', campo: 'sms_habilitado', valor: 'false', antigo: 'true' } },
-            { id: 992, time: '00:04', datetime: ago(4, 0), user: 'financeiro.paulo', type: 'delete', module: 'Financeiro', sev: 'critical', desc: 'Exclusão de fatura #8821 — REQUER APROVAÇÃO', ip: ips[4], session: sessions[4], device: devices[4], payload: { faturaId: 8821, valor: 1200, requerAprovacao: true } },
-            { id: 991, time: '23:52', datetime: ago(30, 3), user: 'atendente.joao', type: 'login', module: 'Sistema', sev: 'warn', desc: 'Tentativa de login com senha incorreta (3ª tentativa)', ip: ips[2], session: sessions[2], device: devices[2], payload: { user: 'atendente.joao', tentativas: 3, timeoutAte: '00:22' } },
-            { id: 990, time: '23:45', datetime: ago(45, 3), user: 'dra.ana', type: 'update', module: 'Agenda', sev: 'info', desc: 'Agenda bloqueada: feriado 07/06 (D+2)', ip: ips[1], session: sessions[1], device: devices[1], payload: { data: '07/06/2026', medico: 'Dr. Ricardo', unidade: 'Itaim Bibi' } },
-            { id: 989, time: '23:30', datetime: ago(0, 4), user: 'dr.rodrigo', type: 'create', module: 'Prescrição', sev: 'info', desc: 'Prescrição gerada para paciente #4281', ip: ips[1], session: sessions[1], device: devices[1], payload: { prescricaoId: 4821, medicamentos: 3, duracao: '7 dias' } },
-            { id: 988, time: '23:15', datetime: ago(4, 4), user: 'financeiro.paulo', type: 'error', module: 'Financeiro', sev: 'error', desc: 'Erro ao processar conciliação: gateway Amil indisponível', ip: ips[4], session: sessions[4], device: devices[4], payload: { gateway: 'Amil', codigo_err: 'TIMEOUT_504' } },
-            { id: 987, time: '23:00', datetime: ago(31, 4), user: 'atendente.maria', type: 'logout', module: 'Sistema', sev: 'info', desc: 'Logout por timeout de sessão (30 min)', ip: ips[3], session: sessions[3], device: devices[3], payload: { timeoutSeg: 1800, ultimaAtividade: '22:52' } },
-            { id: 986, time: '22:45', datetime: ago(15, 5), user: 'admin', type: 'delete', module: 'Usuário', sev: 'info', desc: 'Usuário "estagiario.carlos" desativado', ip: ips[0], session: sessions[0], device: devices[0], payload: { user: 'estagiario.carlos', motivo: 'Término de estágio' } },
-            { id: 985, time: '22:30', datetime: ago(30, 5), user: 'dra.ana', type: 'update', module: 'Paciente', sev: 'info', desc: 'Paciente #3912: convênio alterado de Particular → Unimed', ip: ips[1], session: sessions[1], device: devices[1], payload: { pacienteId: 3912, antigo: 'Particular', novo: 'Unimed' } },
-            { id: 984, time: '22:15', datetime: ago(45, 5), user: 'atendente.joao', type: 'create', module: 'Atendimento', sev: 'info', desc: 'Atendimento emergencial registrado: queixa de dor torácica', ip: ips[2], session: sessions[2], device: devices[2], payload: { atendimentoId: 1956, prioridade: 'EMERGENTE', paciente: 'Luiz Mendes' } },
-            { id: 983, time: '22:00', datetime: ago(0, 6), user: 'financeiro.paulo', type: 'update', module: 'Estoque', sev: 'warn', desc: 'Alerta: "Soro Fisiológico" chegou ao estoque mínimo (42 un)', ip: ips[4], session: sessions[4], device: devices[4], payload: { item: 'Soro Fisiológico 0,9% 500ml', estoqueAtual: 42, estoqueMin: 40 } },
-            { id: 982, time: '21:45', datetime: ago(15, 6), user: 'admin', type: 'login', module: 'Sistema', sev: 'info', desc: 'Login realizado com sucesso', ip: ips[0], session: sessions[0], device: devices[0], payload: { user: 'admin', method: 'password', mfa: true } },
-            { id: 981, time: '21:30', datetime: ago(30, 6), user: 'atendente.maria', type: 'export', module: 'Relatório', sev: 'info', desc: 'PDF gerado: Relatório Financeiro Semanal', ip: ips[3], session: sessions[3], device: devices[3], payload: { formato: 'PDF', periodo: '26/05 a 01/06', bytes: 284000 } },
-            { id: 980, time: '21:15', datetime: ago(45, 6), user: 'dra.ana', type: 'update', module: 'Configuração', sev: 'warn', desc: 'Horário de atendimento alterado: seg-sex 08:00-18:00', ip: ips[1], session: sessions[1], device: devices[1], payload: { dia: 'seg-sex', novoHorario: '08:00-18:00', medico: 'Dra. Ana' } },
+// Dados simulados (em produção, viriam do backend)
+const mockLogs = [
+    { id: 'LOG-001', timestamp: '2026-08-18T10:30:00', user: 'Dr. Rodrigo', action: 'create', module: 'Paciente', description: 'Cadastro de novo paciente', ip: '192.168.1.100', severity: 'info', session: 'sess_abc123', device: 'Chrome/Windows', payload: { pacienteId: 'P-1234', nome: 'João Silva' } },
+    { id: 'LOG-002', timestamp: '2026-08-18T10:25:00', user: 'Dra. Ana', action: 'update', module: 'Agenda', description: 'Atualização de horário de consulta', ip: '192.168.1.101', severity: 'info', session: 'sess_def456', device: 'Firefox/Mac', payload: { consultaId: 'C-5678', novoHorario: '14:00' } },
+    { id: 'LOG-003', timestamp: '2026-08-18T10:20:00', user: 'Dr. Rodrigo', action: 'login', module: 'Usuário', description: 'Login realizado com sucesso', ip: '192.168.1.100', severity: 'info', session: 'sess_abc123', device: 'Chrome/Windows', payload: { userId: 'U-001' } },
+    { id: 'LOG-004', timestamp: '2026-08-18T10:15:00', user: 'Sistema', action: 'error', module: 'Financeiro', description: 'Erro ao processar pagamento', ip: '192.168.1.50', severity: 'error', session: 'sess_sys001', device: 'Server', payload: { erro: 'Timeout', transacaoId: 'T-9999' } },
+    { id: 'LOG-005', timestamp: '2026-08-18T10:10:00', user: 'Dra. Ana', action: 'delete', module: 'Atendimento', description: 'Exclusão de atendimento cancelado', ip: '192.168.1.101', severity: 'warn', session: 'sess_def456', device: 'Firefox/Mac', payload: { atendimentoId: 'A-3456' } },
+    { id: 'LOG-006', timestamp: '2026-08-18T10:05:00', user: 'Dr. Carlos', action: 'export', module: 'Estoque', description: 'Exportação de relatório de estoque', ip: '192.168.1.102', severity: 'info', session: 'sess_ghi789', device: 'Safari/Mac', payload: { relatorio: 'estoque_agosto' } },
+    { id: 'LOG-007', timestamp: '2026-08-18T10:00:00', user: 'Sistema', action: 'logout', module: 'Usuário', description: 'Logout automático por inatividade', ip: '192.168.1.103', severity: 'info', session: 'sess_jkl012', device: 'Server', payload: { userId: 'U-005' } },
+    { id: 'LOG-008', timestamp: '2026-08-18T09:55:00', user: 'Dr. Rodrigo', action: 'update', module: 'Configuração', description: 'Alteração de parâmetros do sistema', ip: '192.168.1.100', severity: 'warn', session: 'sess_abc123', device: 'Chrome/Windows', payload: { parametro: 'taxa_juros', valor: '1.5%' } },
+];
+
+// =============================================
+// INICIALIZAÇÃO
+// =============================================
+document.addEventListener('DOMContentLoaded', function () {
+    // Inicializar ícones Lucide
+    lucide.createIcons();
+
+    // Carregar dados
+    logsData = [...mockLogs];
+    filteredLogs = [...logsData];
+
+    // Popular tabela
+    renderTable();
+
+    // Atualizar KPIs
+    updateKPIs();
+
+    // Renderizar gráfico
+    renderBarChart();
+
+    // Popular filtro de usuários
+    populateUserFilter();
+
+    // Configurar event listeners CORRETAMENTE
+    configurarEventListeners();
+
+    // Iniciar auto-refresh
+    if (autoRefresh) {
+        startAutoRefresh();
+    }
+
+    console.log('Sistema de Logs de Auditoria inicializado!');
+});
+
+// =============================================
+// CONFIGURAÇÃO DE EVENT LISTENERS
+// =============================================
+function configurarEventListeners() {
+    // Botões da topbar
+    const btnAuto = document.getElementById('btnAuto');
+    const btnToggleTheme = document.getElementById('toggleTheme');
+    const btnRefresh = document.getElementById('btnRefresh');
+
+    if (btnAuto) {
+        btnAuto.addEventListener('click', toggleAutoRefresh);
+    }
+
+    if (btnToggleTheme) {
+        btnToggleTheme.addEventListener('click', toggleTheme);
+    }
+
+    if (btnRefresh) {
+        btnRefresh.addEventListener('click', refreshData);
+    }
+
+    // Botões de ação
+    const btnExport = document.getElementById('btnExport');
+    const btnPrint = document.getElementById('btnPrint');
+    const btnLive = document.getElementById('btnLive');
+
+    if (btnExport) {
+        btnExport.addEventListener('click', exportCSV);
+    }
+
+    if (btnPrint) {
+        btnPrint.addEventListener('click', printLogs);
+    }
+
+    if (btnLive) {
+        btnLive.addEventListener('click', toggleLiveMonitor);
+    }
+
+    // Filtros
+    const btnApply = document.getElementById('btnApply');
+    const btnClear = document.getElementById('btnClear');
+
+    if (btnApply) {
+        btnApply.addEventListener('click', applyFilters);
+    }
+
+    if (btnClear) {
+        btnClear.addEventListener('click', clearFilters);
+    }
+
+    // Busca
+    const searchLog = document.getElementById('searchLog');
+    if (searchLog) {
+        searchLog.addEventListener('input', searchLogs);
+    }
+
+    // Modal
+    const mClose = document.getElementById('mClose');
+    const mCopy = document.getElementById('mCopy');
+    const detailModal = document.getElementById('detailModal');
+
+    if (mClose) {
+        mClose.addEventListener('click', closeModal);
+    }
+
+    if (mCopy) {
+        mCopy.addEventListener('click', copyJSON);
+    }
+
+    if (detailModal) {
+        detailModal.addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    }
+}
+
+// =============================================
+// FUNÇÕES DE TABELA
+// =============================================
+function renderTable() {
+    const tbody = document.getElementById('logBody');
+    tbody.innerHTML = '';
+
+    if (filteredLogs.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" style="text-align: center; padding: 3rem; color: #94a3b8;">
+                    <i data-lucide="inbox" style="width: 48px; height: 48px; margin: 0 auto 1rem; display: block; opacity: 0.5;"></i>
+                    Nenhum log encontrado
+                </td>
+            </tr>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
+    filteredLogs.forEach(log => {
+        const tr = document.createElement('tr');
+        tr.dataset.id = log.id;
+
+        tr.innerHTML = `
+            <td>${formatTimestamp(log.timestamp)}</td>
+            <td>${log.user}</td>
+            <td><span class="sev-badge sev-${log.severity}">${log.action}</span></td>
+            <td>${log.module}</td>
+            <td>${log.description}</td>
+            <td>${log.ip}</td>
+            <td><span class="sev-badge sev-${log.severity}">${log.severity}</span></td>
+            <td>
+                <button class="action-btn" onclick="openModal('${log.id}')" aria-label="Ver detalhes">
+                    <i data-lucide="eye"></i>
+                </button>
+            </td>
+        `;
+
+        // Adicionar evento de clique na linha
+        tr.addEventListener('click', function (e) {
+            if (!e.target.closest('.action-btn')) {
+                openModal(log.id);
+            }
+        });
+
+        tbody.appendChild(tr);
+    });
+
+    lucide.createIcons();
+
+    // Atualizar contador
+    document.getElementById('showing').textContent = filteredLogs.length;
+    document.getElementById('totalRows').textContent = logsData.length;
+}
+
+// =============================================
+// FUNÇÕES DE FILTRO
+// =============================================
+function applyFilters() {
+    const fTipo = document.getElementById('fTipo').value;
+    const fModulo = document.getElementById('fModulo').value;
+    const fUser = document.getElementById('fUser').value;
+    const fSev = document.getElementById('fSev').value;
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+
+    filteredLogs = logsData.filter(log => {
+        if (fTipo && log.action !== fTipo) return false;
+        if (fModulo && log.module !== fModulo) return false;
+        if (fUser && log.user !== fUser) return false;
+        if (fSev && log.severity !== fSev) return false;
+        if (dateFrom && new Date(log.timestamp) < new Date(dateFrom)) return false;
+        if (dateTo && new Date(log.timestamp) > new Date(dateTo)) return false;
+        return true;
+    });
+
+    renderTable();
+    updateKPIs();
+    renderBarChart();
+}
+
+function clearFilters() {
+    document.getElementById('fTipo').value = '';
+    document.getElementById('fModulo').value = '';
+    document.getElementById('fUser').value = '';
+    document.getElementById('fSev').value = '';
+    document.getElementById('dateFrom').value = '';
+    document.getElementById('dateTo').value = '';
+
+    filteredLogs = [...logsData];
+    renderTable();
+    updateKPIs();
+    renderBarChart();
+}
+
+function searchLogs() {
+    const termo = document.getElementById('searchLog').value.toLowerCase();
+
+    if (!termo) {
+        filteredLogs = [...logsData];
+    } else {
+        filteredLogs = logsData.filter(log => {
+            return log.description.toLowerCase().includes(termo) ||
+                log.user.toLowerCase().includes(termo) ||
+                log.module.toLowerCase().includes(termo) ||
+                log.id.toLowerCase().includes(termo);
+        });
+    }
+
+    renderTable();
+}
+
+function populateUserFilter() {
+    const users = [...new Set(logsData.map(log => log.user))];
+    const select = document.getElementById('fUser');
+
+    users.forEach(user => {
+        const option = document.createElement('option');
+        option.value = user;
+        option.textContent = user;
+        select.appendChild(option);
+    });
+}
+
+// =============================================
+// FUNÇÕES DE KPI
+// =============================================
+function updateKPIs() {
+    const today = new Date().toISOString().split('T')[0];
+
+    const total = filteredLogs.length;
+    const todayCount = filteredLogs.filter(log => log.timestamp.startsWith(today)).length;
+    const newToday = Math.floor(Math.random() * 10);
+    const alerts = filteredLogs.filter(log => log.severity === 'error' || log.severity === 'critical').length;
+    const uniqueUsers = new Set(filteredLogs.map(log => log.user)).size;
+
+    document.getElementById('kpiTotal').textContent = total;
+    document.getElementById('kpiToday').textContent = todayCount;
+    document.getElementById('kpiNewToday').textContent = newToday;
+    document.getElementById('kpiWarn').textContent = alerts;
+    document.getElementById('kpiUsers').textContent = uniqueUsers;
+}
+
+// =============================================
+// FUNÇÕES DE GRÁFICO
+// =============================================
+function renderBarChart() {
+    const container = document.getElementById('barHours');
+    container.innerHTML = '';
+
+    // Simular dados das últimas 24 horas
+    const hours = [];
+    for (let i = 23; i >= 0; i--) {
+        const hour = new Date();
+        hour.setHours(hour.getHours() - i);
+        hours.push({
+            hour: hour.getHours().toString().padStart(2, '0') + ':00',
+            create: Math.floor(Math.random() * 5),
+            update: Math.floor(Math.random() * 8),
+            delete: Math.floor(Math.random() * 3),
+            login: Math.floor(Math.random() * 6),
+            error: Math.floor(Math.random() * 2)
+        });
+    }
+
+    const maxVal = Math.max(...hours.flatMap(h => [h.create, h.update, h.delete, h.login, h.error]));
+
+    hours.forEach(data => {
+        const col = document.createElement('div');
+        col.className = 'bar-col';
+
+        const stack = document.createElement('div');
+        stack.className = 'bar-stack';
+
+        const segments = [
+            { value: data.create, color: 'var(--brand)' },
+            { value: data.update, color: 'var(--cyan)' },
+            { value: data.delete, color: 'var(--warn)' },
+            { value: data.login, color: 'var(--ok)' },
+            { value: data.error, color: 'var(--danger)' }
         ];
-    }
-    function fmt(d) {
-        return d.getDate().toString().padStart(2, '0') + '/' + d.getMonth() + 1 + '/' + d.getFullYear() + ' ' + d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
-    }
-    function loadData() {
-        try { const d = JSON.parse(localStorage.getItem(STORAGE_KEY)); if (d && d.length) return d; } catch { }
-        return seed();
-    }
-    function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(LOGS)); }
 
-    /* TOAST */
-    function toast(title, msg = '', type = 'ok') {
-        const icons = { ok: 'check-circle-2', warn: 'alert-triangle', danger: 'x-circle', info: 'info' };
-        const el = document.createElement('div');
-        el.className = 'toast ' + type;
-        el.innerHTML = `<i data-lucide="${icons[type]}"></i><div><strong>${title}</strong>${msg ? `<span>${msg}</span>` : ''}</div>`;
-        $('#toastBox').appendChild(el); lucide.createIcons();
-        setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(40px)' }, 3200);
-        setTimeout(() => el.remove(), 3700);
-    }
-
-    /* USERS DROPDOWN */
-    function populateUsers() {
-        const users = [...new Set(LOGS.map(l => l.user))].sort();
-        $('#fUser').innerHTML = '<option value="">Todos</option>' + users.map(u => `<option value="${u}">${u}</option>`).join('');
-    }
-
-    /* KPIs */
-    function updateKPIs() {
-        $('#kpiTotal').textContent = LOGS.length;
-        $('#kpiToday').textContent = LOGS.filter(l => l.time > '00:00' && l.type !== 'login').length;
-        $('#kpiNewToday').textContent = LOGS.filter(l => l.time > '00:00').length;
-        $('#kpiWarn').textContent = LOGS.filter(l => l.sev === 'warn' || l.sev === 'error' || l.sev === 'critical').length;
-        $('#kpiUsers').textContent = [...new Set(LOGS.map(l => l.user))].length;
-    }
-
-    /* BAR CHART */
-    function renderBars() {
-        const hours = [];
-        for (let h = 23; h >= 0; h--) hours.push(h);
-        const typeMap = { create: 0, update: 1, delete: 2, login: 3, error: 4 };
-        const colors = [getCSSVar('--brand'), getCSSVar('--cyan'), getCSSVar('--warn'), getCSSVar('--ok'), getCSSVar('--danger')];
-        const pivo = hours.map(h => [0, 0, 0, 0, 0]);
-        LOGS.forEach(l => {
-            const H = parseInt(l.time);
-            if (H >= 0 && H < 24) { const c = typeMap[l.type] ?? -1; if (c >= 0) pivo[H][c]++; }
-        });
-        const max = Math.max(...pivo.flat(), 1);
-        $('#barHours').innerHTML = hours.map(h => {
-            const total = pivo[h].reduce((a, b) => a + b, 0);
-            const hpt = Math.max((total / max) * 156, 2);
-            return `
-    <div class="bar-col">
-      <div class="bar-stack" style="height:${hpt}px">
-        ${pivo[h].map((v, i) => v > 0 ? `<div class="bar-seg" style="height:${(v / Math.max(total, 1)) * 100}%;background:${colors[i]}"></div>` : '').join('')}
-      </div>
-      <span class="time">${String(h).padStart(2, '0')}h</span>
-    </div>`;
-        }).join('');
-    }
-    function getCSSVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-
-    /* TABLE */
-    let filterQ = '', filterType = '', filterModule = '', filterUser = '', filterSev = '';
-    function renderTable() {
-        const tbody = $('#logBody');
-        const list = LOGS.filter(l => {
-            const q = !filterQ || l.desc.toLowerCase().includes(filterQ) || l.user.toLowerCase().includes(filterQ) || l.module.toLowerCase().includes(filterQ) || String(l.id).includes(filterQ);
-            const t = !filterType || l.type === filterType;
-            const m = !filterModule || l.module === filterModule;
-            const u = !filterUser || l.user === filterUser;
-            const s = !filterSev || l.sev === filterSev;
-            return q && t && m && u && s;
-        }).sort((a, b) => b.id - a.id);
-
-        tbody.innerHTML = list.map(l => {
-            const typeIcon = { login: 'log-in', logout: 'log-out', create: 'plus', update: 'pencil', delete: 'trash-2', export: 'download', error: 'alert-circle' }[l.type] || 'activity';
-            return `
-    <tr data-id="${l.id}">
-      <td><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink3)">${l.time}</span></td>
-      <td>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--cyan));color:#fff;display:grid;place-items:center;font-weight:700;font-size:11px">${l.user.split('.').map(p => p[0]).join('').slice(0, 2).toUpperCase()}</div>
-          <div><strong style="font-size:13px">${l.user}</strong><small style="display:block;color:var(--ink3);font-size:11px">${l.ip}</small></div>
-        </div>
-      </td>
-      <td><span class="type-badge ${l.type}"><i data-lucide="${typeIcon}"></i> ${cap(l.type)}</span></td>
-      <td>${l.module}</td>
-      <td>${l.desc}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink3)">${l.ip}</td>
-      <td><span class="sev-badge ${l.sev}">${cap(l.sev)}</span></td>
-      <td><button class="ico-btn" data-detail="${l.id}" title="Ver detalhes"><i data-lucide="eye"></i></button></td>
-    </tr>`;
-        }).join('') || `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--ink3)">Nenhum log encontrado.</td></tr>`;
-
-        $('#showing').textContent = list.length;
-        $('#totalRows').textContent = LOGS.length;
-        updateKPIs();
-        lucide.createIcons();
-        $$('[data-detail]').forEach(b => b.addEventListener('click', () => openDetail(+b.dataset.detail)));
-    }
-    function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
-
-    /* DETAIL MODAL */
-    function openDetail(id) {
-        const l = LOGS.find(x => x.id === id); if (!l) return;
-        $('#mTag').textContent = l.sev.toUpperCase();
-        $('#mTag').className = 'modal-tag sev-badge ' + l.sev;
-        $('#mId').textContent = '#' + l.id;
-        $('#mUser').textContent = l.user;
-        $('#mAction').textContent = cap(l.type);
-        $('#mModule').textContent = l.module;
-        $('#mTime').textContent = l.datetime || l.time;
-        $('#mIP').textContent = l.ip;
-        $('#mSession').textContent = l.session;
-        $('#mDevice').textContent = l.device;
-        $('#mDesc').textContent = l.desc;
-        $('#mPayload').textContent = JSON.stringify(l.payload || {}, null, 2);
-        $('#detailModal').hidden = false;
-    }
-
-    /* EXPORT CSV */
-    function exportCSV() {
-        const headers = ['ID', 'Timestamp', 'Usuario', 'Acao', 'Modulo', 'Descricao', 'IP', 'Severidade', 'Sessao', 'Dispositivo'];
-        const rows = LOGS.map(l => [l.id, l.datetime || l.time, l.user, l.type, l.module, l.desc, l.ip, l.sev, l.session || '', l.device || '']);
-        const csv = [headers, ...rows].map(r => r.join(';')).join('\n');
-        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `logs-auditoria-g4med-${new Date().toISOString().slice(0, 10)}.csv`;
-        a.click();
-        toast('Exportado', 'CSV de logs gerado com sucesso', 'ok');
-    }
-
-    /* AUTO REFRESH */
-    function setAutoRefresh(on) {
-        autoRefresh = on;
-        if (on) {
-            refreshInterval = setInterval(() => {
-                const t = new Date();
-                LOGS.unshift({
-                    id: LOGS[0].id + 1, time: String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0'),
-                    datetime: nowStr(), user: 'auto.system', type: 'info', module: 'Sistema', sev: 'info',
-                    desc: 'Ciclo de sincronização automática', ip: '127.0.0.1', session: 'sess_system',
-                    device: 'Background Process', payload: { ciclo: true }
-                });
-                renderTable(); renderBars();
-            }, 30000);
-            $('#btnAuto').classList.add('on');
-            toast('Auto-refresh ativado', 'Atualizações a cada 30s', 'ok');
-        } else {
-            clearInterval(refreshInterval); refreshInterval = null;
-            $('#btnAuto').classList.remove('on');
-            toast('Auto-refresh pausado');
-        }
-    }
-    function nowStr() {
-        const n = new Date();
-        return String(n.getDate()).padStart(2, '0') + '/' + String(n.getMonth() + 1).padStart(2, '0') + '/' + n.getFullYear() + ' ' + String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0');
-    }
-
-    /* BINDINGS */
-    function bind() {
-        if (localStorage.getItem('g4med-theme') === 'dark') {
-            document.documentElement.dataset.theme = 'dark';
-            $('#toggleTheme i')?.setAttribute('data-lucide', 'sun');
-        }
-        $('#toggleTheme').addEventListener('click', () => {
-            const cur = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-            document.documentElement.dataset.theme = cur;
-            localStorage.setItem('g4med-theme', cur);
-            $('#toggleTheme i').setAttribute('data-lucide', cur === 'dark' ? 'sun' : 'moon');
-            lucide.createIcons();
-            toast(`Tema ${cur === 'dark' ? 'escuro' : 'claro'} ativado`);
+        segments.forEach(seg => {
+            if (seg.value > 0) {
+                const bar = document.createElement('div');
+                bar.className = 'bar-seg';
+                bar.style.height = (seg.value / maxVal * 100) + 'px';
+                bar.style.background = seg.color;
+                stack.appendChild(bar);
+            }
         });
 
-        $('#btnAuto').addEventListener('click', () => setAutoRefresh(!autoRefresh));
-        $('#btnRefresh').addEventListener('click', () => { renderTable(); renderBars(); toast('Dados atualizados', 'Logs sincronizados', 'ok'); });
-        $('#btnLive').addEventListener('click', () => setAutoRefresh(true));
+        const label = document.createElement('div');
+        label.className = 'bar-label';
+        label.textContent = data.hour;
 
-        const apply = () => {
-            filterQ = $('#searchLog').value.trim().toLowerCase();
-            filterType = $('#fTipo').value;
-            filterModule = $('#fModulo').value;
-            filterUser = $('#fUser').value;
-            filterSev = $('#fSev').value;
-            renderTable();
-            toast('Filtros aplicados', `Mostrando ${$('#showing').textContent} registros`, 'ok');
-        };
-        $('#searchLog').addEventListener('input', () => { filterQ = $('#searchLog').value.trim().toLowerCase(); renderTable(); });
-        $('#btnApply').addEventListener('click', apply);
-        $('#btnClear').addEventListener('click', () => {
-            $$('.filter-group select').forEach(s => s.value = ''); $$('[type=date]').forEach(d => d.value = '');
-            filterQ = ''; filterType = ''; filterModule = ''; filterUser = ''; filterSev = '';
-            $('#searchLog').value = ''; renderTable(); toast('Filtros limpos');
-        });
+        col.appendChild(stack);
+        col.appendChild(label);
+        container.appendChild(col);
+    });
+}
 
-        $('#btnExport').addEventListener('click', exportCSV);
-        $('#btnPrint').addEventListener('click', () => window.print());
+// =============================================
+// FUNÇÕES DE MODAL
+// =============================================
+function openModal(logId) {
+    const log = logsData.find(l => l.id === logId);
+    if (!log) return;
 
-        $('#mClose').addEventListener('click', () => $('#detailModal').hidden = true);
-        $('#detailModal').addEventListener('click', e => { if (e.target === $('#detailModal')) $('#detailModal').hidden = true; });
-        $('#mCopy').addEventListener('click', () => {
-            navigator.clipboard?.writeText($('#mPayload').textContent);
-            toast('Copiado!', 'JSON copiado para área de transferência', 'ok');
-        });
+    document.getElementById('mTag').textContent = log.severity.toUpperCase();
+    document.getElementById('mTitle').textContent = log.description;
+    document.getElementById('mId').textContent = log.id;
+    document.getElementById('mUser').textContent = log.user;
+    document.getElementById('mAction').textContent = log.action;
+    document.getElementById('mModule').textContent = log.module;
+    document.getElementById('mTime').textContent = formatTimestamp(log.timestamp);
+    document.getElementById('mIP').textContent = log.ip;
+    document.getElementById('mSession').textContent = log.session;
+    document.getElementById('mDevice').textContent = log.device;
+    document.getElementById('mDesc').textContent = log.description;
+    document.getElementById('mPayload').textContent = JSON.stringify(log.payload, null, 2);
 
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape' && !$('#detailModal').hidden) $('#detailModal').hidden = true;
-        });
+    document.getElementById('detailModal').hidden = false;
+}
+
+function closeModal() {
+    document.getElementById('detailModal').hidden = true;
+}
+
+function copyJSON() {
+    const payload = document.getElementById('mPayload').textContent;
+    navigator.clipboard.writeText(payload).then(() => {
+        showToast('JSON copiado com sucesso!', 'success');
+    });
+}
+
+// =============================================
+// FUNÇÕES DE AÇÃO - CORREGIDAS
+// =============================================
+function toggleAutoRefresh() {
+    autoRefresh = !autoRefresh;
+    const btn = document.getElementById('btnAuto');
+
+    if (autoRefresh) {
+        btn.classList.add('on');
+        startAutoRefresh();
+        showToast('Auto-refresh ativado', 'info');
+    } else {
+        btn.classList.remove('on');
+        stopAutoRefresh();
+        showToast('Auto-refresh desativado', 'info');
     }
+}
 
-    function init() {
-        lucide.createIcons();
-        populateUsers();
+function startAutoRefresh() {
+    refreshInterval = setInterval(() => {
+        refreshData();
+    }, 30000); // 30 segundos
+}
+
+function stopAutoRefresh() {
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+    }
+}
+
+function refreshData() {
+    const btn = document.getElementById('btnRefresh');
+
+    // Criar animação de spin
+    btn.style.animation = 'spin 1s linear';
+
+    setTimeout(() => {
+        btn.style.animation = '';
+        // Simular novos dados
+        logsData = [...mockLogs];
+        filteredLogs = [...logsData];
         renderTable();
-        renderBars();
-        bind();
-        setAutoRefresh(true);
-        setTimeout(() => toast('Logs de Auditoria', `${LOGS.length} eventos carregados`, 'ok'), 300);
+        updateKPIs();
+        renderBarChart();
+        document.getElementById('lastSync').textContent = 'agora';
+        showToast('Dados atualizados', 'success');
+    }, 1000);
+}
+
+function toggleTheme() {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    const btn = document.getElementById('toggleTheme');
+
+    if (currentTheme === 'dark') {
+        // Trocar ícone para sun
+        btn.innerHTML = '<i data-lucide="sun"></i>';
+        document.body.style.background = '#0f172a';
+        document.body.style.color = '#f1f5f9';
+        showToast('Tema escuro ativado', 'info');
+    } else {
+        // Trocar ícone para moon
+        btn.innerHTML = '<i data-lucide="moon"></i>';
+        document.body.style.background = '#e6f7f5';
+        document.body.style.color = '#1e293b';
+        showToast('Tema claro ativado', 'info');
     }
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-    else init();
-})();
+
+    // Re-renderizar ícones Lucide
+    lucide.createIcons();
+}
+
+function toggleLiveMonitor() {
+    const btn = document.getElementById('btnLive');
+    const dot = btn.querySelector('.dot-live');
+
+    if (dot.style.animation) {
+        dot.style.animation = '';
+        btn.innerHTML = '<span class="dot-live"></span> Monitorar em tempo real';
+        showToast('Monitoramento pausado', 'info');
+    } else {
+        dot.style.animation = 'pulse 2s infinite';
+        btn.innerHTML = '<span class="dot-live"></span> Monitorando...';
+        showToast('Monitoramento em tempo real ativado', 'success');
+    }
+
+    lucide.createIcons();
+}
+
+function exportCSV() {
+    const headers = ['ID', 'Timestamp', 'Usuário', 'Ação', 'Módulo', 'Descrição', 'IP', 'Severidade'];
+    const rows = filteredLogs.map(log => [
+        log.id,
+        log.timestamp,
+        log.user,
+        log.action,
+        log.module,
+        log.description,
+        log.ip,
+        log.severity
+    ]);
+
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'logs_auditoria_' + new Date().toISOString().split('T')[0] + '.csv';
+    a.click();
+
+    showToast('CSV exportado com sucesso!', 'success');
+}
+
+function printLogs() {
+    window.print();
+}
+
+// =============================================
+// FUNÇÕES AUXILIARES
+// =============================================
+function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function showToast(message, type = 'info') {
+    const toastBox = document.getElementById('toastBox');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+        <i data-lucide="${type === 'success' ? 'check-circle' : 'info'}" style="color: var(--${type === 'success' ? 'ok' : 'info'})"></i>
+        <span>${message}</span>
+    `;
+
+    toastBox.appendChild(toast);
+    lucide.createIcons();
+
+    setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease reverse';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Adicionar animação de spin ao CSS
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(style);
+
+// Exportar funções para escopo global
+window.openModal = openModal;

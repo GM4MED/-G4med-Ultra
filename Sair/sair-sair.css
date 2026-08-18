@@ -1,431 +1,500 @@
-/* ==========================================================
-   VARIÁVEIS
-========================================================== */
-
 :root {
+    --primary: #0d9488;
+    --primary-dark: #134e4a;
+    --primary-soft: #ccfbf1;
+    --ink: #172033;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --canvas: #f5f9fb;
     --danger: #dc2626;
     --danger-dark: #b91c1c;
-    --danger-light: #ef4444;
-
-    --primary: #1d4f91;
-
-    --white: #ffffff;
-
-    --gray-50: #f8fafc;
-    --gray-100: #f1f5f9;
-    --gray-200: #e5e7eb;
-    --gray-500: #64748b;
-    --gray-800: #0f172a;
-
-    --shadow-danger: 0 6px 20px rgba(220, 38, 38, 0.25);
-    --shadow-danger-hover: 0 10px 25px rgba(220, 38, 38, 0.35);
+    --danger-soft: #fef2f2;
+    --shadow: 0 18px 45px rgb(15 23 42 / 10%)
 }
 
-/* ==========================================================
-   BOTÃO SAIR
-========================================================== */
-
-.logout-btn {
-    width: 100%;
-    height: 52px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-
-    border: none;
-    border-radius: 14px;
-
-    background: linear-gradient(135deg,
-            var(--danger),
-            var(--danger-light));
-
-    color: var(--white);
-    font-size: 15px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition: all .25s ease;
-
-    box-shadow: var(--shadow-danger);
+* {
+    box-sizing: border-box
 }
 
-.logout-btn:hover {
-    transform: translateY(-2px);
-
-    background: linear-gradient(135deg,
-            var(--danger-dark),
-            var(--danger));
-
-    box-shadow: var(--shadow-danger-hover);
+html {
+    min-height: 100%;
+    scroll-behavior: smooth
 }
 
-.logout-btn:active {
-    transform: scale(.98);
+body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: 'Plus Jakarta Sans', sans-serif
 }
 
-.logout-btn svg {
-    width: 18px;
-    height: 18px;
+button {
+    font: inherit
 }
 
-/* ==========================================================
-   MODAL
-========================================================== */
-
-.modal-logout {
-    position: fixed;
-    inset: 0;
-
-    display: none;
-    align-items: center;
-    justify-content: center;
-
-    background: rgba(15, 23, 42, .65);
-    backdrop-filter: blur(6px);
-
-    z-index: 99999;
+button:focus-visible {
+    outline: 3px solid #5eead4;
+    outline-offset: 3px
 }
 
-.modal-logout.show {
-    display: flex;
+.logout-page {
+    display: grid;
+    min-height: 100vh;
+    place-items: center;
+    padding: 32px 20px;
+    background: radial-gradient(circle at 12% 12%, #e0f7f4 0, transparent 30%), radial-gradient(circle at 88% 88%, #e8f1ff 0, transparent 30%), var(--canvas)
 }
 
-.modal-overlay {
-    position: absolute;
-    inset: 0;
-}
-
-/* ==========================================================
-   CONTEÚDO MODAL
-========================================================== */
-
-.modal-logout-content {
+.logout-shell {
     position: relative;
-    z-index: 2;
-
-    width: 100%;
-    max-width: 500px;
-
-    background: var(--white);
-
-    border-radius: 24px;
-
-    padding: 35px;
-
+    width: min(100%, 520px);
+    padding: 42px;
+    border: 1px solid rgb(255 255 255 / 80%);
+    border-radius: 28px;
+    background: rgb(255 255 255 / 88%);
+    box-shadow: var(--shadow);
     text-align: center;
-
-    animation: logoutShow .25s ease;
+    backdrop-filter: blur(12px)
 }
 
-@keyframes logoutShow {
-
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ==========================================================
-   CABEÇALHO
-========================================================== */
-
-.logout-header {
-    margin-bottom: 25px;
-}
-
-.logout-header h2 {
-    margin-bottom: 10px;
-
-    color: var(--gray-800);
-
-    font-size: 28px;
-    font-weight: 700;
-}
-
-.logout-header p {
-    color: var(--gray-500);
-
-    font-size: 14px;
-    line-height: 1.6;
-}
-
-/* ==========================================================
-   ÍCONE
-========================================================== */
-
-.logout-icon {
-    width: 80px;
-    height: 80px;
-
-    margin: 0 auto 20px;
-
-    display: flex;
+.brand-lockup {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+    text-align: left
+}
 
+.brand-symbol {
+    display: grid;
+    width: 39px;
+    height: 39px;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--primary-soft);
+    color: var(--primary-dark);
+    font-size: 18px
+}
+
+.brand-lockup strong {
+    display: block;
+    color: var(--primary-dark);
+    font-size: 20px;
+    line-height: 1.1
+}
+
+.brand-lockup small {
+    display: block;
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 9px;
+    letter-spacing: .04em
+}
+
+.logout-illustration {
+    position: relative;
+    width: 145px;
+    height: 125px;
+    margin: 0 auto 20px
+}
+
+.illustration-circle {
+    position: absolute;
     border-radius: 50%;
-
-    background: #fee2e2;
+    background: #e8f7f5
 }
 
-.logout-icon svg {
-    width: 36px;
-    height: 36px;
-
-    color: var(--danger);
+.circle-large {
+    width: 124px;
+    height: 124px;
+    top: 0;
+    left: 10px
 }
 
-/* ==========================================================
-   USUÁRIO
-========================================================== */
-
-.logout-user {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-
-    padding: 16px;
-
-    background: var(--gray-50);
-
-    border-radius: 16px;
-
-    margin-bottom: 20px;
+.circle-small {
+    right: 0;
+    bottom: 10px;
+    width: 49px;
+    height: 49px;
+    background: #e0efff
 }
 
-.user-avatar {
-    width: 50px;
-    height: 50px;
+.logout-shield {
+    position: absolute;
+    top: 22px;
+    left: 42px;
+    display: grid;
+    width: 79px;
+    height: 79px;
+    place-items: center;
+    border: 1px solid rgb(255 255 255 / 75%);
+    border-radius: 25px;
+    background: linear-gradient(145deg, #ffffff, #dff5f2);
+    box-shadow: 8px 8px 18px rgb(15 118 110 / 13%), -7px -7px 17px rgb(255 255 255 / 88%);
+    color: var(--primary);
+    font-size: 29px;
+    transform: rotate(-6deg)
+}
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
+.illustration-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-
-    background: linear-gradient(135deg,
-            var(--primary),
-            #2563eb);
-
-    color: var(--white);
-
-    font-weight: 700;
-    font-size: 16px;
+    background: #5eead4
 }
 
-.user-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+.dot-one {
+    top: 5px;
+    right: 24px
 }
 
-.user-info strong {
-    color: var(--gray-800);
-    font-size: 15px;
+.dot-two {
+    bottom: 14px;
+    left: 8px;
+    background: #93c5fd
 }
 
-.user-info span {
-    color: var(--gray-500);
-    font-size: 13px;
-}
-
-/* ==========================================================
-   INFORMAÇÕES
-========================================================== */
-
-.logout-info {
-    background: var(--gray-50);
-
-    border-radius: 16px;
-
-    padding: 16px;
-
-    margin-bottom: 25px;
-}
-
-.logout-info div {
-    display: flex;
-    justify-content: space-between;
+.eyebrow {
+    display: inline-flex;
     align-items: center;
-
-    padding: 8px 0;
+    gap: 7px;
+    color: var(--primary);
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .1em
 }
 
-.logout-info div:not(:last-child) {
-    border-bottom: 1px solid rgba(0, 0, 0, .05);
+.logout-copy h1 {
+    margin: 10px 0 8px;
+    color: var(--ink);
+    font-size: clamp(27px, 5vw, 34px);
+    letter-spacing: -.05em
 }
 
-.logout-info strong {
-    color: var(--gray-800);
-    font-size: 14px;
+.logout-copy p {
+    max-width: 360px;
+    margin: 0 auto;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7
 }
 
-.logout-info span {
-    color: var(--gray-500);
-    font-size: 14px;
+.session-summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 25px 0;
+    padding: 14px;
+    border: 1px solid #e4edf2;
+    border-radius: 15px;
+    background: #fbfdfe;
+    text-align: left
 }
 
-/* ==========================================================
-   AÇÕES
-========================================================== */
+.summary-avatar {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    flex: none;
+    place-items: center;
+    border-radius: 12px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 11px;
+    font-weight: 800
+}
+
+.summary-details {
+    display: grid;
+    gap: 4px;
+    min-width: 0
+}
+
+.summary-details strong {
+    font-size: 11px
+}
+
+.summary-details span {
+    color: #16a34a;
+    font-size: 9px
+}
+
+.summary-details span i {
+    margin-right: 3px;
+    font-size: 6px
+}
+
+.summary-time {
+    display: grid;
+    gap: 4px;
+    margin-left: auto;
+    text-align: right
+}
+
+.summary-time small {
+    color: #94a3b8;
+    font-size: 8px
+}
+
+.summary-time strong {
+    color: #475569;
+    font-size: 11px
+}
 
 .logout-actions {
-    display: flex;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px
 }
 
-.logout-actions button {
-    flex: 1;
-
-    height: 52px;
-
-    border: none;
-    border-radius: 14px;
-
-    font-size: 14px;
-    font-weight: 600;
-
+.button {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 14px;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    font-size: 11px;
+    font-weight: 800;
     cursor: pointer;
-
-    transition: all .25s ease;
+    transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, border-color .18s ease
 }
 
-/* ==========================================================
-   CANCELAR
-========================================================== */
-
-.btn-cancel {
-    background: var(--gray-200);
-    color: var(--gray-800);
-}
-
-.btn-cancel:hover {
-    background: #dbe2ea;
+.button:hover {
     transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgb(15 23 42 / 12%)
 }
 
-/* ==========================================================
-   CONFIRMAR SAÍDA
-========================================================== */
+.button-secondary {
+    border-color: var(--line);
+    background: #fff;
+    color: #475569
+}
 
-.btn-logout-confirm {
+.button-secondary:hover {
+    border-color: #99f6e4;
+    background: #f0fdfa;
+    color: #0f766e
+}
+
+.button-danger {
+    background: var(--danger);
+    color: #fff
+}
+
+.button-danger:hover {
+    background: var(--danger-dark)
+}
+
+.security-note {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-
-    background: linear-gradient(135deg,
-            var(--danger),
-            var(--danger-light));
-
-    color: var(--white);
-
-    box-shadow: var(--shadow-danger);
+    gap: 6px;
+    margin: 22px 0 0;
+    color: #94a3b8;
+    font-size: 9px
 }
 
-.btn-logout-confirm:hover {
-    transform: translateY(-2px);
-
-    background: linear-gradient(135deg,
-            var(--danger-dark),
-            var(--danger));
-
-    box-shadow: var(--shadow-danger-hover);
+.security-note i {
+    color: var(--primary)
 }
 
-.btn-logout-confirm:active {
-    transform: scale(.98);
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgb(15 23 42 / 60%);
+    backdrop-filter: blur(4px)
 }
 
-.btn-logout-confirm svg {
-    width: 18px;
-    height: 18px;
+.modal-backdrop[hidden],
+.logout-loading[hidden] {
+    display: none
 }
 
-/* ==========================================================
-   LOADING
-========================================================== */
+.logout-modal {
+    position: relative;
+    width: min(100%, 420px);
+    padding: 34px 30px 28px;
+    border: 1px solid rgb(255 255 255 / 80%);
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 25px 70px rgb(15 23 42 / 24%);
+    text-align: center;
+    animation: modal-in .2s ease-out
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: grid;
+    width: 31px;
+    height: 31px;
+    place-items: center;
+    border: 0;
+    border-radius: 9px;
+    background: #f8fafc;
+    color: #94a3b8;
+    cursor: pointer
+}
+
+.modal-close:hover {
+    background: #fef2f2;
+    color: var(--danger)
+}
+
+.modal-icon {
+    display: grid;
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 18px;
+    place-items: center;
+    border-radius: 16px;
+    background: var(--danger-soft);
+    color: var(--danger);
+    font-size: 19px
+}
+
+.logout-modal h2 {
+    margin: 9px 0 8px;
+    font-size: 21px;
+    letter-spacing: -.04em
+}
+
+.logout-modal>p {
+    margin: 0 auto;
+    max-width: 310px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.65
+}
+
+.modal-session {
+    display: grid;
+    gap: 5px;
+    margin: 20px 0;
+    padding: 13px;
+    border-radius: 11px;
+    background: #f8fafc;
+    text-align: left
+}
+
+.modal-session span {
+    color: #94a3b8;
+    font-size: 9px
+}
+
+.modal-session strong {
+    color: #334155;
+    font-size: 11px
+}
+
+.modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px
+}
 
 .logout-loading {
     position: fixed;
     inset: 0;
-
-    display: none;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-
-    gap: 20px;
-
-    background: var(--white);
-
-    z-index: 999999;
+    z-index: 40;
+    display: grid;
+    place-items: center;
+    background: rgb(255 255 255 / 90%);
+    backdrop-filter: blur(8px)
 }
 
-.logout-loading.show {
-    display: flex;
+.loading-card {
+    display: grid;
+    justify-items: center;
+    gap: 9px;
+    color: var(--ink);
+    font-size: 12px
 }
 
-.logout-loading h3 {
-    color: var(--gray-800);
-    font-size: 18px;
+.loading-card>span:last-child {
+    color: #94a3b8;
+    font-size: 10px
 }
 
-.logout-loading p {
-    color: var(--gray-500);
-    font-size: 14px;
-}
-
-/* ==========================================================
-   SPINNER
-========================================================== */
-
-.spinner {
-    width: 70px;
-    height: 70px;
-
-    border: 6px solid var(--gray-200);
+.loading-spinner {
+    width: 37px;
+    height: 37px;
+    border: 3px solid #ccfbf1;
     border-top-color: var(--primary);
-
     border-radius: 50%;
-
-    animation: spin 1s linear infinite;
+    animation: spin .8s linear infinite
 }
 
 @keyframes spin {
     to {
-        transform: rotate(360deg);
+        transform: rotate(360deg)
     }
 }
 
-/* ==========================================================
-   RESPONSIVO
-========================================================== */
-
-@media (max-width: 576px) {
-
-    .modal-logout-content {
-        padding: 25px;
-        margin: 20px;
+@keyframes modal-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(.98)
     }
 
-    .logout-actions {
-        flex-direction: column;
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1)
+    }
+}
+
+@media(max-width:560px) {
+    .logout-page {
+        padding: 18px 12px
     }
 
-    .logout-actions button {
-        width: 100%;
+    .logout-shell {
+        padding: 32px 20px 26px;
+        border-radius: 22px
     }
 
-    .logout-header h2 {
-        font-size: 24px;
+    .logout-actions,
+    .modal-actions {
+        grid-template-columns: 1fr
+    }
+
+    .button {
+        min-height: 42px
+    }
+
+    .session-summary {
+        align-items: flex-start
+    }
+
+    .summary-time {
+        margin-top: 3px
+    }
+
+    .security-note {
+        line-height: 1.5
+    }
+}
+
+@media(prefers-reduced-motion:reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important
     }
 }

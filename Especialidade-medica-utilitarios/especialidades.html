@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gestão de Especialidades Médicas - G4Med">
+    <meta name="author" content="G4Med Admin">
+
+    <title>Especialidades Médicas · G4Med</title>
+
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Configuração do Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        teal: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- CSS Externo -->
+    <link rel="stylesheet" href="./especialidades.css">
+</head>
+
+<body>
+    <!-- Topbar -->
+    <header class="topbar w-full">
+        <div class="topbar-left">
+            <a href="../Menu-Principal.html" class="back-btn" title="Voltar" aria-label="Voltar">
+                <i data-lucide="arrow-left"></i>
+            </a>
+            <div class="brand">
+                <div class="brand-mark">
+                    <i data-lucide="stethoscope"></i>
+                </div>
+                <div>
+                    <div class="brand-name">G4Med <span>Cadastros</span></div>
+                    <div class="brand-sub">Especialidades Médicas</div>
+                </div>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <button class="icon-btn" id="toggleTheme" title="Tema" aria-label="Alternar tema">
+                <i data-lucide="moon"></i>
+            </button>
+            <div class="user-chip">
+                <div class="avatar">DR</div>
+                <div class="user-meta">
+                    <span class="user-name">Dr. Rodrigo</span>
+                    <span class="user-role">Administrador</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page-full">
+        <!-- Page Header -->
+        <section class="page-header w-full">
+            <div class="page-title">
+                <span class="crumb">
+                    <a href="../index.html">Início</a> · <a href="cadastros.html">Cadastros</a> · <strong>Especialidades
+                        Médicas</strong>
+                </span>
+                <h1><i data-lucide="user-md"></i> Especialidades Médicas</h1>
+                <p>Gerencie as especialidades médicas disponíveis no sistema de forma centralizada e auditável.</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn primary" id="btnNovaEspecialidade">
+                    <i data-lucide="plus-circle"></i> Nova Especialidade
+                </button>
+            </div>
+        </section>
+
+        <!-- KPI Cards -->
+        <section class="kpi-row w-full">
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon brand">
+                        <i data-lucide="briefcase"></i>
+                    </div>
+                </div>
+                <span class="kpi-label">Total de Especialidades</span>
+                <span class="kpi-value" id="kpiTotal">0</span>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon ok">
+                        <i data-lucide="check-circle-2"></i>
+                    </div>
+                </div>
+                <span class="kpi-label">Especialidades Ativas</span>
+                <span class="kpi-value" id="kpiAtivas">0</span>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon warn">
+                        <i data-lucide="pause-circle"></i>
+                    </div>
+                </div>
+                <span class="kpi-label">Especialidades Inativas</span>
+                <span class="kpi-value" id="kpiInativas">0</span>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-head">
+                    <div class="kpi-icon info">
+                        <i data-lucide="clock"></i>
+                    </div>
+                </div>
+                <span class="kpi-label">Última Atualização</span>
+                <span class="kpi-value" id="kpiLast">—</span>
+            </div>
+        </section>
+
+        <!-- Toolbar + Filters -->
+        <section class="card w-full">
+            <div class="toolbar w-full">
+                <div class="search-box">
+                    <i data-lucide="search"></i>
+                    <input id="searchEspecialidade" type="text" placeholder="Pesquisar especialidade..."
+                        autocomplete="off" aria-label="Pesquisar especialidade">
+                </div>
+                <div class="filters-group">
+                    <select id="filtroStatus" class="filter-select" aria-label="Filtrar por status">
+                        <option value="">Todos os Status</option>
+                        <option value="ativo">Ativas</option>
+                        <option value="inativo">Inativas</option>
+                    </select>
+                    <select id="filtroOrdenacao" class="filter-select" aria-label="Ordenar resultados">
+                        <option value="nome-asc">Nome A-Z</option>
+                        <option value="nome-desc">Nome Z-A</option>
+                        <option value="recentes">Mais Recentes</option>
+                        <option value="antigas">Mais Antigas</option>
+                    </select>
+                    <button class="btn ghost" id="btnLimparFiltros" title="Limpar filtros">
+                        <i data-lucide="x"></i> Limpar
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Table -->
+        <section class="card w-full">
+            <div class="card-head w-full">
+                <div>
+                    <h2><i data-lucide="table-2"></i> Registros Cadastrados</h2>
+                    <span class="card-sub">Clique em uma linha para visualizar ou editar</span>
+                </div>
+            </div>
+
+            <div class="table-wrap w-full">
+                <table class="data-table w-full" id="tabelaEspecialidades">
+                    <thead>
+                        <tr>
+                            <th style="width: 100px;">Código</th>
+                            <th style="width: 200px;">Especialidade</th>
+                            <th>Descrição</th>
+                            <th style="width: 120px;">Profissionais</th>
+                            <th style="width: 100px;">Status</th>
+                            <th style="width: 120px;">Atualização</th>
+                            <th style="width: 100px;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabela">
+                        <!-- Loading skeleton -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="table-foot w-full">
+                <span>Mostrando <b id="showing">0</b> de <b id="totalRows">0</b> registros</span>
+                <div class="pagination" id="pagination">
+                    <!-- Paginação será injetada via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="page-footer">
+            <span>© 2026 G4Med · Sistema de Gestão Hospitalar · Última sincronização: <b id="lastSync">agora</b></span>
+        </footer>
+    </main>
+
+    <!-- Modal Nova/Editar Especialidade -->
+    <div class="modal" id="modalEspecialidade" hidden>
+        <div class="modal-card modal-lg">
+            <div class="modal-head">
+                <div>
+                    <h3 id="modalTitle"><i data-lucide="plus-circle"></i> Nova Especialidade Médica</h3>
+                    <span class="modal-sub">Preencha os campos abaixo para cadastrar</span>
+                </div>
+                <button class="modal-close" id="modalClose" aria-label="Fechar">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <form id="especialidadeForm" novalidate autocomplete="off">
+                <div class="form-grid">
+                    <div class="field col-4">
+                        <label for="codigo">Código <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <i data-lucide="hash"></i>
+                            <input type="text" id="codigo" readonly placeholder="Auto" aria-readonly="true">
+                        </div>
+                        <small class="hint">Gerado automaticamente</small>
+                    </div>
+                    <div class="field col-8">
+                        <label for="nome">Nome da Especialidade <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <i data-lucide="user"></i>
+                            <input type="text" id="nome" placeholder="Ex: Cardiologia, Neurologia..." maxlength="100"
+                                required autocomplete="off">
+                        </div>
+                        <small class="hint">Nome completo da especialidade médica</small>
+                    </div>
+                    <div class="field col-12">
+                        <label for="descricao">Descrição</label>
+                        <div class="input-wrap area">
+                            <i data-lucide="align-left"></i>
+                            <textarea id="descricao" rows="4" maxlength="500"
+                                placeholder="Descreva a especialidade médica, área de atuação, procedimentos realizados..."></textarea>
+                        </div>
+                        <small class="hint"><span id="descLen">0</span>/500 caracteres</small>
+                    </div>
+                    <div class="field col-6">
+                        <label for="status">Status</label>
+                        <div class="input-wrap">
+                            <i data-lucide="toggle-left"></i>
+                            <select id="status" name="status">
+                                <option value="ativo">Ativa</option>
+                                <option value="inativo">Inativa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field col-6">
+                        <label for="observacoes">Observações</label>
+                        <div class="input-wrap">
+                            <i data-lucide="file-text"></i>
+                            <input type="text" id="observacoes" placeholder="Observações adicionais..." maxlength="200">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn ghost" id="btnCancelar">
+                        <i data-lucide="rotate-ccw"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn primary" id="btnGravar">
+                        <i data-lucide="save"></i> Gravar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Visualização -->
+    <div class="modal" id="modalVisualizar" hidden>
+        <div class="modal-card modal-md">
+            <div class="modal-head">
+                <div>
+                    <h3><i data-lucide="eye"></i> Visualizar Especialidade</h3>
+                    <span class="modal-sub">Detalhes completos do registro</span>
+                </div>
+                <button class="modal-close" id="modalViewClose" aria-label="Fechar">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <div class="view-content">
+                <div class="view-item">
+                    <span class="view-label">Código</span>
+                    <span class="view-value" id="viewCodigo">—</span>
+                </div>
+                <div class="view-item">
+                    <span class="view-label">Especialidade</span>
+                    <span class="view-value" id="viewNome">—</span>
+                </div>
+                <div class="view-item">
+                    <span class="view-label">Descrição</span>
+                    <span class="view-value" id="viewDescricao">—</span>
+                </div>
+                <div class="view-item">
+                    <span class="view-label">Profissionais Vinculados</span>
+                    <span class="view-value" id="viewProfissionais">—</span>
+                </div>
+                <div class="view-item">
+                    <span class="view-label">Status</span>
+                    <span class="view-value" id="viewStatus">—</span>
+                </div>
+                <div class="view-item">
+                    <span class="view-label">Criada em</span>
+                    <span class="view-value" id="viewCriada">—</span>
+                </div>
+                <div class="view-item">
+                    <span class="view-label">Última Atualização</span>
+                    <span class="view-value" id="viewAtualizacao">—</span>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn ghost" id="modalViewClose2">
+                    <i data-lucide="x"></i> Fechar
+                </button>
+                <button class="btn primary" id="btnEditarDoView">
+                    <i data-lucide="edit-2"></i> Editar Especialidade
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmação Exclusão -->
+    <div class="modal" id="modalExcluir" hidden>
+        <div class="modal-card modal-sm">
+            <div class="modal-icon warn">
+                <i data-lucide="alert-triangle"></i>
+            </div>
+            <h3>Confirmar Exclusão</h3>
+            <p>Tem certeza que deseja excluir a especialidade <b id="delNome">—</b>?<br>Esta ação não pode ser desfeita.
+            </p>
+            <div class="modal-actions">
+                <button class="btn ghost" id="delCancel">Cancelar</button>
+                <button class="btn danger" id="delConfirm">
+                    <i data-lucide="trash-2"></i> Excluir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Box -->
+    <div id="toastBox" class="toast-box"></div>
+
+    <!-- JavaScript Externo -->
+    <script src="./especialidades.js"></script>
+</body>
+
+</html>
