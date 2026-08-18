@@ -206,7 +206,7 @@ a:focus-visible {
 
 .toast.info {
     background: #eff6ff;
-    color: #1d4ed8;
+    color: #7a1332;
     border: 1px solid #bfdbfe;
 }
 
@@ -227,7 +227,7 @@ a:focus-visible {
     background: #fff;
     color: var(--slate-800);
     font-weight: 600;
-    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+    box-shadow: 0 6px 16px rgba(42, 15, 30, 0.05);
     transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
