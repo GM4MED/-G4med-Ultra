@@ -1,132 +1,938 @@
-/* ==========================================
-   1. Tailwind CSS Directives
-   ================================---------- */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* =========================================================
+   G4Med — Procedimento Médico
+   CSS complementar ao Tailwind CSS
+   Cor primária: teal-600 — #0D9488
+   ========================================================= */
 
-/* ==========================================
-   2. Base Styles
-   ================================---------- */
-@layer base {
-    :root {
-        /* CSS Variables para facilitar manutenção e temas */
-        --scrollbar-track: theme('colors.slate.100');
-        --scrollbar-thumb: theme('colors.slate.300');
-        --scrollbar-thumb-hover: theme('colors.slate.400');
+/* ---------------------------------------------------------
+   Utilitários
+   --------------------------------------------------------- */
+
+[hidden] {
+    display: none !important;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-width: 320px;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+input,
+select,
+textarea {
+    max-width: 100%;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #94a3b8;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+[contenteditable="true"]:focus-visible {
+    outline: 3px solid rgb(13 148 136 / 25%);
+    outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------
+   Identidade visual e logotipo
+   --------------------------------------------------------- */
+
+.brand-logo {
+    display: grid;
+    width: 7rem;
+    height: 3rem;
+    flex: 0 0 auto;
+    place-items: center;
+    overflow: hidden;
+    background: transparent;
+    border-radius: 0.75rem;
+}
+
+.brand-logo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.brand-logo:hover {
+    opacity: 0.9;
+}
+
+.section-icon {
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: 0 0 auto;
+    place-items: center;
+    color: #0d9488;
+    background: #f0fdfa;
+    border-radius: 0.75rem;
+    font-weight: 800;
+}
+
+.label-muted {
+    margin-bottom: 0.25rem;
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------
+   Cards e títulos de seção
+   --------------------------------------------------------- */
+
+.card {
+    padding: 1.25rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgb(15 23 42 / 4%);
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.card-title h2 {
+    color: #0b1f3a;
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.card-title p {
+    margin-top: 0.15rem;
+    color: #64748b;
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+/* ---------------------------------------------------------
+   Formulários
+   --------------------------------------------------------- */
+
+.field {
+    min-width: 0;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: #334155;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.field label span {
+    color: #0d9488;
+}
+
+.input,
+.textarea {
+    width: 100%;
+    color: #1e293b;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.55rem;
+    outline: 0;
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        background-color 160ms ease;
+}
+
+.input {
+    height: 2.7rem;
+    padding: 0.65rem 0.75rem;
+}
+
+.textarea {
+    min-height: 7rem;
+    padding: 0.75rem;
+    resize: vertical;
+}
+
+.input:hover,
+.textarea:hover {
+    border-color: #b8c7cf;
+}
+
+.input:focus,
+.textarea:focus {
+    border-color: #0d9488;
+    box-shadow: 0 0 0 3px rgb(13 148 136 / 14%);
+}
+
+.input:read-only {
+    color: #64748b;
+    background: #f1f5f9;
+}
+
+.field-error,
+.error {
+    min-height: 1rem;
+    margin-top: 0.3rem;
+    color: #dc2626;
+    font-size: 0.72rem;
+    line-height: 1.35;
+}
+
+.field.has-error .input,
+.field.has-error .textarea {
+    border-color: #dc2626;
+}
+
+.field.has-error .input:focus,
+.field.has-error .textarea:focus {
+    box-shadow: 0 0 0 3px rgb(220 38 38 / 14%);
+}
+
+/* ---------------------------------------------------------
+   Resumo do paciente
+   --------------------------------------------------------- */
+
+.patient-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f0fdfa;
+    border: 1px solid #ccfbf1;
+    border-radius: 0.75rem;
+}
+
+.patient-summary h3 {
+    color: #0b1f3a;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.patient-summary strong {
+    color: #334155;
+    font-weight: 700;
+}
+
+/* ---------------------------------------------------------
+   Botões
+   --------------------------------------------------------- */
+
+.btn {
+    display: inline-flex;
+    min-height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid transparent;
+    border-radius: 0.55rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    line-height: 1.2;
+    transition:
+        color 160ms ease,
+        background-color 160ms ease,
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-primary {
+    color: #ffffff;
+    background: #0d9488;
+}
+
+.btn-primary:hover {
+    background: #0f766e;
+}
+
+.btn-primary:focus-visible {
+    outline-color: rgb(13 148 136 / 40%);
+}
+
+.btn-outline {
+    color: #334155;
+    background: #ffffff;
+    border-color: #e2e8f0;
+}
+
+.btn-outline:hover {
+    color: #0d9488;
+    background: #f8fafc;
+    border-color: #0d9488;
+}
+
+.icon-btn {
+    display: inline-grid;
+    width: 2.35rem;
+    height: 2.35rem;
+    place-items: center;
+    padding: 0;
+    color: #64748b;
+    background: transparent;
+    border: 0;
+    border-radius: 0.5rem;
+    font-size: 1.6rem;
+    line-height: 1;
+    transition:
+        color 160ms ease,
+        background-color 160ms ease;
+}
+
+.icon-btn:hover {
+    color: #0d9488;
+    background: #f0fdfa;
+}
+
+/* ---------------------------------------------------------
+   Badges de status
+   --------------------------------------------------------- */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 1.7rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.status-agendado {
+    color: #92400e;
+    background: #fef3c7;
+}
+
+.status-andamento {
+    color: #1d4ed8;
+    background: #dbeafe;
+}
+
+.status-concluido {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.status-cancelado {
+    color: #991b1b;
+    background: #fee2e2;
+}
+
+/* ---------------------------------------------------------
+   Busca de pacientes
+   --------------------------------------------------------- */
+
+.search-results {
+    position: relative;
+    z-index: 5;
+    max-height: 15rem;
+    margin-top: 0.25rem;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.55rem;
+    box-shadow: 0 10px 30px rgb(15 23 42 / 12%);
+}
+
+.search-result {
+    display: block;
+    width: 100%;
+    padding: 0.7rem 0.8rem;
+    color: #334155;
+    text-align: left;
+    background: #ffffff;
+    border: 0;
+    transition: background-color 160ms ease;
+}
+
+.search-result:hover,
+.search-result:focus-visible {
+    background: #f0fdfa;
+}
+
+.search-result strong {
+    display: block;
+    color: #0b1f3a;
+    font-size: 0.8rem;
+    line-height: 1.3;
+}
+
+.search-result small {
+    display: block;
+    margin-top: 0.2rem;
+    color: #64748b;
+    font-size: 0.7rem;
+}
+
+/* ---------------------------------------------------------
+   Navegação por abas
+   --------------------------------------------------------- */
+
+.tabs {
+    display: flex;
+    gap: 0.25rem;
+    overflow-x: auto;
+    padding: 0.35rem 0.5rem 0;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    border-radius: 1rem 1rem 0 0;
+    scrollbar-width: thin;
+}
+
+.tabs::-webkit-scrollbar {
+    height: 0.3rem;
+}
+
+.tabs::-webkit-scrollbar-thumb {
+    background: #99f6e4;
+    border-radius: 999px;
+}
+
+.tab {
+    position: relative;
+    flex: 0 0 auto;
+    padding: 0.8rem;
+    color: #64748b;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    font-size: 0.78rem;
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition:
+        color 160ms ease,
+        border-color 160ms ease;
+}
+
+.tab:hover,
+.tab.is-active {
+    color: #0d9488;
+}
+
+.tab.is-active {
+    border-bottom-color: #0d9488;
+}
+
+.tab-panel {
+    padding-top: 1.25rem;
+}
+
+/* ---------------------------------------------------------
+   Editor clínico
+   --------------------------------------------------------- */
+
+.editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding: 0.4rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-bottom: 0;
+    border-radius: 0.55rem 0.55rem 0 0;
+}
+
+.editor-toolbar button {
+    padding: 0.35rem 0.55rem;
+    color: #334155;
+    background: #ffffff;
+    border: 0;
+    border-radius: 0.35rem;
+    font-size: 0.78rem;
+    transition:
+        color 160ms ease,
+        background-color 160ms ease;
+}
+
+.editor-toolbar button:hover {
+    color: #0d9488;
+    background: #f0fdfa;
+}
+
+.rich-editor {
+    min-height: 16rem;
+    padding: 0.85rem;
+    color: #1e293b;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0 0 0.55rem 0.55rem;
+    outline: 0;
+    line-height: 1.6;
+}
+
+.rich-editor:focus {
+    border-color: #0d9488;
+    box-shadow: 0 0 0 3px rgb(13 148 136 / 14%);
+}
+
+.rich-editor:empty::before {
+    color: #94a3b8;
+    content: attr(data-placeholder);
+    pointer-events: none;
+}
+
+/* ---------------------------------------------------------
+   Upload e anexos
+   --------------------------------------------------------- */
+
+.drop-zone {
+    display: flex;
+    min-height: 10rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 1.5rem;
+    color: #64748b;
+    text-align: center;
+    background: #f0fdfa;
+    border: 2px dashed #99f6e4;
+    border-radius: 0.8rem;
+    cursor: pointer;
+    transition:
+        border-color 160ms ease,
+        background-color 160ms ease,
+        transform 160ms ease;
+}
+
+.drop-zone:hover,
+.drop-zone.dragover {
+    background: #ccfbf1;
+    border-color: #0d9488;
+}
+
+.drop-zone.dragover {
+    transform: scale(1.01);
+}
+
+.drop-zone strong {
+    color: #0b1f3a;
+    font-size: 0.9rem;
+}
+
+.drop-zone small {
+    color: #64748b;
+    font-size: 0.7rem;
+}
+
+/* ---------------------------------------------------------
+   Consentimento
+   --------------------------------------------------------- */
+
+.consent-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 0.85rem;
+    color: #047857;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 0.65rem;
+}
+
+.consent-alert>span {
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.consent-alert strong {
+    display: block;
+    font-size: 0.85rem;
+}
+
+.consent-alert p {
+    margin-top: 0.2rem;
+    color: #047857;
+    font-size: 0.75rem;
+}
+
+/* ---------------------------------------------------------
+   Tabelas
+   --------------------------------------------------------- */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+}
+
+thead th {
+    color: #64748b;
+    background: #f8fafc;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+th,
+td {
+    padding: 0.65rem;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+td input,
+td select {
+    min-width: 7rem;
+    height: 2.25rem;
+    padding: 0.4rem;
+}
+
+/* ---------------------------------------------------------
+   Timeline de auditoria
+   --------------------------------------------------------- */
+
+.timeline {
+    margin-left: 0.6rem;
+    padding-left: 1.25rem;
+    border-left: 2px solid #ccfbf1;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 1.2rem;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-item::before {
+    position: absolute;
+    top: 0.25rem;
+    left: -1.65rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    background: #0d9488;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px #f0fdfa;
+    content: "";
+}
+
+.timeline-item time {
+    color: #64748b;
+    font-size: 0.7rem;
+}
+
+.timeline-item strong {
+    display: block;
+    margin-top: 0.15rem;
+    color: #0b1f3a;
+    font-size: 0.82rem;
+}
+
+.timeline-item p {
+    margin-top: 0.15rem;
+    color: #64748b;
+    font-size: 0.78rem;
+}
+
+/* ---------------------------------------------------------
+   Toast notifications
+   --------------------------------------------------------- */
+
+.toast {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 60;
+    max-width: min(90vw, 24rem);
+    padding: 0.8rem 1rem;
+    color: #ffffff;
+    background: #0b1f3a;
+    border-radius: 0.6rem;
+    box-shadow: 0 10px 30px rgb(15 23 42 / 20%);
+    font-size: 0.82rem;
+    line-height: 1.4;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(1rem);
+    transition:
+        opacity 200ms ease,
+        transform 200ms ease;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ---------------------------------------------------------
+   Modais
+   --------------------------------------------------------- */
+
+.overlay {
+    position: fixed;
+    z-index: 50;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    overflow-y: auto;
+    background: rgb(15 23 42 / 60%);
+}
+
+.simple-modal {
+    width: min(100%, 42rem);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 24px 70px rgb(15 23 42 / 20%);
+}
+
+/* ---------------------------------------------------------
+   Impressão
+   --------------------------------------------------------- */
+
+.print-only {
+    display: none;
+}
+
+@media print {
+    @page {
+        margin: 1.5cm;
     }
 
     body {
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        @apply bg-slate-50 text-slate-800 antialiased;
+        color: #1e293b;
+        background: #ffffff;
     }
 
-    /* Scrollbar padrão (Firefox + Modern Spec) */
-    * {
-        scrollbar-width: thin;
-        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    .print-hide,
+    .tabs,
+    .toast,
+    .overlay,
+    .btn,
+    .icon-btn,
+    .drop-zone,
+    .editor-toolbar {
+        display: none !important;
     }
 
-    /* Scrollbar para navegadores WebKit (Chrome, Safari, Edge) */
-    ::-webkit-scrollbar {
-        @apply w-1.5 h-1.5;
+    .card {
+        break-inside: avoid;
+        box-shadow: none;
+        border-color: #cbd5e1;
     }
 
-    ::-webkit-scrollbar-track {
-        background-color: var(--scrollbar-track);
+    .tab-panel[hidden] {
+        display: block !important;
     }
 
-    ::-webkit-scrollbar-thumb {
-        background-color: var(--scrollbar-thumb);
-        @apply rounded-full;
+    .tab-panel {
+        padding-top: 1rem;
     }
 
-    ::-webkit-scrollbar-thumb:hover {
-        background-color: var(--scrollbar-thumb-hover);
-    }
-}
-
-/* ==========================================
-   3. Keyframes & Animations
-   ================================---------- */
-@keyframes pulse-red {
-
-    0%,
-    100% {
-        background-color: theme('colors.red.500');
+    .print-only {
+        display: block;
     }
 
-    50% {
-        background-color: theme('colors.red.700');
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-4px);
+    .page-header {
+        position: static;
+        border: 0;
+        box-shadow: none;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ==========================================
-   4. Custom Components Layer
-   ================================---------- */
-@layer components {
-
-    /* Glassmorphic Header */
-    .header-glass {
-        @apply bg-white/90 backdrop-blur-md border-b border-slate-200/80;
+    .brand-logo {
+        width: 6rem;
+        height: 2.5rem;
+        background: transparent;
     }
 
-    /* Sidebar Items */
-    .sidebar-item-active {
-        @apply bg-cyan-50 text-cyan-700 font-medium border-r-4 border-cyan-600 transition-colors duration-150;
+    .brand-logo img {
+        object-fit: contain;
     }
 
-    .sidebar-item-inactive {
-        @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150;
+    .patient-summary {
+        background: #ffffff;
     }
 
-    /* Notification Badge */
-    .notification-badge {
-        @apply absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] text-white font-bold pointer-events-none;
+    .card-title {
+        margin-bottom: 0.75rem;
+    }
+
+    input,
+    select,
+    textarea,
+    .rich-editor {
+        color: #1e293b;
+        background: #ffffff;
+        border-color: #cbd5e1;
+        box-shadow: none;
+    }
+
+    table {
+        page-break-inside: avoid;
+    }
+
+    tr {
+        page-break-inside: avoid;
     }
 }
 
-/* ==========================================
-   5. Custom Utilities Layer
-   ================================---------- */
-@layer utilities {
+/* ---------------------------------------------------------
+   Responsividade
+   --------------------------------------------------------- */
 
-    /* Transitions & Animations */
-    .chart-bar {
-        @apply transition-[height] duration-500 ease-in-out;
+@media (max-width: 1024px) {
+    .brand-logo {
+        width: 6rem;
     }
 
-    .emergency-active {
-        animation: pulse-red 1s infinite ease-in-out;
-    }
-
-    .animate-fade-in {
-        animation: fadeIn 0.2s ease-out forwards;
-        will-change: opacity, transform;
+    .tabs {
+        border-radius: 0.75rem 0.75rem 0 0;
     }
 }
 
-/* ==========================================
-   6. Accessibility Overrides
-   ================================---------- */
+@media (max-width: 767px) {
+    .brand-logo {
+        width: 5.5rem;
+        height: 2.5rem;
+    }
+
+    .patient-summary {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .patient-summary .btn {
+        width: 100%;
+    }
+
+    .page-header {
+        align-items: flex-start;
+    }
+
+    .page-header .status-badge {
+        display: none;
+    }
+
+    .modal-footer {
+        flex-direction: column-reverse;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+
+    .card-title {
+        align-items: flex-start;
+    }
+
+    .card-title .btn {
+        margin-left: 0;
+    }
+
+    .toast {
+        right: 0.75rem;
+        bottom: 0.75rem;
+        left: 0.75rem;
+        max-width: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .brand-logo {
+        width: 5rem;
+        height: 2.25rem;
+    }
+
+    .card-title {
+        flex-wrap: wrap;
+    }
+
+    .card-title h2 {
+        font-size: 0.98rem;
+    }
+
+    .card-title p {
+        font-size: 0.72rem;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .tabs {
+        padding-right: 0.25rem;
+        padding-left: 0.25rem;
+    }
+
+    .tab {
+        padding-right: 0.6rem;
+        padding-left: 0.6rem;
+    }
+}
+
+/* ---------------------------------------------------------
+   Preferência por menos movimento
+   --------------------------------------------------------- */
+
 @media (prefers-reduced-motion: reduce) {
 
-    .animate-fade-in,
-    .emergency-active,
-    .chart-bar {
-        animation: none !important;
-        transition: none !important;
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }

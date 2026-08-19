@@ -1,321 +1,1130 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>G4Med - Intelligent Health System</title>
-    <!-- Tailwind CSS CDN -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>G4Med | Procedimento Médico</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Arquivo CSS Externo -->
-    <link rel="stylesheet" href="procedimento-medico.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        g4: {
+                            navy: "#0B1F3A",
+                            teal: "#0D9488"
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+
+    <link rel="stylesheet" href="procedimento-medico.css" />
 </head>
 
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800">
+    <header class="print-hide sticky top-0 z-20 border-b bg-white">
+        <div class="mx-auto flex max-w-[1500px] items-center justify-between gap-4 px-4 py-3 lg:px-8">
+            <div class="flex min-w-0 items-center gap-3">
+                <!-- <button id="back-button" type="button" class="btn btn-outline back-button"
+                    aria-label="Voltar para a página anterior">
+                    <span aria-hidden="true">←</span>
+                    <span class="back-button-label">Voltar</span>
+                </button> -->
+                <a id="back-button" href="../Menu-Principal.html" class="btn btn-outline back-button"
+                    aria-label="Voltar para o menu principal">
+                    <span aria-hidden="true">←</span>
+                    <span class="back-button-label">Voltar</span>
+                </a>
 
-    <!-- HEADER -->
-    <header
-        class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 flex h-16 w-full items-center justify-between px-6">
-        <div class="max-w-[1600px] mx-auto w-full flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div
-                    class="flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-600 text-white font-bold text-xl shadow-sm">
-                    G4
-                </div>
-                <div>
-                    <span class="text-lg font-bold tracking-tight text-slate-900">G4Med</span>
-                    <span class="block text-[10px] font-medium uppercase tracking-wider text-cyan-600">Intelligent
-                        Health System</span>
+                <a href="#" class="brand-logo" aria-label="Página inicial do G4Med">
+                    <img src="assets/logo-g4med.png" alt="Logo G4Med" />
+                </a>
+
+                <div class="min-w-0">
+                    <p class="truncate text-xs font-bold uppercase tracking-wider text-g4-teal">
+                        G4Med
+                    </p>
+
+                    <h1 class="truncate text-lg font-bold text-g4-navy">
+                        Procedimento Médico
+                    </h1>
+
+                    <p class="hidden text-xs text-slate-500 sm:block">
+                        Registro e acompanhamento do procedimento
+                    </p>
                 </div>
             </div>
 
-            <!-- Barra de Pesquisa Central -->
-            <div class="hidden md:flex flex-1 max-w-md mx-8">
-                <div class="relative w-full">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </span>
-                    <input type="text" placeholder="Buscar pacientes, exames, médicos..."
-                        class="w-full rounded-lg border border-slate-200 bg-slate-50/50 py-2 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:border-cyan-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all">
-                </div>
-            </div>
+            <div class="flex items-center gap-2">
+                <span id="header-status" class="status-badge status-agendado">
+                    Agendado
+                </span>
 
-            <div class="flex items-center gap-4">
-                <!-- Ícone de Notificação com Badge -->
-                <button class="relative rounded-lg p-2 text-slate-600 hover:bg-slate-100 transition-colors"
-                    aria-label="Notificações">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
-                    <span
-                        class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] text-white font-bold">3</span>
+                <button id="save-top" type="button" class="btn btn-primary">
+                    Salvar
+                </button>
+
+                <button id="close-page" type="button" class="icon-btn" aria-label="Fechar procedimento">
+                    ×
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-[1600px] mx-auto w-full p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 pb-24">
+    <main class="mx-auto max-w-[1500px] px-4 py-5 lg:px-8">
+        <form id="procedure-form" novalidate>
+            <div class="mb-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
+                <section class="card" aria-labelledby="patient-title">
+                    <div class="card-title">
+                        <span class="section-icon" aria-hidden="true">
+                            ♙
+                        </span>
 
-        <!-- COLUNA ESQUERDA: PACIENTE E LOGS (3/12) -->
-        <div class="lg:col-span-3 space-y-6">
-            <!-- Card Paciente -->
-            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-                <div class="flex items-center gap-4 mb-4">
-                    <img class="w-16 h-16 rounded-xl object-cover"
-                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop"
-                        alt="Paciente">
-                    <div>
-                        <h2 class="font-bold text-slate-800">Maria S. Oliveira</h2>
-                        <p class="text-xs text-slate-500">ID: #445.990-22</p>
-                        <p class="text-xs font-semibold text-red-600 mt-1">⚠️ Alergia: Penicilina</p>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-2 text-[11px]">
-                    <div class="bg-slate-50 p-2 rounded-lg">
-                        <span class="block text-slate-400">IDADE</span>
-                        <span class="font-bold">34 anos</span>
-                    </div>
-                    <div class="bg-slate-50 p-2 rounded-lg">
-                        <span class="block text-slate-400">PESO</span>
-                        <span class="font-bold">68.5 kg</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Log de Eventos -->
-            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col h-[400px]">
-                <div class="p-4 border-b border-slate-100 flex justify-between items-center">
-                    <h3 class="font-bold text-sm">Log de Eventos</h3>
-                    <button onclick="addLogEvent()" class="text-cyan-600 hover:bg-cyan-50 p-1 rounded transition">
-                        <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 5v14M5 12h14" />
-                        </svg>
-                    </button>
-                </div>
-                <div id="event-log" class="p-4 overflow-y-auto flex-1 space-y-4">
-                    <div class="flex gap-3 border-l-2 border-emerald-500 pl-3">
-                        <div class="text-[10px] font-mono text-slate-400">14:00</div>
-                        <div class="text-xs"><b class="block">Início da Anestesia</b> Concluída sem intercorrências.
-                        </div>
-                    </div>
-                    <div class="flex gap-3 border-l-2 border-cyan-500 pl-3">
-                        <div class="text-[10px] font-mono text-slate-400">14:15</div>
-                        <div class="text-xs"><b class="block">Incisão Inicial</b> Realizada via técnica umbilical.</div>
-                    </div>
-                    <div class="flex gap-3 border-l-2 border-amber-500 pl-3">
-                        <div class="text-[10px] font-mono text-slate-400">14:32</div>
-                        <div class="text-xs"><b class="block">Pneumoperitônio</b> Estabilizado em 12mmHg.</div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- COLUNA CENTRAL: SINAIS VITAIS (6/12) -->
-        <div class="lg:col-span-6 space-y-6">
-            <!-- Grid de Sinais -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- FC -->
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <div class="flex justify-between items-start">
                         <div>
-                            <p class="text-xs font-bold text-slate-400 uppercase">Frequência Cardíaca</p>
-                            <div class="flex items-baseline gap-2">
-                                <span id="val-fc" class="text-4xl font-black text-slate-800">82</span>
-                                <span class="text-slate-400 font-bold">bpm</span>
-                            </div>
-                        </div>
-                        <div class="text-emerald-500 animate-pulse">
-                            <svg viewBox="0 0 24 24" class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="3">
-                                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="mt-4 h-12 flex items-end gap-1">
-                        <div class="bg-emerald-100 w-full h-[60%] rounded-sm"></div>
-                        <div class="bg-emerald-100 w-full h-[70%] rounded-sm"></div>
-                        <div class="bg-emerald-500 w-full h-[65%] rounded-sm"></div>
-                        <div class="bg-emerald-100 w-full h-[80%] rounded-sm"></div>
-                        <div class="bg-emerald-100 w-full h-[75%] rounded-sm"></div>
-                    </div>
-                </div>
+                            <h2 id="patient-title">
+                                Paciente
+                            </h2>
 
-                <!-- SpO2 -->
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <div class="flex justify-between items-start">
+                            <p>
+                                Vincule o procedimento ao atendimento correto.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <div class="field md:col-span-2">
+                            <label for="patient-search">
+                                Buscar paciente
+                                <span aria-hidden="true">*</span>
+                            </label>
+
+                            <input id="patient-search" name="patientSearch" class="input" type="search"
+                                placeholder="Digite nome, CPF ou prontuário" autocomplete="off"
+                                aria-describedby="patient-error" />
+
+                            <div id="patient-results" class="search-results hidden" role="listbox"
+                                aria-label="Resultados de pacientes"></div>
+
+                            <p id="patient-error" class="error" data-error="patient" aria-live="polite"></p>
+                        </div>
+
+                        <div class="patient-summary md:col-span-2">
+                            <div>
+                                <p class="label-muted">
+                                    Paciente selecionado
+                                </p>
+
+                                <h3 id="patient-name">
+                                    Nenhum paciente selecionado
+                                </h3>
+
+                                <div class="mt-2 grid gap-2 text-sm text-slate-600 sm:grid-cols-2 lg:grid-cols-4">
+                                    <span>
+                                        CPF:
+                                        <strong id="patient-cpf">—</strong>
+                                    </span>
+
+                                    <span>
+                                        Nascimento:
+                                        <strong id="patient-birth">—</strong>
+                                    </span>
+
+                                    <span>
+                                        Prontuário:
+                                        <strong id="patient-record">—</strong>
+                                    </span>
+
+                                    <span>
+                                        Sexo:
+                                        <strong id="patient-sex">—</strong>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <button type="button" id="view-record" class="btn btn-outline" disabled>
+                                Visualizar prontuário
+                            </button>
+                        </div>
+
+                        <div class="field">
+                            <label for="appointment-date">
+                                Data e hora do atendimento
+                            </label>
+
+                            <input id="appointment-date" name="appointmentDate" type="datetime-local" class="input" />
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="card" aria-labelledby="recent-history-title">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-xs font-bold text-slate-400 uppercase">Saturação O₂</p>
-                            <div class="flex items-baseline gap-2">
-                                <span id="val-spo2" class="text-4xl font-black text-cyan-600">99</span>
-                                <span class="text-slate-400 font-bold">%</span>
-                            </div>
-                        </div>
-                        <div class="text-cyan-500">
-                            <svg viewBox="0 0 24 24" class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="3">
-                                <path d="M12 21c-3-3-5-6-5-9a5 5 0 1 1 10 0c0 3-2 6-5 9Z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="mt-4 h-12 flex items-end gap-1">
-                        <div class="bg-cyan-500 w-full h-[98%] rounded-sm"></div>
-                        <div class="bg-cyan-100 w-full h-[99%] rounded-sm"></div>
-                        <div class="bg-cyan-100 w-full h-[98%] rounded-sm"></div>
-                        <div class="bg-cyan-500 w-full h-[99%] rounded-sm"></div>
-                        <div class="bg-cyan-100 w-full h-[100%] rounded-sm"></div>
-                    </div>
-                </div>
+                            <h2 id="recent-history-title">
+                                Histórico recente
+                            </h2>
 
-                <!-- PA -->
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <p class="text-xs font-bold text-slate-400 uppercase">Pressão Arterial</p>
-                    <div class="flex items-baseline gap-2">
-                        <span id="val-pa" class="text-3xl font-black text-slate-800">118/76</span>
-                        <span class="text-slate-400 font-bold uppercase text-[10px]">mmHg (MAP 90)</span>
-                    </div>
-                    <div class="mt-4 flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                        <span class="text-[10px] font-bold text-emerald-600 uppercase">Normotenso</span>
-                    </div>
-                </div>
-
-                <!-- Temp -->
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <p class="text-xs font-bold text-slate-400 uppercase">Temperatura Esofágica</p>
-                    <div class="flex items-baseline gap-2">
-                        <span id="val-temp" class="text-3xl font-black text-slate-800">36.4</span>
-                        <span class="text-slate-400 font-bold">°C</span>
-                    </div>
-                    <div class="mt-4 flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-                        <span class="text-[10px] font-bold text-cyan-500 uppercase">Estável</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Area de Vídeo/Câmera Laparoscópica (Simulação) -->
-            <div
-                class="relative rounded-2xl overflow-hidden bg-slate-900 aspect-video border-4 border-white shadow-xl group">
-                <img src="https://images.unsplash.com/photo-1579154235602-3c27f39199a8?w=800&q=80"
-                    class="w-full h-full object-cover opacity-60 transition group-hover:opacity-80" alt="Laparoscopia">
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="text-center">
-                        <div
-                            class="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4">
+                            <p class="mt-1 text-xs text-slate-500">
+                                Resumo do paciente selecionado
+                            </p>
                         </div>
-                        <p class="text-white font-bold tracking-widest text-sm uppercase">Live Stream: Laparoscópio 01
+
+                        <span class="rounded-full bg-teal-50 px-2 py-1 text-xs font-bold text-g4-teal">
+                            Privado
+                        </span>
+                    </div>
+
+                    <div id="patient-history" class="mt-4 space-y-3">
+                        <p class="text-sm text-slate-500">
+                            Selecione um paciente para visualizar o histórico.
                         </p>
                     </div>
-                </div>
-                <div
-                    class="absolute top-4 left-4 bg-red-600 text-white text-[10px] px-2 py-1 rounded font-bold animate-pulse">
-                    REC
-                </div>
+
+                    <button type="button" id="full-history" class="btn btn-outline mt-4 w-full">
+                        Ver histórico completo
+                    </button>
+                </aside>
             </div>
-        </div>
 
-        <!-- COLUNA DIREITA: CHECKLIST E EQUIPE (3/12) -->
-        <div class="lg:col-span-3 space-y-6">
-            <!-- Checklist -->
-            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-                <h3 class="font-bold text-sm mb-4">Safety Checklist (WHO)</h3>
-                <div class="space-y-3">
-                    <label class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg transition cursor-pointer">
-                        <input type="checkbox" checked
-                            class="w-4 h-4 rounded text-cyan-600 border-slate-300 focus:ring-cyan-500">
-                        <span class="text-xs font-medium text-slate-700">Identificação Confirmada</span>
-                    </label>
-                    <label class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg transition cursor-pointer">
-                        <input type="checkbox" checked
-                            class="w-4 h-4 rounded text-cyan-600 border-slate-300 focus:ring-cyan-500">
-                        <span class="text-xs font-medium text-slate-700">Sítio Cirúrgico Marcado</span>
-                    </label>
-                    <label class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg transition cursor-pointer">
-                        <input type="checkbox"
-                            class="w-4 h-4 rounded text-cyan-600 border-slate-300 focus:ring-cyan-500">
-                        <span class="text-xs font-medium text-slate-700">Contagem de Compressas</span>
-                    </label>
-                    <label class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg transition cursor-pointer">
-                        <input type="checkbox"
-                            class="w-4 h-4 rounded text-cyan-600 border-slate-300 focus:ring-cyan-500">
-                        <span class="text-xs font-medium text-slate-700">Amostras Identificadas</span>
-                    </label>
-                </div>
+            <nav class="print-hide tabs" role="tablist" aria-label="Seções do procedimento">
+                <button id="tab-general" class="tab is-active" type="button" role="tab" aria-selected="true"
+                    aria-controls="panel-general" data-tab="general">
+                    Dados Gerais
+                </button>
+
+                <button id="tab-clinical" class="tab" type="button" role="tab" aria-selected="false"
+                    aria-controls="panel-clinical" data-tab="clinical">
+                    Descrição Clínica
+                </button>
+
+                <button id="tab-materials" class="tab" type="button" role="tab" aria-selected="false"
+                    aria-controls="panel-materials" data-tab="materials">
+                    Materiais
+                </button>
+
+                <button id="tab-attachments" class="tab" type="button" role="tab" aria-selected="false"
+                    aria-controls="panel-attachments" data-tab="attachments">
+                    Anexos
+                </button>
+
+                <button id="tab-consent" class="tab" type="button" role="tab" aria-selected="false"
+                    aria-controls="panel-consent" data-tab="consent">
+                    Consentimento
+                </button>
+
+                <button id="tab-billing" class="tab" type="button" role="tab" aria-selected="false"
+                    aria-controls="panel-billing" data-tab="billing">
+                    Faturamento
+                </button>
+
+                <button id="tab-audit" class="tab" type="button" role="tab" aria-selected="false"
+                    aria-controls="panel-audit" data-tab="audit">
+                    Auditoria
+                </button>
+            </nav>
+
+            <section id="panel-general" class="tab-panel is-active" role="tabpanel" aria-labelledby="tab-general">
+                <section class="card" aria-labelledby="procedure-data-title">
+                    <div class="card-title">
+                        <span class="section-icon" aria-hidden="true">
+                            ▦
+                        </span>
+
+                        <div>
+                            <h2 id="procedure-data-title">
+                                Dados do Procedimento
+                            </h2>
+
+                            <p>
+                                Identificação, classificação e acompanhamento.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                        <div class="field lg:col-span-2">
+                            <label for="procedure-search">
+                                Procedimento
+                                <span aria-hidden="true">*</span>
+                            </label>
+
+                            <select id="procedure-search" name="procedure" class="input" required>
+                                <option value="">
+                                    Selecione o procedimento
+                                </option>
+
+                                <option value="Consulta clínica">
+                                    Consulta clínica
+                                </option>
+
+                                <option value="Curativo">
+                                    Curativo
+                                </option>
+
+                                <option value="Sutura">
+                                    Sutura
+                                </option>
+
+                                <option value="Triagem">
+                                    Triagem
+                                </option>
+                            </select>
+
+                            <p class="error" data-error="procedure" aria-live="polite"></p>
+                        </div>
+
+                        <div class="field">
+                            <label for="procedure-code">
+                                Código do procedimento
+                            </label>
+
+                            <input id="procedure-code" name="code" class="input" type="text"
+                                placeholder="Ex.: PROC-001" />
+                        </div>
+
+                        <div class="field">
+                            <label for="category">
+                                Categoria
+                            </label>
+
+                            <select id="category" name="category" class="input">
+                                <option>
+                                    Clínica médica
+                                </option>
+
+                                <option>
+                                    Enfermagem
+                                </option>
+
+                                <option>
+                                    Diagnóstico
+                                </option>
+
+                                <option>
+                                    Cirúrgico
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="procedure-type">
+                                Tipo de procedimento
+                            </label>
+
+                            <select id="procedure-type" name="type" class="input">
+                                <option>
+                                    Eletivo
+                                </option>
+
+                                <option>
+                                    Urgência
+                                </option>
+
+                                <option>
+                                    Emergência
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="procedure-date">
+                                Data
+                                <span aria-hidden="true">*</span>
+                            </label>
+
+                            <input id="procedure-date" name="date" type="date" class="input" required />
+
+                            <p class="error" data-error="date" aria-live="polite"></p>
+                        </div>
+
+                        <div class="field">
+                            <label for="start-time">
+                                Hora de início
+                                <span aria-hidden="true">*</span>
+                            </label>
+
+                            <input id="start-time" name="startTime" type="time" class="input" required />
+                        </div>
+
+                        <div class="field">
+                            <label for="end-time">
+                                Hora de término
+                            </label>
+
+                            <input id="end-time" name="endTime" type="time" class="input" />
+                        </div>
+
+                        <div class="field">
+                            <label for="duration">
+                                Duração
+                            </label>
+
+                            <input id="duration" name="duration" class="input bg-slate-100" type="text" readonly
+                                placeholder="Calculada automaticamente" />
+                        </div>
+
+                        <div class="field">
+                            <label for="status">
+                                Status
+                            </label>
+
+                            <select id="status" name="status" class="input">
+                                <option value="Agendado">
+                                    Agendado
+                                </option>
+
+                                <option value="Em andamento">
+                                    Em andamento
+                                </option>
+
+                                <option value="Concluído">
+                                    Concluído
+                                </option>
+
+                                <option value="Cancelado">
+                                    Cancelado
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card mt-5" aria-labelledby="professional-title">
+                    <div class="card-title">
+                        <span class="section-icon" aria-hidden="true">
+                            ♙
+                        </span>
+
+                        <div>
+                            <h2 id="professional-title">
+                                Profissional / Atendimento
+                            </h2>
+
+                            <p>
+                                Registre os participantes e o contexto assistencial.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                        <div class="field lg:col-span-2">
+                            <label for="responsible">
+                                Profissional responsável
+                                <span aria-hidden="true">*</span>
+                            </label>
+
+                            <select id="responsible" name="responsible" class="input" required>
+                                <option value="">
+                                    Selecione o profissional
+                                </option>
+
+                                <option value="Dr. João Silva">
+                                    Dr. João Silva
+                                </option>
+
+                                <option value="Dra. Ana Costa">
+                                    Dra. Ana Costa
+                                </option>
+
+                                <option value="Maria Souza — Enfermagem">
+                                    Maria Souza — Enfermagem
+                                </option>
+                            </select>
+
+                            <p class="error" data-error="responsible" aria-live="polite"></p>
+                        </div>
+
+                        <div class="field">
+                            <label for="specialty">
+                                Especialidade
+                            </label>
+
+                            <input id="specialty" name="specialty" class="input" type="text"
+                                placeholder="Ex.: Clínica médica" />
+                        </div>
+
+                        <div class="field">
+                            <label for="unit">
+                                Unidade
+                            </label>
+
+                            <input id="unit" name="unit" class="input" type="text" placeholder="Unidade Centro" />
+                        </div>
+
+                        <div class="field">
+                            <label for="room">
+                                Sala
+                            </label>
+
+                            <input id="room" name="room" class="input" type="text" placeholder="Sala 04" />
+                        </div>
+
+                        <div class="field">
+                            <label for="attendance">
+                                Nº do atendimento
+                            </label>
+
+                            <input id="attendance" name="attendance" class="input" type="text"
+                                placeholder="ATD-2026-0001" />
+                        </div>
+
+                        <div class="field">
+                            <label for="attendance-type">
+                                Tipo de atendimento
+                            </label>
+
+                            <select id="attendance-type" name="attendanceType" class="input">
+                                <option>
+                                    Ambulatorial
+                                </option>
+
+                                <option>
+                                    Internação
+                                </option>
+
+                                <option>
+                                    Pronto atendimento
+                                </option>
+
+                                <option>
+                                    Teleatendimento
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 overflow-x-auto">
+                        <div class="mb-2 flex items-center justify-between gap-3">
+                            <h3 class="font-semibold">
+                                Equipe participante
+                            </h3>
+
+                            <button type="button" id="add-professional" class="btn btn-outline">
+                                + Adicionar profissional
+                            </button>
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Profissional
+                                    </th>
+
+                                    <th>
+                                        Função
+                                    </th>
+
+                                    <th>
+                                        Participação
+                                    </th>
+
+                                    <th>
+                                        Ação
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="professionals-body"></tbody>
+                        </table>
+                    </div>
+                </section>
             </section>
 
-            <!-- Equipe na Sala -->
-            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-                <h3 class="font-bold text-sm mb-4">Equipe em Sala</h3>
-                <div class="space-y-4">
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-700 font-bold text-xs">
-                            AS</div>
+            <section id="panel-clinical" class="tab-panel" role="tabpanel" aria-labelledby="tab-clinical" hidden>
+                <section class="card">
+                    <div class="card-title">
+                        <span class="section-icon" aria-hidden="true">
+                            ✎
+                        </span>
+
                         <div>
-                            <p class="text-xs font-bold">Ana Soares</p>
-                            <p class="text-[10px] text-slate-500 uppercase font-semibold">Anestesista</p>
+                            <h2>
+                                Indicação Clínica
+                            </h2>
+
+                            <p>
+                                Documente o motivo da realização do procedimento.
+                            </p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-xs">
-                            MP</div>
+
+                    <div class="field">
+                        <label for="indication">
+                            Indicação clínica
+                            <span aria-hidden="true">*</span>
+                        </label>
+
+                        <textarea id="indication" name="indication" class="textarea" rows="5"
+                            placeholder="Informe o motivo ou indicação clínica para realização do procedimento..."></textarea>
+                    </div>
+                </section>
+
+                <section class="card mt-5">
+                    <div class="card-title">
+                        <span class="section-icon" aria-hidden="true">
+                            ✚
+                        </span>
+
                         <div>
-                            <p class="text-xs font-bold">Marcos Paulo</p>
-                            <p class="text-[10px] text-slate-500 uppercase font-semibold">Instrumentador</p>
+                            <h2>
+                                Descrição do Procedimento
+                            </h2>
+
+                            <p>
+                                Registre a técnica, achados, materiais e intercorrências.
+                            </p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-xs">
-                            CP</div>
+
+                    <div class="editor-toolbar print-hide">
+                        <button type="button" data-format="bold" aria-label="Aplicar negrito">
+                            <strong>B</strong>
+                        </button>
+
+                        <button type="button" data-format="italic" aria-label="Aplicar itálico">
+                            <em>I</em>
+                        </button>
+
+                        <button type="button" data-format="insertUnorderedList">
+                            • Lista
+                        </button>
+                    </div>
+
+                    <div id="clinical-description" class="rich-editor" contenteditable="true" role="textbox"
+                        aria-label="Descrição do procedimento"
+                        data-placeholder="Descreva a técnica utilizada, região anatômica, condições encontradas, materiais, observações, intercorrências e resultado...">
+                    </div>
+                </section>
+
+                <section class="card mt-5">
+                    <div class="card-title">
+                        <span class="section-icon" aria-hidden="true">
+                            ✓
+                        </span>
+
                         <div>
-                            <p class="text-xs font-bold">Carla Peron</p>
-                            <p class="text-[10px] text-slate-500 uppercase font-semibold">Circulante</p>
+                            <h2>
+                                Resultado / Conclusão
+                            </h2>
+
+                            <p>
+                                Condição final, recomendações e acompanhamento.
+                            </p>
                         </div>
                     </div>
-                </div>
+
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <div class="field">
+                            <label for="result">
+                                Resultado do procedimento
+                            </label>
+
+                            <textarea id="result" name="result" class="textarea" rows="4"></textarea>
+                        </div>
+
+                        <div class="field">
+                            <label for="patient-condition">
+                                Condição do paciente
+                            </label>
+
+                            <select id="patient-condition" name="condition" class="input">
+                                <option>
+                                    Estável
+                                </option>
+
+                                <option>
+                                    Em observação
+                                </option>
+
+                                <option>
+                                    Necessita acompanhamento
+                                </option>
+
+                                <option>
+                                    Encaminhado
+                                </option>
+
+                                <option>
+                                    Outro
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="recommendations">
+                                Recomendações
+                            </label>
+
+                            <textarea id="recommendations" name="recommendations" class="textarea" rows="4"></textarea>
+                        </div>
+
+                        <div class="field">
+                            <label for="aftercare">
+                                Orientações pós-procedimento
+                            </label>
+
+                            <textarea id="aftercare" name="aftercare" class="textarea" rows="4"></textarea>
+                        </div>
+
+                        <div class="field">
+                            <label for="follow-up">
+                                Próximo acompanhamento
+                            </label>
+
+                            <input id="follow-up" name="followUp" type="date" class="input" />
+                        </div>
+                    </div>
+                </section>
             </section>
-        </div>
+
+            <section id="panel-materials" class="tab-panel" role="tabpanel" aria-labelledby="tab-materials" hidden>
+                <section class="card">
+                    <div class="card-title">
+                        <span class="section-icon" aria-hidden="true">
+                            ▤
+                        </span>
+
+                        <div>
+                            <h2>
+                                Materiais e recursos utilizados
+                            </h2>
+
+                            <p>
+                                Controle os itens consumidos no procedimento.
+                            </p>
+                        </div>
+
+                        <button type="button" id="add-material" class="btn btn-primary ml-auto">
+                            + Adicionar material
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Material
+                                    </th>
+
+                                    <th>
+                                        Quantidade
+                                    </th>
+
+                                    <th>
+                                        Lote
+                                    </th>
+
+                                    <th>
+                                        Fabricante
+                                    </th>
+
+                                    <th>
+                                        Validade
+                                    </th>
+
+                                    <th>
+                                        Ação
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="materials-body"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+
+            <section id="panel-attachments" class="tab-panel" role="tabpanel" aria-labelledby="tab-attachments" hidden>
+                <section class="card">
+                    <div class="card-title">
+                        <span class="section-icon" aria-hidden="true">
+                            ⌕
+                        </span>
+
+                        <div>
+                            <h2>
+                                Anexos
+                            </h2>
+
+                            <p>
+                                PDFs, imagens, laudos, documentos e termos assinados.
+                            </p>
+                        </div>
+                    </div>
+
+                    <label id="drop-zone" class="drop-zone" for="file-input">
+                        <span class="text-3xl text-g4-teal">
+                            📎
+                        </span>
+
+                        <strong>
+                            Arraste arquivos aqui
+                        </strong>
+
+                        <span>
+                            ou clique para selecionar
+                        </span>
+
+                        <small>
+                            PDF, JPG, PNG, DOC ou DOCX · até 10 MB por arquivo
+                        </small>
+
+                        <input id="file-input" type="file" class="sr-only" multiple
+                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
+                    </label>
+
+                    <div class="mt-5 overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Nome
+                                    </th>
+
+                                    <th>
+                                        Tipo
+                                    </th>
+
+                                    <th>
+                                        Tamanho
+                                    </th>
+
+                                    <th>
+                                        Data
+                                    </th>
+
+                                    <th>
+                                        Usuário
+                                    </th>
+
+                                    <th>
+                                        Ações
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="attachments-body"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+
+            <section id="panel-consent" class="tab-panel" role="tabpanel" aria-labelledby="tab-consent" hidden>
+                <section class="card">
+                    <div class="card-title">
+                        <span class="section-icon" aria-hidden="true">
+                            ✓
+                        </span>
+
+                        <div>
+                            <h2>
+                                Consentimento
+                            </h2>
+
+                            <p>
+                                Controle o termo relacionado ao procedimento.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="consent-alert">
+                        <span aria-hidden="true">
+                            ✓
+                        </span>
+
+                        <div>
+                            <strong id="consent-label">
+                                Consentimento registrado
+                            </strong>
+
+                            <p>
+                                O status pode ser integrado posteriormente a uma assinatura digital.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <div class="field">
+                            <label for="consent-date">
+                                Data
+                            </label>
+
+                            <input id="consent-date" name="consentDate" type="date" class="input" />
+                        </div>
+
+                        <div class="field">
+                            <label for="consent-owner">
+                                Responsável
+                            </label>
+
+                            <input id="consent-owner" name="consentOwner" class="input" type="text"
+                                value="Dr. João Silva" />
+                        </div>
+
+                        <div class="field">
+                            <label for="consent-document">
+                                Documento relacionado
+                            </label>
+
+                            <input id="consent-document" name="consentDocument" class="input" type="text"
+                                placeholder="Termo de consentimento" />
+                        </div>
+
+                        <div class="field">
+                            <label for="signature-status">
+                                Status da assinatura
+                            </label>
+
+                            <select id="signature-status" name="signatureStatus" class="input">
+                                <option>
+                                    Registrado
+                                </option>
+
+                                <option>
+                                    Pendente
+                                </option>
+
+                                <option>
+                                    Em validação
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="button" id="view-consent" class="btn btn-outline mt-5">
+                        Visualizar termo
+                    </button>
+                </section>
+            </section>
+
+            <section id="panel-billing" class="tab-panel" role="tabpanel" aria-labelledby="tab-billing" hidden>
+                <section class="card">
+                    <div class="card-title">
+                        <span class="section-icon" aria-hidden="true">
+                            $
+                        </span>
+
+                        <div>
+                            <h2>
+                                Faturamento
+                            </h2>
+
+                            <p>
+                                Informações financeiras separadas do conteúdo clínico.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                        <div class="field">
+                            <label for="insurance">
+                                Convênio
+                            </label>
+
+                            <input id="insurance" name="insurance" class="input" type="text"
+                                placeholder="Nome do convênio" />
+                        </div>
+
+                        <div class="field">
+                            <label for="plan">
+                                Plano
+                            </label>
+
+                            <input id="plan" name="plan" class="input" type="text" />
+                        </div>
+
+                        <div class="field">
+                            <label for="payer-type">
+                                Particular / Convênio
+                            </label>
+
+                            <select id="payer-type" name="payerType" class="input">
+                                <option>
+                                    Particular
+                                </option>
+
+                                <option>
+                                    Convênio
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="tuss">
+                                Código TUSS
+                            </label>
+
+                            <input id="tuss" name="tuss" class="input" type="text" />
+                        </div>
+
+                        <div class="field">
+                            <label for="billing-value">
+                                Valor
+                            </label>
+
+                            <input id="billing-value" name="billingValue" type="number" min="0" step="0.01"
+                                class="input" />
+                        </div>
+
+                        <div class="field">
+                            <label for="quantity">
+                                Quantidade
+                            </label>
+
+                            <input id="quantity" name="quantity" type="number" min="1" value="1" class="input" />
+                        </div>
+
+                        <div class="field">
+                            <label for="authorization">
+                                Autorização
+                            </label>
+
+                            <input id="authorization" name="authorization" class="input" type="text" />
+                        </div>
+
+                        <div class="field">
+                            <label for="guide">
+                                Número da guia
+                            </label>
+
+                            <input id="guide" name="guide" class="input" type="text" />
+                        </div>
+
+                        <div class="field">
+                            <label for="billing-status">
+                                Status do faturamento
+                            </label>
+
+                            <select id="billing-status" name="billingStatus" class="input">
+                                <option>
+                                    Pendente
+                                </option>
+
+                                <option>
+                                    Em análise
+                                </option>
+
+                                <option>
+                                    Autorizado
+                                </option>
+
+                                <option>
+                                    Faturado
+                                </option>
+
+                                <option>
+                                    Cancelado
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <section id="panel-audit" class="tab-panel" role="tabpanel" aria-labelledby="tab-audit" hidden>
+                <section class="card">
+                    <div class="card-title">
+                        <span class="section-icon" aria-hidden="true">
+                            ◷
+                        </span>
+
+                        <div>
+                            <h2>
+                                Auditoria
+                            </h2>
+
+                            <p>
+                                Histórico de alterações e rastreabilidade.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div id="audit-timeline" class="timeline"></div>
+                </section>
+            </section>
+
+            <footer
+                class="print-hide mt-5 flex flex-col-reverse justify-between gap-3 border-t pt-5 sm:flex-row sm:items-center">
+                <div class="flex gap-2">
+                    <button type="button" id="print-procedure" class="btn btn-outline">
+                        ⎙ Imprimir procedimento
+                    </button>
+                </div>
+
+                <div class="flex flex-col gap-2 sm:flex-row">
+                    <button type="button" id="cancel-procedure" class="btn btn-outline">
+                        Cancelar
+                    </button>
+
+                    <button type="button" id="draft-procedure" class="btn btn-outline">
+                        Salvar rascunho
+                    </button>
+
+                    <button type="submit" class="btn btn-primary">
+                        Salvar procedimento
+                    </button>
+                </div>
+            </footer>
+        </form>
     </main>
 
-    <!-- FOOTER NAVEGAÇÃO -->
-    <footer class="fixed bottom-0 inset-x-0 bg-white/80 backdrop-blur-md border-t border-slate-200 p-4 z-50">
-        <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-2">
-                <a href="../Menu-Principal.html"
-                    class="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition inline-flex items-center justify-center">Voltar</a>
-                <button
-                    class="px-4 py-2 text-sm font-bold bg-slate-800 text-white hover:bg-slate-900 rounded-xl transition shadow-lg">Pausar
-                    Timer</button>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <div id="history-modal" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="history-title">
+        <div class="simple-modal">
+            <div class="flex items-center justify-between border-b p-5">
+                <div>
+                    <h2 id="history-title">
+                        Prontuário resumido
+                    </h2>
+
+                    <p id="history-patient" class="text-sm text-slate-500"></p>
+                </div>
+
+                <button type="button" class="icon-btn" data-close-overlay aria-label="Fechar prontuário">
+                    ×
+                </button>
             </div>
 
-            <div class="flex items-center gap-3">
-                <button id="btn-emergency"
-                    class="px-6 py-3 bg-rose-600 text-white font-black rounded-xl hover:bg-rose-700 transition shadow-lg flex items-center gap-2">
-                    <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current">
-                        <path d="M12 2L1 21h22L12 2zm0 3.45l8.27 14.3H3.73L12 5.45zM11 16h2v2h-2v-2zm0-7h2v5h-2V9z" />
-                    </svg>
-                    CÓDIGO AZUL
-                </button>
-                <button
-                    class="px-8 py-3 bg-cyan-600 text-white font-black rounded-xl hover:bg-cyan-700 transition shadow-lg flex items-center gap-2">
-                    FINALIZAR ETAPA
-                    <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3">
-                        <path d="M9 18l6-6-6-6" />
-                    </svg>
+            <div id="history-content" class="p-5"></div>
+
+            <div class="flex justify-end border-t p-5">
+                <button type="button" class="btn btn-primary" data-close-overlay>
+                    Fechar
                 </button>
             </div>
         </div>
-    </footer>
+    </div>
 
-    <!-- Arquivo JS Externo -->
+    <div id="confirm-modal" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+        <div class="simple-modal max-w-md">
+            <div class="p-5">
+                <h2 id="confirm-title">
+                    Confirmar ação
+                </h2>
+
+                <p id="confirm-text" class="mt-2 text-sm text-slate-600"></p>
+            </div>
+
+            <div class="flex justify-end gap-2 border-t p-5">
+                <button type="button" id="confirm-cancel" class="btn btn-outline">
+                    Cancelar
+                </button>
+
+                <button type="button" id="confirm-ok" class="btn btn-primary">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="procedimento-medico.js"></script>
 </body>
 
