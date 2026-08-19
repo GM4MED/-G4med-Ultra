@@ -1,2384 +1,1144 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>G4Med BI · Inteligência de Pacientess</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap"
-        rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace']
-                    },
-                    colors: {
-                        brand: '#4f46e5'
-                    }
-                }
-            }
-        };
-    </script>
-
+    <!-- skill:chrome -->
     <style>
-        :root {
-            --bg: #f5f7fb;
-            --panel: #ffffff;
-            --panel-soft: #fbfbfd;
-            --line: #e5e7ef;
-            --line-soft: #eef0f6;
-            --text: #0f172a;
-            --text-soft: #475569;
-            --muted: #64748b;
-            --brand: #4f46e5;
-            --brand-soft: #eef2ff;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --info: #0284c7;
-            --purple: #8b5cf6;
-            --rose: #f43f5e;
-            --shadow: 0 8px 24px rgba(15, 23, 42, .07);
-            --shadow-sm: 0 2px 7px rgba(15, 23, 42, .05);
-            --gradient: linear-gradient(135deg, #4f46e5, #7c3aed 52%, #0284c7);
+        /* Credit line — bottom-right */
+        .design-ui-credit {
+            position: fixed;
+            bottom: 12px;
+            right: 12px;
+            font: 11px/1 system-ui, sans-serif;
+            color: rgba(128, 128, 128, 0.5);
+            pointer-events: none;
+            z-index: 2147483647;
+            transition: opacity 0.4s ease;
+            user-select: none;
+            letter-spacing: 0.02em;
         }
 
-        html.dark {
-            --bg: #0a1020;
-            --panel: #111832;
-            --panel-soft: #0d1429;
-            --line: #1e2747;
-            --line-soft: #172044;
-            --text: #e2e8f0;
-            --text-soft: #cbd5e1;
-            --muted: #94a3b8;
-            --brand-soft: #1b2450;
-            --shadow: 0 8px 24px rgba(0, 0, 0, .35);
-            --shadow-sm: 0 2px 7px rgba(0, 0, 0, .3);
+        /* Hide chrome on touch devices */
+        @media (hover: none) {
+            .design-ui-credit {
+                display: none;
+            }
+        }
+
+        /* Print fixes */
+        @media print {
+            * {
+                transition: none !important;
+                animation: none !important;
+                box-shadow: none !important;
+            }
+
+            body {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+
+            .design-ui-credit {
+                display: none !important;
+            }
+        }
+    </style>
+    <script>
+        (function () {
+            // Design-ui pages are single compositions, so the whole body is editable.
+            function markEditable() {
+                document.body.classList.add('artifact-editable');
+            }
+
+            // Credit badge with idle-fade. Hover devices only.
+            function initChromeUI() {
+                if (!matchMedia('(hover: hover)').matches) return;
+
+                var credit = document.createElement('div');
+                credit.className = 'design-ui-credit';
+                credit.setAttribute('aria-hidden', 'true');
+                credit.innerHTML = '\u{1F49C} by ClickUp Brain';
+                document.body.appendChild(credit);
+
+                var timer = null;
+                var fade = function (out) { credit.style.opacity = out ? '0' : ''; };
+                fade(true);
+                var show = function () {
+                    fade(false);
+                    clearTimeout(timer);
+                    timer = setTimeout(function () { fade(true); }, 3000);
+                };
+                document.addEventListener('mousemove', show);
+                show();
+            }
+
+            function init() {
+                markEditable();
+                initChromeUI();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+        })();
+
+    </script>
+    <!-- /skill:chrome -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Atendimento Recepção | GM4med</title>
+    <style>
+        :root {
+            --ink: #172033;
+            --soft: #475467;
+            --muted: #667085;
+            --line: #dce2eb;
+            --bg: #f4f7fb;
+            --teal: #0d9488;
+            --teal-dark: #0f766e;
+            --green: #16a34a;
+            --red: #dc2626;
+            --amber: #d97706
         }
 
         * {
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
+            box-sizing: border-box
         }
 
         body {
-            min-width: 320px;
-            min-height: 100vh;
             margin: 0;
+            padding: 24px;
+            min-width: 320px;
             background: var(--bg);
-            color: var(--text);
-            font-family: "Plus Jakarta Sans", sans-serif;
-            -webkit-font-smoothing: antialiased;
+            color: var(--ink);
+            font: 14px/1.5 Arial, sans-serif
         }
 
         button,
         input,
-        select {
-            font: inherit;
+        select,
+        textarea {
+            font: inherit
         }
 
         button {
             cursor: pointer;
+            border: 0
         }
 
-        .panel {
-            background: var(--panel);
+        :focus-visible {
+            outline: 3px solid #0d94884d;
+            outline-offset: 3px
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0)
+        }
+
+        .app {
+            max-width: 1560px;
+            margin: auto;
+            overflow: hidden;
+            background: #fff;
             border: 1px solid var(--line);
-            box-shadow: var(--shadow-sm);
+            border-radius: 18px;
+            box-shadow: 0 18px 42px #182b3d1a
         }
 
-        .icon-button {
-            display: inline-grid;
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 18px 26px;
+            background: #134e4a;
+            color: #fff
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .mark {
+            display: grid;
             place-items: center;
-            width: 40px;
-            height: 40px;
-            border: 1px solid transparent;
-            border-radius: 10px;
-            color: var(--text-soft);
-            transition: .2s ease;
+            width: 44px;
+            height: 44px;
+            border-radius: 11px;
+            background: #0f766e;
+            font-weight: 800
         }
 
-        .icon-button:hover {
-            background: var(--brand-soft);
-            color: var(--brand);
+        .eyebrow {
+            margin: 0;
+            color: #99f6e4;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .12em;
+            text-transform: uppercase
         }
 
-        .icon-button svg {
-            width: 18px;
-            height: 18px;
+        .brand h1 {
+            margin: 2px 0 0;
+            font-size: 21px
+        }
+
+        .live {
+            color: #ccfbf1;
+            font-size: 12px
+        }
+
+        .live:before {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            margin-right: 7px;
+            border-radius: 50%;
+            background: #86efac;
+            content: ""
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            justify-content: flex-end
         }
 
         .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
             min-height: 38px;
-            padding: 0 14px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 700;
-            transition: .2s ease;
-            white-space: nowrap;
-        }
-
-        .btn svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .btn-primary {
-            background: var(--gradient);
-            color: white;
-            box-shadow: 0 5px 15px rgba(79, 70, 229, .25);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 20px rgba(79, 70, 229, .4);
-        }
-
-        .btn-ghost {
-            background: var(--panel);
-            border: 1px solid var(--line);
-            color: var(--text-soft);
-        }
-
-        .btn-ghost:hover {
-            border-color: var(--brand);
-            background: var(--brand-soft);
-            color: var(--brand);
-        }
-
-        .input-control {
-            width: 100%;
-            min-height: 38px;
-            padding: 0 11px;
-            border: 1px solid var(--line);
-            border-radius: 9px;
-            outline: none;
-            background: var(--panel-soft);
-            color: var(--text);
-            font-size: 12px;
-        }
-
-        .input-control:focus {
-            border-color: var(--brand);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, .15);
-        }
-
-        .card-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text);
-            font-size: 14px;
-            font-weight: 800;
-        }
-
-        .card-title svg {
-            width: 17px;
-            height: 17px;
-            color: var(--brand);
-        }
-
-        .card-subtitle {
-            margin-top: 3px;
-            color: var(--muted);
-            font-size: 11px;
-        }
-
-        .chart-box {
-            position: relative;
-            height: 290px;
-        }
-
-        .chart-box.tall {
-            height: 350px;
-        }
-
-        .spark-box {
-            height: 35px;
-        }
-
-        .segmented {
-            display: flex;
-            gap: 3px;
-            padding: 3px;
-            overflow-x: auto;
-            border: 1px solid var(--line);
-            border-radius: 9px;
-            background: var(--panel-soft);
-        }
-
-        .segmented button {
-            padding: 5px 9px;
+            padding: 9px 12px;
             border-radius: 7px;
-            color: var(--muted);
-            font-size: 10px;
-            font-weight: 700;
-            white-space: nowrap;
+            color: #fff;
+            background: #475467;
+            font-size: 12px;
+            font-weight: 700
         }
 
-        .segmented button.active {
-            background: var(--panel);
-            color: var(--brand);
-            box-shadow: var(--shadow-sm);
+        .btn:disabled {
+            cursor: not-allowed;
+            opacity: .45
         }
 
-        .heatmap {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            overflow-x: auto;
+        .primary {
+            background: var(--teal)
         }
 
-        .heatmap-row {
+        .success {
+            background: var(--green)
+        }
+
+        .warning {
+            color: #78350f;
+            background: #fef3c7;
+            border: 1px solid #fcd34d
+        }
+
+        .danger {
+            background: var(--red)
+        }
+
+        .quiet {
+            color: var(--soft);
+            background: #fff;
+            border: 1px solid #cbd5e1
+        }
+
+        .icon {
+            width: 38px;
+            padding: 0
+        }
+
+        main {
             display: grid;
-            grid-template-columns: 145px repeat(12, minmax(38px, 1fr));
-            gap: 4px;
-            min-width: 680px;
+            grid-template-columns: minmax(0, 1.16fr) minmax(430px, .84fr);
+            gap: 20px;
+            padding: 22px;
+            background: var(--bg)
         }
 
-        .heatmap-label {
+        .panel {
+            min-width: 0;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 13px;
+            box-shadow: 0 1px 3px #182b3d0d
+        }
+
+        .queue {
             display: flex;
-            align-items: center;
-            padding: 0 7px;
-            color: var(--text-soft);
-            font-size: 10px;
-            font-weight: 700;
+            min-height: 560px;
+            flex-direction: column;
+            overflow: hidden
         }
 
-        .heatmap-header>div:not(:first-child) {
+        .head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 21px
+        }
+
+        .head h2 {
+            margin: 0;
+            font-size: 16px
+        }
+
+        .head p {
+            margin: 4px 0 0;
             color: var(--muted);
-            font-size: 9px;
-            font-weight: 800;
-            text-align: center;
-            text-transform: uppercase;
+            font-size: 12px
         }
 
-        .heatmap-cell {
+        .record {
             display: grid;
             place-items: center;
-            min-height: 27px;
-            border-radius: 5px;
-            background: color-mix(in srgb,
-                    var(--brand) calc(var(--intensity) * 100%),
-                    var(--brand-soft));
-            color: var(--text-soft);
-            cursor: pointer;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 9px;
-            font-weight: 700;
-            transition: .15s ease;
+            min-width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #ccfbf1;
+            color: var(--teal-dark);
+            font-size: 11px;
+            font-weight: 800
         }
 
-        .heatmap-cell:hover {
-            z-index: 2;
-            transform: scale(1.08);
-            box-shadow: 0 5px 15px rgba(79, 70, 229, .35);
-        }
-
-        .toast-area {
-            position: fixed;
-            right: 20px;
-            bottom: 20px;
-            z-index: 100;
+        .tabs {
             display: flex;
+            padding: 0 21px;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .tab {
+            position: relative;
+            padding: 13px 12px;
+            color: var(--muted);
+            background: transparent;
+            font-size: 12px;
+            font-weight: 700
+        }
+
+        .tab:after {
+            position: absolute;
+            right: 10px;
+            bottom: -1px;
+            left: 10px;
+            height: 3px;
+            background: transparent;
+            content: ""
+        }
+
+        .tab.active {
+            color: var(--teal-dark)
+        }
+
+        .tab.active:after {
+            background: var(--teal)
+        }
+
+        .content {
+            padding: 23px 21px
+        }
+
+        .tab-content {
+            display: none
+        }
+
+        .tab-content.active {
+            display: block
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 17px 13px
+        }
+
+        .field {
+            display: flex;
+            min-width: 0;
             flex-direction: column;
+            gap: 6px
+        }
+
+        .s1 {
+            grid-column: span 1
+        }
+
+        .s2 {
+            grid-column: span 2
+        }
+
+        .s3 {
+            grid-column: span 3
+        }
+
+        .s4 {
+            grid-column: span 4
+        }
+
+        .s7 {
+            grid-column: span 7
+        }
+
+        .s12 {
+            grid-column: span 12
+        }
+
+        .field label {
+            color: var(--soft);
+            font-size: 11px;
+            font-weight: 700
+        }
+
+        .field input,
+        .field select,
+        .field textarea,
+        .search input {
+            width: 100%;
+            min-height: 40px;
+            padding: 8px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            color: var(--ink);
+            background: #fff
+        }
+
+        .field textarea {
+            min-height: 80px;
+            resize: vertical
+        }
+
+        .field input:disabled,
+        .field select:disabled,
+        .field textarea:disabled {
+            background: #f3f5f8;
+            color: var(--muted);
+            cursor: not-allowed
+        }
+
+        .field input[readonly] {
+            background: #eef2f7;
+            font-weight: 700
+        }
+
+        .section-title {
+            margin: 4px 0 -2px;
+            padding-bottom: 9px;
+            border-bottom: 1px solid var(--line);
+            color: var(--soft);
+            font-size: 12px
+        }
+
+        .checklist {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(110px, 1fr));
+            gap: 8px
+        }
+
+        .checklist label {
+            display: flex;
+            gap: 7px;
+            min-height: 54px;
+            padding: 10px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            color: var(--soft);
+            font-size: 11px;
+            font-weight: 600
+        }
+
+        .checklist input {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--teal)
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
             gap: 8px;
-            width: min(370px, calc(100vw - 40px));
+            margin-top: 20px;
+            padding-top: 17px;
+            border-top: 1px solid var(--line)
+        }
+
+        .queue-head {
+            align-items: center;
+            padding-bottom: 15px
+        }
+
+        .search {
+            display: flex;
+            gap: 7px;
+            min-width: min(325px, 52%)
+        }
+
+        .search input {
+            min-height: 36px;
+            font-size: 12px
+        }
+
+        .summary {
+            display: flex;
+            gap: 16px;
+            padding: 0 21px 15px;
+            color: var(--muted);
+            font-size: 11px
+        }
+
+        .summary b {
+            color: var(--teal-dark)
+        }
+
+        .table-wrap {
+            flex: 1;
+            overflow: auto;
+            border-top: 1px solid var(--line)
+        }
+
+        table {
+            width: 100%;
+            min-width: 650px;
+            border-collapse: collapse;
+            table-layout: fixed
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            padding: 10px 11px;
+            color: var(--muted);
+            background: #f8fafc;
+            border-bottom: 1px solid var(--line);
+            font-size: 10px;
+            text-align: left;
+            text-transform: uppercase
+        }
+
+        td {
+            height: 62px;
+            padding: 9px 11px;
+            border-bottom: 1px solid #edf0f4;
+            color: var(--soft);
+            font-size: 11px
+        }
+
+        tbody tr {
+            cursor: pointer
+        }
+
+        tbody tr:hover {
+            background: #f0fdfa
+        }
+
+        tbody tr.selected {
+            background: #ccfbf1;
+            box-shadow: inset 0 2px var(--teal), inset 0 -2px var(--teal)
+        }
+
+        td strong,
+        td small {
+            display: block
+        }
+
+        td small {
+            margin-top: 2px;
+            color: var(--muted);
+            font-size: 10px
+        }
+
+        .badge {
+            display: inline-flex;
+            padding: 5px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 800
+        }
+
+        .normal,
+        .waiting {
+            color: #075985;
+            background: #e0f2fe
+        }
+
+        .preferred {
+            color: #92400e;
+            background: #fef3c7
+        }
+
+        .emergency,
+        .cancelled {
+            color: #991b1b;
+            background: #fee2e2
+        }
+
+        .service {
+            color: #166534;
+            background: #dcfce7
+        }
+
+        .done {
+            color: var(--soft);
+            background: #eaecf0
+        }
+
+        .empty td {
+            height: 150px;
+            text-align: center;
+            color: var(--muted)
         }
 
         .toast {
-            padding: 13px 16px;
-            border-left: 4px solid var(--brand);
-            border-radius: 10px;
-            background: var(--panel);
-            box-shadow: 0 20px 45px rgba(15, 23, 42, .2);
-            color: var(--text-soft);
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            background: var(--ink);
+            color: #fff;
             font-size: 12px;
             font-weight: 700;
-            animation: toast-in .25s ease forwards;
-        }
-
-        .toast-success {
-            border-left-color: var(--success);
-        }
-
-        .toast-warning {
-            border-left-color: var(--warning);
-        }
-
-        .toast-danger {
-            border-left-color: var(--danger);
-        }
-
-        @keyframes toast-in {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .loading {
-            opacity: .6;
+            opacity: 0;
+            transform: translateY(10px);
             pointer-events: none;
+            transition: .2s
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: none
+        }
+
+        #print-document {
+            display: none
+        }
+
+        @media(max-width:1260px) {
+            body {
+                padding: 16px
+            }
+
+            main {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media(max-width:860px) {
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column
+            }
+
+            .live {
+                position: absolute;
+                top: 20px;
+                right: 20px
+            }
+
+            .toolbar {
+                width: 100%;
+                justify-content: flex-start
+            }
+
+            .grid {
+                grid-template-columns: repeat(6, minmax(0, 1fr))
+            }
+
+            .s7,
+            .s12 {
+                grid-column: span 6
+            }
+
+            .s4 {
+                grid-column: span 3
+            }
+
+            .checklist {
+                grid-template-columns: repeat(3, minmax(110px, 1fr))
+            }
+        }
+
+        @media(max-width:640px) {
+            body {
+                padding: 0
+            }
+
+            .app {
+                min-height: 100vh;
+                border: 0;
+                border-radius: 0
+            }
+
+            .topbar {
+                padding: 18px 16px
+            }
+
+            .live {
+                position: static
+            }
+
+            main {
+                gap: 14px;
+                padding: 14px
+            }
+
+            .head,
+            .content {
+                padding-inline: 16px
+            }
+
+            .tabs {
+                padding-inline: 10px
+            }
+
+            .toolbar {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .toolbar .btn {
+                width: 100%
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 13px
+            }
+
+            .s1,
+            .s2,
+            .s3,
+            .s4,
+            .s7,
+            .s12 {
+                grid-column: span 1
+            }
+
+            .checklist {
+                grid-template-columns: 1fr
+            }
+
+            .queue-head {
+                align-items: flex-start;
+                flex-direction: column
+            }
+
+            .search {
+                width: 100%;
+                min-width: 0
+            }
+
+            .summary {
+                padding-inline: 16px;
+                flex-wrap: wrap
+            }
+
+            .actions {
+                flex-direction: column-reverse
+            }
+
+            .actions .btn {
+                width: 100%
+            }
         }
 
         @media print {
-
-            .topbar,
-            .page-actions,
-            .filter-bar,
-            .toast-area,
-            .segmented,
-            button {
-                display: none !important;
+            @page {
+                size: A4 portrait;
+                margin: 18mm 15mm 17mm
             }
 
+            html,
             body {
-                background: white;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #fff !important;
+                font: 10.5pt Arial, sans-serif !important
             }
 
-            .panel {
-                box-shadow: none;
+            body>*:not(#print-document) {
+                display: none !important
+            }
+
+            #print-document {
+                display: block !important
+            }
+
+            .p-header {
+                position: fixed;
+                top: 0;
+                right: 0;
+                left: 0;
+                height: 35mm;
+                display: flex;
+                gap: 14mm;
+                padding-bottom: 5mm;
+                border-bottom: 1.2pt solid #0d9488;
+                background: #fff
+            }
+
+            .p-logo {
+                width: 43mm;
+                height: auto;
+                max-height: 25mm;
+                object-fit: contain
+            }
+
+            .p-clinic {
+                flex: 1;
+                min-width: 0
+            }
+
+            .p-brand {
+                color: #0d9488;
+                font-size: 14pt;
+                font-weight: 700
+            }
+
+            .p-system,
+            .p-line {
+                color: #475467;
+                font-size: 8.5pt
+            }
+
+            .p-name {
+                margin-top: 4pt;
+                font-size: 12pt;
+                font-weight: 700
+            }
+
+            .p-footer {
+                position: fixed;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                height: 11mm;
+                display: grid;
+                grid-template-columns: 1.05fr 2fr auto;
+                gap: 5mm;
+                padding-top: 3mm;
+                border-top: .7pt solid #cbd5e1;
+                color: #667085;
+                font-size: 7.3pt;
+                line-height: 1.2
+            }
+
+            .p-page:after {
+                content: "Página " counter(page) " de " counter(pages)
+            }
+
+            .p-content {
+                padding-top: 40mm;
+                padding-bottom: 15mm
+            }
+
+            .p-title {
+                display: flex;
+                justify-content: space-between;
+                gap: 12mm;
+                padding-bottom: 9pt;
+                margin-bottom: 13pt;
+                border-bottom: .7pt solid #dce2eb
+            }
+
+            .p-kicker {
+                color: #0d9488;
+                font-size: 8pt;
+                font-weight: 700;
+                letter-spacing: .12em;
+                text-transform: uppercase
+            }
+
+            .p-title h1 {
+                margin: 2pt 0 0;
+                font-size: 18pt
+            }
+
+            .p-ticket {
+                min-width: 29mm;
+                padding: 7pt 9pt;
+                border: 1.5pt solid #0d9488;
+                border-radius: 5pt;
+                color: #0f766e;
+                text-align: center;
+                font-size: 16pt;
+                font-weight: 700
+            }
+
+            .p-section {
+                break-inside: avoid;
+                margin-bottom: 15pt
+            }
+
+            .p-section h2 {
+                margin: 0 0 7pt;
+                padding-bottom: 4pt;
+                border-bottom: 1.2pt solid #0d9488;
+                color: #0f766e;
+                font-size: 10.5pt;
+                text-transform: uppercase
+            }
+
+            .p-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 7pt 20pt
+            }
+
+            .p-item {
+                break-inside: avoid
+            }
+
+            .p-label {
+                display: block;
+                color: #667085;
+                font-size: 7.5pt;
+                font-weight: 700;
+                text-transform: uppercase
+            }
+
+            .p-value {
+                display: block;
+                min-height: 14pt;
+                font-size: 10pt;
+                overflow-wrap: anywhere
+            }
+
+            .p-checks {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 5pt 20pt;
+                margin: 0;
+                padding: 0;
+                list-style: none
+            }
+
+            .p-checks li {
+                padding: 4pt 0;
+                border-bottom: .5pt solid #edf0f4
+            }
+
+            .p-notes {
+                min-height: 28pt;
+                white-space: pre-wrap
+            }
+
+            .p-signatures {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 25mm;
+                margin-top: 24mm;
+                break-inside: avoid
+            }
+
+            .p-signature {
+                padding-top: 18pt;
+                border-top: .7pt solid #475467;
+                color: #475467;
+                text-align: center;
+                font-size: 8pt
+            }
+
+            h1,
+            h2 {
+                break-after: avoid-page
+            }
+
+            img,
+            .p-item,
+            .p-checks li {
+                break-inside: avoid-page
             }
         }
     </style>
 </head>
 
 <body>
-
-    <!-- TOPBAR -->
-    <header class="sticky top-0 z-50 border-b backdrop-blur-xl"
-        style="background:color-mix(in srgb,var(--panel) 88%,transparent);border-color:var(--line)">
-        <div class="mx-auto flex max-w-[1640px] items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-
-            <div class="flex items-center gap-3">
-                <a href="../Menu-Principal.html" class="icon-button" title="Voltar" aria-label="Voltar">
-                    <i data-lucide="arrow-left"></i>
-                </a>
-
-                <div class="grid h-10 w-10 place-items-center rounded-xl text-white shadow-lg"
-                    style="background:var(--gradient)">
-                    <i data-lucide="users"></i>
-                </div>
-
+    <div class="app">
+        <header class="topbar">
+            <div class="brand">
+                <div class="mark">GM</div>
                 <div>
-                    <div class="text-sm font-extrabold">
-                        G4Med
-                        <span class="rounded bg-indigo-600 px-1.5 py-0.5 text-[9px] text-white">
-                            BI
-                        </span>
-                    </div>
-
-                    <div class="text-[11px]" style="color:var(--muted)">
-                        Relatório de Pacientes
-                    </div>
+                    <p class="eyebrow">GM4med · Recepção</p>
+                    <h1>Atendimento do paciente</h1>
                 </div>
             </div>
-
-            <div class="flex items-center gap-1 sm:gap-2">
-                <button id="toggleTheme" class="icon-button" type="button" title="Alternar tema"
-                    aria-label="Alternar tema">
-                    <i data-lucide="moon"></i>
-                </button>
-
-                <button id="btnRefresh" class="icon-button" type="button" title="Atualizar dados"
-                    aria-label="Atualizar dados">
-                    <i data-lucide="refresh-cw"></i>
-                </button>
-
-                <button id="btnNotifications" class="icon-button relative" type="button" title="Notificações"
-                    aria-label="Notificações">
-                    <i data-lucide="bell"></i>
-                    <span class="absolute right-2 top-2 h-2 w-2 rounded-full bg-rose-500"></span>
-                </button>
-
-                <div class="ml-1 flex items-center gap-2 rounded-full border p-1.5 pr-3"
-                    style="border-color:var(--line)">
-                    <div class="grid h-8 w-8 place-items-center rounded-full text-xs font-bold text-white"
-                        style="background:var(--gradient)">
-                        DR
-                    </div>
-
-                    <div class="hidden leading-tight sm:block">
-                        <div class="text-xs font-bold">Dr. Rodrigo</div>
-                        <div class="text-[10px]" style="color:var(--muted)">
-                            Gestor BI
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-
-    <main class="mx-auto max-w-[1640px] px-4 py-6 sm:px-6 lg:px-8">
-
-        <!-- CABEÇALHO -->
-        <section class="mb-5 flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
-            <div>
-                <div class="mb-2 text-xs" style="color:var(--muted)">
-                    <a href="../index.html" class="font-bold text-indigo-500">
-                        Início
-                    </a>
-                    <span> · Relatórios · </span>
-                    <strong style="color:var(--text-soft)">
-                        Pacientes
-                    </strong>
-                </div>
-
-                <h1 class="text-2xl font-extrabold tracking-tight sm:text-3xl">
-                    Inteligência de Pacientes
-                </h1>
-
-                <p class="mt-1 max-w-3xl text-sm" style="color:var(--muted)">
-                    Perfil demográfico, captação, fidelização e jornada do paciente —
-                    análise 360° da base ativa.
-                </p>
-            </div>
-
-            <div class="page-actions flex flex-wrap items-center gap-2">
-
-                <div id="periodTabs" class="flex max-w-full gap-1 overflow-x-auto rounded-xl border p-1"
-                    style="border-color:var(--line);background:var(--panel)">
-                    <button type="button" data-period="7"
-                        class="period-button whitespace-nowrap rounded-lg px-3 py-2 text-xs font-bold"
-                        style="color:var(--muted)">
-                        7 dias
-                    </button>
-
-                    <button type="button" data-period="30"
-                        class="period-button active whitespace-nowrap rounded-lg px-3 py-2 text-xs font-bold text-white"
-                        style="background:var(--gradient)">
-                        30 dias
-                    </button>
-
-                    <button type="button" data-period="90"
-                        class="period-button whitespace-nowrap rounded-lg px-3 py-2 text-xs font-bold"
-                        style="color:var(--muted)">
-                        90 dias
-                    </button>
-
-                    <button type="button" data-period="365"
-                        class="period-button whitespace-nowrap rounded-lg px-3 py-2 text-xs font-bold"
-                        style="color:var(--muted)">
-                        12 meses
-                    </button>
-
-                    <button type="button" data-period="custom"
-                        class="period-button flex items-center gap-1 whitespace-nowrap rounded-lg px-3 py-2 text-xs font-bold"
-                        style="color:var(--muted)">
-                        <i data-lucide="calendar" class="h-3.5 w-3.5"></i>
-                        Personalizado
-                    </button>
-                </div>
-
-                <button id="btnPrint" class="btn btn-ghost" type="button">
-                    <i data-lucide="printer"></i>
-                    Imprimir
-                </button>
-
-                <button id="btnExport" class="btn btn-ghost" type="button">
-                    <i data-lucide="download"></i>
-                    Exportar
-                </button>
-
-                <button id="btnShare" class="btn btn-primary" type="button">
-                    <i data-lucide="share-2"></i>
-                    Compartilhar
-                </button>
-            </div>
-        </section>
-
-
-        <!-- FILTROS -->
-        <section class="panel mb-5 grid gap-4 rounded-2xl p-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-
-            <label class="block">
-                <span class="mb-1 block text-[10px] font-extrabold uppercase tracking-wider" style="color:var(--muted)">
-                    Data inicial
-                </span>
-                <input id="dateFrom" type="date" class="input-control">
-            </label>
-
-            <label class="block">
-                <span class="mb-1 block text-[10px] font-extrabold uppercase tracking-wider" style="color:var(--muted)">
-                    Data final
-                </span>
-                <input id="dateTo" type="date" class="input-control">
-            </label>
-
-            <label class="block">
-                <span class="mb-1 block text-[10px] font-extrabold uppercase tracking-wider" style="color:var(--muted)">
-                    Unidade
-                </span>
-                <select id="fUnit" class="input-control">
-                    <option value="">Todas as unidades</option>
-                    <option value="Matriz Itaim Bibi">Matriz Itaim Bibi</option>
-                    <option value="Alphaville">Alphaville</option>
-                    <option value="Jardins">Jardins</option>
-                </select>
-            </label>
-
-            <label class="block">
-                <span class="mb-1 block text-[10px] font-extrabold uppercase tracking-wider" style="color:var(--muted)">
-                    Convênio
-                </span>
-                <select id="fIns" class="input-control">
-                    <option value="">Todos</option>
-                    <option value="Particular">Particular</option>
-                    <option value="Unimed">Unimed</option>
-                    <option value="Bradesco Saúde">Bradesco Saúde</option>
-                    <option value="SulAmérica">SulAmérica</option>
-                    <option value="Amil">Amil</option>
-                </select>
-            </label>
-
-            <label class="block">
-                <span class="mb-1 block text-[10px] font-extrabold uppercase tracking-wider" style="color:var(--muted)">
-                    Faixa etária
-                </span>
-                <select id="fAge" class="input-control">
-                    <option value="">Todas</option>
-                    <option value="0-17">0–17 anos</option>
-                    <option value="18-29">18–29 anos</option>
-                    <option value="30-44">30–44 anos</option>
-                    <option value="45-59">45–59 anos</option>
-                    <option value="60+">60+ anos</option>
-                </select>
-            </label>
-
-            <label class="block">
-                <span class="mb-1 block text-[10px] font-extrabold uppercase tracking-wider" style="color:var(--muted)">
-                    Origem
-                </span>
-                <select id="fOrig" class="input-control">
-                    <option value="">Todas</option>
-                    <option value="Indicação">Indicação</option>
-                    <option value="Google">Google</option>
-                    <option value="Instagram">Instagram</option>
-                    <option value="Convênio">Convênio</option>
-                    <option value="Site">Site</option>
-                    <option value="Retorno">Retorno</option>
-                </select>
-            </label>
-
-            <div class="flex items-end gap-2 sm:col-span-2 lg:col-span-3 xl:col-span-6 xl:justify-end">
-                <button id="btnClear" class="btn btn-ghost" type="button">
-                    <i data-lucide="rotate-ccw"></i>
-                    Limpar
-                </button>
-
-                <button id="btnApply" class="btn btn-primary" type="button">
-                    <i data-lucide="filter"></i>
-                    Aplicar filtros
-                </button>
-            </div>
-        </section>
-
-
-        <!-- KPIs -->
-        <section class="mb-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-
-            <article class="panel rounded-2xl p-4">
-                <div class="mb-4 flex items-center justify-between">
-                    <div
-                        class="grid h-10 w-10 place-items-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950">
-                        <i data-lucide="users"></i>
-                    </div>
-                    <span class="text-xs font-bold text-emerald-500">↗ +8,4%</span>
-                </div>
-
-                <div class="text-xs font-bold" style="color:var(--muted)">
-                    Pacientes ativos
-                </div>
-
-                <div class="mt-1 font-mono text-2xl font-bold">
-                    <span data-counter="12847">0</span>
-                </div>
-
-                <div class="spark-box mt-3">
-                    <canvas class="spark" data-color="#4f46e5"></canvas>
-                </div>
-            </article>
-
-            <article class="panel rounded-2xl p-4">
-                <div class="mb-4 flex items-center justify-between">
-                    <div
-                        class="grid h-10 w-10 place-items-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-950">
-                        <i data-lucide="user-plus"></i>
-                    </div>
-                    <span class="text-xs font-bold text-emerald-500">↗ +14,2%</span>
-                </div>
-
-                <div class="text-xs font-bold" style="color:var(--muted)">
-                    Novos no período
-                </div>
-
-                <div class="mt-1 font-mono text-2xl font-bold">
-                    <span data-counter="487">0</span>
-                </div>
-
-                <div class="spark-box mt-3">
-                    <canvas class="spark" data-color="#10b981"></canvas>
-                </div>
-            </article>
-
-            <article class="panel rounded-2xl p-4">
-                <div class="mb-4 flex items-center justify-between">
-                    <div class="grid h-10 w-10 place-items-center rounded-xl bg-sky-100 text-sky-600 dark:bg-sky-950">
-                        <i data-lucide="repeat"></i>
-                    </div>
-                    <span class="text-xs font-bold text-emerald-500">↗ +2,1%</span>
-                </div>
-
-                <div class="text-xs font-bold" style="color:var(--muted)">
-                    Taxa de retorno
-                </div>
-
-                <div class="mt-1 font-mono text-2xl font-bold">
-                    68,4<small class="ml-1 text-sm" style="color:var(--muted)">%</small>
-                </div>
-
-                <div class="spark-box mt-3">
-                    <canvas class="spark" data-color="#0284c7"></canvas>
-                </div>
-            </article>
-
-            <article class="panel rounded-2xl p-4">
-                <div class="mb-4 flex items-center justify-between">
-                    <div
-                        class="grid h-10 w-10 place-items-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-950">
-                        <i data-lucide="user-x"></i>
-                    </div>
-                    <span class="text-xs font-bold text-amber-500">↘ -0,6%</span>
-                </div>
-
-                <div class="text-xs font-bold" style="color:var(--muted)">
-                    Taxa de churn
-                </div>
-
-                <div class="mt-1 font-mono text-2xl font-bold">
-                    4,8<small class="ml-1 text-sm" style="color:var(--muted)">%</small>
-                </div>
-
-                <div class="spark-box mt-3">
-                    <canvas class="spark" data-color="#f59e0b"></canvas>
-                </div>
-            </article>
-
-            <article class="panel rounded-2xl p-4">
-                <div class="mb-4 flex items-center justify-between">
-                    <div
-                        class="grid h-10 w-10 place-items-center rounded-xl bg-violet-100 text-violet-600 dark:bg-violet-950">
-                        <i data-lucide="cake"></i>
-                    </div>
-                    <span class="text-xs font-bold" style="color:var(--muted)">Estável</span>
-                </div>
-
-                <div class="text-xs font-bold" style="color:var(--muted)">
-                    Idade média
-                </div>
-
-                <div class="mt-1 font-mono text-2xl font-bold">
-                    38<small class="ml-1 text-sm" style="color:var(--muted)">anos</small>
-                </div>
-
-                <div class="spark-box mt-3">
-                    <canvas class="spark" data-color="#8b5cf6"></canvas>
-                </div>
-            </article>
-
-            <article class="panel rounded-2xl p-4">
-                <div class="mb-4 flex items-center justify-between">
-                    <div
-                        class="grid h-10 w-10 place-items-center rounded-xl bg-rose-100 text-rose-600 dark:bg-rose-950">
-                        <i data-lucide="heart"></i>
-                    </div>
-                    <span class="text-xs font-bold text-emerald-500">↗ +0,3%</span>
-                </div>
-
-                <div class="text-xs font-bold" style="color:var(--muted)">
-                    LTV médio
-                </div>
-
-                <div class="mt-1 font-mono text-2xl font-bold">
-                    R$ 2,4<small class="ml-1 text-sm" style="color:var(--muted)">k</small>
-                </div>
-
-                <div class="spark-box mt-3">
-                    <canvas class="spark" data-color="#f43f5e"></canvas>
-                </div>
-            </article>
-        </section>
-
-
-        <!-- INSIGHTS -->
-        <section class="mb-5 grid gap-4 lg:grid-cols-3">
-            <article class="panel flex gap-3 rounded-2xl border-l-4 border-emerald-500 p-4">
-                <div
-                    class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-950">
-                    <i data-lucide="lightbulb"></i>
-                </div>
-                <div>
-                    <strong class="text-sm">Destaque do período</strong>
-                    <p class="mt-1 text-xs leading-relaxed" style="color:var(--muted)">
-                        Captação por <b>Instagram</b> cresceu 32%.
-                        O custo por paciente caiu para <b>R$ 84</b>.
-                    </p>
-                </div>
-            </article>
-
-            <article class="panel flex gap-3 rounded-2xl border-l-4 border-amber-500 p-4">
-                <div
-                    class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-950">
-                    <i data-lucide="alert-triangle"></i>
-                </div>
-                <div>
-                    <strong class="text-sm">Atenção</strong>
-                    <p class="mt-1 text-xs leading-relaxed" style="color:var(--muted)">
-                        <b>284 pacientes</b> estão sem retorno há mais de 12 meses.
-                    </p>
-                </div>
-            </article>
-
-            <article class="panel flex gap-3 rounded-2xl border-l-4 border-sky-500 p-4">
-                <div
-                    class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sky-100 text-sky-600 dark:bg-sky-950">
-                    <i data-lucide="rocket"></i>
-                </div>
-                <div>
-                    <strong class="text-sm">Oportunidade</strong>
-                    <p class="mt-1 text-xs leading-relaxed" style="color:var(--muted)">
-                        A faixa <b>30–44 anos</b> concentra 38% da base.
-                    </p>
-                </div>
-            </article>
-        </section>
-
-
-        <!-- GRÁFICOS -->
-        <section class="grid gap-4 lg:grid-cols-2">
-
-            <!-- Novos pacientes -->
-            <article class="panel rounded-2xl p-5 lg:col-span-2">
-                <div class="mb-4 flex flex-wrap items-start justify-between gap-3 border-b pb-4"
-                    style="border-color:var(--line-soft)">
+            <div class="live">Operação ativa · <b id="todayLabel">hoje</b></div>
+            <div class="toolbar"><button id="btnNovo" class="btn primary" type="button">Novo</button><button
+                    id="btnSalvar" class="btn success" type="button" disabled>Gravar</button><button id="btnEditar"
+                    class="btn warning" type="button" disabled>Editar</button><button id="btnExcluir" class="btn danger"
+                    type="button" disabled>Excluir</button><button id="btnImprimir" class="btn" type="button"
+                    disabled>Imprimir Ficha</button><button id="btnAnterior" class="btn icon" type="button"
+                    disabled>‹</button><button id="btnProximo" class="btn icon" type="button" disabled>›</button><button
+                    id="btnSair" class="btn quiet" type="button">Voltar</button></div>
+        </header>
+        <main>
+            <section class="panel">
+                <div class="head">
                     <div>
-                        <h2 class="card-title">
-                            <i data-lucide="user-plus"></i>
-                            Novos pacientes por mês
-                        </h2>
-                        <p class="card-subtitle">Captação mensal versus meta</p>
-                    </div>
-
-                    <div class="segmented" data-target="newPatients">
-                        <button type="button" class="active" data-mode="bar">
-                            Barras
-                        </button>
-                        <button type="button" data-mode="line">
-                            Linha
-                        </button>
-                    </div>
+                        <h2>Ficha de atendimento</h2>
+                        <p id="formState">Selecione um registro ou inicie um novo atendimento.</p>
+                    </div><span id="recordId" class="record">--</span>
                 </div>
-
-                <div class="chart-box">
-                    <canvas id="chartNovosPacientes"></canvas>
-                </div>
-            </article>
-
-
-            <!-- Sexo -->
-            <article class="panel rounded-2xl p-5">
-                <div class="mb-4 border-b pb-4" style="border-color:var(--line-soft)">
-                    <h2 class="card-title">
-                        <i data-lucide="venus-and-mars"></i>
-                        Pacientes por sexo
-                    </h2>
-                    <p class="card-subtitle">Distribuição da base ativa</p>
-                </div>
-
-                <div class="relative mx-auto h-64 max-w-xs">
-                    <canvas id="chartSexoPacientes"></canvas>
-
-                    <div class="pointer-events-none absolute inset-0 grid place-items-center text-center">
-                        <div>
-                            <div id="doughnutTotal" class="font-mono text-2xl font-bold">
-                                12.847
+                <nav class="tabs"><button id="tabPaciente" class="tab active" type="button"
+                        aria-controls="dados-paciente">1. Dados do paciente</button><button id="tabAtendimento"
+                        class="tab" type="button" aria-controls="dados-atendimento">2. Dados do atendimento</button>
+                </nav>
+                <div class="content">
+                    <form id="atendimentoForm">
+                        <section id="dados-paciente" class="tab-content active">
+                            <div class="grid">
+                                <div class="field s2"><label>Código ID</label><input id="pacienteId" readonly></div>
+                                <div class="field s3"><label>CPF</label><input id="cpf" disabled maxlength="14"
+                                        placeholder="000.000.000-00"></div>
+                                <div class="field s7"><label>Nome do paciente</label><input id="nomePaciente" disabled
+                                        required></div>
+                                <div class="field s3"><label>Data de nascimento</label><input id="dataNasc" type="date"
+                                        disabled></div>
+                                <div class="field s3"><label>Tel. celular</label><input id="celular" disabled
+                                        maxlength="15" placeholder="(00) 00000-0000"></div>
+                                <div class="field s3"><label>Convênio</label><select id="convenio" disabled>
+                                        <option value="">Selecione...</option>
+                                        <option>Particular</option>
+                                        <option>Unimed</option>
+                                        <option>Amil</option>
+                                        <option>Bradesco Saúde</option>
+                                        <option>SulAmérica</option>
+                                    </select></div>
+                                <div class="field s2"><label>Carteirinha</label><input id="carteirinha" disabled></div>
+                                <div class="field s1"><label>Validade</label><input id="validadeConvenio" disabled
+                                        maxlength="5" placeholder="MM/AA"></div>
                             </div>
-                            <div class="text-[10px] font-bold uppercase" style="color:var(--muted)">
-                                Pacientes
+                        </section>
+                        <section id="dados-atendimento" class="tab-content">
+                            <div class="grid">
+                                <div class="field s3"><label>Data do atendimento</label><input id="dataAtendimento"
+                                        type="date" disabled required></div>
+                                <div class="field s3"><label>Horário de chegada</label><input id="horaChegada"
+                                        type="time" disabled required></div>
+                                <div class="field s3"><label>Tipo de atendimento</label><select id="tipoAtendimento"
+                                        disabled required>
+                                        <option value="">Selecione...</option>
+                                        <option>Consulta</option>
+                                        <option>Retorno</option>
+                                        <option>Exame</option>
+                                        <option>Procedimento</option>
+                                        <option>Teleconsulta</option>
+                                        <option>Urgência</option>
+                                        <option>Encaixe</option>
+                                    </select></div>
+                                <div class="field s3"><label>Exame ou procedimento</label><input id="procedimento"
+                                        disabled></div>
+                                <div class="field s4"><label>Médico</label><select id="medico" disabled required>
+                                        <option value="">Selecione...</option>
+                                        <option>Dr. Ricardo Silva</option>
+                                        <option>Dra. Ana Beatriz</option>
+                                        <option>Dr. Marcos Pereira</option>
+                                    </select></div>
+                                <div class="field s4"><label>Especialidade</label><input id="especialidade" readonly
+                                        disabled></div>
+                                <div class="field s2"><label>Nº senha</label><input id="numeroSenha" readonly disabled>
+                                </div>
+                                <div class="field s2"><label>Prioridade</label><select id="prioridade" disabled>
+                                        <option>Normal</option>
+                                        <option>Idoso</option>
+                                        <option>Gestante</option>
+                                        <option>PCD</option>
+                                        <option>Emergencial</option>
+                                    </select></div>
+                                <div class="s12">
+                                    <h3 class="section-title">Confirmação de presença e checklist</h3>
+                                </div>
+                                <fieldset class="s12">
+                                    <div class="checklist"><label><input id="pacientePresente" type="checkbox"
+                                                disabled>Paciente presente</label><label><input id="docsConferidos"
+                                                type="checkbox" disabled>Documentos conferidos</label><label><input
+                                                id="convenioValido" type="checkbox" disabled>Convênio
+                                            válido</label><label><input id="autorizacaoRealizada" type="checkbox"
+                                                disabled>Autorização realizada</label><label><input id="lgpdAceita"
+                                                type="checkbox" disabled>LGPD aceita</label></div>
+                                </fieldset>
+                                <div class="field s12"><label>Observações</label><textarea id="obsAtendimento"
+                                        disabled></textarea></div>
                             </div>
-                        </div>
-                    </div>
+                        </section>
+                        <div class="actions"><button id="btnLimpar" class="btn quiet" type="button" disabled>Limpar
+                                campos</button><button id="btnAvancar" class="btn primary" type="button">Próxima
+                                etapa</button></div>
+                    </form>
                 </div>
-
-                <div id="legendSexo" class="mt-4 flex flex-wrap justify-center gap-2"></div>
-            </article>
-
-
-            <!-- Convênios -->
-            <article class="panel rounded-2xl p-5">
-                <div class="mb-4 border-b pb-4" style="border-color:var(--line-soft)">
-                    <h2 class="card-title">
-                        <i data-lucide="id-card"></i>
-                        Distribuição por convênio
-                    </h2>
-                    <p class="card-subtitle">Participação na base</p>
-                </div>
-
-                <div class="chart-box">
-                    <canvas id="chartConveniosPacientes"></canvas>
-                </div>
-            </article>
-
-
-            <!-- Faixa etária -->
-            <article class="panel rounded-2xl p-5">
-                <div class="mb-4 border-b pb-4" style="border-color:var(--line-soft)">
-                    <h2 class="card-title">
-                        <i data-lucide="bar-chart-2"></i>
-                        Faixa etária
-                    </h2>
-                    <p class="card-subtitle">Distribuição demográfica</p>
-                </div>
-
-                <div class="chart-box">
-                    <canvas id="chartFaixaEtaria"></canvas>
-                </div>
-            </article>
-
-
-            <!-- Cidades -->
-            <article class="panel rounded-2xl p-5">
-                <div class="mb-4 border-b pb-4" style="border-color:var(--line-soft)">
-                    <h2 class="card-title">
-                        <i data-lucide="map-pin"></i>
-                        Top cidades
-                    </h2>
-                    <p class="card-subtitle">Origem geográfica</p>
-                </div>
-
-                <div id="topCities" class="space-y-4"></div>
-            </article>
-
-
-            <!-- Heatmap -->
-            <article class="panel rounded-2xl p-5 lg:col-span-2">
-                <div class="mb-4 border-b pb-4" style="border-color:var(--line-soft)">
-                    <h2 class="card-title">
-                        <i data-lucide="grid-3x3"></i>
-                        Mapa de calor — Origem × Mês
-                    </h2>
-                    <p class="card-subtitle">
-                        Captação por canal nos últimos 12 meses
-                    </p>
-                </div>
-
-                <div id="heatmap" class="heatmap"></div>
-
-                <div class="mt-4 flex items-center justify-end gap-2 text-[10px] font-bold" style="color:var(--muted)">
-                    <span>Baixo</span>
-                    <div class="flex gap-1">
-                        <span class="h-2.5 w-5 rounded bg-indigo-100"></span>
-                        <span class="h-2.5 w-5 rounded bg-indigo-300"></span>
-                        <span class="h-2.5 w-5 rounded bg-indigo-400"></span>
-                        <span class="h-2.5 w-5 rounded bg-indigo-600"></span>
-                        <span class="h-2.5 w-5 rounded bg-indigo-900"></span>
-                    </div>
-                    <span>Alto</span>
-                </div>
-            </article>
-
-
-            <!-- Evolução -->
-            <article class="panel rounded-2xl p-5 lg:col-span-2">
-                <div class="mb-4 flex flex-wrap items-start justify-between gap-3 border-b pb-4"
-                    style="border-color:var(--line-soft)">
+            </section>
+            <section class="panel queue">
+                <div class="head queue-head">
                     <div>
-                        <h2 class="card-title">
-                            <i data-lucide="line-chart"></i>
-                            Evolução de cadastros
-                        </h2>
-                        <p class="card-subtitle">
-                            Realizado, meta e ano anterior
-                        </p>
+                        <h2>Fila de espera</h2>
+                        <p>Atendimentos previstos para hoje</p>
                     </div>
-
-                    <div class="segmented" data-target="evolution">
-                        <button type="button" class="active" data-metric="all">
-                            Tudo
-                        </button>
-                        <button type="button" data-metric="real">
-                            Realizado
-                        </button>
-                        <button type="button" data-metric="target">
-                            Meta
-                        </button>
-                        <button type="button" data-metric="prev">
-                            Ano anterior
-                        </button>
-                    </div>
+                    <div class="search"><input id="inputBusca" type="search" placeholder="Nome, CPF ou senha"><button
+                            id="btnBuscar" class="btn primary" type="button">Buscar</button></div>
                 </div>
-
-                <div class="chart-box tall">
-                    <canvas id="chartEvolucaoPacientes"></canvas>
+                <div class="summary"><span><b id="waitingCount">0</b> aguardando</span><span><b id="serviceCount">0</b>
+                        em atendimento</span><span><b id="priorityCount">0</b> prioritários</span></div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Senha</th>
+                                <th>Hora</th>
+                                <th>Paciente</th>
+                                <th>Tipo</th>
+                                <th>Médico</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaAtendimentos"></tbody>
+                    </table>
                 </div>
-            </article>
-        </section>
-
-
-        <!-- RANKING -->
-        <section class="panel mt-4 rounded-2xl p-5">
-            <div class="mb-4 flex flex-wrap items-start justify-between gap-3 border-b pb-4"
-                style="border-color:var(--line-soft)">
-                <div>
-                    <h2 class="card-title">
-                        <i data-lucide="trophy"></i>
-                        Top 12 pacientes — Maior LTV
-                    </h2>
-                    <p class="card-subtitle">
-                        Pacientes mais valiosos por receita acumulada
-                    </p>
-                </div>
-
-                <div id="rankTabs" class="segmented">
-                    <button type="button" class="active" data-rank="geral">
-                        Geral
-                    </button>
-                    <button type="button" data-rank="ltv">
-                        LTV
-                    </button>
-                    <button type="button" data-rank="frequency">
-                        Frequência
-                    </button>
-                    <button type="button" data-rank="recency">
-                        Recência
-                    </button>
-                </div>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table id="rankTable" class="w-full min-w-[760px] text-left text-xs">
-                    <thead style="color:var(--muted)">
-                        <tr class="border-b" style="border-color:var(--line-soft)">
-                            <th class="p-3">#</th>
-                            <th class="p-3">Paciente</th>
-                            <th class="p-3">Convênio</th>
-                            <th class="p-3">Consultas</th>
-                            <th class="p-3">Última visita</th>
-                            <th class="p-3">LTV</th>
-                            <th class="p-3">NPS</th>
-                            <th class="p-3">Score</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-
-
-        <!-- DETALHAMENTO -->
-        <section class="panel mt-4 rounded-2xl p-5">
-            <div class="mb-4 flex flex-wrap items-center justify-between gap-3 border-b pb-4"
-                style="border-color:var(--line-soft)">
-                <div>
-                    <h2 class="card-title">
-                        <i data-lucide="table-2"></i>
-                        Detalhamento por convênio
-                    </h2>
-                    <p class="card-subtitle">
-                        Métricas consolidadas por convênio
-                    </p>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-2">
-                    <div class="flex items-center gap-2 rounded-lg border px-3"
-                        style="border-color:var(--line);background:var(--panel-soft)">
-                        <i data-lucide="search" class="h-4 w-4" style="color:var(--muted)"></i>
-                        <input id="tblSearch" type="search" placeholder="Buscar convênio..."
-                            class="h-9 w-44 bg-transparent text-xs outline-none" style="color:var(--text)">
-                    </div>
-
-                    <button id="btnExportCat" class="btn btn-ghost" type="button">
-                        <i data-lucide="download"></i>
-                        CSV
-                    </button>
-                </div>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table id="breakdownTable" class="w-full min-w-[850px] text-left text-xs">
-                    <thead style="color:var(--muted)">
-                        <tr class="border-b" style="border-color:var(--line-soft)">
-                            <th class="p-3">Convênio</th>
-                            <th class="p-3 text-right">Pacientes</th>
-                            <th class="p-3 text-right">Novos</th>
-                            <th class="p-3 text-right">Retorno</th>
-                            <th class="p-3 text-right">Idade média</th>
-                            <th class="p-3 text-right">LTV médio</th>
-                            <th class="p-3 text-right">Variação</th>
-                            <th class="p-3">Tendência</th>
-                        </tr>
-                    </thead>
-
-                    <tbody></tbody>
-
-                    <tfoot>
-                        <tr class="border-t font-bold" style="border-color:var(--line)">
-                            <th class="p-3">TOTAL</th>
-                            <th id="tFTot" class="p-3 text-right">0</th>
-                            <th id="tFNew" class="p-3 text-right">0</th>
-                            <th id="tFRet" class="p-3 text-right">0</th>
-                            <th id="tFAge" class="p-3 text-right">0</th>
-                            <th id="tFLtv" class="p-3 text-right">R$ 0</th>
-                            <th class="p-3 text-right">—</th>
-                            <th class="p-3"></th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </section>
-
-
-        <!-- RODAPÉ -->
-        <footer class="flex flex-col justify-between gap-2 py-6 text-[11px] sm:flex-row" style="color:var(--muted)">
-            <span>
-                © 2026 G4Med · Inteligência Hospitalar ·
-                Última atualização:
-                <b id="lastUpdate">agora</b>
-            </span>
-
-            <span>
-                Data Warehouse v3.2 · SLA 99,98%
-            </span>
-        </footer>
-    </main>
-
-
-    <div id="toastBox" class="toast-area" aria-live="polite"></div>
-
-
+            </section>
+        </main>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <section id="print-document"></section>
     <script>
+        'use strict';
+        const STORAGE = 'G4Med_atendimentos_recepcao', CLINIC_KEYS = ['G4Med_clinica', 'G4med_clinica', 'GM4med_clinica', 'G4Med_dados_clinica', 'dados_clinica', 'clinica'], $ = id => document.getElementById(id), state = { records: [], selected: null, mode: 'view', filtered: [] }, editables = ['cpf', 'nomePaciente', 'dataNasc', 'celular', 'convenio', 'carteirinha', 'validadeConvenio', 'dataAtendimento', 'horaChegada', 'tipoAtendimento', 'procedimento', 'medico', 'prioridade', 'obsAtendimento', 'pacientePresente', 'docsConferidos', 'convenioValido', 'autorizacaoRealizada', 'lgpdAceita'];
+        const esc = v => String(v ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;'), norm = v => String(v ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(), today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` }, time = () => { const d = new Date(); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}` }, br = v => v && v.includes('-') ? v.split('-').reverse().join('/') : v || '-';
+        function toast(m) { $('toast').textContent = m; $('toast').classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => $('toast').classList.remove('show'), 2600) } function clinic() { for (const key of CLINIC_KEYS) { try { const raw = localStorage.getItem(key); if (!raw) continue; const x = JSON.parse(raw), c = x?.clinica || x?.clinic || x; if (c && typeof c === 'object') return c } catch { } } return {} } function cv(c, ...keys) { for (const k of keys) if (c[k] != null && String(c[k]).trim()) return String(c[k]).trim(); return '' } function load() { try { const x = JSON.parse(localStorage.getItem(STORAGE) || '[]'); return Array.isArray(x) ? x : [] } catch { return [] } } function save() { try { localStorage.setItem(STORAGE, JSON.stringify(state.records)) } catch { toast('Não foi possível salvar no navegador.') } } function newId() { return `PAC-${today().replaceAll('-', '')}-${String(Date.now()).slice(-5)}` } function newTicket(p) { const pre = p === 'Normal' ? 'G' : 'P', n = state.records.map(r => String(r.numeroSenha || '')).filter(x => x.startsWith(pre + '-')).map(x => +x.split('-')[1]).filter(Number.isInteger); return `${pre}-${String((n.length ? Math.max(...n) : 0) + 1).padStart(3, '0')}` } function selected() { return state.records.find(r => r.id === state.selected) } function setEditable(on) { editables.forEach(id => $(id).disabled = !on); $('pacienteId').disabled = $('especialidade').disabled = $('numeroSenha').disabled = true; $('btnSalvar').disabled = $('btnLimpar').disabled = !on } function clearForm() { $('atendimentoForm').reset(); $('pacienteId').value = $('numeroSenha').value = $('especialidade').value = ''; $('recordId').textContent = '--' } function collect() { return { id: $('pacienteId').value || newId(), cpf: $('cpf').value, nomePaciente: $('nomePaciente').value.trim().toUpperCase(), dataNasc: $('dataNasc').value, celular: $('celular').value, convenio: $('convenio').value, carteirinha: $('carteirinha').value, validadeConvenio: $('validadeConvenio').value, dataAtendimento: $('dataAtendimento').value, horaChegada: $('horaChegada').value, tipoAtendimento: $('tipoAtendimento').value, procedimento: $('procedimento').value, medico: $('medico').value, especialidade: $('especialidade').value, numeroSenha: $('numeroSenha').value, prioridade: $('prioridade').value, checklist: { pacientePresente: $('pacientePresente').checked, docsConferidos: $('docsConferidos').checked, convenioValido: $('convenioValido').checked, autorizacaoRealizada: $('autorizacaoRealizada').checked, lgpdAceita: $('lgpdAceita').checked }, obsAtendimento: $('obsAtendimento').value, status: 'Aguardando' } } function fill(r) { for (const [id, v] of Object.entries({ pacienteId: r.id, cpf: r.cpf, nomePaciente: r.nomePaciente, dataNasc: r.dataNasc, celular: r.celular, convenio: r.convenio, carteirinha: r.carteirinha, validadeConvenio: r.validadeConvenio, dataAtendimento: r.dataAtendimento, horaChegada: r.horaChegada, tipoAtendimento: r.tipoAtendimento, procedimento: r.procedimento, medico: r.medico, especialidade: r.especialidade, numeroSenha: r.numeroSenha, prioridade: r.prioridade, obsAtendimento: r.obsAtendimento })) $(id).value = v || ''; const c = r.checklist || {};['pacientePresente', 'docsConferidos', 'convenioValido', 'autorizacaoRealizada', 'lgpdAceita'].forEach(id => $(id).checked = !!c[id]); $('recordId').textContent = String(r.id || '--').replace('PAC-', '').slice(-5); $('formState').textContent = `${r.nomePaciente} · ${r.status || 'Aguardando'}` } function filtered() { const q = norm($('inputBusca').value); return q ? state.records.filter(r => [r.nomePaciente, r.cpf, r.numeroSenha, r.medico, r.tipoAtendimento, r.status].some(v => norm(v).includes(q))) : [...state.records] } function render() { state.filtered = filtered(); $('corpoTabelaAtendimentos').innerHTML = state.filtered.length ? state.filtered.map(r => `<tr data-id="${esc(r.id)}" tabindex="0" class="${r.id === state.selected ? 'selected' : ''}"><td><span class="badge ticket ${r.prioridade === 'Normal' ? 'normal' : r.prioridade === 'Emergencial' ? 'emergency' : 'preferred'}">${esc(r.numeroSenha || '-')}</span></td><td>${esc(r.horaChegada || '-')}</td><td><strong>${esc(r.nomePaciente || '-')}</strong><small>${esc(r.cpf || '')}</small></td><td>${esc(r.tipoAtendimento || '-')}</td><td>${esc(r.medico || '-')}</td><td><span class="badge status ${r.status === 'Em atendimento' ? 'service' : r.status === 'Finalizado' ? 'done' : r.status === 'Cancelado' ? 'cancelled' : 'waiting'}">${esc(r.status || 'Aguardando')}</span></td></tr>`).join('') : '<tr class="empty"><td colspan="6">Nenhum atendimento encontrado.</td></tr>'; $('waitingCount').textContent = state.records.filter(r => r.status === 'Aguardando').length; $('serviceCount').textContent = state.records.filter(r => r.status === 'Em atendimento').length; $('priorityCount').textContent = state.records.filter(r => ['Idoso', 'Gestante', 'PCD', 'Emergencial'].includes(r.prioridade)).length; toolbar() } function toolbar() { const has = Boolean(state.selected), editing = ['new', 'edit'].includes(state.mode), list = state.filtered.length ? state.filtered : state.records, i = list.findIndex(r => r.id === state.selected); $('btnEditar').disabled = $('btnExcluir').disabled = !has || editing; $('btnImprimir').disabled = !has && !editing; $('btnAnterior').disabled = !has || editing || i <= 0; $('btnProximo').disabled = !has || editing || i < 0 || i >= list.length - 1 } function selectRecord(id) { const r = state.records.find(x => x.id === id); if (!r) return; state.selected = id; state.mode = 'view'; fill(r); setEditable(false); render() } function tab(id) { document.querySelectorAll('.tab-content').forEach(x => x.classList.toggle('active', x.id === id)); document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x.getAttribute('aria-controls') === id)) } function newRecord() { state.mode = 'new'; state.selected = null; clearForm(); $('pacienteId').value = newId(); $('dataAtendimento').value = today(); $('horaChegada').value = time(); $('numeroSenha').value = newTicket('Normal'); $('formState').textContent = 'Novo atendimento em preenchimento.'; setEditable(true); toolbar(); tab('dados-paciente'); $('nomePaciente').focus() } function editRecord() { if (!selected()) return toast('Selecione um atendimento para editar.'); state.mode = 'edit'; setEditable(true); toolbar(); $('nomePaciente').focus() } function saveRecord() { if (!['new', 'edit'].includes(state.mode)) return toast('Clique em Novo ou Editar antes de gravar.'); const r = collect(); for (const [id, msg] of [['nomePaciente', 'Informe o nome do paciente.'], ['cpf', 'Informe o CPF do paciente.'], ['dataAtendimento', 'Informe a data do atendimento.'], ['horaChegada', 'Informe o horário de chegada.'], ['tipoAtendimento', 'Selecione o tipo de atendimento.'], ['medico', 'Selecione o médico responsável.'], ['numeroSenha', 'A senha não foi gerada.']]) if (!r[id]) return toast(msg); const i = state.records.findIndex(x => x.id === state.selected); if (i < 0) { state.records.push(r); state.selected = r.id; toast('Atendimento cadastrado com sucesso.') } else { state.records[i] = { ...state.records[i], ...r }; toast('Atendimento atualizado com sucesso.') } save(); state.mode = 'view'; fill(selected()); setEditable(false); render() } function removeRecord() { const r = selected(); if (!r) return toast('Selecione um atendimento para excluir.'); if (!confirm(`Deseja realmente excluir o atendimento de ${r.nomePaciente}?`)) return; state.records = state.records.filter(x => x.id !== r.id); state.selected = null; save(); clearForm(); setEditable(false); render(); toast('Atendimento excluído.') } function navigate(dir) { const list = state.filtered.length ? state.filtered : state.records, i = list.findIndex(r => r.id === state.selected); if (i >= 0 && list[i + dir]) selectRecord(list[i + dir].id) }
+        function pitem(label, value) { return `<div class="p-item"><span class="p-label">${esc(label)}</span><span class="p-value">${esc(value || '-')}</span></div>` } function printFicha() {
+            const r = selected() || (state.mode === 'new' ? collect() : null); if (!r || !r.nomePaciente) return toast('Selecione ou preencha um atendimento antes de imprimir.'); const c = clinic(), logo = cv(c, 'logo', 'logoUrl', 'logoBase64', 'logoDataUrl') || 'logo-gm4med.png', name = cv(c, 'nome', 'nomeClinica', 'name'), address = cv(c, 'endereco', 'address'), number = cv(c, 'numero', 'number'), complement = cv(c, 'complemento', 'complement'), neighborhood = cv(c, 'bairro', 'neighborhood'), city = cv(c, 'cidade', 'city'), uf = cv(c, 'estado', 'uf', 'state'), cityUF = [city, uf].filter(Boolean).join('/'), cep = cv(c, 'cep', 'zipCode', 'zipcode'), phone = cv(c, 'telefone', 'phone'), email = cv(c, 'email'), fullAddress = [address, number, complement, neighborhood].filter(Boolean).join(', '), footerAddress = [fullAddress, cityUF, cep ? `CEP: ${cep}` : ''].filter(Boolean).join(' · '), check = r.checklist || {};
+            $('print-document').innerHTML = `<header class="p-header"><img class="p-logo" src="${esc(logo)}" alt="Logo oficial GM4med"><div class="p-clinic"><div class="p-brand">GM4med</div><div class="p-system">Intelligent Health System</div>${name ? `<div class="p-name">${esc(name)}</div>` : ''}${fullAddress ? `<div class="p-line">${esc(fullAddress)}</div>` : ''}${cityUF || cep ? `<div class="p-line">${esc(cityUF)}${cep ? ' · CEP: ' + esc(cep) : ''}</div>` : ''}${phone ? `<div class="p-line">Tel.: ${esc(phone)}</div>` : ''}${email ? `<div class="p-line">E-mail: ${esc(email)}</div>` : ''}</div></header><footer class="p-footer"><span>GM4med · Intelligent Health System</span><span>${esc(name ? name + ' | ' : '')}${esc(footerAddress)}${phone ? ' | Tel.: ' + esc(phone) : ''}</span><span class="p-page"></span></footer><main class="p-content"><header class="p-title"><div><div class="p-kicker">Documento institucional</div><h1>Ficha médica de atendimento</h1></div><div class="p-ticket">${esc(r.numeroSenha || '-')}</div></header><section class="p-section"><h2>Dados do paciente</h2><div class="p-grid">${pitem('Código ID', r.id)}${pitem('CPF', r.cpf)}${pitem('Paciente', r.nomePaciente)}${pitem('Data de nascimento', br(r.dataNasc))}${pitem('Celular', r.celular)}${pitem('Convênio', r.convenio)}${pitem('Carteirinha', r.carteirinha)}${pitem('Validade', r.validadeConvenio)}</div></section><section class="p-section"><h2>Dados do atendimento</h2><div class="p-grid">${pitem('Data', br(r.dataAtendimento))}${pitem('Horário', r.horaChegada)}${pitem('Tipo', r.tipoAtendimento)}${pitem('Procedimento', r.procedimento)}${pitem('Médico', r.medico)}${pitem('Especialidade', r.especialidade)}${pitem('Prioridade', r.prioridade)}${pitem('Status', r.status)}</div></section><section class="p-section"><h2>Checklist da recepção</h2><ul class="p-checks"><li>Paciente presente: <strong>${check.pacientePresente ? 'Sim' : 'Não'}</strong></li><li>Documentos conferidos: <strong>${check.docsConferidos ? 'Sim' : 'Não'}</strong></li><li>Convênio válido: <strong>${check.convenioValido ? 'Sim' : 'Não'}</strong></li><li>Autorização realizada: <strong>${check.autorizacaoRealizada ? 'Sim' : 'Não'}</strong></li><li>LGPD aceita: <strong>${check.lgpdAceita ? 'Sim' : 'Não'}</strong></li></ul></section><section class="p-section"><h2>Observações</h2><div class="p-notes">${esc(r.obsAtendimento || 'Nenhuma observação registrada.')}</div></section><section class="p-signatures"><div class="p-signature">Assinatura da recepção</div><div class="p-signature">Assinatura do paciente</div></section></main>`;
+            const image = $('print-document').querySelector('img'); let printed = false; const start = () => { if (printed) return; printed = true; requestAnimationFrame(() => requestAnimationFrame(() => window.print())) }; if (image) { image.addEventListener('load', start, { once: true }); image.addEventListener('error', start, { once: true }); if (image.complete) start(); setTimeout(start, 800) } else start()
+        }
+        function mask(id, fn) { $(id).addEventListener('input', e => e.target.value = fn(e.target.value)) } mask('cpf', v => v.replace(/\D/g, '').slice(0, 11).replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2')); mask('celular', v => { v = v.replace(/\D/g, '').slice(0, 11); return v.length < 11 ? v.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{4})(\d)/, '$1-$2') : v.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2') }); mask('validadeConvenio', v => { v = v.replace(/\D/g, '').slice(0, 4); return v.length > 2 ? v.slice(0, 2) + '/' + v.slice(2) : v });
+        $('btnNovo').onclick = newRecord; $('btnSalvar').onclick = saveRecord; $('btnEditar').onclick = editRecord; $('btnExcluir').onclick = removeRecord; $('btnImprimir').onclick = printFicha; $('btnAnterior').onclick = () => navigate(-1); $('btnProximo').onclick = () => navigate(1); $('btnLimpar').onclick = () => { clearForm(); toast('Campos limpos.') }; $('btnBuscar').onclick = render; $('inputBusca').oninput = render; $('medico').onchange = () => $('especialidade').value = ({ 'Dr. Ricardo Silva': 'Cardiologia', 'Dra. Ana Beatriz': 'Clínica geral', 'Dr. Marcos Pereira': 'Ortopedia' })[$('medico').value] || ''; $('prioridade').onchange = () => { if (state.mode === 'new') $('numeroSenha').value = newTicket($('prioridade').value) }; $('atendimentoForm').onsubmit = e => { e.preventDefault(); saveRecord() }; $('corpoTabelaAtendimentos').onclick = e => { const row = e.target.closest('tr[data-id]'); if (row) selectRecord(row.dataset.id) }; $('corpoTabelaAtendimentos').onkeydown = e => { const row = e.target.closest('tr[data-id]'); if (row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); selectRecord(row.dataset.id) } }; $('tabPaciente').onclick = () => tab('dados-paciente'); $('tabAtendimento').onclick = () => tab('dados-atendimento'); $('btnAvancar').onclick = () => tab(document.querySelector('.tab.active')?.getAttribute('aria-controls') === 'dados-paciente' ? 'dados-atendimento' : 'dados-paciente'); $('btnSair').onclick = () => toast('Voltar ao menu principal.'); state.records = load(); state.filtered = [...state.records]; $('todayLabel').textContent = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'full' }).format(new Date()); setEditable(false); render();
         (() => {
-            'use strict';
-
-            const $ = (selector, root = document) =>
-                root.querySelector(selector);
-
-            const $$ = (selector, root = document) =>
-                Array.from(root.querySelectorAll(selector));
-
-            const charts = new Map();
-
-            const state = {
-                period: '30',
-                newPatientsMode: 'bar',
-                evolutionMetric: 'all',
-                rankMode: 'geral',
-                filters: {},
-                data: null
+            const dadosClinica = {
+                nome: 'ClÃ­nica Exemplo',
+                endereco: 'Rua das Flores',
+                numero: '123',
+                complemento: 'Sala 4',
+                bairro: 'Centro',
+                cidade: 'SÃ£o Paulo',
+                estado: 'SP',
+                cep: '01234-567',
+                telefone: '(11) 99999-9999',
+                email: 'contato@clinica.com'
             };
 
-            const COLORS = {
-                brand: '#4f46e5',
-                cyan: '#06b6d4',
-                success: '#10b981',
-                warning: '#f59e0b',
-                danger: '#ef4444',
-                info: '#0284c7',
-                purple: '#8b5cf6',
-                rose: '#f43f5e',
-                gray: '#94a3b8'
-            };
-
-            const MONTHS = [
-                'Jan', 'Fev', 'Mar', 'Abr',
-                'Mai', 'Jun', 'Jul', 'Ago',
-                'Set', 'Out', 'Nov', 'Dez'
-            ];
-
-            const MONTHS_FULL = [
-                'Janeiro', 'Fevereiro', 'Março', 'Abril',
-                'Maio', 'Junho', 'Julho', 'Agosto',
-                'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-            ];
-
-            const numberFormatter = new Intl.NumberFormat('pt-BR');
-
-            const currencyFormatter = new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-                maximumFractionDigits: 0
-            });
-
-            const decimalFormatter = new Intl.NumberFormat('pt-BR', {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1
-            });
-
-            function formatNumber(value) {
-                return numberFormatter.format(
-                    Math.round(Number(value) || 0)
-                );
-            }
-
-            function formatCurrency(value) {
-                return currencyFormatter.format(
-                    Number(value) || 0
-                );
-            }
-
-            function formatDecimal(value) {
-                return decimalFormatter.format(
-                    Number(value) || 0
-                );
-            }
-
-            function formatPercent(value) {
-                return `${formatDecimal(value)}%`;
-            }
-
-            function escapeHTML(value) {
-                return String(value ?? '')
-                    .replaceAll('&', '&amp;')
-                    .replaceAll('<', '&lt;')
-                    .replaceAll('>', '&gt;')
-                    .replaceAll('"', '&quot;')
-                    .replaceAll("'", '&#039;');
-            }
-
-            function isDark() {
-                return document.documentElement.classList.contains('dark');
-            }
-
-            function themeColors() {
-                return {
-                    text: isDark() ? '#cbd5e1' : '#475569',
-                    muted: isDark() ? '#94a3b8' : '#64748b',
-                    grid: isDark()
-                        ? 'rgba(148,163,184,.16)'
-                        : 'rgba(15,23,42,.07)',
-                    surface: isDark() ? '#111832' : '#ffffff'
-                };
-            }
-
-            function showToast(message, type = 'info') {
-                const area = $('#toastBox');
-                if (!area) return;
-
-                const toast = document.createElement('div');
-                toast.className = `toast toast-${type}`;
-                toast.textContent = message;
-                toast.setAttribute('role', 'status');
-
-                area.appendChild(toast);
-
-                setTimeout(() => {
-                    toast.style.opacity = '0';
-                    toast.style.transform = 'translateX(30px)';
-                }, 2800);
-
-                setTimeout(() => toast.remove(), 3200);
-            }
-
-            function refreshIcons() {
-                if (window.lucide) {
-                    lucide.createIcons();
-                }
-            }
-
-            function destroyChart(key) {
-                const chart = charts.get(key);
-
-                if (chart) {
-                    chart.destroy();
-                    charts.delete(key);
-                }
-            }
-
-            function registerChart(key, chart) {
-                destroyChart(key);
-                charts.set(key, chart);
-            }
-
-            function chartOptions(options = {}) {
-                const theme = themeColors();
-
-                return {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: {
-                        duration: 600,
-                        easing: 'easeOutQuart'
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: theme.text,
-                                usePointStyle: true,
-                                boxWidth: 8,
-                                padding: 12
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: theme.surface,
-                            titleColor: theme.text,
-                            bodyColor: theme.text,
-                            borderColor: theme.grid,
-                            borderWidth: 1,
-                            padding: 10,
-                            cornerRadius: 9,
-                            usePointStyle: true
-                        }
-                    },
-                    scales: {
-                        x: {
-                            ticks: {color: theme.muted},
-                            grid: {color: theme.grid}
-                        },
-                        y: {
-                            ticks: {color: theme.muted},
-                            grid: {color: theme.grid},
-                            beginAtZero: true
-                        }
-                    },
-                    ...options
-                };
-            }
-
-            function makeData() {
-                return {
-                    totalPatients: 12847,
-
-                    acquisition: [
-                        342, 368, 401, 389,
-                        425, 448, 462, 471,
-                        489, 512, 498, 487
-                    ],
-
-                    target: [
-                        350, 370, 390, 410,
-                        430, 450, 470, 490,
-                        510, 530, 550, 570
-                    ],
-
-                    gender: [
-                        {
-                            name: 'Feminino',
-                            value: 7048,
-                            color: COLORS.rose
-                        },
-                        {
-                            name: 'Masculino',
-                            value: 5011,
-                            color: COLORS.brand
-                        },
-                        {
-                            name: 'Outro / Não informado',
-                            value: 788,
-                            color: COLORS.gray
-                        }
-                    ],
-
-                    insurance: [
-                        ['Particular', 2840, 418, 2422, 36, 3120, 9.4, 'up'],
-                        ['Unimed', 3210, 384, 2826, 39, 2480, 6.2, 'up'],
-                        ['Bradesco Saúde', 1980, 264, 1716, 41, 2780, 4.8, 'up'],
-                        ['SulAmérica', 1420, 198, 1222, 38, 2540, 11.2, 'up'],
-                        ['Amil', 1180, 146, 1034, 40, 2220, -2.1, 'down'],
-                        ['NotreDame', 842, 104, 738, 37, 2140, 8.3, 'up'],
-                        ['Hapvida', 684, 82, 602, 42, 1840, 5.7, 'up'],
-                        ['Outros', 691, 76, 615, 39, 2080, 3.2, 'up']
-                    ].map(item => ({
-                        name: item[0],
-                        patients: item[1],
-                        newPatients: item[2],
-                        returns: item[3],
-                        age: item[4],
-                        ltv: item[5],
-                        variation: item[6],
-                        trend: item[7]
-                    })),
-
-                    ageGroups: [
-                        ['0–12', 284, 312],
-                        ['13–17', 198, 212],
-                        ['18–29', 1420, 1180],
-                        ['30–44', 2680, 2120],
-                        ['45–59', 1842, 1418],
-                        ['60+', 1064, 317]
-                    ].map(item => ({
-                        label: item[0],
-                        female: item[1],
-                        male: item[2]
-                    })),
-
-                    cities: [
-                        ['São Paulo · SP', 42],
-                        ['Guarulhos · SP', 14],
-                        ['Osasco · SP', 11],
-                        ['Santo André · SP', 9],
-                        ['Barueri · SP', 8],
-                        ['Outros', 16]
-                    ].map(item => ({
-                        name: item[0],
-                        value: item[1]
-                    })),
-
-                    origins: [
-                        'Indicação',
-                        'Google',
-                        'Instagram',
-                        'Convênio',
-                        'Site',
-                        'Retorno'
-                    ],
-
-                    evolutionReal: [
-                        9820, 10170, 10530, 10920,
-                        11340, 11780, 12220, 12680,
-                        13140, 13620, 14080, 14540
-                    ],
-
-                    evolutionTarget: [
-                        9800, 10200, 10600, 11000,
-                        11400, 11800, 12200, 12600,
-                        13000, 13400, 13800, 14200
-                    ],
-
-                    evolutionPrevious: [
-                        9140, 9480, 9810, 10160,
-                        10520, 10860, 11200, 11540,
-                        11880, 12210, 12540, 12890
-                    ],
-
-                    patients: [
-                        ['Maria Silva Santos', 'Particular', 42, 'há 3 dias', 18420, 9.8],
-                        ['João Pedro Almeida', 'Unimed', 38, 'há 1 semana', 16280, 9.6],
-                        ['Ana Beatriz Costa', 'Bradesco Saúde', 36, 'há 2 dias', 15640, 9.7],
-                        ['Carlos Eduardo Lima', 'Particular', 34, 'há 5 dias', 14820, 9.4],
-                        ['Fernanda Ribeiro', 'SulAmérica', 32, 'há 12 dias', 13980, 9.5],
-                        ['Roberto Mendes', 'Unimed', 30, 'há 1 dia', 13420, 9.3],
-                        ['Patrícia Oliveira', 'Particular', 29, 'há 8 dias', 12960, 9.6],
-                        ['Lucas Henrique Souza', 'Amil', 27, 'há 4 dias', 11840, 9.2],
-                        ['Camila Andrade', 'Particular', 26, 'há 2 semanas', 11420, 9.5],
-                        ['Bruno Castro Vieira', 'NotreDame', 25, 'há 6 dias', 10840, 9.1],
-                        ['Juliana Pereira', 'Unimed', 24, 'há 9 dias', 10420, 9.4],
-                        ['Marcelo Torres', 'Bradesco Saúde', 23, 'há 3 semanas', 9980, 9.0]
-                    ].map(item => ({
-                        name: item[0],
-                        insurance: item[1],
-                        consultations: item[2],
-                        lastVisit: item[3],
-                        ltv: item[4],
-                        nps: item[5]
-                    }))
-                };
-            }
-
-            function renderNewPatients() {
-                const canvas = $('#chartNovosPacientes');
-                if (!canvas) return;
-
-                const context = canvas.getContext('2d');
-                const gradient = context.createLinearGradient(0, 0, 0, 300);
-
-                gradient.addColorStop(0, 'rgba(79,70,229,.9)');
-                gradient.addColorStop(1, 'rgba(6,182,212,.75)');
-
-                const area = context.createLinearGradient(0, 0, 0, 300);
-                area.addColorStop(0, 'rgba(79,70,229,.28)');
-                area.addColorStop(1, 'rgba(79,70,229,0)');
-
-                const chart = new Chart(canvas, {
-                    type: state.newPatientsMode === 'line'
-                        ? 'line'
-                        : 'bar',
-
-                    data: {
-                        labels: MONTHS,
-                        datasets: [
-                            {
-                                label: 'Novos pacientes',
-                                data: state.data.acquisition,
-                                backgroundColor: state.newPatientsMode === 'line'
-                                    ? area
-                                    : gradient,
-                                borderColor: COLORS.brand,
-                                borderWidth: state.newPatientsMode === 'line'
-                                    ? 3
-                                    : 0,
-                                borderRadius: 7,
-                                fill: state.newPatientsMode === 'line',
-                                tension: .38,
-                                pointRadius: state.newPatientsMode === 'line'
-                                    ? 4
-                                    : 0,
-                                maxBarThickness: 32
-                            },
-                            {
-                                type: 'line',
-                                label: 'Meta',
-                                data: state.data.target,
-                                borderColor: COLORS.warning,
-                                borderDash: [6, 5],
-                                borderWidth: 2,
-                                pointRadius: 2,
-                                fill: false,
-                                tension: .35
-                            }
-                        ]
-                    },
-
-                    options: chartOptions({
-                        interaction: {
-                            mode: 'index',
-                            intersect: false
-                        },
-                        plugins: {
-                            legend: {
-                                position: 'bottom'
-                            }
-                        }
-                    })
-                });
-
-                registerChart('newPatients', chart);
-            }
-
-            function renderGender() {
-                const canvas = $('#chartSexoPacientes');
-                if (!canvas) return;
-
-                const total = state.data.gender.reduce(
-                    (sum, item) => sum + item.value,
-                    0
-                );
-
-                $('#doughnutTotal').textContent = formatNumber(total);
-
-                const chart = new Chart(canvas, {
-                    type: 'doughnut',
-                    data: {
-                        labels: state.data.gender.map(item => item.name),
-                        datasets: [{
-                            data: state.data.gender.map(item => item.value),
-                            backgroundColor: state.data.gender.map(item => item.color),
-                            borderWidth: 0,
-                            spacing: 3,
-                            hoverOffset: 8
-                        }]
-                    },
-                    options: chartOptions({
-                        cutout: '72%',
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label(context) {
-                                        return `${context.label}: ${formatNumber(context.raw)}`;
-                                    }
-                                }
-                            }
-                        }
-                    })
-                });
-
-                registerChart('gender', chart);
-
-                $('#legendSexo').innerHTML =
-                    state.data.gender.map(item => {
-                        const percentage = item.value / total * 100;
-
-                        return `
-                            <span class="rounded-full px-2 py-1 text-[10px]"
-                                style="background:var(--panel-soft);color:var(--text-soft)">
-                                <span class="mr-1 inline-block h-2 w-2 rounded-full"
-                                    style="background:${item.color}"></span>
-                                ${escapeHTML(item.name)}
-                                <strong class="ml-1">${formatPercent(percentage)}</strong>
-                            </span>
-                        `;
-                    }).join('');
-            }
-
-            function renderInsurance() {
-                const canvas = $('#chartConveniosPacientes');
-                if (!canvas) return;
-
-                const chart = new Chart(canvas, {
-                    type: 'bar',
-                    data: {
-                        labels: state.data.insurance.map(item => item.name),
-                        datasets: [{
-                            label: 'Pacientes',
-                            data: state.data.insurance.map(item => item.patients),
-                            backgroundColor: [
-                                COLORS.brand,
-                                COLORS.cyan,
-                                COLORS.purple,
-                                COLORS.rose,
-                                COLORS.warning,
-                                COLORS.success,
-                                COLORS.info,
-                                COLORS.gray
-                            ],
-                            borderRadius: 6,
-                            borderWidth: 0,
-                            maxBarThickness: 26
-                        }]
-                    },
-                    options: chartOptions({
-                        indexAxis: 'y',
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        }
-                    })
-                });
-
-                registerChart('insurance', chart);
-            }
-
-            function renderAge() {
-                const canvas = $('#chartFaixaEtaria');
-                if (!canvas) return;
-
-                const chart = new Chart(canvas, {
-                    type: 'bar',
-                    data: {
-                        labels: state.data.ageGroups.map(item => item.label),
-                        datasets: [
-                            {
-                                label: 'Feminino',
-                                data: state.data.ageGroups.map(item => item.female),
-                                backgroundColor: `${COLORS.rose}cc`,
-                                borderRadius: 6,
-                                maxBarThickness: 24
-                            },
-                            {
-                                label: 'Masculino',
-                                data: state.data.ageGroups.map(item => item.male),
-                                backgroundColor: `${COLORS.brand}cc`,
-                                borderRadius: 6,
-                                maxBarThickness: 24
-                            }
-                        ]
-                    },
-                    options: chartOptions({
-                        plugins: {
-                            legend: {
-                                position: 'bottom'
-                            }
-                        }
-                    })
-                });
-
-                registerChart('age', chart);
-            }
-
-            function renderEvolution() {
-                const canvas = $('#chartEvolucaoPacientes');
-                if (!canvas) return;
-
-                const datasets = [];
-
-                if (state.evolutionMetric === 'all' ||
-                    state.evolutionMetric === 'real') {
-                    datasets.push({
-                        label: 'Realizado',
-                        data: state.data.evolutionReal,
-                        borderColor: COLORS.brand,
-                        backgroundColor: 'rgba(79,70,229,.14)',
-                        borderWidth: 3,
-                        tension: .38,
-                        fill: true,
-                        pointRadius: 3
-                    });
-                }
-
-                if (state.evolutionMetric === 'all' ||
-                    state.evolutionMetric === 'target') {
-                    datasets.push({
-                        label: 'Meta',
-                        data: state.data.evolutionTarget,
-                        borderColor: COLORS.success,
-                        borderDash: [6, 5],
-                        borderWidth: 2,
-                        tension: .35,
-                        fill: false,
-                        pointRadius: 2
-                    });
-                }
-
-                if (state.evolutionMetric === 'all' ||
-                    state.evolutionMetric === 'prev') {
-                    datasets.push({
-                        label: 'Ano anterior',
-                        data: state.data.evolutionPrevious,
-                        borderColor: COLORS.gray,
-                        borderDash: [2, 4],
-                        borderWidth: 2,
-                        tension: .35,
-                        fill: false,
-                        pointRadius: 2
-                    });
-                }
-
-                const chart = new Chart(canvas, {
-                    type: 'line',
-                    data: {
-                        labels: MONTHS,
-                        datasets
-                    },
-                    options: chartOptions({
-                        interaction: {
-                            mode: 'index',
-                            intersect: false
-                        },
-                        plugins: {
-                            legend: {
-                                position: 'bottom'
-                            }
-                        }
-                    })
-                });
-
-                registerChart('evolution', chart);
-            }
-
-            function renderSparklines() {
-                $$('.spark').forEach((canvas, index) => {
-                    const color = canvas.dataset.color || COLORS.brand;
-                    const values = Array.from(
-                        {length: 12},
-                        (_, position) =>
-                            28 + position * 2 + ((position * 11 + index * 5) % 14)
-                    );
-
-                    const context = canvas.getContext('2d');
-                    const gradient = context.createLinearGradient(0, 0, 0, 40);
-
-                    gradient.addColorStop(0, `${color}55`);
-                    gradient.addColorStop(1, `${color}00`);
-
-                    const chart = new Chart(canvas, {
-                        type: 'line',
-                        data: {
-                            labels: values.map(() => ''),
-                            datasets: [{
-                                data: values,
-                                borderColor: color,
-                                backgroundColor: gradient,
-                                borderWidth: 2,
-                                tension: .4,
-                                pointRadius: 0,
-                                fill: true
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {display: false},
-                                tooltip: {enabled: false}
-                            },
-                            scales: {
-                                x: {display: false},
-                                y: {display: false}
-                            }
-                        }
-                    });
-
-                    registerChart(`spark-${index}`, chart);
-                });
-            }
-
-            function renderCities() {
-                const container = $('#topCities');
-                if (!container) return;
-
-                const max = Math.max(
-                    ...state.data.cities.map(city => city.value)
-                );
-
-                container.innerHTML = state.data.cities.map(city => {
-                    const width = city.value / max * 100;
-
-                    return `
-                        <div>
-                            <div class="mb-1 flex justify-between text-xs">
-                                <span style="color:var(--text-soft)">
-                                    ${escapeHTML(city.name)}
-                                </span>
-                                <strong class="font-mono">
-                                    ${city.value}%
-                                </strong>
-                            </div>
-
-                            <div class="h-2 overflow-hidden rounded-full"
-                                style="background:var(--line-soft)">
-                                <div class="h-full rounded-full"
-                                    style="width:${width}%;background:var(--gradient)">
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
-
-            function renderHeatmap() {
-                const container = $('#heatmap');
-                if (!container) return;
-
-                const base = [120, 86, 142, 98, 64, 108];
-
-                const rows = state.data.origins.map((origin, originIndex) => ({
-                    origin,
-                    values: MONTHS.map((_, monthIndex) => {
-                        const season = .78 +
-                            ((monthIndex * 9 + originIndex * 13) % 38) / 100;
-
-                        const instagramBoost =
-                            origin === 'Instagram'
-                                ? monthIndex * 6
-                                : 0;
-
-                        return Math.round(
-                            base[originIndex] * season +
-                            instagramBoost
-                        );
-                    })
-                }));
-
-                const allValues = rows.flatMap(row => row.values);
-                const min = Math.min(...allValues);
-                const max = Math.max(...allValues);
-
-                const intensity = value => {
-                    if (max === min) return .5;
-                    return .18 + ((value - min) / (max - min)) * .82;
-                };
-
-                let html = `
-                    <div class="heatmap-row heatmap-header">
-                        <div class="heatmap-label">Origem</div>
-                        ${MONTHS.map(month => `<div>${month}</div>`).join('')}
-                    </div>
-                `;
-
-                rows.forEach(row => {
-                    html += `
-                        <div class="heatmap-row">
-                            <div class="heatmap-label">
-                                ${escapeHTML(row.origin)}
-                            </div>
-
-                            ${row.values.map((value, index) => `
-                                <div
-                                    class="heatmap-cell"
-                                    style="--intensity:${intensity(value)}"
-                                    title="${escapeHTML(row.origin)} — ${MONTHS_FULL[index]}: ${formatNumber(value)} pacientes">
-                                    ${formatNumber(value)}
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                });
-
-                container.innerHTML = html;
-            }
-
-            function renderRank() {
-                const tbody = $('#rankTable tbody');
-                if (!tbody) return;
-
-                let patients = [...state.data.patients];
-
-                if (state.rankMode === 'frequency') {
-                    patients.sort((a, b) =>
-                        b.consultations - a.consultations
-                    );
-                } else {
-                    patients.sort((a, b) => b.ltv - a.ltv);
-                }
-
-                const maxVisits = Math.max(
-                    ...patients.map(patient => patient.consultations)
-                );
-
-                const maxLtv = Math.max(
-                    ...patients.map(patient => patient.ltv)
-                );
-
-                tbody.innerHTML = patients.map((patient, index) => {
-                    const score = Math.round(
-                        patient.consultations / maxVisits * 40 +
-                        patient.ltv / maxLtv * 40 +
-                        patient.nps / 10 * 20
-                    );
-
-                    const scoreColor =
-                        score >= 90
-                            ? 'text-emerald-500'
-                            : score >= 75
-                                ? 'text-amber-500'
-                                : 'text-rose-500';
-
-                    return `
-                        <tr class="border-b" style="border-color:var(--line-soft)">
-                            <td class="p-3 font-mono">${index + 1}</td>
-                            <td class="p-3 font-semibold">${escapeHTML(patient.name)}</td>
-                            <td class="p-3">${escapeHTML(patient.insurance)}</td>
-                            <td class="p-3 font-mono">${patient.consultations}</td>
-                            <td class="p-3" style="color:var(--muted)">
-                                ${escapeHTML(patient.lastVisit)}
-                            </td>
-                            <td class="p-3 font-mono">${formatCurrency(patient.ltv)}</td>
-                            <td class="p-3 font-mono">${formatDecimal(patient.nps)}</td>
-                            <td class="p-3 font-mono font-bold ${scoreColor}">
-                                ${score}
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            }
-
-            function renderBreakdown(search = '') {
-                const tbody = $('#breakdownTable tbody');
-                if (!tbody) return;
-
-                const term = search.trim().toLowerCase();
-
-                const rows = state.data.insurance.filter(item =>
-                    item.name.toLowerCase().includes(term)
-                );
-
-                tbody.innerHTML = rows.map(item => {
-                    const variationClass =
-                        item.variation >= 0
-                            ? 'text-emerald-500'
-                            : 'text-rose-500';
-
-                    const trend =
-                        item.trend === 'up'
-                            ? '↗'
-                            : '↘';
-
-                    const trendClass =
-                        item.trend === 'up'
-                            ? 'text-emerald-500'
-                            : 'text-rose-500';
-
-                    return `
-                        <tr class="border-b" style="border-color:var(--line-soft)">
-                            <td class="p-3 font-bold">
-                                ${escapeHTML(item.name)}
-                            </td>
-
-                            <td class="p-3 text-right font-mono">
-                                ${formatNumber(item.patients)}
-                            </td>
-
-                            <td class="p-3 text-right font-mono">
-                                ${formatNumber(item.newPatients)}
-                            </td>
-
-                            <td class="p-3 text-right font-mono">
-                                ${formatNumber(item.returns)}
-                            </td>
-
-                            <td class="p-3 text-right font-mono">
-                                ${item.age} anos
-                            </td>
-
-                            <td class="p-3 text-right font-mono">
-                                ${formatCurrency(item.ltv)}
-                            </td>
-
-                            <td class="p-3 text-right font-mono font-bold ${variationClass}">
-                                ${item.variation >= 0 ? '+' : ''}
-                                ${formatPercent(item.variation)}
-                            </td>
-
-                            <td class="p-3 text-lg font-bold ${trendClass}">
-                                ${trend}
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-
-                updateTotals(rows);
-            }
-
-            function updateTotals(rows) {
-                const patients = rows.reduce(
-                    (sum, item) => sum + item.patients,
-                    0
-                );
-
-                const newPatients = rows.reduce(
-                    (sum, item) => sum + item.newPatients,
-                    0
-                );
-
-                const returns = rows.reduce(
-                    (sum, item) => sum + item.returns,
-                    0
-                );
-
-                const age = rows.reduce(
-                    (sum, item) => sum + item.age * item.patients,
-                    0
-                ) / Math.max(patients, 1);
-
-                const ltv = rows.reduce(
-                    (sum, item) => sum + item.ltv * item.patients,
-                    0
-                ) / Math.max(patients, 1);
-
-                $('#tFTot').textContent = formatNumber(patients);
-                $('#tFNew').textContent = formatNumber(newPatients);
-                $('#tFRet').textContent = formatNumber(returns);
-                $('#tFAge').textContent = `${formatDecimal(age)} anos`;
-                $('#tFLtv').textContent = formatCurrency(ltv);
-            }
-
-            function animateCounters() {
-                $$('[data-counter]').forEach(element => {
-                    const target = Number(element.dataset.counter) || 0;
-                    const start = performance.now();
-                    const duration = 1100;
-
-                    function frame(now) {
-                        const progress = Math.min(
-                            (now - start) / duration,
-                            1
-                        );
-
-                        const eased = 1 - Math.pow(1 - progress, 3);
-
-                        element.textContent = formatNumber(
-                            target * eased
-                        );
-
-                        if (progress < 1) {
-                            requestAnimationFrame(frame);
-                        }
-                    }
-
-                    requestAnimationFrame(frame);
-                });
-            }
-
-            function renderAll() {
-                renderNewPatients();
-                renderGender();
-                renderInsurance();
-                renderAge();
-                renderEvolution();
-                renderSparklines();
-                renderCities();
-                renderHeatmap();
-                renderRank();
-                renderBreakdown();
-                refreshIcons();
-            }
-
-            function updateLastUpdate() {
-                const element = $('#lastUpdate');
-
-                if (!element) return;
-
-                element.textContent = new Intl.DateTimeFormat(
-                    'pt-BR',
-                    {
-                        dateStyle: 'short',
-                        timeStyle: 'short'
-                    }
-                ).format(new Date());
-            }
-
-            function applyTheme() {
-                const saved = localStorage.getItem('g4med-theme');
-                const systemDark = window.matchMedia &&
-                    window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-                const dark = saved
-                    ? saved === 'dark'
-                    : systemDark;
-
-                document.documentElement.classList.toggle('dark', dark);
-
-                const icon = $('#toggleTheme i');
-
-                if (icon) {
-                    icon.setAttribute(
-                        'data-lucide',
-                        dark ? 'sun' : 'moon'
-                    );
-                }
-
-                refreshIcons();
-            }
-
-            function bindEvents() {
-                $$('.period-button').forEach(button => {
-                    button.addEventListener('click', () => {
-                        $$('.period-button').forEach(item => {
-                            item.classList.remove('active', 'text-white');
-                            item.style.background = 'transparent';
-                        });
-
-                        button.classList.add('active', 'text-white');
-                        button.style.background = 'var(--gradient)';
-
-                        state.period = button.dataset.period;
-
-                        const custom = state.period === 'custom';
-
-                        $('#dateFrom').disabled = !custom;
-                        $('#dateTo').disabled = !custom;
-
-                        if (!custom) {
-                            simulateRefresh(
-                                'Período atualizado com sucesso.'
-                            );
-                        }
-                    });
-                });
-
-                $$('.segmented[data-target="newPatients"] button')
-                    .forEach(button => {
-                        button.addEventListener('click', () => {
-                            $$('.segmented[data-target="newPatients"] button')
-                                .forEach(item => item.classList.remove('active'));
-
-                            button.classList.add('active');
-                            state.newPatientsMode = button.dataset.mode;
-                            renderNewPatients();
-                        });
-                    });
-
-                $$('.segmented[data-target="evolution"] button')
-                    .forEach(button => {
-                        button.addEventListener('click', () => {
-                            $$('.segmented[data-target="evolution"] button')
-                                .forEach(item => item.classList.remove('active'));
-
-                            button.classList.add('active');
-                            state.evolutionMetric = button.dataset.metric;
-                            renderEvolution();
-                        });
-                    });
-
-                $$('#rankTabs button').forEach(button => {
-                    button.addEventListener('click', () => {
-                        $$('#rankTabs button').forEach(item =>
-                            item.classList.remove('active')
-                        );
-
-                        button.classList.add('active');
-                        state.rankMode = button.dataset.rank;
-                        renderRank();
-                    });
-                });
-
-                $('#toggleTheme').addEventListener('click', () => {
-                    const dark = !isDark();
-
-                    document.documentElement.classList.toggle('dark', dark);
-                    localStorage.setItem(
-                        'g4med-theme',
-                        dark ? 'dark' : 'light'
-                    );
-
-                    const icon = $('#toggleTheme i');
-
-                    if (icon) {
-                        icon.setAttribute(
-                            'data-lucide',
-                            dark ? 'sun' : 'moon'
-                        );
-                    }
-
-                    refreshIcons();
-                    renderAll();
-
-                    showToast(
-                        dark
-                            ? 'Tema escuro ativado.'
-                            : 'Tema claro ativado.',
-                        'info'
-                    );
-                });
-
-                $('#btnRefresh').addEventListener('click', () => {
-                    simulateRefresh(
-                        'Dados atualizados com sucesso.'
-                    );
-                });
-
-                $('#btnNotifications').addEventListener('click', () => {
-                    showToast(
-                        'Nenhum alerta crítico no momento.',
-                        'info'
-                    );
-                });
-
-                $('#btnApply').addEventListener('click', () => {
-                    state.filters = {
-                        from: $('#dateFrom').value,
-                        to: $('#dateTo').value,
-                        unit: $('#fUnit').value,
-                        insurance: $('#fIns').value,
-                        age: $('#fAge').value,
-                        origin: $('#fOrig').value
-                    };
-
-                    if (
-                        state.period === 'custom' &&
-                        ((!state.filters.from && state.filters.to) ||
-                            (state.filters.from && !state.filters.to))
-                    ) {
-                        showToast(
-                            'Preencha as duas datas do período personalizado.',
-                            'warning'
-                        );
-
-                        return;
-                    }
-
-                    simulateRefresh(
-                        'Filtros aplicados com sucesso.'
-                    );
-                });
-
-                $('#btnClear').addEventListener('click', () => {
-                    ['#fUnit', '#fIns', '#fAge', '#fOrig']
-                        .forEach(selector => {
-                            $(selector).selectedIndex = 0;
-                        });
-
-                    $('#dateFrom').value = '';
-                    $('#dateTo').value = '';
-
-                    renderBreakdown('');
-
-                    showToast(
-                        'Filtros limpos.',
-                        'info'
-                    );
-                });
-
-                $('#tblSearch').addEventListener('input', event => {
-                    renderBreakdown(event.target.value);
-                });
-
-                $('#btnPrint').addEventListener('click', () => {
-                    showToast(
-                        'Preparando impressão do relatório.',
-                        'info'
-                    );
-
-                    setTimeout(() => window.print(), 300);
-                });
-
-                $('#btnExport')?.addEventListener('click', exportCSV);
-
-                $('#btnExportCat')?.addEventListener('click', exportCSV);
-
-                $('#btnShare').addEventListener('click', async () => {
-                    try {
-                        if (navigator.share) {
-                            await navigator.share({
-                                title: 'G4Med BI — Relatório de Pacientes',
-                                text: 'Relatório gerencial de pacientes.',
-                                url: window.location.href
-                            });
-
-                            showToast(
-                                'Relatório compartilhado.',
-                                'success'
-                            );
-                        } else {
-                            await navigator.clipboard.writeText(
-                                window.location.href
-                            );
-
-                            showToast(
-                                'Link copiado para a área de transferência.',
-                                'success'
-                            );
-                        }
-                    } catch (error) {
-                        if (error.name !== 'AbortError') {
-                            showToast(
-                                'Não foi possível compartilhar o relatório.',
-                                'danger'
-                            );
-                        }
-                    }
-                });
-            }
-
-            function buildCSVContent() {
-                const header = [
-                    'Convenio',
-                    'Pacientes',
-                    'Novos',
-                    'Retorno',
-                    'Idade media',
-                    'LTV medio',
-                    'Variacao (%)',
-                    'Tendencia'
-                ];
-
-                const term = ($('#tblSearch')?.value || '')
-                    .trim()
-                    .toLowerCase();
-
-                const rows = state.data.insurance
-                    .filter(item => item.name.toLowerCase().includes(term))
-                    .map(item => [
-                        item.name,
-                        item.patients,
-                        item.newPatients,
-                        item.returns,
-                        item.age,
-                        item.ltv,
-                        formatDecimal(item.variation),
-                        item.trend === 'up' ? 'Alta' : 'Baixa'
-                    ]);
-
-                const escapeCell = value => {
-                    const text = String(value ?? '');
-
-                    return /[";\n]/.test(text)
-                        ? `"${text.replaceAll('"', '""')}"`
-                        : text;
-                };
-
-                return [header, ...rows]
-                    .map(row => row.map(escapeCell).join(';'))
-                    .join('\r\n');
-            }
-
-            function exportCSV() {
-                try {
-                    const content = buildCSVContent();
-
-                    // BOM garante acentuacao correta ao abrir no Excel
-                    const blob = new Blob(
-                        [`\uFEFF${content}`],
-                        {type: 'text/csv;charset=utf-8;'}
-                    );
-
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-
-                    const stamp = new Date()
-                        .toISOString()
-                        .slice(0, 10);
-
-                    link.href = url;
-                    link.download = `g4med-pacientes-convenios-${stamp}.csv`;
-                    link.rel = 'noopener';
-
-                    document.body.appendChild(link);
-                    link.click();
-                    link.remove();
-
-                    setTimeout(() => URL.revokeObjectURL(url), 1000);
-
-                    showToast('Arquivo CSV exportado.', 'success');
-                } catch (error) {
-                    console.error('Falha ao exportar CSV:', error);
-                    showToast('Não foi possível exportar o CSV.', 'danger');
-                }
-            }
-
-            function simulateRefresh(message) {
-                document.body.classList.add('loading');
-
-                setTimeout(() => {
-                    state.data = makeData();
-                    renderAll();
-                    animateCounters();
-                    updateLastUpdate();
-                    document.body.classList.remove('loading');
-                    showToast(message, 'success');
-                }, 450);
-            }
-
-            function initialize() {
-                state.data = makeData();
-
-                applyTheme();
-                bindEvents();
-
-                $('#dateFrom').disabled = true;
-                $('#dateTo').disabled = true;
-
-                renderAll();
-                animateCounters();
-                updateLastUpdate();
-
-                window.addEventListener('resize', () => {
-                    charts.forEach(chart => {
-                        if (typeof chart.resize === 'function') {
-                            chart.resize();
-                        }
-                    });
-                });
-
-                setInterval(updateLastUpdate, 60000);
-                refreshIcons();
-            }
-
-            if (document.readyState === 'loading') {
-                document.addEventListener(
-                    'DOMContentLoaded',
-                    initialize,
-                    {once: true}
-                );
-            } else {
-                initialize();
-            }
+            localStorage.setItem('G4Med_clinica', JSON.stringify(dadosClinica));
+            console.log('Dados da clÃ­nica atualizados para as prÃ³ximas impressÃµes.', dadosClinica);
         })();
-    </script>
 
+    </script>
 </body>
 
 </html>
