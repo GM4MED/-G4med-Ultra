@@ -83,7 +83,6 @@
                 init();
             }
         })();
-
     </script>
     <!-- /skill:chrome -->
     <meta charset="UTF-8">
@@ -91,19 +90,17 @@
     <meta name="description" content="Tela de atendimento do paciente na recepção do G4Med">
     <title>Atendimento na Recepção | G4Med</title>
     <link rel="stylesheet" href="atendimento-recepcao.css">
-    <script src="atendimento-recepcao.js" defer></script>
 </head>
 
 <body>
     <div class="app">
         <header class="topbar">
             <div class="brand">
-                <!-- Logo integrada linkada com o arquivo padrão e tratada pelo script -->
                 <img id="logoClinica" class="logo-img" src="logo.png11.png" alt="Logo da Clínica"
                     style="height: 40px; width: auto; object-fit: contain;">
                 <div class="mark" aria-hidden="true">GM</div>
                 <div>
-                    <p class="eyebrow">G4Mmed · Recepção</p>
+                    <p class="eyebrow">G4Med · Recepção</p>
                     <h1>Atendimento do paciente</h1>
                 </div>
             </div>
@@ -315,7 +312,9 @@
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody id="corpoTabelaAtendimentos"></tbody>
+                        <tbody id="corpoTabelaAtendimentos" aria-live="polite">
+                            <!-- Registros injetados pelo JavaScript -->
+                        </tbody>
                     </table>
                 </div>
             </section>
@@ -324,20 +323,6 @@
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <section id="print-document" aria-label="Documento médico para impressão"></section>
-    0">
-    Status
-    </th>
-    </tr>
-    </thead>
-
-    <tbody id="corpoTabelaAtendimentos" aria-live="polite">
-        <!-- Registros injetados pelo JavaScript -->
-    </tbody>
-    </table>
-    </div>
-    </section>
-    </main>
-    </div>
 
     <script src="atendimento-recepcao.js"></script>
 </body>

@@ -1,12 +1,25 @@
 'use strict';
+
 document.addEventListener('DOMContentLoaded', () => {
     const STORAGE_KEY = 'G4Med_atendimentos_recepcao';
-    const CLINIC_KEYS = ['G4Med_clinica', 'G4med_clinica', 'G4Med_clinica', 'G4Med_dados_clinica', 'dados_clinica', 'clinica'];
+    const CLINIC_KEYS = ['G4Med_clinica', 'G4med_clinica', 'G4Med_dados_clinica', 'dados_clinica', 'clinica'];
     const DEFAULT_LOGO = 'logo.png11.png';
+
     const $ = id => document.getElementById(id);
     const state = { records: [], selectedId: null, mode: 'view', filtered: [] };
-    const editables = ['cpf', 'nomePaciente', 'dataNasc', 'celular', 'convenio', 'carteirinha', 'validadeConvenio', 'dataAtendimento', 'horaChegada', 'tipoAtendimento', 'procedimento', 'medico', 'prioridade', 'obsAtendimento', 'pacientePresente', 'docsConferidos', 'convenioValido', 'autorizacaoRealizada', 'lgpdAceita'];
-    const specialties = { 'Dr. Ricardo Silva': 'Cardiologia', 'Dra. Ana Beatriz': 'Clínica geral', 'Dr. Marcos Pereira': 'Ortopedia' };
+
+    const editables = [
+        'cpf', 'nomePaciente', 'dataNasc', 'celular', 'convenio', 'carteirinha',
+        'validadeConvenio', 'dataAtendimento', 'horaChegada', 'tipoAtendimento',
+        'procedimento', 'medico', 'prioridade', 'obsAtendimento', 'pacientePresente',
+        'docsConferidos', 'convenioValido', 'autorizacaoRealizada', 'lgpdAceita'
+    ];
+
+    const specialties = {
+        'Dr. Ricardo Silva': 'Cardiologia',
+        'Dra. Ana Beatriz': 'Clínica geral',
+        'Dr. Marcos Pereira': 'Ortopedia'
+    };
 
     const fixEncoding = value => {
         if (typeof value !== 'string') return value;
@@ -17,10 +30,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const esc = value => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+    const esc = value => String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+
     const normalize = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-    const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
-    const timeNow = () => { const d = new Date(); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+
+    const today = () => {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    };
+
+    const timeNow = () => {
+        const d = new Date();
+        return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    };
+
     const dateBR = value => value && value.includes('-') ? value.split('-').reverse().join('/') : value || '-';
 
     const clinicValue = (clinic, ...keys) => {
@@ -32,7 +60,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return '';
     };
 
-    const readClinic = () => { for (const key of CLINIC_KEYS) { try { const raw = localStorage.getItem(key); if (!raw) continue; const parsed = JSON.parse(raw); const clinic = parsed?.clinica || parsed?.clinic || parsed; if (clinic && typeof clinic === 'object') return clinic; } catch { } } return {}; };
+    const readClinic = () => {
+        for (const key of CLINIC_KEYS) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) continue;
+                const parsed = JSON.parse(raw);
+                const clinic = parsed?.clinica || parsed?.clinic || parsed;
+                if (clinic && typeof clinic === 'object') return clinic;
+            } catch { }
+        }
+        return {};
+    };
 
     const toast = message => {
         const t = $('toast');
@@ -43,10 +82,35 @@ document.addEventListener('DOMContentLoaded', () => {
         t.timer = setTimeout(() => t.classList.add('hidden'), 2600);
     };
 
-    const loadRecords = () => { try { const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); return Array.isArray(data) ? data : []; } catch { return []; } };
-    const saveRecords = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.records)); } catch { toast('Não foi possível salvar no navegador.'); } };
+    const loadRecords = () => {
+        try {
+            const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            return Array.isArray(data) ? data : [];
+        } catch {
+            return [];
+        }
+    };
+
+    const saveRecords = () => {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state.records));
+        } catch {
+            toast('Não foi possível salvar no navegador.');
+        }
+    };
+
     const newPatientId = () => `PAC-${today().replaceAll('-', '')}-${String(Date.now()).slice(-5)}`;
-    const newTicket = priority => { const prefix = priority === 'Normal' ? 'G' : 'P'; const nums = state.records.map(r => String(r.numeroSenha || '')).filter(v => v.startsWith(`${prefix}-`)).map(v => Number(v.split('-')[1])).filter(Number.isInteger); return `${prefix}-${String((nums.length ? Math.max(...nums) : 0) + 1).padStart(3, '0')}`; };
+
+    const newTicket = priority => {
+        const prefix = priority === 'Normal' ? 'G' : 'P';
+        const nums = state.records
+            .map(r => String(r.numeroSenha || ''))
+            .filter(v => v.startsWith(`${prefix}-`))
+            .map(v => Number(v.split('-')[1]))
+            .filter(Number.isInteger);
+        return `${prefix}-${String((nums.length ? Math.max(...nums) : 0) + 1).padStart(3, '0')}`;
+    };
+
     const selected = () => state.records.find(record => record.id === state.selectedId);
 
     function setEditable(on) {
@@ -99,11 +163,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function fill(record) {
         const values = {
-            pacienteId: record.id, cpf: record.cpf, nomePaciente: record.nomePaciente, dataNasc: record.dataNasc, celular: record.celular, convenio: record.convenio, carteirinha: record.carteirinha, validadeConvenio: record.validadeConvenio, dataAtendimento: record.dataAtendimento, horaChegada: record.horaChegada, tipoAtendimento: record.tipoAtendimento, procedimento: record.procedimento, medico: record.medico, especialidade: record.especialidade, numeroSenha: record.numeroSenha, prioridade: record.prioridade, obsAtendimento: record.obsAtendimento
+            pacienteId: record.id, cpf: record.cpf, nomePaciente: record.nomePaciente,
+            dataNasc: record.dataNasc, celular: record.celular, convenio: record.convenio,
+            carteirinha: record.carteirinha, validadeConvenio: record.validadeConvenio,
+            dataAtendimento: record.dataAtendimento, horaChegada: record.horaChegada,
+            tipoAtendimento: record.tipoAtendimento, procedimento: record.procedimento,
+            medico: record.medico, especialidade: record.especialidade,
+            numeroSenha: record.numeroSenha, prioridade: record.prioridade,
+            obsAtendimento: record.obsAtendimento
         };
+
         Object.entries(values).forEach(([id, value]) => { if ($(id)) $(id).value = value || ''; });
+
         const checks = record.checklist || {};
-        ['pacientePresente', 'docsConferidos', 'convenioValido', 'autorizacaoRealizada', 'lgpdAceita'].forEach(id => { if ($(id)) $(id).checked = Boolean(checks[id]); });
+        ['pacientePresente', 'docsConferidos', 'convenioValido', 'autorizacaoRealizada', 'lgpdAceita'].forEach(id => {
+            if ($(id)) $(id).checked = Boolean(checks[id]);
+        });
+
         if ($('recordId')) $('recordId').textContent = String(record.id || '--').replace('PAC-', '').slice(-5);
         if ($('formState')) $('formState').textContent = `${record.nomePaciente} · ${record.status || 'Aguardando'}`;
     }
@@ -230,7 +306,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (index >= 0 && list[index + direction]) selectRecord(list[index + direction].id);
     }
 
-    function printItem(label, value) { return `<div class="p-item"><span class="p-label">${esc(label)}</span><span class="p-value">${esc(value || '-')}</span></div>`; }
+    function printItem(label, value) {
+        return `<div class="p-item"><span class="p-label">${esc(label)}</span><span class="p-value">${esc(value || '-')}</span></div>`;
+    }
 
     function printFicha() {
         const record = selected() || (state.mode === 'new' ? collect() : null);
@@ -251,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         printDoc.innerHTML = `
             <header class="p-header">
-                <img class="p-logo" src="${esc(logo)}" alt="Logo oficial G4Mmed">
+                <img class="p-logo" src="${esc(logo)}" alt="Logo oficial G4Med">
                 <div class="p-clinic">
                     <div class="p-brand">G4Med</div>
                     <div class="p-system">Intelligent Health System</div>
@@ -263,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </header>
             <footer class="p-footer">
-                <span>G4Medmed &middot; Intelligent Health System</span>
+                <span>G4Med &middot; Intelligent Health System</span>
                 <span>${esc(footerInfo)}</span>
                 <span class="p-page"></span>
             </footer>
@@ -338,6 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const el = $(id);
         if (el) el.addEventListener('input', event => event.target.value = formatter(event.target.value));
     }
+
     mask('cpf', value => value.replace(/\D/g, '').slice(0, 11).replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2'));
     mask('celular', value => { value = value.replace(/\D/g, '').slice(0, 11); return value.length < 11 ? value.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{4})(\d)/, '$1-$2') : value.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2'); });
     mask('validadeConvenio', value => { value = value.replace(/\D/g, '').slice(0, 4); return value.length > 2 ? `${value.slice(0, 2)}/${value.slice(2)}` : value; });
