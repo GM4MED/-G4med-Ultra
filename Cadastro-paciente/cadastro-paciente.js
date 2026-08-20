@@ -1,524 +1,1818 @@
-/**
- * paciente.js - Cadastro de Paciente G4med
- * Regras do PDF: ao abrir só Novo/Buscar ativos.
- * Novo → habilita tudo, gera ID.
- * Gravar → valida, salva, desabilita.
- * Editar → habilita para alteração.
- * Cancelar → limpa e volta ao estado inicial.
- */
+"use strict";
 
-/* ==========================================================
-   ESTADO
-========================================================== */
-let modo = 'inicial'; // inicial | novo | editando | gravado
-let proxId = 1;
-let streamWebcam = null;
-let historico = [];
+(() => {
+    const EDITABLE_SELECTOR = ".campo-edita";
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+    const DEFAULT_PHOTO =
+        "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
-/* ==========================================================
-   INIT
-========================================================== */
-document.addEventListener('DOMContentLoaded', () => {
-    iniciarRelogio();
-    aplicarMascaras();
-    iniciarAssinatura();
-    iniciarAnexos();
-    setEstadoInicial();
+    const ALLOWED_EXTENSIONS = new Set([
+        "pdf",
+        "jpg",
+        "jpeg",
+        "png",
+        "doc",
+        "docx"
+    ]);
 
-    // Eventos
-    document.getElementById('pacNascimento')?.addEventListener('change', calcularIdade);
-    document.getElementById('pacCep')?.addEventListener('blur', buscarCep);
-    document.getElementById('pacCpf')?.addEventListener('blur', function () {
-        if (this.value && !validarCPF(this.value)) {
-            this.style.borderColor = 'var(--vermelho)';
-            alert('CPF inválido!');
-        } else {
-            this.style.borderColor = '';
+    const state = {
+        mode: "initial",
+        nextId: 1,
+        stream: null,
+        history: [],
+        attachments: new Map(),
+        snapshot: null,
+        cepController: null,
+        modalTriggers: new Map(),
+        signatureContext: null,
+        isDrawing: false
+    };
+
+    const byId = (id) => document.getElementById(id);
+
+    const queryAll = (selector, parent = document) => {
+        return [...parent.querySelectorAll(selector)];
+    };
+
+    document.addEventListener("DOMContentLoaded", initialize);
+
+    function initialize() {
+        initializeClock();
+        initializeMasks();
+        initializeTextTransforms();
+        initializeTabs();
+        initializeModalEvents();
+        initializeSignature();
+        initializeAttachments();
+        initializeFieldEvents();
+        setInitialState();
+    }
+
+    /* ==========================================================
+       ESTADOS
+    ========================================================== */
+
+    function setInitialState() {
+        state.mode = "initial";
+
+        setEditableState(false);
+
+        setButtons({
+            btnNovo: false,
+            btnGravar: true,
+            btnEditar: true,
+            btnAnterior: true,
+            btnProximo: true,
+            btnBuscar: false,
+            btnExcluir: true,
+            btnCancelar: true,
+            btnAnexo: true,
+            btnImprimir: true,
+            btnHistorico: true
+        });
+
+        setStatus(
+            "Clique em Novo para iniciar um cadastro ou em Buscar para localizar um paciente."
+        );
+    }
+
+    function setNewState() {
+        state.mode = "new";
+
+        setEditableState(true);
+
+        setButtons({
+            btnNovo: true,
+            btnGravar: false,
+            btnEditar: true,
+            btnAnterior: true,
+            btnProximo: true,
+            btnBuscar: true,
+            btnExcluir: true,
+            btnCancelar: false,
+            btnAnexo: false,
+            btnImprimir: true,
+            btnHistorico: true
+        });
+
+        setFieldValue(
+            "pacId",
+            String(state.nextId).padStart(5, "0")
+        );
+
+        setFieldValue(
+            "pacDataCad",
+            nowForDateTimeInput()
+        );
+
+        setFieldValue("pacUserCad", "ADMIN");
+        setFieldValue("pacStatus", "A");
+
+        setStatus("Novo cadastro iniciado.");
+
+        window.setTimeout(() => {
+            byId("pacNome")?.focus();
+        }, 0);
+    }
+
+    function setSavedState({ isNewRecord = false, addLog = true } = {}) {
+        state.mode = "saved";
+
+        setEditableState(false);
+
+        setButtons({
+            btnNovo: false,
+            btnGravar: true,
+            btnEditar: false,
+            btnAnterior: false,
+            btnProximo: false,
+            btnBuscar: false,
+            btnExcluir: false,
+            btnCancelar: true,
+            btnAnexo: true,
+            btnImprimir: false,
+            btnHistorico: false
+        });
+
+        if (addLog) {
+            if (isNewRecord) {
+                state.nextId += 1;
+                addHistory("Paciente cadastrado");
+            } else {
+                addHistory("Cadastro atualizado");
+            }
         }
-    });
 
-    // Caixa alta para campos específicos
-    ['pacNome', 'pacNacionalidade', 'pacProfissao', 'pacRespNome', 'pacRespParentesco',
-        'pacEndereco', 'pacBairro', 'pacCidade', 'pacConvenioNome', 'pacTitular', 'pacPlano']
-        .forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.addEventListener('input', function () { this.value = this.value.toUpperCase(); });
+        state.snapshot = createSnapshot();
+
+        setStatus("Cadastro salvo com sucesso.");
+    }
+
+    function setEditingState() {
+        if (state.mode !== "saved") {
+            return;
+        }
+
+        state.mode = "editing";
+        state.snapshot = createSnapshot();
+
+        setEditableState(true);
+
+        setButtons({
+            btnNovo: true,
+            btnGravar: false,
+            btnEditar: true,
+            btnAnterior: true,
+            btnProximo: true,
+            btnBuscar: true,
+            btnExcluir: true,
+            btnCancelar: false,
+            btnAnexo: false,
+            btnImprimir: true,
+            btnHistorico: true
         });
 
-    // Caixa baixa para e-mail
-    const email = document.getElementById('pacEmail');
-    if (email) email.addEventListener('input', function () { this.value = this.value.toLowerCase(); });
-});
-
-/* ==========================================================
-   ESTADO DOS BOTÕES E CAMPOS
-========================================================== */
-function setEstadoInicial() {
-    modo = 'inicial';
-    toggleCampos(true);
-    setBtn('btnNovo', false);
-    setBtn('btnGravar', true);
-    setBtn('btnEditar', true);
-    setBtn('btnAnterior', true);
-    setBtn('btnProximo', true);
-    setBtn('btnBuscar', false);
-    setBtn('btnExcluir', true);
-    setBtn('btnCancelar', true);
-    setBtn('btnAnexo', true);
-    setBtn('btnImprimir', true);
-    setBtn('btnHistorico', true);
-}
-
-function setEstadoNovo() {
-    modo = 'novo';
-    toggleCampos(false);
-    setBtn('btnNovo', true);
-    setBtn('btnGravar', false);
-    setBtn('btnEditar', true);
-    setBtn('btnAnterior', true);
-    setBtn('btnProximo', true);
-    setBtn('btnBuscar', true);
-    setBtn('btnExcluir', true);
-    setBtn('btnCancelar', false);
-    setBtn('btnAnexo', false);
-    setBtn('btnImprimir', true);
-    setBtn('btnHistorico', true);
-
-    document.getElementById('pacId').value = String(proxId).padStart(5, '0');
-    document.getElementById('pacDataCad').value = agoraISO();
-    document.getElementById('pacUserCad').value = 'ADMIN';
-    document.getElementById('pacStatus').value = 'A';
-    setTimeout(() => document.getElementById('pacNome')?.focus(), 100);
-}
-
-function setEstadoGravado() {
-    modo = 'gravado';
-    toggleCampos(true);
-    setBtn('btnNovo', false);
-    setBtn('btnGravar', true);
-    setBtn('btnEditar', false);
-    setBtn('btnAnterior', false);
-    setBtn('btnProximo', false);
-    setBtn('btnBuscar', false);
-    setBtn('btnExcluir', false);
-    setBtn('btnCancelar', true);
-    setBtn('btnAnexo', true);
-    setBtn('btnImprimir', false);
-    setBtn('btnHistorico', false);
-
-    proxId++;
-    addHistorico('Paciente cadastrado');
-}
-
-function setEstadoEditando() {
-    modo = 'editando';
-    toggleCampos(false);
-    setBtn('btnNovo', true);
-    setBtn('btnGravar', false);
-    setBtn('btnEditar', true);
-    setBtn('btnAnterior', true);
-    setBtn('btnProximo', true);
-    setBtn('btnBuscar', true);
-    setBtn('btnExcluir', true);
-    setBtn('btnCancelar', false);
-    setBtn('btnAnexo', false);
-    setBtn('btnImprimir', true);
-    setBtn('btnHistorico', true);
-}
-
-function toggleCampos(desabilitar) {
-    document.querySelectorAll('.campo-edita').forEach(el => {
-        el.disabled = desabilitar;
-    });
-}
-
-function setBtn(id, disabled) {
-    const btn = document.getElementById(id);
-    if (btn) btn.disabled = disabled;
-}
-
-/* ==========================================================
-   AÇÕES DOS BOTÕES
-========================================================== */
-function acaoNovo() {
-    if (modo === 'novo' || modo === 'editando') {
-        if (!confirm('Deseja limpar e iniciar um novo cadastro?')) return;
-        limparFormulario();
+        addHistory("Edição iniciada");
+        setStatus("Modo de edição ativo.");
     }
-    setEstadoNovo();
-}
 
-function acaoGravar() {
-    if (!validarFormulario()) return;
-    document.getElementById('pacUltAtu').value = agoraISO();
-    setEstadoGravado();
-    alert('Paciente gravado com sucesso!');
-}
-
-function acaoEditar() {
-    setEstadoEditando();
-    addHistorico('Iniciada edição do cadastro');
-}
-
-function acaoExcluir() {
-    if (confirm('Deseja realmente excluir este paciente?')) {
-        addHistorico('Paciente excluído');
-        limparFormulario();
-        setEstadoInicial();
-        alert('Paciente excluído.');
-    }
-}
-
-function acaoCancelar() {
-    if (modo === 'novo') {
-        if (!confirm('Cancelar o cadastro atual?')) return;
-        limparFormulario();
-        setEstadoInicial();
-    } else if (modo === 'editando') {
-        if (!confirm('Cancelar as alterações?')) return;
-        toggleCampos(true);
-        setEstadoGravado(); // Volta ao estado gravado
-    } else {
-        limparFormulario();
-        setEstadoInicial();
-    }
-}
-
-function acaoBuscar() {
-    abrirModal('modalBusca');
-    setTimeout(() => document.getElementById('buscaTermo')?.focus(), 100);
-}
-
-function acaoAnterior() { alert('Navegar para registro anterior (integrar com BD)'); }
-function acaoProximo() { alert('Navegar para próximo registro (integrar com BD)'); }
-function acaoAnexo() { switchTab('tab8'); }
-function acaoImprimir() { window.print(); }
-function acaoHistorico() { abrirModal('modalHistorico'); }
-function acaoSair() { if (confirm('Deseja sair?')) window.location.href = 'index.html'; }
-
-/* ==========================================================
-   VALIDAÇÃO
-========================================================== */
-function validarFormulario() {
-    const nome = document.getElementById('pacNome')?.value.trim();
-    const cpf = document.getElementById('pacCpf')?.value.trim();
-    const nasc = document.getElementById('pacNascimento')?.value;
-
-    if (!nome) { alert('Preencha o Nome Completo.'); document.getElementById('pacNome').focus(); return false; }
-    if (!cpf || cpf.length < 14) { alert('Preencha o CPF corretamente.'); document.getElementById('pacCpf').focus(); return false; }
-    if (!validarCPF(cpf)) { alert('CPF inválido.'); document.getElementById('pacCpf').focus(); return false; }
-    if (!nasc) { alert('Preencha a Data de Nascimento.'); document.getElementById('pacNascimento').focus(); return false; }
-    return true;
-}
-
-/* ==========================================================
-   LIMPAR FORMULÁRIO
-========================================================== */
-function limparFormulario() {
-    document.querySelectorAll('input, select, textarea').forEach(el => {
-        if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
-        else if (!el.readOnly && el.type !== 'button') el.value = '';
-    });
-    document.getElementById('fotoPreview').src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-    document.getElementById('anexoLista').innerHTML = '<div class="anexo-vazio">Nenhum documento anexado</div>';
-    limparAssinatura();
-}
-
-/* ==========================================================
-   MÁSCARAS
-========================================================== */
-function aplicarMascaras() {
-    const map = {
-        'pacCpf': 'cpf', 'pacRg': 'rg', 'pacTel1': 'tel', 'pacTel2': 'tel',
-        'pacWhats': 'tel', 'pacRespTel': 'tel', 'pacRespWhats': 'tel',
-        'pacCep': 'cep', 'pacTitularCpf': 'cpf'
-    };
-    Object.entries(map).forEach(([id, tipo]) => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('input', e => mascara(e.target, tipo));
-    });
-}
-
-function mascara(el, tipo) {
-    let v = el.value.replace(/\D/g, '');
-    if (tipo === 'cpf') {
-        v = v.replace(/(\d{3})(\d)/, '$1.$2');
-        v = v.replace(/(\d{3})(\d)/, '$1.$2');
-        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-    } else if (tipo === 'rg') {
-        v = v.replace(/(\d{2})(\d)/, '$1.$2');
-        v = v.replace(/(\d{3})(\d)/, '$1.$2');
-        v = v.replace(/(\d{3})([\dXx])$/, '$1-$2');
-    } else if (tipo === 'tel') {
-        v = v.length > 10
-            ? v.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
-            : v.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-    } else if (tipo === 'cep') {
-        v = v.replace(/(\d{5})(\d)/, '$1-$2');
-    }
-    el.value = v;
-}
-
-/* ==========================================================
-   VALIDAÇÃO CPF
-========================================================== */
-function validarCPF(cpf) {
-    cpf = cpf.replace(/[^\d]/g, '');
-    if (cpf.length !== 11 || /^(.)(\1){10}$/.test(cpf)) return false;
-    let s = 0, r;
-    for (let i = 1; i <= 9; i++) s += parseInt(cpf[i - 1]) * (11 - i);
-    r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
-    if (r !== parseInt(cpf[9])) return false;
-    s = 0;
-    for (let i = 1; i <= 10; i++) s += parseInt(cpf[i - 1]) * (12 - i);
-    r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
-    return r === parseInt(cpf[10]);
-}
-
-/* ==========================================================
-   BUSCA CEP
-========================================================== */
-function buscarCep() {
-    const cep = document.getElementById('pacCep')?.value.replace(/\D/g, '');
-    if (cep.length !== 8) return;
-
-    fetch(`https://viacep.com.br/ws/${cep}/json/`)
-        .then(r => r.json())
-        .then(data => {
-            if (data.erro) { alert('CEP não encontrado.'); return; }
-            document.getElementById('pacEndereco').value = (data.logradouro || '').toUpperCase();
-            document.getElementById('pacBairro').value = (data.bairro || '').toUpperCase();
-            document.getElementById('pacCidade').value = (data.localidade || '').toUpperCase();
-            document.getElementById('pacEstado').value = (data.uf || '').toUpperCase();
-            document.getElementById('pacPais').value = 'BRASIL';
-            document.getElementById('pacNumero').focus();
-        })
-        .catch(() => alert('Erro ao buscar CEP.'));
-}
-
-/* ==========================================================
-   CÁLCULO IDADE
-========================================================== */
-function calcularIdade() {
-    const nasc = document.getElementById('pacNascimento')?.value;
-    const el = document.getElementById('pacIdade');
-    if (!nasc || !el) return;
-    const hoje = new Date(), n = new Date(nasc);
-    if (isNaN(n)) return;
-    let a = hoje.getFullYear() - n.getFullYear();
-    let m = hoje.getMonth() - n.getMonth();
-    let d = hoje.getDate() - n.getDate();
-    if (d < 0) { m--; d += 30; }
-    if (m < 0) { a--; m += 12; }
-    el.value = `${a} Anos ${String(m).padStart(2, '0')} Meses ${String(d).padStart(2, '0')} Dias`;
-}
-
-/* ==========================================================
-   TABS
-========================================================== */
-function switchTab(tabId) {
-    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    document.querySelector(`[data-tab="${tabId}"]`)?.classList.add('active');
-    document.getElementById(tabId)?.classList.add('active');
-}
-
-/* ==========================================================
-   WEBCAM
-========================================================== */
-function abrirWebcam() {
-    abrirModal('modalWebcam');
-    const video = document.getElementById('webcamVideo');
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(s => { streamWebcam = s; video.srcObject = s; })
-        .catch(() => { alert('Não foi possível acessar a webcam.'); fecharWebcam(); });
-}
-
-function capturarFoto() {
-    const video = document.getElementById('webcamVideo');
-    const canvas = document.getElementById('webcamCanvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0);
-    document.getElementById('fotoPreview').src = canvas.toDataURL('image/png');
-    fecharWebcam();
-}
-
-function fecharWebcam() {
-    fecharModal('modalWebcam');
-    if (streamWebcam) { streamWebcam.getTracks().forEach(t => t.stop()); streamWebcam = null; }
-}
-
-/* ==========================================================
-   ASSINATURA DIGITAL
-========================================================== */
-let ctxAss = null, desenhando = false;
-
-function iniciarAssinatura() {
-    const c = document.getElementById('assinaturaCanvas');
-    if (!c) return;
-    ctxAss = c.getContext('2d');
-    ctxAss.strokeStyle = '#333'; ctxAss.lineWidth = 2; ctxAss.lineCap = 'round';
-
-    const pos = (e) => {
-        const r = c.getBoundingClientRect();
-        const sx = c.width / r.width, sy = c.height / r.height;
-        return { x: (e.clientX - r.left) * sx, y: (e.clientY - r.top) * sy };
-    };
-    const start = (e) => { desenhando = true; const p = pos(e); ctxAss.beginPath(); ctxAss.moveTo(p.x, p.y); };
-    const move = (e) => { if (!desenhando) return; const p = pos(e); ctxAss.lineTo(p.x, p.y); ctxAss.stroke(); };
-    const end = () => { desenhando = false; };
-
-    c.addEventListener('mousedown', start);
-    c.addEventListener('mousemove', move);
-    c.addEventListener('mouseup', end);
-    c.addEventListener('mouseleave', end);
-    c.addEventListener('touchstart', e => { e.preventDefault(); start(e.touches[0]); });
-    c.addEventListener('touchmove', e => { e.preventDefault(); move(e.touches[0]); });
-    c.addEventListener('touchend', end);
-}
-
-function limparAssinatura() {
-    const c = document.getElementById('assinaturaCanvas');
-    if (c && ctxAss) ctxAss.clearRect(0, 0, c.width, c.height);
-}
-
-function salvarAssinatura() {
-    const c = document.getElementById('assinaturaCanvas');
-    if (!c) return;
-    console.log('Assinatura:', c.toDataURL('image/png').substring(0, 50));
-    alert('Assinatura salva!');
-}
-
-/* ==========================================================
-   ANEXOS
-========================================================== */
-function iniciarAnexos() {
-    const drop = document.getElementById('dropZone');
-    const input = document.getElementById('anexoInput');
-    if (!drop || !input) return;
-
-    drop.addEventListener('click', () => input.click());
-    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('dragover'); });
-    drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
-    drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('dragover'); processarArquivos(e.dataTransfer.files); });
-    input.addEventListener('change', e => processarArquivos(e.target.files));
-}
-
-function processarArquivos(files) {
-    const lista = document.getElementById('anexoLista');
-    if (!lista) return;
-    if (lista.querySelector('.anexo-vazio')) lista.innerHTML = '';
-
-    Array.from(files).forEach(file => {
-        const ext = file.name.split('.').pop().toLowerCase();
-        const icon = ['pdf'].includes(ext) ? 'fa-file-pdf' :
-            ['jpg', 'jpeg', 'png'].includes(ext) ? 'fa-file-image' :
-                ['doc', 'docx'].includes(ext) ? 'fa-file-word' : 'fa-file';
-        const size = (file.size / 1024).toFixed(1) + ' KB';
-
-        const div = document.createElement('div');
-        div.className = 'anexo-item';
-        div.innerHTML = `
-            <div class="anexo-item-info">
-                <i class="fa-solid ${icon}"></i>
-                <div><div class="anexo-item-nome">${file.name}</div><div class="anexo-item-size">${size}</div></div>
-            </div>
-            <div class="anexo-item-actions">
-                <button type="button" class="btn-view" title="Visualizar"><i class="fa-solid fa-eye"></i></button>
-                <button type="button" class="btn-del" title="Excluir" onclick="this.closest('.anexo-item').remove()"><i class="fa-solid fa-trash"></i></button>
-            </div>`;
-        lista.appendChild(div);
-    });
-}
-
-/* ==========================================================
-   HISTÓRICO
-========================================================== */
-function addHistorico(acao) {
-    historico.push({ data: new Date().toLocaleString('pt-BR'), usuario: 'ADMIN', acao });
-    renderHistorico();
-}
-
-function renderHistorico() {
-    const el = document.getElementById('historicoConteudo');
-    if (!el) return;
-    if (historico.length === 0) {
-        el.innerHTML = '<div class="historico-vazio">Nenhuma alteração registrada.</div>';
-        return;
-    }
-    el.innerHTML = historico.map(h => `
-        <div class="historico-item">
-            <div class="historico-data">${h.data}</div>
-            <div class="historico-acao">${h.acao}</div>
-            <div class="historico-user">@${h.usuario}</div>
-        </div>`).join('');
-}
-
-/* ==========================================================
-   MODAIS
-========================================================== */
-function abrirModal(id) { document.getElementById(id)?.classList.add('active'); }
-function fecharModal(id) { document.getElementById(id)?.classList.remove('active'); }
-
-/* ==========================================================
-   BUSCA (simulação)
-========================================================== */
-function executarBusca() {
-    const termo = document.getElementById('buscaTermo')?.value.trim();
-    const res = document.getElementById('buscaResultados');
-    if (!termo || !res) return;
-
-    // Simulação de resultados
-    res.innerHTML = `
-        <div class="busca-item" onclick="alert('Paciente selecionado: ${termo}')">
-            <div class="busca-item-nome">${termo.toUpperCase()}</div>
-            <div class="busca-item-info">CPF: 000.000.000-00 | Código: 00001</div>
-        </div>
-        <div class="busca-item" onclick="alert('Paciente selecionado: MARIA SILVA')">
-            <div class="busca-item-nome">MARIA SILVA</div>
-            <div class="busca-item-info">CPF: 111.111.111-11 | Código: 00002</div>
-        </div>`;
-}
-
-/* ==========================================================
-   RELÓGIO
-========================================================== */
-function iniciarRelogio() {
-    const el = document.getElementById('clock');
-    if (!el) return;
-    const upd = () => {
-        el.textContent = new Date().toLocaleString('pt-BR', {
-            day: '2-digit', month: '2-digit', year: 'numeric',
-            hour: '2-digit', minute: '2-digit', second: '2-digit'
+    function setEditableState(isEditable) {
+        queryAll(EDITABLE_SELECTOR).forEach((element) => {
+            element.disabled = !isEditable;
         });
+
+        const attachmentInput = byId("anexoInput");
+        const dropZone = byId("dropZone");
+        const signatureCanvas = byId("assinaturaCanvas");
+
+        if (attachmentInput) {
+            attachmentInput.disabled = !isEditable;
+        }
+
+        if (dropZone) {
+            dropZone.setAttribute(
+                "aria-disabled",
+                String(!isEditable)
+            );
+
+            dropZone.classList.toggle(
+                "is-disabled",
+                !isEditable
+            );
+        }
+
+        if (signatureCanvas) {
+            signatureCanvas.dataset.enabled = String(isEditable);
+
+            signatureCanvas.setAttribute(
+                "aria-disabled",
+                String(!isEditable)
+            );
+        }
+    }
+
+    function setButtons(buttons) {
+        Object.entries(buttons).forEach(([id, disabled]) => {
+            const button = byId(id);
+
+            if (button) {
+                button.disabled = disabled;
+            }
+        });
+    }
+
+    /* ==========================================================
+       TOOLBAR
+    ========================================================== */
+
+    function actionNew() {
+        const isEditing =
+            state.mode === "new" ||
+            state.mode === "editing";
+
+        if (
+            isEditing &&
+            !window.confirm(
+                "Deseja descartar as alterações e iniciar um novo cadastro?"
+            )
+        ) {
+            return;
+        }
+
+        clearForm();
+        setNewState();
+    }
+
+    function actionSave() {
+        if (!validateForm()) {
+            return;
+        }
+
+        const isNewRecord = state.mode === "new";
+
+        setFieldValue(
+            "pacUltAtu",
+            nowForDateTimeInput()
+        );
+
+        setSavedState({ isNewRecord });
+
+        window.alert("Paciente gravado com sucesso.");
+    }
+
+    function actionEdit() {
+        setEditingState();
+    }
+
+    function actionDelete() {
+        if (state.mode !== "saved") {
+            return;
+        }
+
+        const confirmed = window.confirm(
+            "Deseja realmente excluir este paciente?"
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        addHistory("Paciente excluído");
+        clearForm();
+        setInitialState();
+
+        window.alert("Paciente excluído.");
+    }
+
+    function actionCancel() {
+        if (state.mode === "new") {
+            if (!window.confirm("Cancelar o cadastro atual?")) {
+                return;
+            }
+
+            clearForm();
+            setInitialState();
+            return;
+        }
+
+        if (state.mode === "editing") {
+            if (!window.confirm("Descartar as alterações realizadas?")) {
+                return;
+            }
+
+            restoreSnapshot(state.snapshot);
+            setSavedState({ addLog: false });
+
+            setStatus("Alterações canceladas.");
+            return;
+        }
+
+        clearForm();
+        setInitialState();
+    }
+
+    function actionSearch() {
+        openModal("modalBusca", byId("btnBuscar"));
+
+        window.setTimeout(() => {
+            byId("buscaTermo")?.focus();
+        }, 0);
+    }
+
+    function actionPrevious() {
+        setStatus(
+            "A navegação de registros depende da integração com a base de dados."
+        );
+    }
+
+    function actionNext() {
+        setStatus(
+            "A navegação de registros depende da integração com a base de dados."
+        );
+    }
+
+    function actionAttachment() {
+        switchTab("tab8");
+    }
+
+    function actionPrint() {
+        window.print();
+    }
+
+    function actionHistory() {
+        renderHistory();
+        openModal("modalHistorico", byId("btnHistorico"));
+    }
+
+    /* ==========================================================
+       VALIDAÇÃO
+    ========================================================== */
+
+    function validateForm() {
+        clearInvalidFields();
+
+        const requiredFields = [
+            {
+                field: byId("pacNome"),
+                message: "Preencha o nome completo."
+            },
+            {
+                field: byId("pacCpf"),
+                message: "Preencha o CPF corretamente."
+            },
+            {
+                field: byId("pacNascimento"),
+                message: "Preencha a data de nascimento."
+            }
+        ];
+
+        for (const item of requiredFields) {
+            if (!item.field?.value.trim()) {
+                invalidateField(item.field, item.message);
+                return false;
+            }
+        }
+
+        const cpf = byId("pacCpf");
+
+        if (!validateCpf(cpf.value)) {
+            invalidateField(cpf, "CPF inválido.");
+            return false;
+        }
+
+        const birthDate = new Date(
+            `${byId("pacNascimento").value}T00:00:00`
+        );
+
+        if (
+            Number.isNaN(birthDate.getTime()) ||
+            birthDate > new Date()
+        ) {
+            invalidateField(
+                byId("pacNascimento"),
+                "A data de nascimento não pode estar no futuro."
+            );
+
+            return false;
+        }
+
+        return true;
+    }
+
+    function invalidateField(field, message) {
+        if (!field) {
+            return;
+        }
+
+        field.classList.add("is-invalid");
+        field.setAttribute("aria-invalid", "true");
+        field.focus();
+
+        setStatus(message);
+        window.alert(message);
+    }
+
+    function clearInvalidFields() {
+        queryAll(".is-invalid").forEach((field) => {
+            field.classList.remove("is-invalid");
+            field.removeAttribute("aria-invalid");
+        });
+    }
+
+    function validateCpfField(field) {
+        if (!field?.value || validateCpf(field.value)) {
+            field?.classList.remove("is-invalid");
+            field?.removeAttribute("aria-invalid");
+
+            return true;
+        }
+
+        field.classList.add("is-invalid");
+        field.setAttribute("aria-invalid", "true");
+
+        setStatus("CPF inválido.");
+
+        return false;
+    }
+
+    function validateCpf(cpf) {
+        const digits = String(cpf).replace(/\D/g, "");
+
+        if (
+            digits.length !== 11 ||
+            /^(\d)\1{10}$/.test(digits)
+        ) {
+            return false;
+        }
+
+        const getCheckDigit = (length) => {
+            const sum = [...digits.slice(0, length)].reduce(
+                (total, digit, index) => {
+                    return total + Number(digit) * (length + 1 - index);
+                },
+                0
+            );
+
+            const result = (sum * 10) % 11;
+
+            return result === 10 ? 0 : result;
+        };
+
+        return (
+            getCheckDigit(9) === Number(digits[9]) &&
+            getCheckDigit(10) === Number(digits[10])
+        );
+    }
+
+    /* ==========================================================
+       FORMULÁRIO E SNAPSHOT
+    ========================================================== */
+
+    function clearForm() {
+        byId("pacienteForm")?.reset();
+
+        clearInvalidFields();
+        clearSignature();
+
+        state.attachments.forEach((attachment) => {
+            if (attachment.url) {
+                URL.revokeObjectURL(attachment.url);
+            }
+        });
+
+        state.attachments.clear();
+        renderAttachments();
+
+        const photo = byId("fotoPreview");
+
+        if (photo) {
+            photo.src = DEFAULT_PHOTO;
+        }
+
+        [
+            "pacId",
+            "pacIdade",
+            "pacDataCad",
+            "pacUltAtu"
+        ].forEach((id) => {
+            setFieldValue(id, "");
+        });
+
+        setFieldValue("pacNacionalidade", "BRASILEIRO");
+        setFieldValue("pacPais", "BRASIL");
+        setFieldValue("pacUserCad", "ADMIN");
+        setFieldValue("pacStatus", "A");
+    }
+
+    function createSnapshot() {
+        const fields = queryAll(
+            "#pacienteForm input, #pacienteForm select, #pacienteForm textarea"
+        ).map((field) => ({
+            id: field.id,
+            value: field.value,
+            checked: field.checked
+        }));
+
+        return {
+            fields,
+            photo: byId("fotoPreview")?.src || DEFAULT_PHOTO,
+            signature:
+                byId("assinaturaCanvas")?.toDataURL("image/png") || null,
+            attachments: [...state.attachments.values()].map((item) => ({
+                ...item
+            }))
+        };
+    }
+
+    function restoreSnapshot(snapshot) {
+        if (!snapshot) {
+            return;
+        }
+
+        snapshot.fields.forEach(({ id, value, checked }) => {
+            const field = byId(id);
+
+            if (!field) {
+                return;
+            }
+
+            field.value = value;
+            field.checked = checked;
+        });
+
+        const photo = byId("fotoPreview");
+
+        if (photo) {
+            photo.src = snapshot.photo;
+        }
+
+        restoreSignature(snapshot.signature);
+
+        state.attachments.clear();
+
+        snapshot.attachments.forEach((attachment) => {
+            state.attachments.set(
+                attachment.id,
+                attachment
+            );
+        });
+
+        renderAttachments();
+    }
+
+    /* ==========================================================
+       MÁSCARAS E TRANSFORMAÇÕES
+    ========================================================== */
+
+    function initializeMasks() {
+        const masks = {
+            pacCpf: "cpf",
+            pacRg: "rg",
+            pacTel1: "phone",
+            pacTel2: "phone",
+            pacWhats: "phone",
+            pacRespTel: "phone",
+            pacRespWhats: "phone",
+            pacCep: "cep",
+            pacTitularCpf: "cpf"
+        };
+
+        Object.entries(masks).forEach(([id, type]) => {
+            byId(id)?.addEventListener("input", (event) => {
+                applyMask(event.target, type);
+            });
+        });
+    }
+
+    function applyMask(input, type) {
+        let value = input.value.replace(/\D/g, "");
+
+        if (type === "cpf") {
+            value = value
+                .slice(0, 11)
+                .replace(/(\d{3})(\d)/, "$1.$2")
+                .replace(/(\d{3})(\d)/, "$1.$2")
+                .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        }
+
+        if (type === "rg") {
+            value = value
+                .slice(0, 9)
+                .replace(/(\d{2})(\d)/, "$1.$2")
+                .replace(/(\d{3})(\d)/, "$1.$2")
+                .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        }
+
+        if (type === "phone") {
+            value = value.slice(0, 11);
+
+            value = value.length > 10
+                ? value.replace(
+                    /(\d{2})(\d{5})(\d{0,4})/,
+                    "($1) $2-$3"
+                )
+                : value.replace(
+                    /(\d{2})(\d{0,4})(\d{0,4})/,
+                    "($1) $2-$3"
+                );
+
+            value = value.replace(/-$/, "");
+        }
+
+        if (type === "cep") {
+            value = value
+                .slice(0, 8)
+                .replace(/(\d{5})(\d)/, "$1-$2");
+        }
+
+        input.value = value;
+    }
+
+    function initializeTextTransforms() {
+        const uppercaseFields = [
+            "pacNome",
+            "pacNacionalidade",
+            "pacProfissao",
+            "pacRespNome",
+            "pacRespParentesco",
+            "pacEndereco",
+            "pacBairro",
+            "pacCidade",
+            "pacTitular",
+            "pacPlano"
+        ];
+
+        uppercaseFields.forEach((id) => {
+            byId(id)?.addEventListener("input", (event) => {
+                event.target.value =
+                    event.target.value.toLocaleUpperCase("pt-BR");
+            });
+        });
+
+        byId("pacEmail")?.addEventListener("input", (event) => {
+            event.target.value = event.target.value.toLowerCase();
+        });
+    }
+
+    /* ==========================================================
+       CEP
+    ========================================================== */
+
+    async function searchCep() {
+        const cepInput = byId("pacCep");
+        const cep = cepInput?.value.replace(/\D/g, "");
+
+        if (!cep || cep.length !== 8) {
+            return;
+        }
+
+        state.cepController?.abort();
+        state.cepController = new AbortController();
+
+        setStatus("Buscando endereço pelo CEP...");
+
+        try {
+            const response = await fetch(
+                `https://viacep.com.br/ws/${cep}/json/`,
+                {
+                    signal: state.cepController.signal,
+                    headers: {
+                        Accept: "application/json"
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    "Falha na consulta do CEP."
+                );
+            }
+
+            const data = await response.json();
+
+            if (data.erro) {
+                throw new Error("CEP não encontrado.");
+            }
+
+            setFieldValue(
+                "pacEndereco",
+                String(data.logradouro || "").toUpperCase()
+            );
+
+            setFieldValue(
+                "pacBairro",
+                String(data.bairro || "").toUpperCase()
+            );
+
+            setFieldValue(
+                "pacCidade",
+                String(data.localidade || "").toUpperCase()
+            );
+
+            setFieldValue(
+                "pacEstado",
+                String(data.uf || "").toUpperCase()
+            );
+
+            setFieldValue("pacPais", "BRASIL");
+
+            byId("pacNumero")?.focus();
+
+            setStatus(
+                "Endereço preenchido a partir do CEP."
+            );
+        } catch (error) {
+            if (error.name === "AbortError") {
+                return;
+            }
+
+            const message =
+                error.message ||
+                "Não foi possível buscar o CEP.";
+
+            setStatus(message);
+            window.alert(message);
+        } finally {
+            state.cepController = null;
+        }
+    }
+
+    /* ==========================================================
+       IDADE
+    ========================================================== */
+
+    function calculateAge() {
+        const birthValue = byId("pacNascimento")?.value;
+        const output = byId("pacIdade");
+
+        if (!birthValue || !output) {
+            return;
+        }
+
+        const [year, month, day] = birthValue
+            .split("-")
+            .map(Number);
+
+        const birthDate = new Date(
+            year,
+            month - 1,
+            day
+        );
+
+        const today = new Date();
+
+        if (
+            Number.isNaN(birthDate.getTime()) ||
+            birthDate > today
+        ) {
+            output.value = "";
+            return;
+        }
+
+        let years =
+            today.getFullYear() - birthDate.getFullYear();
+
+        let months =
+            today.getMonth() - birthDate.getMonth();
+
+        let days =
+            today.getDate() - birthDate.getDate();
+
+        if (days < 0) {
+            months -= 1;
+
+            days += new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                0
+            ).getDate();
+        }
+
+        if (months < 0) {
+            years -= 1;
+            months += 12;
+        }
+
+        output.value =
+            `${years} Anos ` +
+            `${String(months).padStart(2, "0")} Meses ` +
+            `${String(days).padStart(2, "0")} Dias`;
+    }
+
+    /* ==========================================================
+       ABAS
+    ========================================================== */
+
+    function initializeTabs() {
+        const tabs = queryAll(".tab-btn[data-tab]");
+
+        tabs.forEach((tab, index) => {
+            tab.addEventListener("keydown", (event) => {
+                const allowedKeys = [
+                    "ArrowLeft",
+                    "ArrowRight",
+                    "Home",
+                    "End"
+                ];
+
+                if (!allowedKeys.includes(event.key)) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                let nextIndex = index;
+
+                if (event.key === "ArrowRight") {
+                    nextIndex = (index + 1) % tabs.length;
+                }
+
+                if (event.key === "ArrowLeft") {
+                    nextIndex =
+                        (index - 1 + tabs.length) % tabs.length;
+                }
+
+                if (event.key === "Home") {
+                    nextIndex = 0;
+                }
+
+                if (event.key === "End") {
+                    nextIndex = tabs.length - 1;
+                }
+
+                tabs[nextIndex].focus();
+                switchTab(tabs[nextIndex].dataset.tab);
+            });
+        });
+
+        const activeTab =
+            tabs.find((tab) =>
+                tab.classList.contains("active")
+            )?.dataset.tab || "tab1";
+
+        switchTab(activeTab);
+    }
+
+    function switchTab(tabId) {
+        const targetPanel = byId(tabId);
+
+        const targetTab = queryAll(".tab-btn[data-tab]")
+            .find((tab) => tab.dataset.tab === tabId);
+
+        if (!targetPanel || !targetTab) {
+            return;
+        }
+
+        queryAll(".tab-btn[data-tab]").forEach((tab) => {
+            const isActive = tab === targetTab;
+
+            tab.classList.toggle("active", isActive);
+            tab.setAttribute(
+                "aria-selected",
+                String(isActive)
+            );
+
+            tab.tabIndex = isActive ? 0 : -1;
+        });
+
+        queryAll('.tab-content[role="tabpanel"]').forEach(
+            (panel) => {
+                const isActive = panel === targetPanel;
+
+                panel.classList.toggle("active", isActive);
+                panel.hidden = !isActive;
+            }
+        );
+    }
+
+    /* ==========================================================
+       WEBCAM
+    ========================================================== */
+
+    async function openWebcam() {
+        if (!["new", "editing"].includes(state.mode)) {
+            const message =
+                "Clique em Novo ou Editar antes de capturar a foto do paciente.";
+
+            setStatus(message);
+            window.alert(message);
+
+            return;
+        }
+
+        const modal = byId("modalWebcam");
+        const video = byId("webcamVideo");
+
+        if (!modal || !video) {
+            window.alert(
+                "Não foi possível localizar os elementos da câmera."
+            );
+
+            return;
+        }
+
+        if (!window.isSecureContext) {
+            window.alert(
+                "A câmera funciona somente em HTTPS ou localhost. " +
+                "Não teste o sistema usando file:// ou um IP com HTTP."
+            );
+
+            return;
+        }
+
+        if (!navigator.mediaDevices?.getUserMedia) {
+            window.alert(
+                "Este navegador não possui suporte à câmera."
+            );
+
+            return;
+        }
+
+        closeWebcam(false);
+
+        try {
+            openModal(
+                "modalWebcam",
+                byId("btnAbrirWebcam")
+            );
+
+            const stream =
+                await navigator.mediaDevices.getUserMedia({
+                    audio: false,
+                    video: {
+                        facingMode: {
+                            ideal: "user"
+                        },
+                        width: {
+                            ideal: 1280
+                        },
+                        height: {
+                            ideal: 720
+                        }
+                    }
+                });
+
+            state.stream = stream;
+
+            video.muted = true;
+            video.srcObject = stream;
+
+            await waitForVideoReady(video);
+            await video.play();
+
+            setStatus(
+                "Câmera pronta para capturar a foto."
+            );
+        } catch (error) {
+            closeWebcam(false);
+
+            const errorMessages = {
+                NotAllowedError:
+                    "Permissão da câmera negada. Autorize a câmera nas configurações do navegador.",
+                NotFoundError:
+                    "Nenhuma câmera foi encontrada neste dispositivo.",
+                NotReadableError:
+                    "A câmera está sendo usada por outro aplicativo, navegador ou aba.",
+                OverconstrainedError:
+                    "A câmera disponível não atende aos requisitos solicitados.",
+                SecurityError:
+                    "O navegador bloqueou o acesso à câmera por segurança."
+            };
+
+            const message =
+                errorMessages[error.name] ||
+                "Não foi possível acessar a câmera. Tente novamente.";
+
+            setStatus(message);
+            window.alert(message);
+        }
+    }
+
+    function waitForVideoReady(video) {
+        if (
+            video.readyState >=
+            HTMLMediaElement.HAVE_METADATA
+        ) {
+            return Promise.resolve();
+        }
+
+        return new Promise((resolve, reject) => {
+            const timeout = window.setTimeout(() => {
+                reject(
+                    new Error(
+                        "Tempo esgotado ao iniciar a câmera."
+                    )
+                );
+            }, 10000);
+
+            video.addEventListener(
+                "loadedmetadata",
+                () => {
+                    window.clearTimeout(timeout);
+                    resolve();
+                },
+                { once: true }
+            );
+
+            video.addEventListener(
+                "error",
+                () => {
+                    window.clearTimeout(timeout);
+
+                    reject(
+                        new Error(
+                            "Erro ao carregar o vídeo da câmera."
+                        )
+                    );
+                },
+                { once: true }
+            );
+        });
+    }
+
+    function capturePhoto() {
+        const video = byId("webcamVideo");
+        const canvas = byId("webcamCanvas");
+        const photoPreview = byId("fotoPreview");
+
+        if (!video || !canvas || !photoPreview) {
+            window.alert(
+                "Não foi possível preparar a captura da foto."
+            );
+
+            return;
+        }
+
+        if (
+            video.readyState <
+            HTMLMediaElement.HAVE_CURRENT_DATA
+        ) {
+            window.alert(
+                "A câmera ainda não está pronta. Aguarde alguns segundos e tente novamente."
+            );
+
+            return;
+        }
+
+        if (!video.videoWidth || !video.videoHeight) {
+            window.alert(
+                "Não foi possível obter a imagem da câmera."
+            );
+
+            return;
+        }
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        const context = canvas.getContext("2d");
+
+        if (!context) {
+            window.alert(
+                "Não foi possível processar a foto capturada."
+            );
+
+            return;
+        }
+
+        context.drawImage(
+            video,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        photoPreview.src = canvas.toDataURL(
+            "image/jpeg",
+            0.85
+        );
+
+        closeWebcam();
+        setStatus("Foto capturada com sucesso.");
+    }
+
+    function closeWebcam(restoreFocus = true) {
+        const modal = byId("modalWebcam");
+        const video = byId("webcamVideo");
+        const trigger = byId("btnAbrirWebcam");
+
+        state.stream?.getTracks().forEach((track) => {
+            track.stop();
+        });
+
+        state.stream = null;
+
+        if (video) {
+            video.pause();
+            video.srcObject = null;
+        }
+
+        if (modal) {
+            modal.classList.remove("active");
+            modal.hidden = true;
+            modal.setAttribute("aria-hidden", "true");
+        }
+
+        if (restoreFocus) {
+            trigger?.focus();
+        }
+    }
+
+    /* ==========================================================
+       ASSINATURA
+    ========================================================== */
+
+    function initializeSignature() {
+        const canvas = byId("assinaturaCanvas");
+
+        if (!canvas) {
+            return;
+        }
+
+        state.signatureContext = canvas.getContext("2d");
+
+        state.signatureContext.strokeStyle = "#172033";
+        state.signatureContext.lineWidth = 2;
+        state.signatureContext.lineCap = "round";
+
+        const getPoint = (event) => {
+            const rect = canvas.getBoundingClientRect();
+
+            return {
+                x:
+                    (event.clientX - rect.left) *
+                    (canvas.width / rect.width),
+                y:
+                    (event.clientY - rect.top) *
+                    (canvas.height / rect.height)
+            };
+        };
+
+        canvas.addEventListener("pointerdown", (event) => {
+            if (canvas.dataset.enabled !== "true") {
+                return;
+            }
+
+            state.isDrawing = true;
+
+            canvas.setPointerCapture(event.pointerId);
+
+            const point = getPoint(event);
+
+            state.signatureContext.beginPath();
+            state.signatureContext.moveTo(point.x, point.y);
+        });
+
+        canvas.addEventListener("pointermove", (event) => {
+            if (!state.isDrawing) {
+                return;
+            }
+
+            const point = getPoint(event);
+
+            state.signatureContext.lineTo(point.x, point.y);
+            state.signatureContext.stroke();
+        });
+
+        [
+            "pointerup",
+            "pointerleave",
+            "pointercancel"
+        ].forEach((eventName) => {
+            canvas.addEventListener(eventName, () => {
+                state.isDrawing = false;
+            });
+        });
+    }
+
+    function clearSignature() {
+        const canvas = byId("assinaturaCanvas");
+
+        if (canvas && state.signatureContext) {
+            state.signatureContext.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+        }
+    }
+
+    function saveSignature() {
+        if (!["new", "editing"].includes(state.mode)) {
+            setStatus(
+                "Inicie ou edite um cadastro antes de salvar a assinatura."
+            );
+
+            return;
+        }
+
+        setStatus(
+            "Assinatura registrada para envio junto ao cadastro."
+        );
+    }
+
+    function restoreSignature(dataUrl) {
+        clearSignature();
+
+        if (!dataUrl || !state.signatureContext) {
+            return;
+        }
+
+        const image = new Image();
+
+        image.onload = () => {
+            state.signatureContext.drawImage(
+                image,
+                0,
+                0
+            );
+        };
+
+        image.src = dataUrl;
+    }
+
+    /* ==========================================================
+       ANEXOS
+    ========================================================== */
+
+    function initializeAttachments() {
+        const dropZone = byId("dropZone");
+        const input = byId("anexoInput");
+
+        if (!dropZone || !input) {
+            return;
+        }
+
+        dropZone.addEventListener("click", (event) => {
+            if (
+                event.target.closest("input") ||
+                input.disabled
+            ) {
+                return;
+            }
+
+            input.click();
+        });
+
+        dropZone.addEventListener("dragover", (event) => {
+            if (input.disabled) {
+                return;
+            }
+
+            event.preventDefault();
+            dropZone.classList.add("dragover");
+        });
+
+        dropZone.addEventListener("dragleave", () => {
+            dropZone.classList.remove("dragover");
+        });
+
+        dropZone.addEventListener("drop", (event) => {
+            event.preventDefault();
+            dropZone.classList.remove("dragover");
+
+            if (!input.disabled) {
+                processFiles(event.dataTransfer.files);
+            }
+        });
+
+        input.addEventListener("change", (event) => {
+            processFiles(event.target.files);
+            input.value = "";
+        });
+    }
+
+    function processFiles(fileList) {
+        const files = [...fileList];
+
+        if (!files.length) {
+            return;
+        }
+
+        const invalidFiles = [];
+
+        files.forEach((file) => {
+            const extension =
+                file.name
+                    .split(".")
+                    .pop()
+                    ?.toLowerCase() || "";
+
+            if (
+                !ALLOWED_EXTENSIONS.has(extension) ||
+                file.size > MAX_FILE_SIZE ||
+                file.size === 0
+            ) {
+                invalidFiles.push(file.name);
+                return;
+            }
+
+            const id =
+                crypto.randomUUID?.() ||
+                `${Date.now()}-${Math.random()}`;
+
+            state.attachments.set(id, {
+                id,
+                file,
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                url: URL.createObjectURL(file)
+            });
+        });
+
+        renderAttachments();
+
+        if (invalidFiles.length) {
+            const message =
+                `Arquivo inválido ou maior que 10 MB: ` +
+                invalidFiles.join(", ");
+
+            setStatus(message);
+            window.alert(message);
+        }
+    }
+
+    function renderAttachments() {
+        const list = byId("anexoLista");
+
+        if (!list) {
+            return;
+        }
+
+        list.replaceChildren();
+
+        if (!state.attachments.size) {
+            const empty = document.createElement("p");
+
+            empty.className = "anexo-vazio";
+            empty.textContent = "Nenhum documento anexado.";
+
+            list.append(empty);
+            return;
+        }
+
+        state.attachments.forEach((attachment) => {
+            const item = document.createElement("article");
+            const info = document.createElement("div");
+            const icon = document.createElement("i");
+            const text = document.createElement("div");
+            const name = document.createElement("div");
+            const size = document.createElement("div");
+            const actions = document.createElement("div");
+
+            item.className = "anexo-item";
+            info.className = "anexo-item-info";
+            text.className = "anexo-item-text";
+            name.className = "anexo-item-nome";
+            size.className = "anexo-item-size";
+            actions.className = "anexo-item-actions";
+
+            icon.className =
+                `fa-solid ${getFileIcon(attachment.name)}`;
+
+            icon.setAttribute("aria-hidden", "true");
+
+            name.textContent = attachment.name;
+            size.textContent = formatFileSize(attachment.size);
+
+            text.append(name, size);
+            info.append(icon, text);
+
+            actions.append(
+                createAttachmentButton(
+                    "fa-eye",
+                    "Visualizar anexo",
+                    () => {
+                        window.open(
+                            attachment.url,
+                            "_blank",
+                            "noopener"
+                        );
+                    },
+                    "btn-view"
+                ),
+                createAttachmentButton(
+                    "fa-trash",
+                    "Excluir anexo",
+                    () => removeAttachment(attachment.id),
+                    "btn-del"
+                )
+            );
+
+            item.append(info, actions);
+            list.append(item);
+        });
+    }
+
+    function createAttachmentButton(
+        iconName,
+        label,
+        action,
+        className
+    ) {
+        const button = document.createElement("button");
+        const icon = document.createElement("i");
+
+        button.type = "button";
+        button.className = className;
+        button.setAttribute("aria-label", label);
+
+        icon.className = `fa-solid ${iconName}`;
+        icon.setAttribute("aria-hidden", "true");
+
+        button.append(icon);
+        button.addEventListener("click", action);
+
+        return button;
+    }
+
+    function removeAttachment(id) {
+        const attachment = state.attachments.get(id);
+
+        if (attachment?.url) {
+            URL.revokeObjectURL(attachment.url);
+        }
+
+        state.attachments.delete(id);
+
+        renderAttachments();
+        setStatus("Anexo removido.");
+    }
+
+    function getFileIcon(name) {
+        const extension =
+            name.split(".").pop()?.toLowerCase();
+
+        if (extension === "pdf") {
+            return "fa-file-pdf";
+        }
+
+        if (["jpg", "jpeg", "png"].includes(extension)) {
+            return "fa-file-image";
+        }
+
+        if (["doc", "docx"].includes(extension)) {
+            return "fa-file-word";
+        }
+
+        return "fa-file";
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes < 1024 * 1024) {
+            return `${(bytes / 1024).toFixed(1)} KB`;
+        }
+
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
+    /* ==========================================================
+       HISTÓRICO
+    ========================================================== */
+
+    function addHistory(action) {
+        state.history.push({
+            date: new Intl.DateTimeFormat("pt-BR", {
+                dateStyle: "short",
+                timeStyle: "medium"
+            }).format(new Date()),
+            user: "ADMIN",
+            action
+        });
+
+        renderHistory();
+    }
+
+    function renderHistory() {
+        const container = byId("historicoConteudo");
+
+        if (!container) {
+            return;
+        }
+
+        container.replaceChildren();
+
+        if (!state.history.length) {
+            const empty = document.createElement("p");
+
+            empty.className = "historico-vazio";
+            empty.textContent =
+                "Nenhuma alteração registrada.";
+
+            container.append(empty);
+            return;
+        }
+
+        [...state.history]
+            .reverse()
+            .forEach((entry) => {
+                const item = document.createElement("article");
+                const date = document.createElement("div");
+                const action = document.createElement("div");
+                const user = document.createElement("div");
+
+                item.className = "historico-item";
+                date.className = "historico-data";
+                action.className = "historico-acao";
+                user.className = "historico-user";
+
+                date.textContent = entry.date;
+                action.textContent = entry.action;
+                user.textContent = `@${entry.user}`;
+
+                item.append(date, action, user);
+                container.append(item);
+            });
+    }
+
+    /* ==========================================================
+       MODAIS
+    ========================================================== */
+
+    function initializeModalEvents() {
+        document.addEventListener("keydown", (event) => {
+            const activeModal =
+                document.querySelector(".modal.active");
+
+            if (event.key === "Escape" && activeModal) {
+                if (activeModal.id === "modalWebcam") {
+                    closeWebcam();
+                } else {
+                    closeModal(activeModal.id);
+                }
+            }
+
+            if (event.key === "Tab" && activeModal) {
+                trapModalFocus(event, activeModal);
+            }
+        });
+
+        queryAll(".modal").forEach((modal) => {
+            modal.addEventListener("click", (event) => {
+                if (event.target !== modal) {
+                    return;
+                }
+
+                if (modal.id === "modalWebcam") {
+                    closeWebcam();
+                } else {
+                    closeModal(modal.id);
+                }
+            });
+        });
+    }
+
+    function openModal(
+        id,
+        trigger = document.activeElement
+    ) {
+        const modal = byId(id);
+
+        if (!modal) {
+            return;
+        }
+
+        state.modalTriggers.set(id, trigger);
+
+        modal.hidden = false;
+        modal.classList.add("active");
+        modal.setAttribute("aria-hidden", "false");
+
+        window.setTimeout(() => {
+            getFocusableElements(modal)[0]?.focus();
+        }, 0);
+    }
+
+    function closeModal(id) {
+        const modal = byId(id);
+
+        if (!modal) {
+            return;
+        }
+
+        modal.classList.remove("active");
+        modal.hidden = true;
+        modal.setAttribute("aria-hidden", "true");
+
+        state.modalTriggers.get(id)?.focus?.();
+    }
+
+    function getFocusableElements(container) {
+        const selector = [
+            "button:not([disabled])",
+            "[href]",
+            "input:not([disabled])",
+            "select:not([disabled])",
+            "textarea:not([disabled])",
+            '[tabindex]:not([tabindex="-1"])'
+        ].join(",");
+
+        return queryAll(selector, container).filter((element) => {
+            return !element.hidden && element.offsetParent !== null;
+        });
+    }
+
+    function trapModalFocus(event, modal) {
+        const focusable = getFocusableElements(modal);
+
+        if (!focusable.length) {
+            return;
+        }
+
+        const first = focusable[0];
+        const last = focusable.at(-1);
+
+        if (
+            event.shiftKey &&
+            document.activeElement === first
+        ) {
+            event.preventDefault();
+            last.focus();
+        }
+
+        if (
+            !event.shiftKey &&
+            document.activeElement === last
+        ) {
+            event.preventDefault();
+            first.focus();
+        }
+    }
+
+    /* ==========================================================
+       BUSCA
+    ========================================================== */
+
+    function executeSearch() {
+        const term = byId("buscaTermo")?.value.trim();
+        const results = byId("buscaResultados");
+
+        if (!results) {
+            return;
+        }
+
+        results.replaceChildren();
+
+        if (!term) {
+            const empty = document.createElement("p");
+
+            empty.className = "busca-vazio";
+            empty.textContent =
+                "Digite um nome, CPF, código ou telefone para buscar.";
+
+            results.append(empty);
+            return;
+        }
+
+        const patients = [
+            {
+                name: term.toLocaleUpperCase("pt-BR"),
+                cpf: "000.000.000-00",
+                code: "00001"
+            },
+            {
+                name: "MARIA SILVA",
+                cpf: "111.111.111-11",
+                code: "00002"
+            }
+        ];
+
+        patients.forEach((patient) => {
+            const result = document.createElement("button");
+            const name = document.createElement("span");
+            const info = document.createElement("span");
+
+            result.type = "button";
+            result.className = "busca-item";
+
+            name.className = "busca-item-nome";
+            info.className = "busca-item-info";
+
+            name.textContent = patient.name;
+            info.textContent =
+                `CPF: ${patient.cpf} | Código: ${patient.code}`;
+
+            result.append(name, info);
+
+            result.addEventListener("click", () => {
+                closeModal("modalBusca");
+
+                setStatus(
+                    `Paciente selecionado: ${patient.name}. ` +
+                    "A integração com a base de dados ainda é necessária."
+                );
+            });
+
+            results.append(result);
+        });
+    }
+
+    /* ==========================================================
+       RELÓGIO E UTILITÁRIOS
+    ========================================================== */
+
+    function initializeClock() {
+        const clock = byId("clock");
+
+        if (!clock) {
+            return;
+        }
+
+        const updateClock = () => {
+            const now = new Date();
+
+            clock.textContent = new Intl.DateTimeFormat(
+                "pt-BR",
+                {
+                    dateStyle: "short",
+                    timeStyle: "medium"
+                }
+            ).format(now);
+
+            clock.dateTime = now.toISOString();
+        };
+
+        updateClock();
+        window.setInterval(updateClock, 1000);
+    }
+
+    function nowForDateTimeInput() {
+        const now = new Date();
+
+        return new Date(
+            now.getTime() -
+            now.getTimezoneOffset() * 60000
+        )
+            .toISOString()
+            .slice(0, 16);
+    }
+
+    function setFieldValue(id, value) {
+        const field = byId(id);
+
+        if (field) {
+            field.value = value;
+        }
+    }
+
+    function setStatus(message) {
+        const status = byId("formStatus");
+
+        if (status) {
+            status.textContent = message;
+        }
+    }
+
+    function emitMedicalDocument(type) {
+        const patientName =
+            byId("pacNome")?.value.trim() ||
+            "Paciente não informado";
+
+        setStatus(
+            `${type} solicitado para ${patientName}. ` +
+            "A geração depende da integração com o backend e assinatura profissional."
+        );
+    }
+
+    /* ==========================================================
+       COMPATIBILIDADE COM O HTML ATUAL
+    ========================================================== */
+
+    window.acaoNovo = actionNew;
+    window.acaoGravar = actionSave;
+    window.acaoEditar = actionEdit;
+    window.acaoExcluir = actionDelete;
+    window.acaoCancelar = actionCancel;
+    window.acaoBuscar = actionSearch;
+    window.acaoAnterior = actionPrevious;
+    window.acaoProximo = actionNext;
+    window.acaoAnexo = actionAttachment;
+    window.acaoImprimir = actionPrint;
+    window.acaoHistorico = actionHistory;
+    window.buscarCep = searchCep;
+    window.switchTab = switchTab;
+    window.abrirWebcam = openWebcam;
+    window.capturarFoto = capturePhoto;
+    window.fecharWebcam = closeWebcam;
+    window.fecharModal = closeModal;
+    window.limparAssinatura = clearSignature;
+    window.salvarAssinatura = saveSignature;
+    window.executarBusca = executeSearch;
+
+    window.emitirAtestado = () => {
+        emitMedicalDocument("Atestado médico");
     };
-    upd(); setInterval(upd, 1000);
-}
 
-/* ==========================================================
-   UTILS
-========================================================== */
-function agoraISO() {
-    const d = new Date();
-    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-}
+    window.emitirPedidoExames = () => {
+        emitMedicalDocument("Pedido de exames");
+    };
 
-/* ==========================================================
-   ABA OUTROS
-========================================================== */
-function emitirAtestado() {
-    alert('📝 ATESTADO MÉDICO\n\n• Paciente: ' + (document.getElementById('pacNome')?.value || 'N/A') + '\n• CID: [campo para preenchimento]\n• Acompanhante: [se necessário]\n• Assinatura digital do médico\n\n(Integrar com impressão/PDF)');
-}
+    window.emitirReceita = () => {
+        emitMedicalDocument("Receita médica");
+    };
 
-function emitirPedidoExames() {
-    alert('🧪 PEDIDO DE EXAMES\n\n• Selecionar exames solicitados\n• Assinatura digital integrada\n• Opção para consulta online\n\n(Integrar com laboratório parceiro)');
-}
-
-function emitirReceita() {
-    alert('💊 RECEITA MÉDICA\n\n• Medicamentos e posologia\n• CRM e Especialidade do médico\n• Assinatura digital\n• Opção de impressão ou envio digital\n\n(Integrar com impressão/PDF)');
-}
-
-function verHistorico() {
-    acaoHistorico();
-}
+    window.verHistorico = actionHistory;
+})();
