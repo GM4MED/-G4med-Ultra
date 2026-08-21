@@ -19,20 +19,25 @@
 <body>
     <main class="logout-page">
         <section class="logout-shell" aria-labelledby="pageTitle">
-            <div class="brand-lockup" aria-label="G4Med Intelligent Health System">
-                <span class="brand-symbol"><i class="fa-solid fa-stethoscope" aria-hidden="true"></i></span>
-                <span><strong>G4Med</strong><small>Intelligent Health System</small></span>
+            <!-- Cabeçalho: Logotipo à esquerda e Sessão Segura à direita -->
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 1.5rem;">
+                <div class="brand-lockup" aria-label="G4Med Intelligent Health System" style="margin-bottom: 0;">
+                    <span class="brand-symbol"><i class="fa-solid fa-stethoscope" aria-hidden="true"></i></span>
+                    <span><strong>G4Med</strong><small>Intelligent Health System</small></span>
+                </div>
+                <div class="eyebrow" style="margin: 0;"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                    Sessão segura</div>
             </div>
 
-            <div class="logout-illustration" aria-hidden="true">
-                <div class="illustration-circle circle-large"></div>
-                <div class="illustration-circle circle-small"></div>
-                <div class="logout-shield"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
-                <span class="illustration-dot dot-one"></span><span class="illustration-dot dot-two"></span>
+            <!-- Área Central: Elemento gráfico circular com gradiente verde-azulado claro e a imagem oficial da logo -->
+            <div class="logout-illustration" aria-hidden="true"
+                style="background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%); border: 1px solid #99f6e4; border-radius: 50%; width: 120px; height: 120px; margin: 0 auto 1.5rem auto; display: flex; align-items: center; justify-content: center;">
+                <img src="assets/logo-g4med.png" alt="Logotipo G4Med"
+                    style="max-height: 75px; width: auto; object-fit: contain;">
             </div>
 
             <div class="logout-copy">
-                <span class="eyebrow"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Sessão segura</span>
                 <h1 id="pageTitle">Pronto para sair?</h1>
                 <p>Ao encerrar sua sessão, o acesso a este ambiente será finalizado com segurança.</p>
             </div>
