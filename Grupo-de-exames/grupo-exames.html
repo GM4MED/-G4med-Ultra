@@ -2,16 +2,15 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="color-scheme" content="light" />
-    <title>Grupo de Exames</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="Cadastro e gerenciamento de grupos de exames do G4Med">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Grupo de Exames | G4Med</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="grupo-exames.css" />
 
     <script>
         tailwind.config = {
@@ -19,82 +18,83 @@
                 extend: {
                     colors: {
                         teal: {
-                            50: '#f0fdfa',
-                            100: '#ccfbf1',
-                            200: '#99f6e4',
-                            500: '#14b8a6',
-                            600: '#0d9488',
-                            700: '#0f766e',
-                            800: '#115e59'
+                            50: "#f0fdfa",
+                            100: "#ccfbf1",
+                            200: "#99f6e4",
+                            500: "#14b8a6",
+                            600: "#0d9488",
+                            700: "#0f766e",
+                            800: "#115e59"
                         },
-                        slate: {
-                            50: '#f8fafc',
-                            100: '#f1f5f9',
-                            200: '#e2e8f0',
-                            300: '#cbd5e1',
-                            400: '#94a3b8',
-                            500: '#64748b',
-                            600: '#475569',
-                            700: '#334155',
-                            800: '#1e293b',
-                            900: '#0f172a'
-                        },
-                        blue: {
-                            600: '#2563eb',
-                            700: '#1d4ed8'
-                        }
+                        navy: "#0B1F3A"
                     },
                     boxShadow: {
-                        soft: '0 8px 30px rgba(15, 23, 42, 0.08)'
+                        soft: "0 8px 30px rgba(15, 23, 42, 0.08)",
+                        modal: "0 20px 60px rgba(15, 23, 42, 0.20)"
                     }
                 }
             }
         };
     </script>
+
+    <link rel="stylesheet" href="grupo-exames.css">
 </head>
 
-<body class="bg-slate-50 text-slate-900 antialiased">
+<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+
     <a href="#conteudo-principal"
-        class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow">
+        class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:shadow-lg">
         Pular para o conteúdo principal
     </a>
 
-    <div class="w-screen min-h-screen flex flex-col">
-        <header class="border-b border-slate-200 bg-white sticky top-0 z-40">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center gap-4">
-                <div class="flex items-center gap-3 min-w-0">
+    <div class="min-h-screen">
+
+        <!-- Cabeçalho -->
+        <header class="sticky top-0 z-40 border-b border-slate-200 bg-white">
+            <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+
+                <div class="flex min-w-0 items-center gap-3">
                     <a href="../Menu-Principal.html"
-                        class="icon-btn inline-flex items-center justify-center min-w-12 min-h-12 rounded-full border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+                        class="inline-flex min-h-12 min-w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
                         aria-label="Voltar para o menu principal">
-                        <svg viewBox="0 0 24 24" class="icon-sm" fill="none" stroke="currentColor" stroke-width="2"
+
+                        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M15 18l-6-6 6-6"></path>
                         </svg>
                     </a>
 
                     <div class="min-w-0">
-                        <p class="text-xs font-medium text-slate-500 uppercase tracking-wide">GM4-System</p>
-                        <h1 class="text-lg sm:text-xl font-semibold text-slate-900 truncate">Grupo de Exames</h1>
+                        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">
+                            G4Med
+                        </p>
+
+                        <h1 class="truncate text-lg font-semibold text-slate-900 sm:text-xl">
+                            Grupo de Exames
+                        </h1>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 sm:gap-3">
+                <div class="flex items-center gap-2">
                     <button type="button"
-                        class="help-btn inline-flex items-center gap-2 min-h-12 px-4 rounded-full border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
-                        aria-label="Abrir ajuda sobre solicitação de exames">
-                        <svg viewBox="0 0 24 24" class="icon-xs" fill="none" stroke="currentColor" stroke-width="2"
+                        class="inline-flex min-h-12 min-w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+                        aria-label="Abrir ajuda">
+
+                        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <circle cx="12" cy="12" r="10"></circle>
                             <path d="M9.5 9a3 3 0 1 1 4.9 2.3c-.9.7-1.4 1.2-1.4 2.7"></path>
                             <path d="M12 17h.01"></path>
                         </svg>
-                        <span class="hidden sm:inline">Ajuda</span>
+
+                        <span class="ml-2 hidden sm:inline">Ajuda</span>
                     </button>
 
                     <button type="button"
-                        class="icon-btn inline-flex items-center justify-center min-w-12 min-h-12 rounded-full border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+                        class="inline-flex min-h-12 min-w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
                         aria-label="Abrir notificações">
-                        <svg viewBox="0 0 24 24" class="icon-sm" fill="none" stroke="currentColor" stroke-width="2"
+
+                        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5">
                             </path>
@@ -105,303 +105,1128 @@
             </div>
         </header>
 
-        <main id="conteudo-principal" class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-32">
-            <section class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
-                <div class="flex items-start gap-4 sm:gap-6">
+        <!-- Conteúdo principal -->
+        <main id="conteudo-principal" class="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+
+            <!-- Título da página -->
+            <section class="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-center">
+                <div class="flex items-start gap-4">
                     <div
-                        class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600 shrink-0 shadow-sm">
-                        <svg viewBox="0 0 24 24" class="w-8 h-8 sm:w-9 sm:h-9" fill="none" stroke="currentColor"
-                            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-teal-50 text-teal-600">
+                        <svg viewBox="0 0 24 24" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path
                                 d="M3 8.5A2.5 2.5 0 0 1 5.5 6H9l2 2h7.5A2.5 2.5 0 0 1 21 10.5v6A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5v-8Z">
                             </path>
-                            <path d="M7 13h4"></path>
-                            <path d="M9 11v4"></path>
+                            <path d="M7 13h10"></path>
+                            <path d="M12 10v6"></path>
                         </svg>
                     </div>
 
                     <div>
-                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Solicitação de exames</h2>
-                        <p class="text-slate-600 mt-1 max-w-2xl">
-                            Interface otimizada para localizar, selecionar e revisar exames com clareza, rapidez e
-                            segurança.
+                        <nav class="mb-1 text-sm text-slate-500" aria-label="Navegação estrutural">
+                            <ol class="flex flex-wrap items-center gap-2">
+                                <li>Cadastros</li>
+                                <li aria-hidden="true">/</li>
+                                <li class="font-medium text-teal-700">Grupo de Exames</li>
+                            </ol>
+                        </nav>
+
+                        <h2 class="text-2xl font-bold text-slate-900 sm:text-3xl">
+                            Grupo de Exames
+                        </h2>
+
+                        <p class="mt-1 max-w-2xl text-slate-600">
+                            Gerencie grupos, conjuntos e configurações de exames.
                         </p>
                     </div>
                 </div>
 
-                <div class="bg-teal-50 p-4 rounded-2xl self-start shadow-sm border border-teal-100">
-                    <svg viewBox="0 0 128 128" class="w-20 h-20 sm:w-24 sm:h-24 text-teal-600" fill="none"
-                        stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
-                        aria-hidden="true">
-                        <rect x="34" y="18" width="60" height="92" rx="10" fill="#f0fdfa" stroke="currentColor"></rect>
-                        <path d="M46 40h36"></path>
-                        <path d="M46 52h22"></path>
-                        <path
-                            d="M67 73c0-6.5 5.5-11 12-11 4.8 0 8.7 2.6 10.4 6.5C91 64.6 94.9 62 99.7 62c6.5 0 12 4.5 12 11 0 10-18.7 22-18.7 22S67 83 67 73Z"
-                            fill="#ccfbf1" stroke="currentColor"></path>
-                        <rect x="72" y="85" width="28" height="22" rx="6" fill="#e6fffb" stroke="currentColor"></rect>
-                        <path d="M78 96h16"></path>
-                        <path d="M84 90v12"></path>
-                        <rect x="20" y="76" width="18" height="30" rx="4" fill="#d9f99d" stroke="currentColor"></rect>
-                        <path d="M24 82h10"></path>
-                        <path d="M24 88h10"></path>
-                        <path d="M24 94h10"></path>
+                <button type="button" id="newGroupBtn"
+                    class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-teal-600 px-5 font-semibold text-white transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
+
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 5v14"></path>
+                        <path d="M5 12h14"></path>
                     </svg>
+
+                    <span>Novo Grupo</span>
+                </button>
+            </section>
+
+            <!-- Filtros -->
+            <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6"
+                aria-labelledby="filtrosTitulo">
+
+                <div class="mb-5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h3 id="filtrosTitulo" class="text-lg font-semibold text-slate-900">
+                            Pesquisar grupos
+                        </h3>
+
+                        <p class="text-sm text-slate-500">
+                            Utilize os filtros para localizar um grupo rapidamente.
+                        </p>
+                    </div>
+
+                    <span id="resultCount" class="text-sm text-slate-500" aria-live="polite">
+                        0 grupos encontrados
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+
+                    <div class="xl:col-span-2">
+                        <label for="searchGroup" class="mb-2 block text-sm font-medium text-slate-700">
+                            Busca
+                        </label>
+
+                        <div class="relative">
+                            <svg viewBox="0 0 24 24"
+                                class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="11" cy="11" r="7"></circle>
+                                <path d="M20 20l-3.5-3.5"></path>
+                            </svg>
+
+                            <input id="searchGroup" type="search" autocomplete="off"
+                                placeholder="Pesquisar por código, nome ou sigla..."
+                                class="h-12 w-full rounded-xl border border-slate-300 bg-white pl-12 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="filterCategory" class="mb-2 block text-sm font-medium text-slate-700">
+                            Categoria
+                        </label>
+
+                        <select id="filterCategory"
+                            class="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                            <option value="">Todas</option>
+                            <option value="Laboratorial">Laboratorial</option>
+                            <option value="Imagem">Imagem</option>
+                            <option value="Cardiológico">Cardiológico</option>
+                            <option value="Endoscópico">Endoscópico</option>
+                            <option value="Oftalmológico">Oftalmológico</option>
+                            <option value="Ginecológico">Ginecológico</option>
+                            <option value="Neurológico">Neurológico</option>
+                            <option value="Anatomopatológico">Anatomopatológico</option>
+                            <option value="Microbiológico">Microbiológico</option>
+                            <option value="Check-up">Check-up</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="filterStatus" class="mb-2 block text-sm font-medium text-slate-700">
+                            Status
+                        </label>
+
+                        <select id="filterStatus"
+                            class="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                            <option value="">Todos</option>
+                            <option value="ATIVO">Ativo</option>
+                            <option value="INATIVO">Inativo</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2 xl:col-span-3">
+                        <label for="filterSpecialty" class="mb-2 block text-sm font-medium text-slate-700">
+                            Especialidade
+                        </label>
+
+                        <select id="filterSpecialty"
+                            class="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                            <option value="">Todas</option>
+                            <option value="Clínica Médica">Clínica Médica</option>
+                            <option value="Cardiologia">Cardiologia</option>
+                            <option value="Pediatria">Pediatria</option>
+                            <option value="Ginecologia">Ginecologia</option>
+                            <option value="Neurologia">Neurologia</option>
+                            <option value="Oftalmologia">Oftalmologia</option>
+                            <option value="Dermatologia">Dermatologia</option>
+                            <option value="Ortopedia">Ortopedia</option>
+                            <option value="Endocrinologia">Endocrinologia</option>
+                            <option value="Outras">Outras</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-end">
+                        <button type="button" id="clearFiltersBtn"
+                            class="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500">
+
+                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M3 6h18"></path>
+                                <path d="M8 6V4h8v2"></path>
+                                <path d="M19 6l-1 14H6L5 6"></path>
+                            </svg>
+
+                            Limpar filtros
+                        </button>
+                    </div>
                 </div>
             </section>
 
-            <section class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <div class="card">
-                    <div class="badge">
-                        <svg viewBox="0 0 24 24" class="icon-xs" fill="currentColor" aria-hidden="true">
-                            <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8Z"></path>
-                        </svg>
-                    </div>
+            <!-- Lista de grupos -->
+            <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft"
+                aria-labelledby="listaTitulo">
+
+                <div
+                    class="flex flex-col gap-3 border-b border-slate-200 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                     <div>
-                        <h3 class="font-semibold text-slate-900">Mais agilidade</h3>
-                        <p class="text-sm text-slate-600">Busca rápida com sugestões inteligentes.</p>
+                        <h3 id="listaTitulo" class="text-lg font-semibold text-slate-900">
+                            Lista de Grupos
+                        </h3>
+
+                        <p class="mt-1 text-sm text-slate-500">
+                            Consulte e gerencie os grupos cadastrados.
+                        </p>
+                    </div>
+
+                    <div id="tableLoading" class="hidden items-center gap-2 text-sm text-slate-500" aria-live="polite">
+                        <span
+                            class="h-4 w-4 animate-spin rounded-full border-2 border-teal-600 border-t-transparent"></span>
+                        Carregando grupos...
                     </div>
                 </div>
 
-                <div class="card">
-                    <div class="badge">
-                        <svg viewBox="0 0 24 24" class="icon-xs" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-slate-900">Mais segurança</h3>
-                        <p class="text-sm text-slate-600">Fluxo preparado para validação e proteção de dados.</p>
-                    </div>
+                <div id="groupsTableWrapper" class="overflow-x-auto">
+                    <table class="min-w-[1050px] w-full text-left text-sm">
+                        <caption class="sr-only">
+                            Lista de grupos de exames cadastrados
+                        </caption>
+
+                        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                            <tr>
+                                <th scope="col" class="px-5 py-4 font-semibold">Código</th>
+                                <th scope="col" class="px-5 py-4 font-semibold">Grupo de Exames</th>
+                                <th scope="col" class="px-5 py-4 font-semibold">Sigla</th>
+                                <th scope="col" class="px-5 py-4 font-semibold">Categoria</th>
+                                <th scope="col" class="px-5 py-4 font-semibold">Especialidade</th>
+                                <th scope="col" class="px-5 py-4 font-semibold">Exames</th>
+                                <th scope="col" class="px-5 py-4 font-semibold">Status</th>
+                                <th scope="col" class="px-5 py-4 font-semibold">Atualizado em</th>
+                                <th scope="col" class="px-5 py-4 text-right font-semibold">Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="groupsTableBody" class="divide-y divide-slate-100">
+                            <!-- Renderizado pelo JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="card">
-                    <div class="badge">
-                        <svg viewBox="0 0 24 24" class="icon-xs" fill="none" stroke="currentColor" stroke-width="2"
+                <!-- Skeleton -->
+                <div id="groupsSkeleton" class="hidden space-y-3 p-6" aria-hidden="true">
+                    <div class="h-12 animate-pulse rounded-lg bg-slate-100"></div>
+                    <div class="h-12 animate-pulse rounded-lg bg-slate-100"></div>
+                    <div class="h-12 animate-pulse rounded-lg bg-slate-100"></div>
+                    <div class="h-12 animate-pulse rounded-lg bg-slate-100"></div>
+                </div>
+
+                <!-- Estado vazio -->
+                <div id="groupsEmptyState" class="hidden px-6 py-16 text-center">
+                    <div
+                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+                        <svg viewBox="0 0 24 24" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="1.8"
                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M4 7h16"></path>
                             <path d="M4 12h16"></path>
-                            <path d="M4 17h16"></path>
-                            <path d="M8 7v10"></path>
+                            <path d="M4 17h10"></path>
                         </svg>
                     </div>
-                    <div>
-                        <h3 class="font-semibold text-slate-900">Mais organização</h3>
-                        <p class="text-sm text-slate-600">Seleção clara com revisão visual imediata.</p>
-                    </div>
-                </div>
 
-                <div class="card">
-                    <div class="badge">
-                        <svg viewBox="0 0 24 24" class="icon-xs" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M4 19V5"></path>
-                            <path d="M4 19h16"></path>
-                            <path d="M7 15l4-4 3 3 5-6"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-slate-900">Mais controle</h3>
-                        <p class="text-sm text-slate-600">Contagem e estados atualizados em tempo real.</p>
-                    </div>
-                </div>
-            </section>
+                    <h4 class="text-lg font-semibold text-slate-900">
+                        Nenhum grupo de exames encontrado.
+                    </h4>
 
-            <section class="mt-10">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
-                    <div>
-                        <h3 class="text-xl font-bold text-slate-900">Fluxo de solicitação</h3>
-                        <p class="text-slate-600 mt-1">Adicione, revise e confirme os exames selecionados.</p>
-                    </div>
+                    <p class="mx-auto mt-2 max-w-md text-sm text-slate-500">
+                        Não existem grupos cadastrados ou nenhum grupo corresponde aos filtros selecionados.
+                    </p>
 
-                    <button type="button" id="clearBtn"
-                        class="action-secondary inline-flex items-center justify-center gap-2 min-h-12 px-4 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
-                        aria-label="Limpar todos os exames selecionados">
-                        <svg viewBox="0 0 24 24" class="icon-xs" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M3 6h18"></path>
-                            <path d="M8 6V4h8v2"></path>
-                            <path d="M19 6l-1 14H6L5 6"></path>
-                        </svg>
-                        <span>Limpar seleção</span>
+                    <button type="button" id="emptyCreateBtn"
+                        class="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 text-sm font-semibold text-white transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
+                        <span>+ Criar primeiro grupo</span>
                     </button>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                    <div class="lg:col-span-3 bg-white p-5 sm:p-6 rounded-2xl shadow-soft border border-slate-100">
-                        <div class="flex flex-col gap-5">
-                            <div>
-                                <label for="examInput" class="block text-sm font-medium text-slate-700 mb-2">
-                                    Buscar e adicionar exame
-                                </label>
-
-                                <div class="relative">
-                                    <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                                        aria-hidden="true">
-                                        <svg viewBox="0 0 24 24" class="icon-sm" fill="none" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <circle cx="11" cy="11" r="7"></circle>
-                                            <path d="M20 20l-3.5-3.5"></path>
-                                        </svg>
-                                    </div>
-
-                                    <input id="examInput" type="text" inputmode="search" autocomplete="off"
-                                        spellcheck="false" placeholder="Digite o nome, código TUSS ou grupo do exame"
-                                        class="input-search w-full pl-12 pr-28 min-h-14 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                                        aria-describedby="searchHelp searchStatus" aria-autocomplete="list"
-                                        aria-expanded="false" aria-controls="searchSuggestions" />
-
-                                    <button type="button" id="addBtn"
-                                        class="add-btn absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center justify-center min-h-10 px-4 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
-                                        aria-label="Adicionar exame digitado">
-                                        Adicionar
-                                    </button>
-                                </div>
-
-                                <p id="searchHelp" class="text-xs text-slate-500 mt-2">
-                                    Use <kbd class="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200">/</kbd>
-                                    para focar a busca rapidamente.
-                                </p>
-
-                                <div id="searchStatus" class="mt-3 min-h-6 text-sm text-slate-500" aria-live="polite">
-                                </div>
-
-                                <div id="searchLoading" class="hidden mt-4">
-                                    <div
-                                        class="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-                                        <span
-                                            class="inline-block w-5 h-5 rounded-full border-2 border-teal-500 border-t-transparent animate-spin"
-                                            aria-hidden="true"></span>
-                                        <span class="text-sm text-slate-600">Buscando exames...</span>
-                                    </div>
-                                </div>
-
-                                <div id="searchSuggestions"
-                                    class="mt-3 hidden rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden"
-                                    role="listbox" aria-label="Sugestões de exames"></div>
-                            </div>
-
-                            <div>
-                                <div class="flex items-center justify-between gap-3 mb-3">
-                                    <h4 class="text-sm font-semibold text-slate-900">Exames frequentes</h4>
-                                    <span class="text-xs text-slate-500">Sugestões rápidas</span>
-                                </div>
-
-                                <div id="frequentSkeleton" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                                    <div class="skeleton-chip"></div>
-                                    <div class="skeleton-chip"></div>
-                                    <div class="skeleton-chip"></div>
-                                    <div class="skeleton-chip"></div>
-                                    <div class="skeleton-chip"></div>
-                                    <div class="skeleton-chip"></div>
-                                    <div class="skeleton-chip"></div>
-                                    <div class="skeleton-chip"></div>
-                                </div>
-
-                                <div id="frequentList" class="hidden flex flex-wrap gap-2">
-                                    <button type="button" class="exam-chip" data-exam="Hemograma completo"
-                                        aria-label="Adicionar Hemograma completo">Hemograma completo</button>
-                                    <button type="button" class="exam-chip" data-exam="Glicemia em jejum"
-                                        aria-label="Adicionar Glicemia em jejum">Glicemia em jejum</button>
-                                    <button type="button" class="exam-chip" data-exam="Colesterol total"
-                                        aria-label="Adicionar Colesterol total">Colesterol total</button>
-                                    <button type="button" class="exam-chip" data-exam="TSH"
-                                        aria-label="Adicionar TSH">TSH</button>
-                                    <button type="button" class="exam-chip" data-exam="Urina tipo I"
-                                        aria-label="Adicionar Urina tipo I">Urina tipo I</button>
-                                    <button type="button" class="exam-chip" data-exam="Creatinina"
-                                        aria-label="Adicionar Creatinina">Creatinina</button>
-                                    <button type="button" class="exam-chip" data-exam="TGO"
-                                        aria-label="Adicionar TGO">TGO</button>
-                                    <button type="button" class="exam-chip" data-exam="TGP"
-                                        aria-label="Adicionar TGP">TGP</button>
-                                </div>
-                            </div>
-
-                            <div class="flex flex-col sm:flex-row justify-end gap-3 pt-2">
-                                <button type="button"
-                                    class="action-secondary inline-flex items-center justify-center min-h-12 px-4 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
-                                    aria-label="Cancelar solicitação">
-                                    Cancelar
-                                </button>
-
-                                <button type="button" id="confirmBtn"
-                                    class="action-primary inline-flex items-center justify-center gap-2 min-h-12 px-5 rounded-xl bg-teal-600 text-white font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
-                                    aria-label="Confirmar seleção de exames" disabled>
-                                    <svg viewBox="0 0 24 24" class="icon-xs" fill="none" stroke="currentColor"
-                                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                                        aria-hidden="true">
-                                        <path d="M20 6L9 17l-5-5"></path>
-                                    </svg>
-                                    <span>Confirmar seleção</span>
-                                </button>
-                            </div>
-                        </div>
+                <!-- Estado de erro -->
+                <div id="groupsErrorState" class="hidden px-6 py-16 text-center">
+                    <div
+                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 text-red-600">
+                        <svg viewBox="0 0 24 24" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path d="M12 8v4"></path>
+                            <path d="M12 16h.01"></path>
+                        </svg>
                     </div>
 
-                    <aside class="lg:col-span-2 bg-white p-5 sm:p-6 rounded-2xl shadow-soft border border-slate-100">
-                        <div class="flex justify-between items-center border-b border-slate-200 pb-3 gap-3">
-                            <div>
-                                <h4 class="font-semibold text-slate-900">Exames selecionados</h4>
-                                <p class="text-sm text-slate-500">Revise a lista antes de confirmar.</p>
-                            </div>
+                    <h4 class="text-lg font-semibold text-slate-900">
+                        Não foi possível carregar os grupos de exames.
+                    </h4>
 
-                            <span id="countLabel" class="text-sm font-medium text-slate-600" aria-live="polite"
-                                aria-atomic="true">0 itens</span>
-                        </div>
+                    <p class="mt-2 text-sm text-slate-500">
+                        Verifique a conexão e tente novamente.
+                    </p>
 
-                        <div id="emptyState"
-                            class="flex flex-col items-center justify-center min-h-[18rem] text-center px-4">
-                            <div
-                                class="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-4">
-                                <svg viewBox="0 0 24 24" class="w-8 h-8" fill="none" stroke="currentColor"
-                                    stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                                    aria-hidden="true">
-                                    <rect x="4" y="3" width="16" height="18" rx="2"></rect>
-                                    <path d="M8 7h8"></path>
-                                    <path d="M8 11h8"></path>
-                                    <path d="M8 15h5"></path>
-                                </svg>
-                            </div>
+                    <button type="button" id="retryGroupsBtn"
+                        class="mt-6 inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        Tentar novamente
+                    </button>
+                </div>
 
-                            <p class="text-slate-900 font-semibold">Nenhum exame adicionado ainda</p>
-                            <p class="text-slate-500 text-sm mt-2 max-w-xs">
-                                Use a barra de busca ou os exames frequentes para começar a montar a solicitação.
-                            </p>
-                        </div>
+                <!-- Paginação -->
+                <div id="pagination"
+                    class="flex flex-col gap-3 border-t border-slate-200 px-5 py-4 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                    <p id="paginationInfo" class="text-slate-500">
+                        Exibindo 0 grupos
+                    </p>
 
-                        <div id="selectedList" class="mt-4 space-y-3 hidden" role="list"
-                            aria-label="Lista de exames selecionados"></div>
-                    </aside>
+                    <div class="flex items-center gap-2">
+                        <button type="button" id="previousPageBtn"
+                            class="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            aria-label="Página anterior">
+                            Anterior
+                        </button>
+
+                        <span id="currentPageLabel" class="min-w-20 text-center text-slate-600">
+                            Página 1
+                        </span>
+
+                        <button type="button" id="nextPageBtn"
+                            class="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            aria-label="Próxima página">
+                            Próxima
+                        </button>
+                    </div>
                 </div>
             </section>
         </main>
+    </div>
 
-        <footer class="fixed bottom-0 left-0 right-0 border-t border-slate-200 bg-white/95 backdrop-blur z-30">
-            <div
-                class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-sm text-slate-600">
-                <div class="flex items-center gap-2">
-                    <svg viewBox="0 0 24 24" class="icon-xs text-slate-500" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M12 16v-4"></path>
-                        <path d="M12 8h.01"></path>
-                    </svg>
-                    <span>Dica: você pode adicionar múltiplos exames antes de confirmar.</span>
+    <!-- Modal de grupo -->
+    <div id="groupModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="groupModalTitle">
+        <div class="modal-overlay" data-close-modal="groupModal"></div>
+
+        <section class="modal-panel modal-panel-large">
+            <header class="modal-header">
+                <div>
+                    <p class="text-xs font-medium uppercase tracking-wide text-teal-700">
+                        Cadastro administrativo
+                    </p>
+
+                    <h2 id="groupModalTitle" class="mt-1 text-xl font-bold text-slate-900 sm:text-2xl">
+                        Novo Grupo de Exames
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Configure os dados e exames pertencentes ao grupo.
+                    </p>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <svg viewBox="0 0 24 24" class="icon-xs text-slate-500" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="3" y="11" width="18" height="10" rx="2"></rect>
-                        <path d="M7 11V8a5 5 0 0 1 10 0v3"></path>
+                <button type="button" class="modal-close" data-close-modal="groupModal"
+                    aria-label="Fechar formulário de grupo">
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 6L6 18"></path>
+                        <path d="M6 6l12 12"></path>
                     </svg>
-                    <span>Fluxo preparado para dados sensíveis e navegação segura.</span>
+                </button>
+            </header>
+
+            <div class="modal-tabs" role="tablist" aria-label="Seções do grupo de exames">
+                <button type="button" id="tabGeneral" class="modal-tab is-active" role="tab" aria-selected="true"
+                    aria-controls="panelGeneral" data-tab="general">
+                    Dados Gerais
+                </button>
+
+                <button type="button" id="tabExams" class="modal-tab" role="tab" aria-selected="false"
+                    aria-controls="panelExams" data-tab="exams">
+                    Exames
+                    <span id="modalExamCount" class="tab-counter">0</span>
+                </button>
+
+                <button type="button" id="tabPreparation" class="modal-tab" role="tab" aria-selected="false"
+                    aria-controls="panelPreparation" data-tab="preparation">
+                    Preparo
+                </button>
+
+                <button type="button" id="tabPrices" class="modal-tab" role="tab" aria-selected="false"
+                    aria-controls="panelPrices" data-tab="prices">
+                    Convênios e Valores
+                </button>
+
+                <button type="button" id="tabOperational" class="modal-tab" role="tab" aria-selected="false"
+                    aria-controls="panelOperational" data-tab="operational">
+                    Configurações
+                </button>
+
+                <button type="button" id="tabAudit" class="modal-tab" role="tab" aria-selected="false"
+                    aria-controls="panelAudit" data-tab="audit">
+                    Auditoria
+                </button>
+            </div>
+
+            <form id="groupForm" novalidate>
+                <input type="hidden" id="groupId" name="groupId">
+
+                <div class="modal-body">
+
+                    <!-- Dados gerais -->
+                    <section id="panelGeneral" class="tab-panel" role="tabpanel" aria-labelledby="tabGeneral"
+                        data-panel="general">
+
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+                            <div>
+                                <label for="groupCode" class="form-label">
+                                    Código
+                                </label>
+
+                                <input id="groupCode" name="codigo" type="text" readonly
+                                    class="form-input bg-slate-100 text-slate-500" placeholder="Gerado automaticamente">
+                            </div>
+
+                            <div>
+                                <label for="groupStatus" class="form-label">
+                                    Status
+                                </label>
+
+                                <div
+                                    class="flex min-h-12 items-center justify-between rounded-xl border border-slate-300 px-4">
+                                    <span class="text-sm font-medium text-slate-700">
+                                        Grupo ativo
+                                    </span>
+
+                                    <label class="toggle">
+                                        <input id="groupStatus" name="status" type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label for="groupName" class="form-label">
+                                    Nome do Grupo <span class="text-red-600">*</span>
+                                </label>
+
+                                <input id="groupName" name="nome" type="text" maxlength="120"
+                                    placeholder="Ex.: Perfil Lipídico" class="form-input"
+                                    aria-describedby="groupNameError">
+
+                                <p id="groupNameError" class="form-error"></p>
+                            </div>
+
+                            <div>
+                                <label for="groupShortName" class="form-label">
+                                    Sigla
+                                </label>
+
+                                <input id="groupShortName" name="sigla" type="text" maxlength="20" placeholder="Ex.: PL"
+                                    class="form-input">
+                            </div>
+
+                            <div>
+                                <label for="groupCategory" class="form-label">
+                                    Categoria <span class="text-red-600">*</span>
+                                </label>
+
+                                <select id="groupCategory" name="categoria" class="form-input"
+                                    aria-describedby="groupCategoryError">
+                                    <option value="">Selecione uma categoria</option>
+                                    <option value="Laboratorial">Laboratorial</option>
+                                    <option value="Imagem">Imagem</option>
+                                    <option value="Cardiológico">Cardiológico</option>
+                                    <option value="Endoscópico">Endoscópico</option>
+                                    <option value="Oftalmológico">Oftalmológico</option>
+                                    <option value="Ginecológico">Ginecológico</option>
+                                    <option value="Neurológico">Neurológico</option>
+                                    <option value="Anatomopatológico">Anatomopatológico</option>
+                                    <option value="Microbiológico">Microbiológico</option>
+                                    <option value="Check-up">Check-up</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+
+                                <p id="groupCategoryError" class="form-error"></p>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label for="groupSpecialties" class="form-label">
+                                    Especialidades relacionadas
+                                </label>
+
+                                <select id="groupSpecialties" name="especialidades" multiple
+                                    class="form-input min-h-32">
+                                    <option value="Clínica Médica">Clínica Médica</option>
+                                    <option value="Cardiologia">Cardiologia</option>
+                                    <option value="Pediatria">Pediatria</option>
+                                    <option value="Ginecologia">Ginecologia</option>
+                                    <option value="Neurologia">Neurologia</option>
+                                    <option value="Oftalmologia">Oftalmologia</option>
+                                    <option value="Dermatologia">Dermatologia</option>
+                                    <option value="Ortopedia">Ortopedia</option>
+                                    <option value="Endocrinologia">Endocrinologia</option>
+                                    <option value="Outras">Outras</option>
+                                </select>
+
+                                <p class="form-help">
+                                    Utilize Ctrl ou Command para selecionar mais de uma especialidade.
+                                </p>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label for="groupDescription" class="form-label">
+                                    Descrição
+                                </label>
+
+                                <textarea id="groupDescription" name="descricao" rows="4" maxlength="500"
+                                    placeholder="Descreva a finalidade deste grupo de exames."
+                                    class="form-input resize-y"></textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Exames -->
+                    <section id="panelExams" class="tab-panel hidden" role="tabpanel" aria-labelledby="tabExams"
+                        data-panel="exams">
+
+                        <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-slate-900">
+                                    Exames pertencentes ao grupo
+                                </h3>
+
+                                <p class="mt-1 text-sm text-slate-500">
+                                    A ordem dos exames será utilizada na solicitação ao paciente.
+                                </p>
+                            </div>
+
+                            <button type="button" id="addExamBtn"
+                                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 text-sm font-semibold text-white transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500">
+
+                                <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M12 5v14"></path>
+                                    <path d="M5 12h14"></path>
+                                </svg>
+
+                                Adicionar Exame
+                            </button>
+                        </div>
+
+                        <div id="groupExamsEmpty"
+                            class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center">
+                            <p class="font-medium text-slate-700">
+                                Nenhum exame associado.
+                            </p>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Adicione pelo menos um exame para concluir o cadastro.
+                            </p>
+                        </div>
+
+                        <div id="groupExamsTableWrapper"
+                            class="hidden overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="min-w-[760px] w-full text-left text-sm">
+                                <caption class="sr-only">
+                                    Exames associados ao grupo
+                                </caption>
+
+                                <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3">Ordem</th>
+                                        <th scope="col" class="px-4 py-3">Código</th>
+                                        <th scope="col" class="px-4 py-3">Exame</th>
+                                        <th scope="col" class="px-4 py-3">Tipo</th>
+                                        <th scope="col" class="px-4 py-3">Material</th>
+                                        <th scope="col" class="px-4 py-3">Status</th>
+                                        <th scope="col" class="px-4 py-3 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="groupExamsTableBody" class="divide-y divide-slate-100">
+                                    <!-- Renderizado pelo JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p id="groupExamsError" class="form-error mt-3"></p>
+
+                        <p class="mt-4 rounded-lg bg-teal-50 px-4 py-3 text-sm text-teal-800">
+                            Os exames são armazenados por referência. Informações completas pertencem ao cadastro
+                            individual do exame.
+                        </p>
+                    </section>
+
+                    <!-- Preparo -->
+                    <section id="panelPreparation" class="tab-panel hidden" role="tabpanel"
+                        aria-labelledby="tabPreparation" data-panel="preparation">
+
+                        <div class="space-y-5">
+                            <div>
+                                <h3 class="section-title">Preparo e Orientações</h3>
+                                <p class="section-description">
+                                    As orientações abaixo pertencem ao grupo e não substituem o preparo específico de
+                                    cada exame.
+                                </p>
+                            </div>
+
+                            <div>
+                                <label for="generalPreparation" class="form-label">
+                                    Preparo geral
+                                </label>
+
+                                <textarea id="generalPreparation" name="preparoGeral" rows="5"
+                                    placeholder="Informe orientações gerais de preparo para os exames deste grupo."
+                                    class="form-input resize-y"></textarea>
+
+                                <p class="form-help">
+                                    O preparo específico continuará sendo controlado no cadastro individual de cada
+                                    exame.
+                                </p>
+                            </div>
+
+                            <div>
+                                <label for="patientInstructions" class="form-label">
+                                    Orientações ao paciente
+                                </label>
+
+                                <textarea id="patientInstructions" name="orientacoesPaciente" rows="5"
+                                    placeholder="Digite as orientações que serão apresentadas ao paciente."
+                                    class="form-input resize-y"></textarea>
+                            </div>
+
+                            <div>
+                                <label for="internalNotes" class="form-label">
+                                    Observações internas
+                                </label>
+
+                                <textarea id="internalNotes" name="observacoesInternas" rows="5"
+                                    placeholder="Informações internas para uso da equipe."
+                                    class="form-input resize-y"></textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Convênios e valores -->
+                    <section id="panelPrices" class="tab-panel hidden" role="tabpanel" aria-labelledby="tabPrices"
+                        data-panel="prices">
+
+                        <div class="space-y-5">
+                            <div>
+                                <h3 class="section-title">Convênios e Valores</h3>
+                                <p class="section-description">
+                                    Estrutura preparada para integração futura com tabelas de preços.
+                                </p>
+                            </div>
+
+                            <div>
+                                <label for="acceptedAgreements" class="form-label">
+                                    Convênios aceitos
+                                </label>
+
+                                <select id="acceptedAgreements" name="convenios" multiple class="form-input min-h-32">
+                                    <option value="Particular">Particular</option>
+                                    <option value="Unimed">Unimed</option>
+                                    <option value="Amil">Amil</option>
+                                    <option value="Bradesco Saúde">Bradesco Saúde</option>
+                                    <option value="Hapvida">Hapvida</option>
+                                </select>
+
+                                <p class="form-help">
+                                    Utilize Ctrl ou Command para selecionar mais de um convênio.
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                                <div>
+                                    <label for="priceTable" class="form-label">
+                                        Tabela de preço
+                                    </label>
+
+                                    <select id="priceTable" name="tabelaPreco" class="form-input">
+                                        <option value="">Selecione uma tabela</option>
+                                        <option value="Tabela particular">Tabela particular</option>
+                                        <option value="Tabela convênio">Tabela convênio</option>
+                                        <option value="Tabela padrão">Tabela padrão</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="tussCode" class="form-label">
+                                        Código TUSS
+                                    </label>
+
+                                    <input id="tussCode" name="codigoTuss" type="text" placeholder="Ex.: 40301586"
+                                        class="form-input">
+                                </div>
+
+                                <div>
+                                    <label for="cbhpmCode" class="form-label">
+                                        Código CBHPM
+                                    </label>
+
+                                    <input id="cbhpmCode" name="codigoCbhpm" type="text" placeholder="Código CBHPM"
+                                        class="form-input">
+                                </div>
+
+                                <div>
+                                    <label for="groupPrice" class="form-label">
+                                        Valor
+                                    </label>
+
+                                    <input id="groupPrice" name="valor" type="number" min="0" step="0.01"
+                                        placeholder="0,00" class="form-input">
+                                </div>
+                            </div>
+
+                            <div
+                                class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                                Valores e códigos poderão futuramente ser controlados por uma estrutura de tabela de
+                                preços, evitando duplicação de informações.
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Configurações operacionais -->
+                    <section id="panelOperational" class="tab-panel hidden" role="tabpanel"
+                        aria-labelledby="tabOperational" data-panel="operational">
+
+                        <div class="space-y-5">
+                            <div>
+                                <h3 class="section-title">Configurações Operacionais</h3>
+                                <p class="section-description">
+                                    Defina os requisitos necessários para utilização deste grupo.
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <label class="option-card">
+                                    <span>
+                                        <span class="option-card-title">Necessita agendamento?</span>
+                                        <span class="option-card-description">Exige horário previamente
+                                            reservado.</span>
+                                    </span>
+
+                                    <input id="requiresScheduling" name="necessitaAgendamento" type="checkbox"
+                                        class="h-5 w-5 accent-teal-600">
+                                </label>
+
+                                <label class="option-card">
+                                    <span>
+                                        <span class="option-card-title">Necessita autorização?</span>
+                                        <span class="option-card-description">Exige autorização do convênio.</span>
+                                    </span>
+
+                                    <input id="requiresAuthorization" name="necessitaAutorizacao" type="checkbox"
+                                        class="h-5 w-5 accent-teal-600">
+                                </label>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                                <div>
+                                    <label for="executionLocation" class="form-label">
+                                        Local de realização
+                                    </label>
+
+                                    <select id="executionLocation" name="localRealizacao" class="form-input">
+                                        <option value="">Selecione o local</option>
+                                        <option value="Clínica">Clínica</option>
+                                        <option value="Laboratório">Laboratório</option>
+                                        <option value="Hospital">Hospital</option>
+                                        <option value="Unidade externa">Unidade externa</option>
+                                        <option value="Outro">Outro</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="room" class="form-label">
+                                        Sala
+                                    </label>
+
+                                    <input id="room" name="sala" type="text" placeholder="Ex.: Sala 03"
+                                        class="form-input">
+                                </div>
+
+                                <div>
+                                    <label for="equipment" class="form-label">
+                                        Equipamento
+                                    </label>
+
+                                    <input id="equipment" name="equipamento" type="text"
+                                        placeholder="Ex.: Analisador automático" class="form-input">
+                                </div>
+
+                                <div>
+                                    <label for="estimatedTime" class="form-label">
+                                        Tempo estimado
+                                    </label>
+
+                                    <input id="estimatedTime" name="tempoEstimado" type="time" value="00:30"
+                                        class="form-input">
+                                </div>
+
+                                <div>
+                                    <label for="responsibleProfessional" class="form-label">
+                                        Profissional responsável
+                                    </label>
+
+                                    <select id="responsibleProfessional" name="profissionalResponsavel"
+                                        class="form-input">
+                                        <option value="">Selecione um profissional</option>
+                                        <option value="Administrador">Administrador</option>
+                                        <option value="Dr. Carlos Mendes">Dr. Carlos Mendes</option>
+                                        <option value="Dra. Ana Oliveira">Dra. Ana Oliveira</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="resultDeadline" class="form-label">
+                                        Prazo estimado para resultado
+                                    </label>
+
+                                    <input id="resultDeadline" name="prazoResultado" type="text"
+                                        placeholder="Ex.: 2 dias úteis" class="form-input">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Auditoria -->
+                    <section id="panelAudit" class="tab-panel hidden" role="tabpanel" aria-labelledby="tabAudit"
+                        data-panel="audit">
+
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="section-title">Auditoria</h3>
+                                <p class="section-description">
+                                    Informações somente leitura para rastreabilidade das alterações.
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div class="audit-field">
+                                    <span class="audit-label">Criado por</span>
+                                    <strong id="auditCreatedBy">Administrador</strong>
+                                </div>
+
+                                <div class="audit-field">
+                                    <span class="audit-label">Data de criação</span>
+                                    <strong id="auditCreatedAt">21/08/2026 14:32</strong>
+                                </div>
+
+                                <div class="audit-field">
+                                    <span class="audit-label">Última alteração</span>
+                                    <strong id="auditUpdatedAt">21/08/2026 15:10</strong>
+                                </div>
+
+                                <div class="audit-field">
+                                    <span class="audit-label">Alterado por</span>
+                                    <strong id="auditUpdatedBy">Administrador</strong>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="mb-3 font-semibold text-slate-900">
+                                    Histórico de alterações
+                                </h4>
+
+                                <ol id="auditHistory" class="space-y-3 border-l-2 border-teal-100 pl-5">
+                                    <li class="relative">
+                                        <span
+                                            class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white bg-teal-600"></span>
+                                        <time class="text-xs text-slate-500">21/08/2026 15:10</time>
+                                        <p class="mt-1 text-sm font-medium text-slate-800">
+                                            Administrador alterou o grupo.
+                                        </p>
+                                    </li>
+
+                                    <li class="relative">
+                                        <span
+                                            class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white bg-slate-400"></span>
+                                        <time class="text-xs text-slate-500">21/08/2026 14:32</time>
+                                        <p class="mt-1 text-sm font-medium text-slate-800">
+                                            Administrador criou o grupo.
+                                        </p>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="action-secondary" data-close-modal="groupModal">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" id="saveGroupBtn" class="action-primary">
+                        <span id="saveGroupLabel">Salvar Grupo</span>
+                    </button>
+                </footer>
+            </form>
+        </section>
+    </div>
+
+    <!-- Modal de adicionar exames -->
+    <div id="examModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="examModalTitle">
+
+        <div class="modal-overlay" data-close-modal="examModal"></div>
+
+        <section class="modal-panel modal-panel-medium">
+            <header class="modal-header">
+                <div>
+                    <h2 id="examModalTitle" class="text-xl font-bold text-slate-900">
+                        Adicionar Exame ao Grupo
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Selecione um ou mais exames disponíveis.
+                    </p>
+                </div>
+
+                <button type="button" class="modal-close" data-close-modal="examModal"
+                    aria-label="Fechar seleção de exames">
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 6L6 18"></path>
+                        <path d="M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </header>
+
+            <div class="modal-body">
+                <div class="mb-4">
+                    <label for="searchExam" class="form-label">
+                        Pesquisar exame
+                    </label>
+
+                    <div class="relative">
+                        <svg viewBox="0 0 24 24"
+                            class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <path d="M20 20l-3.5-3.5"></path>
+                        </svg>
+
+                        <input id="searchExam" type="search" placeholder="Digite o nome ou código do exame..."
+                            class="form-input pl-12">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <div>
+                        <label for="filterExamType" class="form-label">Tipo</label>
+
+                        <select id="filterExamType" class="form-input">
+                            <option value="">Todos</option>
+                            <option value="Laboratorial">Laboratorial</option>
+                            <option value="Imagem">Imagem</option>
+                            <option value="Cardiológico">Cardiológico</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="filterExamMaterial" class="form-label">Material</label>
+
+                        <select id="filterExamMaterial" class="form-input">
+                            <option value="">Todos</option>
+                            <option value="Sangue">Sangue</option>
+                            <option value="Urina">Urina</option>
+                            <option value="Fezes">Fezes</option>
+                            <option value="Imagem">Imagem</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="filterExamStatus" class="form-label">Status</label>
+
+                        <select id="filterExamStatus" class="form-input">
+                            <option value="">Todos</option>
+                            <option value="ATIVO">Ativo</option>
+                            <option value="INATIVO">Inativo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="examResultsLoading" class="hidden py-8 text-center text-sm text-slate-500">
+                    <span
+                        class="mx-auto mb-3 block h-6 w-6 animate-spin rounded-full border-2 border-teal-600 border-t-transparent"></span>
+                    Carregando exames...
+                </div>
+
+                <div id="examResults" class="mt-5 max-h-80 space-y-2 overflow-y-auto" role="listbox"
+                    aria-label="Exames disponíveis">
+                    <!-- Renderizado pelo JavaScript -->
+                </div>
+
+                <div id="examResultsEmpty" class="hidden py-8 text-center">
+                    <p class="font-medium text-slate-700">
+                        Nenhum exame encontrado.
+                    </p>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Ajuste os termos da pesquisa ou os filtros selecionados.
+                    </p>
                 </div>
             </div>
-        </footer>
+
+            <footer class="modal-footer">
+                <button type="button" class="action-secondary" data-close-modal="examModal">
+                    Cancelar
+                </button>
+
+                <button type="button" id="addSelectedExamsBtn" class="action-primary" disabled>
+                    Adicionar selecionados
+                </button>
+            </footer>
+        </section>
     </div>
+
+    <!-- Modal de confirmação -->
+    <div id="confirmModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+
+        <div class="modal-overlay" data-close-modal="confirmModal"></div>
+
+        <section class="modal-panel modal-panel-small">
+            <header class="modal-header">
+                <div class="flex items-start gap-3">
+                    <div id="confirmIcon"
+                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600">
+                        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 9v4"></path>
+                            <path d="M12 17h.01"></path>
+                            <path d="M10.3 3.8 2.8 17a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3l-7.5-13.2a2 2 0 0 0-3.4 0Z">
+                            </path>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h2 id="confirmModalTitle" class="text-lg font-bold text-slate-900">
+                            Confirmar ação
+                        </h2>
+
+                        <p id="confirmModalMessage" class="mt-2 text-sm leading-6 text-slate-600">
+                            Essa ação não poderá ser desfeita.
+                        </p>
+                    </div>
+                </div>
+
+                <button type="button" class="modal-close" data-close-modal="confirmModal"
+                    aria-label="Fechar confirmação">
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 6L6 18"></path>
+                        <path d="M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </header>
+
+            <footer class="modal-footer">
+                <button type="button" class="action-secondary" data-close-modal="confirmModal">
+                    Cancelar
+                </button>
+
+                <button type="button" id="confirmActionBtn"
+                    class="inline-flex min-h-12 items-center justify-center rounded-xl bg-red-600 px-5 font-semibold text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                    Confirmar
+                </button>
+            </footer>
+        </section>
+    </div>
+
+    <!-- Toasts -->
+    <div id="toastContainer" class="fixed right-4 top-4 z-[120] flex w-[min( calc(100vw-2rem), 380px)] flex-col gap-3"
+        aria-live="polite" aria-atomic="true">
+        <!-- Toasts renderizados pelo JavaScript -->
+    </div>
+
+    <!-- Template de linha da tabela -->
+    <template id="groupRowTemplate">
+        <tr class="group-row transition hover:bg-slate-50">
+            <td class="whitespace-nowrap px-5 py-4 font-semibold text-teal-700" data-field="codigo"></td>
+
+            <td class="px-5 py-4">
+                <div class="min-w-48">
+                    <p class="font-semibold text-slate-900" data-field="nome"></p>
+                    <p class="mt-1 max-w-xs truncate text-xs text-slate-500" data-field="descricao"></p>
+                </div>
+            </td>
+
+            <td class="whitespace-nowrap px-5 py-4 text-slate-600" data-field="sigla"></td>
+
+            <td class="whitespace-nowrap px-5 py-4 text-slate-600" data-field="categoria"></td>
+
+            <td class="max-w-48 px-5 py-4 text-slate-600" data-field="especialidade"></td>
+
+            <td class="whitespace-nowrap px-5 py-4 text-slate-600" data-field="exames"></td>
+
+            <td class="whitespace-nowrap px-5 py-4" data-field="status"></td>
+
+            <td class="whitespace-nowrap px-5 py-4 text-slate-500" data-field="atualizadoEm"></td>
+
+            <td class="px-5 py-4 text-right">
+                <div class="relative inline-block text-left">
+                    <button type="button"
+                        class="row-action-menu inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        aria-label="Abrir ações do grupo" aria-haspopup="menu">
+
+                        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="5" cy="12" r="1"></circle>
+                            <circle cx="12" cy="12" r="1"></circle>
+                            <circle cx="19" cy="12" r="1"></circle>
+                        </svg>
+                    </button>
+
+                    <div class="row-action-list hidden absolute right-0 z-10 mt-2 w-48 rounded-xl border border-slate-200 bg-white py-1 text-left shadow-lg"
+                        role="menu">
+                        <button type="button" data-action="view" class="row-action-item" role="menuitem">
+                            Visualizar
+                        </button>
+
+                        <button type="button" data-action="edit" class="row-action-item" role="menuitem">
+                            Editar
+                        </button>
+
+                        <button type="button" data-action="duplicate" class="row-action-item" role="menuitem">
+                            Duplicar
+                        </button>
+
+                        <button type="button" data-action="toggle" class="row-action-item" role="menuitem">
+                            Ativar/Inativar
+                        </button>
+
+                        <button type="button" data-action="delete" class="row-action-item text-red-600 hover:bg-red-50"
+                            role="menuitem">
+                            Excluir
+                        </button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </template>
+
+    <!-- Template de item de exame -->
+    <template id="examOptionTemplate">
+        <label
+            class="exam-option flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 p-3 transition hover:border-teal-300 hover:bg-teal-50">
+            <input type="checkbox" class="exam-checkbox h-5 w-5 accent-teal-600">
+
+            <span class="min-w-0 flex-1">
+                <span class="block truncate font-semibold text-slate-800" data-field="nome"></span>
+                <span class="mt-1 block text-xs text-slate-500" data-field="meta"></span>
+            </span>
+
+            <span class="status-badge" data-field="status"></span>
+        </label>
+    </template>
 
     <script src="grupo-exames.js"></script>
 </body>
