@@ -2,374 +2,1275 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Grupo de Procedimentos</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cadastro e gerenciamento de grupos de procedimentos do G4Med">
+    <meta name="color-scheme" content="light">
+
+    <title>Grupo de Procedimentos | G4Med</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="grupo-procedimentos.css" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: "#F0FDFA",
+                            100: "#CCFBF1",
+                            600: "#0D9488",
+                            700: "#0F766E",
+                            800: "#115E59"
+                        },
+                        navy: "#0B1F3A"
+                    },
+                    boxShadow: {
+                        soft: "0 8px 30px rgba(15, 23, 42, .08)",
+                        modal: "0 20px 60px rgba(15, 23, 42, .2)"
+                    }
+                }
+            }
+        };
+    </script>
+
+    <link rel="stylesheet" href="grupo-procedimentos.css">
 </head>
 
-<body class="bg-[#f3f7f6] text-slate-700">
-    <header class="sticky top-0 z-40 border-b border-slate-200/80 bg-white">
-        <div class="mx-auto flex max-w-[1400px] items-center gap-6 px-6 py-4">
-            <div class="flex min-w-[220px] items-center gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e8f5f1] text-[#1b9a84]">
-                    <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.5"
-                        stroke-linecap="round">
-                        <path d="M12 5v14M5 12h14" />
+<body class="min-h-screen bg-slate-50 text-slate-700 antialiased">
+
+    <a href="#mainContent"
+        class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[120] focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:shadow-lg">
+        Pular para o conteúdo principal
+    </a>
+
+    <!-- Cabeçalho -->
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white">
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+
+            <div class="flex min-w-0 items-center gap-3">
+                <a href="../Menu-Principal.html"
+                    class="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary-600"
+                    aria-label="Voltar para o menu principal">
+
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M15 18 9 12l6-6"></path>
                     </svg>
-                </div>
-                <div>
-                    <div class="font-semibold leading-none text-slate-800">G4Med</div>
-                    <div class="mt-1 text-[11px] leading-none text-slate-400">Intelligent Health System</div>
+                </a>
+
+                <div class="min-w-0">
+                    <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                        G4Med
+                    </p>
+
+                    <h1 class="truncate text-lg font-semibold text-slate-900">
+                        Grupo de Procedimentos
+                    </h1>
                 </div>
             </div>
 
-            <div class="mx-auto max-w-[760px] flex-1">
+            <div class="hidden max-w-xl flex-1 md:block">
+                <label for="topSearch" class="sr-only">
+                    Buscar grupos de procedimentos
+                </label>
+
                 <div class="relative">
-                    <svg viewBox="0 0 24 24" class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
-                        fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="7" />
-                        <path d="m20 20-3.5-3.5" />
+                    <svg viewBox="0 0 24 24"
+                        class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                        fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <path d="m20 20-3.5-3.5"></path>
                     </svg>
-                    <input id="topSearch"
-                        class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-100/90 pl-12 pr-4 outline-none focus:border-[#1b9a84] focus:ring-2 focus:ring-[#1b9a84]/20"
-                        placeholder="Buscar grupos de procedimentos..." aria-label="Buscar grupos de procedimentos" />
+
+                    <input id="topSearch" type="search"
+                        class="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm outline-none transition focus:border-primary-600 focus:bg-white focus:ring-2 focus:ring-primary-600/20"
+                        placeholder="Buscar grupos de procedimentos..." aria-label="Buscar grupos de procedimentos">
                 </div>
             </div>
 
-            <div class="ml-auto flex items-center gap-4">
-                <button
-                    class="relative flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
-                    aria-label="Notificações" title="Notificações">
-                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5" />
-                        <path d="M9 17a3 3 0 0 0 6 0" />
+            <div class="flex items-center gap-2">
+                <button type="button"
+                    class="relative flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-600"
+                    aria-label="Notificações">
+
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5">
+                        </path>
+                        <path d="M9 17a3 3 0 0 0 6 0"></path>
                     </svg>
+
                     <span
-                        class="absolute -top-1 -right-1 min-w-5 rounded-full bg-rose-500 px-1 text-[11px] font-semibold leading-5 text-white">3</span>
+                        class="absolute -right-1 -top-1 min-w-5 rounded-full bg-rose-500 px-1 text-center text-[11px] font-semibold leading-5 text-white">
+                        3
+                    </span>
                 </button>
 
-                <button
-                    class="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
-                    aria-label="Ajuda" title="Ajuda">
-                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="9" />
-                        <path d="M12 17v-.5M12 13.5a2 2 0 1 0-2-2" />
+                <button type="button"
+                    class="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-600"
+                    aria-label="Ajuda">
+
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <path d="M12 17v-.5"></path>
+                        <path d="M12 13.5a2 2 0 1 0-2-2"></path>
                     </svg>
                 </button>
 
-                <div class="flex items-center gap-3 pl-2">
+                <div class="hidden items-center gap-3 pl-2 sm:flex">
                     <div
-                        class="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#1b9a84] to-[#83d6c5] font-semibold text-white">
-                        CM</div>
+                        class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 font-semibold text-white">
+                        CM
+                    </div>
+
                     <div class="leading-tight">
-                        <div class="text-sm font-semibold text-slate-800">Dr. Carlos Mendes</div>
-                        <div class="flex items-center gap-1 text-xs text-slate-400">
+                        <p class="text-sm font-semibold text-slate-800">
+                            Dr. Carlos Mendes
+                        </p>
+
+                        <p class="text-xs text-slate-400">
                             Administrador
-                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="m6 9 6 6 6-6" />
-                            </svg>
-                        </div>
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="mx-auto max-w-[1400px] px-6 py-8 pb-28">
-        <div class="mb-6">
-            <a href="../Menu-Principal.html" id="backBtn"
-                class="back-btn inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
-                aria-label="Voltar para o menu principal">
-                <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <path d="M15 18 9 12l6-6" />
-                </svg>
-                <span>Voltar</span>
-            </a>
-        </div>
+    <main id="mainContent" class="mx-auto max-w-7xl px-4 py-6 pb-16 sm:px-6 lg:px-8 lg:py-8">
 
-        <section class="mb-8 grid items-center gap-8 lg:grid-cols-2">
+        <!-- Cabeçalho da página -->
+        <section class="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
             <div>
-                <h1 class="text-4xl font-semibold tracking-tight text-[#153e49] md:text-5xl">Grupo de Procedimentos</h1>
-                <p class="mt-4 max-w-2xl text-lg leading-8 text-slate-500">
-                    Organize e gerencie grupos de procedimentos médicos de forma eficiente. Agilize atendimentos e
-                    padronize seus passos com mais segurança e controle.
+                <nav class="mb-3 text-sm text-slate-500" aria-label="Navegação estrutural">
+                    <ol class="flex flex-wrap items-center gap-2">
+                        <li>Cadastros</li>
+                        <li aria-hidden="true">/</li>
+                        <li class="font-medium text-primary-700">
+                            Grupo de Procedimentos
+                        </li>
+                    </ol>
+                </nav>
+
+                <h2 class="text-3xl font-semibold tracking-tight text-navy sm:text-4xl">
+                    Grupo de Procedimentos
+                </h2>
+
+                <p class="mt-2 max-w-3xl text-base leading-7 text-slate-500">
+                    Organize, classifique e configure os procedimentos médicos do sistema.
                 </p>
             </div>
 
-            <div class="justify-self-end w-full max-w-[520px]">
-                <svg viewBox="0 0 600 380" class="h-auto w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="120" y="70" width="260" height="220" rx="26" fill="#D8F0EA" />
-                    <rect x="150" y="105" width="200" height="145" rx="18" fill="white" stroke="#A7D9CF"
-                        stroke-width="4" />
-                    <rect x="175" y="135" width="150" height="12" rx="6" fill="#9BD7CC" />
-                    <rect x="175" y="160" width="120" height="10" rx="5" fill="#D1ECE6" />
-                    <rect x="175" y="182" width="135" height="10" rx="5" fill="#D1ECE6" />
-                    <rect x="175" y="204" width="102" height="10" rx="5" fill="#D1ECE6" />
-                    <circle cx="400" cy="155" r="46" fill="#CBE9E2" />
-                    <path d="M400 109c28 0 50 22 50 50s-22 50-50 50-50-22-50-50 22-50 50-50Z" stroke="#7FBFB2"
-                        stroke-width="4" />
-                    <path d="M382 155h36M400 137v36" stroke="#1B9A84" stroke-width="6" stroke-linecap="round" />
-                    <path d="M448 178c30 34 45 62 41 86-4 27-25 46-48 46-29 0-50-26-48-57 1-21 11-45 29-75"
-                        stroke="#1B9A84" stroke-width="7" stroke-linecap="round" />
-                    <path d="M470 286c34-14 53-8 71 10" stroke="#8CCFBE" stroke-width="7" stroke-linecap="round" />
-                    <circle cx="548" cy="301" r="12" fill="#1B9A84" />
-                    <path d="M530 295c-18-24-38-41-63-48" stroke="#6DB9A9" stroke-width="6" stroke-linecap="round" />
+            <button id="newGroupBtn" type="button"
+                class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 font-semibold text-white shadow-sm transition hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2">
+
+                <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 5v14"></path>
+                    <path d="M5 12h14"></path>
                 </svg>
-            </div>
+
+                Novo Grupo
+            </button>
         </section>
 
-        <section class="mb-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            <div class="card-benefit">
-                <div class="benefit-icon bg-[#edf8f5] text-[#1b9a84]">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="13" r="8" />
-                        <path d="M12 9v4l3 2" />
-                    </svg>
-                </div>
-                <h3>Mais Agilidade</h3>
-                <p>Monte grupos rapidamente e otimize o tempo da sua equipe.</p>
-            </div>
+        <!-- Indicadores -->
+        <section class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicadores de grupos">
 
-            <div class="card-benefit">
-                <div class="benefit-icon bg-[#eef7ff] text-[#4b8fd6]">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20 11.5V12a8 8 0 1 1-4.7-7.3" />
-                        <path d="m9 12 2 2 4-4" />
-                    </svg>
-                </div>
-                <h3>Segurança</h3>
-                <p>Padronize procedimentos com segurança e confiabilidade.</p>
-            </div>
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+                <p class="text-sm text-slate-500">Total de grupos</p>
+                <p id="totalGroupsMetric" class="mt-2 text-3xl font-semibold text-slate-900">0</p>
+                <p class="mt-1 text-xs text-slate-400">Grupos cadastrados</p>
+            </article>
 
-            <div class="card-benefit">
-                <div class="benefit-icon bg-[#f1f2ff] text-[#7a7be7]">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 6h7l2 2h7v10a2 2 0 0 1-2 2H4z" />
-                        <path d="M8 13h8" />
-                    </svg>
-                </div>
-                <h3>Organização</h3>
-                <p>Mantenha seus procedimentos organizados e sempre à mão.</p>
-            </div>
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+                <p class="text-sm text-slate-500">Grupos ativos</p>
+                <p id="activeGroupsMetric" class="mt-2 text-3xl font-semibold text-emerald-600">0</p>
+                <p class="mt-1 text-xs text-slate-400">Disponíveis para utilização</p>
+            </article>
 
-            <div class="card-benefit">
-                <div class="benefit-icon bg-[#fff4ea] text-[#f29c4e]">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 19V5" />
-                        <path d="M4 17h16" />
-                        <path d="M8 17V9" />
-                        <path d="M13 17V7" />
-                        <path d="M18 17v-5" />
-                    </svg>
-                </div>
-                <h3>Controle Total</h3>
-                <p>Tenha total controle sobre os grupos e seus procedimentos.</p>
-            </div>
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+                <p class="text-sm text-slate-500">Subgrupos</p>
+                <p id="subgroupsMetric" class="mt-2 text-3xl font-semibold text-primary-600">0</p>
+                <p class="mt-1 text-xs text-slate-400">Estruturas hierárquicas</p>
+            </article>
+
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+                <p class="text-sm text-slate-500">Procedimentos vinculados</p>
+                <p id="linkedProceduresMetric" class="mt-2 text-3xl font-semibold text-blue-600">0</p>
+                <p class="mt-1 text-xs text-slate-400">Associações configuradas</p>
+            </article>
         </section>
 
-        <section class="grid gap-6 xl:grid-cols-[1fr_1.05fr]">
-            <div class="panel p-6">
-                <div class="mb-5 flex items-center justify-between gap-4">
-                    <div>
-                        <h2 class="text-xl font-semibold text-slate-800">Buscar e adicionar procedimentos</h2>
-                        <p class="text-sm text-slate-500">Filtre os procedimentos e monte o grupo com rapidez.</p>
+        <!-- Filtros -->
+        <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6"
+            aria-labelledby="filtersTitle">
+
+            <div class="mb-5">
+                <h3 id="filtersTitle" class="text-lg font-semibold text-slate-900">
+                    Pesquisar grupos
+                </h3>
+
+                <p class="mt-1 text-sm text-slate-500">
+                    Encontre grupos por código, nome, sigla ou descrição.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+
+                <div class="xl:col-span-2">
+                    <label for="groupSearch" class="mb-2 block text-sm font-medium text-slate-700">
+                        Busca
+                    </label>
+
+                    <div class="relative">
+                        <svg viewBox="0 0 24 24"
+                            class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                            fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <path d="m20 20-3.5-3.5"></path>
+                        </svg>
+
+                        <input id="groupSearch" type="search"
+                            class="h-12 w-full rounded-xl border border-slate-300 bg-white pl-12 pr-4 text-sm outline-none transition focus:border-primary-600 focus:ring-2 focus:ring-primary-600/20"
+                            placeholder="Pesquisar por código ou nome do grupo..." aria-describedby="searchStatus">
                     </div>
+
+                    <p id="searchStatus" class="sr-only" aria-live="polite"></p>
                 </div>
 
-                <div class="relative mb-5">
-                    <input id="procedureSearch"
-                        class="h-13 w-full rounded-2xl border border-slate-200 bg-white px-5 pr-12 outline-none focus:border-[#1b9a84] focus:ring-2 focus:ring-[#1b9a84]/15"
-                        placeholder="Digite o nome do procedimento..." aria-label="Buscar procedimento" />
-                    <svg viewBox="0 0 24 24" class="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
-                        fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="7" />
-                        <path d="m20 20-3.5-3.5" />
+                <div>
+                    <label for="filterCategory" class="mb-2 block text-sm font-medium text-slate-700">
+                        Categoria
+                    </label>
+
+                    <select id="filterCategory"
+                        class="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm outline-none transition focus:border-primary-600 focus:ring-2 focus:ring-primary-600/20">
+                        <option value="">Todas</option>
+                        <option value="Consultas">Consultas</option>
+                        <option value="Diagnóstico">Diagnóstico</option>
+                        <option value="Cirúrgico">Cirúrgico</option>
+                        <option value="Ambulatorial">Ambulatorial</option>
+                        <option value="Terapêutico">Terapêutico</option>
+                        <option value="Preventivo">Preventivo</option>
+                        <option value="Hospitalar">Hospitalar</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filterStatus" class="mb-2 block text-sm font-medium text-slate-700">
+                        Status
+                    </label>
+
+                    <select id="filterStatus"
+                        class="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm outline-none transition focus:border-primary-600 focus:ring-2 focus:ring-primary-600/20">
+                        <option value="">Todos</option>
+                        <option value="ACTIVE">Ativo</option>
+                        <option value="INACTIVE">Inativo</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filterParent" class="mb-2 block text-sm font-medium text-slate-700">
+                        Grupo principal
+                    </label>
+
+                    <select id="filterParent"
+                        class="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm outline-none transition focus:border-primary-600 focus:ring-2 focus:ring-primary-600/20">
+                        <option value="">Todos</option>
+                        <option value="ROOT">Grupos principais</option>
+                        <option value="SUBGROUP">Subgrupos</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mt-4 flex justify-end">
+                <button id="clearFiltersBtn" type="button"
+                    class="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary-600">
+
+                    <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M3 6h18"></path>
+                        <path d="M8 6V4h8v2"></path>
+                        <path d="M19 6l-1 14H6L5 6"></path>
+                    </svg>
+
+                    Limpar filtros
+                </button>
+            </div>
+        </section>
+
+        <!-- Listagem -->
+        <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft"
+            aria-labelledby="groupsTitle">
+
+            <div
+                class="flex flex-col gap-3 border-b border-slate-200 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                <div>
+                    <h3 id="groupsTitle" class="text-lg font-semibold text-slate-900">
+                        Grupos de procedimentos
+                    </h3>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Consulte, organize e gerencie os grupos cadastrados.
+                    </p>
+                </div>
+
+                <span id="resultCount" class="text-sm text-slate-500" aria-live="polite">
+                    0 grupos encontrados
+                </span>
+            </div>
+
+            <!-- Loading -->
+            <div id="groupsLoading" class="hidden space-y-3 p-6" aria-live="polite">
+                <span class="sr-only">Carregando grupos...</span>
+                <div class="h-14 animate-pulse rounded-xl bg-slate-100"></div>
+                <div class="h-14 animate-pulse rounded-xl bg-slate-100"></div>
+                <div class="h-14 animate-pulse rounded-xl bg-slate-100"></div>
+                <div class="h-14 animate-pulse rounded-xl bg-slate-100"></div>
+            </div>
+
+            <!-- Tabela -->
+            <div id="groupsTableWrapper" class="overflow-x-auto">
+                <table class="min-w-[980px] w-full text-left text-sm">
+                    <caption class="sr-only">
+                        Lista de grupos de procedimentos
+                    </caption>
+
+                    <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                        <tr>
+                            <th scope="col" class="px-5 py-4 font-semibold">Código</th>
+                            <th scope="col" class="px-5 py-4 font-semibold">Nome do Grupo</th>
+                            <th scope="col" class="px-5 py-4 font-semibold">Categoria</th>
+                            <th scope="col" class="px-5 py-4 font-semibold">Grupo Pai</th>
+                            <th scope="col" class="px-5 py-4 font-semibold">Procedimentos</th>
+                            <th scope="col" class="px-5 py-4 font-semibold">Status</th>
+                            <th scope="col" class="px-5 py-4 font-semibold">Atualizado em</th>
+                            <th scope="col" class="px-5 py-4 text-right font-semibold">Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="groupTableBody" class="divide-y divide-slate-100">
+                        <!-- Renderizado pelo JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty state -->
+            <div id="groupsEmptyState" class="hidden px-6 py-16 text-center">
+                <div
+                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+                    <svg viewBox="0 0 24 24" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M4 7h16"></path>
+                        <path d="M4 12h16"></path>
+                        <path d="M4 17h10"></path>
                     </svg>
                 </div>
 
-                <div id="frequentGrid" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"></div>
+                <h4 class="text-lg font-semibold text-slate-900">
+                    Nenhum grupo encontrado.
+                </h4>
 
-                <button id="addSelectedBtn"
-                    class="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-[#1b9a84] px-4 py-3 font-semibold text-white shadow-lg shadow-[#1b9a84]/20 transition hover:bg-[#178a77] active:bg-[#136d60] disabled:cursor-not-allowed disabled:opacity-70">
-                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M12 5v14M5 12h14" />
-                    </svg>
-                    <span class="btn-label">Adicionar ao grupo selecionado</span>
-                    <svg class="btn-spinner hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"
-                        aria-hidden="true">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                        </circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                    </svg>
+                <p class="mx-auto mt-2 max-w-md text-sm text-slate-500">
+                    Cadastre seu primeiro grupo de procedimentos ou altere os filtros selecionados.
+                </p>
+
+                <button id="emptyCreateBtn" type="button"
+                    class="mt-6 inline-flex min-h-11 items-center justify-center rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white transition hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2">
+                    + Novo Grupo
                 </button>
             </div>
 
-            <div class="panel flex min-h-[620px] flex-col overflow-hidden p-0">
-                <div class="border-b border-slate-200 p-6">
-                    <div class="flex items-center justify-between gap-4">
-                        <div>
-                            <h2 class="text-xl font-semibold text-slate-800">Procedimentos selecionados</h2>
-                            <p class="text-sm text-slate-500">Revise os itens antes de confirmar.</p>
-                        </div>
-                        <span id="countBadge"
-                            class="rounded-full bg-[#e8f5f1] px-3 py-1 text-sm font-semibold text-[#1b9a84]">0
-                            itens</span>
-                    </div>
-
-                    <div class="mt-4 flex gap-3">
-                        <button id="openNewGroupBtn" type="button"
-                            class="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-teal-700 active:bg-teal-800">
-                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
-                                <path d="M12 5v14M5 12h14" />
-                            </svg>
-                            Novo Grupo
-                        </button>
-                    </div>
+            <!-- Error state -->
+            <div id="groupsErrorState" class="hidden px-6 py-16 text-center">
+                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 text-red-600">
+                    <svg viewBox="0 0 24 24" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <path d="M12 8v4"></path>
+                        <path d="M12 16h.01"></path>
+                    </svg>
                 </div>
 
-                <div id="selectedState" class="flex flex-1 items-center justify-center p-8 text-center">
-                    <div class="max-w-xs">
-                        <div
-                            class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-[#eef8f5] text-[#1b9a84]">
-                            <svg viewBox="0 0 24 24" class="h-10 w-10" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <rect x="4" y="3" width="14" height="18" rx="2" />
-                                <path d="M9 3v18" />
-                                <path d="M11 12h6" />
-                                <path d="M14 9v6" />
-                            </svg>
-                        </div>
-                        <div class="text-lg font-semibold text-slate-800">Nenhum procedimento selecionado</div>
-                        <p class="mt-2 leading-7 text-slate-500">Busque e adicione procedimentos para montar o grupo
-                            desejado.</p>
-                    </div>
-                </div>
+                <h4 class="text-lg font-semibold text-slate-900">
+                    Não foi possível carregar os grupos.
+                </h4>
 
-                <div id="selectedList" class="hidden space-y-3 p-6 pt-2"></div>
+                <p class="mt-2 text-sm text-slate-500">
+                    Tente novamente em alguns instantes.
+                </p>
 
-                <div class="border-t border-slate-200 p-6">
-                    <button id="removeSelectedBtn"
-                        class="inline-flex h-12 w-full cursor-not-allowed items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 font-medium text-slate-400"
-                        disabled>
-                        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 6h18" />
-                            <path d="M8 6V4h8v2" />
-                            <path d="M19 6l-1 14H6L5 6" />
-                            <path d="M10 11v6M14 11v6" />
-                        </svg>
-                        <span>Remover selecionados</span>
+                <button id="retryBtn" type="button"
+                    class="mt-6 inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary-600">
+                    Tentar novamente
+                </button>
+            </div>
+
+            <!-- Paginação -->
+            <div id="pagination"
+                class="flex flex-col gap-3 border-t border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+
+                <p id="paginationInfo" class="text-sm text-slate-500">
+                    Exibindo 0 grupos
+                </p>
+
+                <div class="flex items-center gap-2">
+                    <button id="previousPageBtn" type="button"
+                        class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">
+                        Anterior
+                    </button>
+
+                    <span id="pageLabel" class="min-w-24 text-center text-sm text-slate-600">
+                        Página 1
+                    </span>
+
+                    <button id="nextPageBtn" type="button"
+                        class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">
+                        Próxima
                     </button>
                 </div>
             </div>
         </section>
-
-        <!-- TABELA DE GRUPOS -->
-        <section class="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div
-                class="flex flex-col gap-4 border-b border-slate-200 p-6 md:flex-row md:items-center md:justify-between">
-                <div>
-                    <h2 class="text-xl font-semibold text-slate-800">Grupos de procedimentos</h2>
-                    <p class="text-sm text-slate-500">Lista enxuta com as informações principais.</p>
-                </div>
-
-                <div class="relative w-full md:w-80">
-                    <input id="groupSearch" type="search" placeholder="Buscar grupo..."
-                        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2 pr-10 text-sm outline-none transition focus:border-[#1b9a84] focus:ring-2 focus:ring-[#1b9a84]/15"
-                        aria-label="Buscar grupo" />
-                    <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
-                        viewBox="0 0 20 20" fill="currentColor">
-                        <path
-                            d="M8.5 3a5.5 5.5 0 104.23 9.02l3.13 3.13 1.41-1.41-3.13-3.13A5.5 5.5 0 008.5 3zm0 2a3.5 3.5 0 110 7 3.5 3.5 0 010-7z" />
-                    </svg>
-                </div>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-slate-200">
-                    <thead class="bg-slate-50">
-                        <tr class="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th class="px-4 py-3">Nome do Grupo</th>
-                            <th class="px-4 py-3">Código</th>
-                            <th class="px-4 py-3">Qtd. de Procedimentos</th>
-                            <th class="px-4 py-3">Status</th>
-                            <th class="px-4 py-3 text-right">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="groupTableBody" class="divide-y divide-slate-100">
-                        <tr data-name="Consulta Clínica" data-code="GRP-001">
-                            <td class="px-4 py-3 text-sm font-medium text-slate-900">Consulta Clínica</td>
-                            <td class="px-4 py-3 text-sm text-slate-600">GRP-001</td>
-                            <td class="px-4 py-3 text-sm text-slate-600">12</td>
-                            <td class="px-4 py-3">
-                                <span
-                                    class="inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">Ativo</span>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex justify-end gap-2">
-                                    <button type="button"
-                                        class="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
-                                        title="Editar grupo" aria-label="Editar grupo">
-                                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                            <path
-                                                d="M13.586 3a2 2 0 012.828 2.828l-8.5 8.5-3.364.707.707-3.364 8.329-8.671z" />
-                                        </svg>
-                                    </button>
-
-                                    <button type="button"
-                                        class="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border border-rose-200 text-rose-600 transition hover:bg-rose-50 hover:text-rose-700"
-                                        title="Excluir grupo" aria-label="Excluir grupo" data-delete>
-                                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                            <path
-                                                d="M6 7h8l-.5 9a2 2 0 01-2 2h-3a2 2 0 01-2-2L6 7zm3-4h2a1 1 0 011 1v1h4a1 1 0 110 2H4a1 1 0 110-2h4V4a1 1 0 011-1z" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
     </main>
 
-    <button id="confirmBtn"
-        class="inline-flex h-12 items-center gap-2 rounded-2xl bg-[#1b9a84] px-5 font-semibold text-white shadow-lg shadow-[#1b9a84]/20 transition hover:bg-[#178a77] active:bg-[#136d60] disabled:cursor-not-allowed disabled:opacity-70">
-        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="m5 13 4 4L19 7" />
-        </svg>
-        <span class="btn-label">Confirmar grupo</span>
-        <svg class="btn-spinner hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-        </svg>
-    </button>
+    <!-- Modal principal -->
+    <div id="groupModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="groupModalTitle">
+        <div class="modal-overlay" data-close-modal="groupModal"></div>
 
-    <!-- Toasts -->
-    <div id="toastArea" class="fixed right-4 top-4 z-50 space-y-3"></div>
+        <section class="modal-panel modal-panel-xl">
 
-    <!-- Modal de exclusão -->
-    <dialog id="deleteModal" class="w-full max-w-md rounded-2xl p-0 backdrop:bg-slate-900/50">
-        <div class="rounded-2xl bg-white p-6">
-            <h2 class="text-lg font-semibold text-slate-900">Confirmar exclusão</h2>
-            <p class="mt-2 text-sm text-slate-600">
-                Essa ação irá excluir permanentemente o grupo selecionado e pode impactar procedimentos vinculados.
-            </p>
+            <header class="modal-header">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-primary-700">
+                        Cadastro administrativo
+                    </p>
 
-            <div class="mt-6 flex justify-end gap-3">
-                <button id="btnCancelDelete" type="button"
-                    class="rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                    <h2 id="groupModalTitle" class="mt-1 text-xl font-bold text-slate-900 sm:text-2xl">
+                        Novo Grupo de Procedimentos
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Cadastre e configure um novo grupo de procedimentos.
+                    </p>
+                </div>
+
+                <button type="button" class="modal-close" data-close-modal="groupModal" aria-label="Fechar modal">
+
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 6 6 18"></path>
+                        <path d="M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </header>
+
+            <nav class="modal-tabs" role="tablist" aria-label="Seções do grupo">
+                <button type="button" class="modal-tab is-active" data-tab="general" role="tab" aria-selected="true"
+                    aria-controls="panelGeneral">
+                    Dados Gerais
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="procedures" role="tab" aria-selected="false"
+                    aria-controls="panelProcedures">
+                    Procedimentos
+                    <span id="procedureCount" class="tab-counter">0</span>
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="rules" role="tab" aria-selected="false"
+                    aria-controls="panelRules">
+                    Regras
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="schedule" role="tab" aria-selected="false"
+                    aria-controls="panelSchedule">
+                    Agenda
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="resources" role="tab" aria-selected="false"
+                    aria-controls="panelResources">
+                    Recursos
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="documents" role="tab" aria-selected="false"
+                    aria-controls="panelDocuments">
+                    Documentos
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="audit" role="tab" aria-selected="false"
+                    aria-controls="panelAudit">
+                    Auditoria
+                </button>
+            </nav>
+
+            <form id="groupForm" novalidate>
+                <input id="groupId" type="hidden">
+
+                <div class="modal-body">
+
+                    <!-- Dados gerais -->
+                    <section id="panelGeneral" class="tab-panel" data-panel="general" role="tabpanel">
+
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+                            <div>
+                                <label for="groupCode" class="form-label">
+                                    Código <span class="text-red-600">*</span>
+                                </label>
+
+                                <input id="groupCode" type="text" class="form-input bg-slate-100 text-slate-500"
+                                    placeholder="Gerado automaticamente" readonly>
+
+                                <p id="groupCodeError" class="field-error"></p>
+                            </div>
+
+                            <div>
+                                <label class="form-label">
+                                    Status <span class="text-red-600">*</span>
+                                </label>
+
+                                <div class="flex min-h-12 items-center gap-5 rounded-xl border border-slate-300 px-4">
+                                    <label class="inline-flex items-center gap-2 text-sm font-medium text-slate-700">
+                                        <input id="statusActive" name="groupStatus" type="radio" value="ACTIVE" checked
+                                            class="h-4 w-4 accent-primary-600">
+                                        Ativo
+                                    </label>
+
+                                    <label class="inline-flex items-center gap-2 text-sm font-medium text-slate-700">
+                                        <input id="statusInactive" name="groupStatus" type="radio" value="INACTIVE"
+                                            class="h-4 w-4 accent-primary-600">
+                                        Inativo
+                                    </label>
+                                </div>
+
+                                <p id="groupStatusError" class="field-error"></p>
+                            </div>
+
+                            <div>
+                                <label for="groupName" class="form-label">
+                                    Nome do Grupo <span class="text-red-600">*</span>
+                                </label>
+
+                                <input id="groupName" type="text" maxlength="120" class="form-input"
+                                    placeholder="Ex.: Consultas" aria-describedby="groupNameError">
+
+                                <p id="groupNameError" class="field-error"></p>
+                            </div>
+
+                            <div>
+                                <label for="groupShortName" class="form-label">
+                                    Nome abreviado
+                                </label>
+
+                                <input id="groupShortName" type="text" maxlength="20" class="form-input"
+                                    placeholder="Ex.: CONS">
+                            </div>
+
+                            <div>
+                                <label for="groupCategory" class="form-label">
+                                    Categoria <span class="text-red-600">*</span>
+                                </label>
+
+                                <select id="groupCategory" class="form-input" aria-describedby="groupCategoryError">
+                                    <option value="">Selecione uma categoria</option>
+                                    <option value="Consultas">Consultas</option>
+                                    <option value="Diagnóstico">Diagnóstico</option>
+                                    <option value="Cirúrgico">Cirúrgico</option>
+                                    <option value="Ambulatorial">Ambulatorial</option>
+                                    <option value="Terapêutico">Terapêutico</option>
+                                    <option value="Preventivo">Preventivo</option>
+                                    <option value="Hospitalar">Hospitalar</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+
+                                <p id="groupCategoryError" class="field-error"></p>
+                            </div>
+
+                            <div>
+                                <label for="groupParent" class="form-label">
+                                    Grupo Principal
+                                </label>
+
+                                <select id="groupParent" class="form-input">
+                                    <option value="">Nenhum — Grupo principal</option>
+                                </select>
+
+                                <p id="groupParentError" class="field-error"></p>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label for="groupDescription" class="form-label">
+                                    Descrição
+                                </label>
+
+                                <textarea id="groupDescription" rows="5" maxlength="600" class="form-input resize-y"
+                                    placeholder="Descreva a finalidade e o contexto de utilização do grupo."></textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Procedimentos -->
+                    <section id="panelProcedures" class="tab-panel hidden" data-panel="procedures" role="tabpanel">
+
+                        <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h3 class="section-title">Procedimentos vinculados</h3>
+                                <p class="section-description">
+                                    Associe os procedimentos que pertencem a este grupo.
+                                </p>
+                            </div>
+
+                            <button id="addProcedureBtn" type="button" class="action-primary">
+                                <span>+ Adicionar procedimento</span>
+                            </button>
+                        </div>
+
+                        <div id="proceduresEmptyState"
+                            class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-12 text-center">
+                            <h4 class="font-semibold text-slate-800">
+                                Nenhum procedimento vinculado
+                            </h4>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Adicione procedimentos para completar este grupo.
+                            </p>
+                        </div>
+
+                        <div id="proceduresTableWrapper"
+                            class="hidden overflow-x-auto rounded-xl border border-slate-200">
+
+                            <table class="min-w-[760px] w-full text-left text-sm">
+                                <caption class="sr-only">
+                                    Procedimentos associados ao grupo
+                                </caption>
+
+                                <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3">Código</th>
+                                        <th scope="col" class="px-4 py-3">Procedimento</th>
+                                        <th scope="col" class="px-4 py-3">Especialidade</th>
+                                        <th scope="col" class="px-4 py-3">Duração</th>
+                                        <th scope="col" class="px-4 py-3">Status</th>
+                                        <th scope="col" class="px-4 py-3 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="proceduresTableBody" class="divide-y divide-slate-100">
+                                    <!-- Renderizado pelo JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p id="proceduresError" class="field-error mt-3"></p>
+                    </section>
+
+                    <!-- Regras -->
+                    <section id="panelRules" class="tab-panel hidden" data-panel="rules" role="tabpanel">
+
+                        <div class="mb-5">
+                            <h3 class="section-title">Regras administrativas</h3>
+                            <p class="section-description">
+                                Configure regras padrão para os procedimentos deste grupo.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+
+                            <label class="rule-card">
+                                <span>
+                                    <strong>Permite agendamento</strong>
+                                    <small>Disponibiliza o grupo para agendamento.</small>
+                                </span>
+                                <input id="ruleScheduling" type="checkbox">
+                            </label>
+
+                            <label class="rule-card">
+                                <span>
+                                    <strong>Exige autorização</strong>
+                                    <small>Solicita autorização antes da execução.</small>
+                                </span>
+                                <input id="ruleAuthorization" type="checkbox">
+                            </label>
+
+                            <label class="rule-card">
+                                <span>
+                                    <strong>Exige solicitação médica</strong>
+                                    <small>Requer solicitação de profissional habilitado.</small>
+                                </span>
+                                <input id="ruleMedicalRequest" type="checkbox">
+                            </label>
+
+                            <label class="rule-card">
+                                <span>
+                                    <strong>Exige guia</strong>
+                                    <small>Exige guia administrativa ou do convênio.</small>
+                                </span>
+                                <input id="ruleGuide" type="checkbox">
+                            </label>
+
+                            <label class="rule-card">
+                                <span>
+                                    <strong>Permite atendimento particular</strong>
+                                    <small>Disponível para pacientes particulares.</small>
+                                </span>
+                                <input id="rulePrivate" type="checkbox">
+                            </label>
+
+                            <label class="rule-card">
+                                <span>
+                                    <strong>Permite atendimento por convênio</strong>
+                                    <small>Disponível para usuários conveniados.</small>
+                                </span>
+                                <input id="ruleAgreement" type="checkbox">
+                            </label>
+
+                            <label class="rule-card">
+                                <span>
+                                    <strong>Permite faturamento</strong>
+                                    <small>Permite geração de faturamento.</small>
+                                </span>
+                                <input id="ruleBilling" type="checkbox">
+                            </label>
+
+                            <label class="rule-card">
+                                <span>
+                                    <strong>Permite encaixe</strong>
+                                    <small>Permite inserir atendimento fora da agenda.</small>
+                                </span>
+                                <input id="ruleWalkIn" type="checkbox">
+                            </label>
+
+                            <label class="rule-card md:col-span-2">
+                                <span>
+                                    <strong>Exige assinatura digital</strong>
+                                    <small>Exige assinatura digital ao finalizar o atendimento.</small>
+                                </span>
+                                <input id="ruleDigitalSignature" type="checkbox">
+                            </label>
+                        </div>
+                    </section>
+
+                    <!-- Agenda -->
+                    <section id="panelSchedule" class="tab-panel hidden" data-panel="schedule" role="tabpanel">
+
+                        <div class="mb-5">
+                            <h3 class="section-title">Configurações de agenda</h3>
+                            <p class="section-description">
+                                Estes valores serão utilizados como padrão e poderão ser sobrescritos no procedimento.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+                            <div>
+                                <label for="defaultDuration" class="form-label">
+                                    Duração padrão
+                                </label>
+
+                                <input id="defaultDuration" type="number" min="1" class="form-input" value="30"
+                                    placeholder="Minutos">
+                            </div>
+
+                            <div>
+                                <label for="preparationTime" class="form-label">
+                                    Tempo de preparação
+                                </label>
+
+                                <input id="preparationTime" type="number" min="0" class="form-input" value="10"
+                                    placeholder="Minutos">
+                            </div>
+
+                            <div>
+                                <label for="intervalTime" class="form-label">
+                                    Tempo de intervalo
+                                </label>
+
+                                <input id="intervalTime" type="number" min="0" class="form-input" value="5"
+                                    placeholder="Minutos">
+                            </div>
+
+                            <div>
+                                <label for="requiredRoom" class="form-label">
+                                    Sala necessária
+                                </label>
+
+                                <select id="requiredRoom" class="form-input">
+                                    <option value="">Selecione uma sala</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="requiredEquipment" class="form-label">
+                                    Equipamento necessário
+                                </label>
+
+                                <select id="requiredEquipment" class="form-input">
+                                    <option value="">Selecione um equipamento</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="requiredSpecialty" class="form-label">
+                                    Especialidade necessária
+                                </label>
+
+                                <select id="requiredSpecialty" class="form-input">
+                                    <option value="">Selecione uma especialidade</option>
+                                </select>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label for="qualifiedProfessional" class="form-label">
+                                    Profissional habilitado
+                                </label>
+
+                                <select id="qualifiedProfessional" multiple class="form-input min-h-32">
+                                </select>
+
+                                <p class="form-help">
+                                    Utilize Ctrl ou Command para selecionar mais de um profissional.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Recursos -->
+                    <section id="panelResources" class="tab-panel hidden" data-panel="resources" role="tabpanel">
+
+                        <div class="mb-5">
+                            <h3 class="section-title">Recursos necessários</h3>
+                            <p class="section-description">
+                                Relacione os recursos utilizados pelos procedimentos do grupo.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+                            <div>
+                                <label for="resourceRooms" class="form-label">
+                                    Salas
+                                </label>
+
+                                <select id="resourceRooms" multiple class="form-input min-h-36">
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="resourceEquipment" class="form-label">
+                                    Equipamentos
+                                </label>
+
+                                <select id="resourceEquipment" multiple class="form-input min-h-36">
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="resourceProfessionals" class="form-label">
+                                    Profissionais
+                                </label>
+
+                                <select id="resourceProfessionals" multiple class="form-input min-h-36">
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="resourceSpecialties" class="form-label">
+                                    Especialidades
+                                </label>
+
+                                <select id="resourceSpecialties" multiple class="form-input min-h-36">
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Documentos -->
+                    <section id="panelDocuments" class="tab-panel hidden" data-panel="documents" role="tabpanel">
+
+                        <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h3 class="section-title">Documentos e protocolos</h3>
+                                <p class="section-description">
+                                    Configure documentos necessários para o grupo.
+                                </p>
+                            </div>
+
+                            <button id="addDocumentBtn" type="button" class="action-primary">
+                                + Adicionar documento
+                            </button>
+                        </div>
+
+                        <div id="documentsEmptyState"
+                            class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-12 text-center">
+                            <h4 class="font-semibold text-slate-800">
+                                Nenhum documento associado
+                            </h4>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Adicione termos, checklists ou protocolos necessários.
+                            </p>
+                        </div>
+
+                        <div id="documentsTableWrapper"
+                            class="hidden overflow-x-auto rounded-xl border border-slate-200">
+
+                            <table class="min-w-[650px] w-full text-left text-sm">
+                                <caption class="sr-only">
+                                    Documentos associados ao grupo
+                                </caption>
+
+                                <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3">Nome</th>
+                                        <th scope="col" class="px-4 py-3">Tipo</th>
+                                        <th scope="col" class="px-4 py-3">Obrigatório</th>
+                                        <th scope="col" class="px-4 py-3">Status</th>
+                                        <th scope="col" class="px-4 py-3 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="documentsTableBody" class="divide-y divide-slate-100">
+                                    <!-- Renderizado pelo JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Auditoria -->
+                    <section id="panelAudit" class="tab-panel hidden" data-panel="audit" role="tabpanel">
+
+                        <div class="mb-5">
+                            <h3 class="section-title">Auditoria</h3>
+                            <p class="section-description">
+                                Histórico de alterações realizadas neste grupo.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div class="audit-field">
+                                <span>Última alteração por</span>
+                                <strong id="auditUser">—</strong>
+                            </div>
+
+                            <div class="audit-field">
+                                <span>Data da última alteração</span>
+                                <strong id="auditDate">—</strong>
+                            </div>
+                        </div>
+
+                        <div class="mt-6">
+                            <h4 class="mb-4 font-semibold text-slate-900">
+                                Histórico
+                            </h4>
+
+                            <ol id="auditTimeline" class="audit-timeline">
+                                <!-- Renderizado pelo JavaScript -->
+                            </ol>
+                        </div>
+                    </section>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="action-secondary" data-close-modal="groupModal">
+                        Cancelar
+                    </button>
+
+                    <button id="saveGroupBtn" type="submit" class="action-primary">
+                        <span class="btn-label">Salvar Grupo</span>
+                        <span class="btn-spinner loading-spinner hidden" aria-hidden="true"></span>
+                    </button>
+                </footer>
+            </form>
+        </section>
+    </div>
+
+    <!-- Modal de procedimentos -->
+    <div id="procedureModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="procedureModalTitle">
+
+        <div class="modal-overlay" data-close-modal="procedureModal"></div>
+
+        <section class="modal-panel modal-panel-lg">
+            <header class="modal-header">
+                <div>
+                    <h2 id="procedureModalTitle" class="text-xl font-bold text-slate-900">
+                        Associar procedimentos
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Selecione os procedimentos que farão parte do grupo.
+                    </p>
+                </div>
+
+                <button type="button" class="modal-close" data-close-modal="procedureModal"
+                    aria-label="Fechar modal de procedimentos">
+
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 6 6 18"></path>
+                        <path d="M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </header>
+
+            <div class="modal-body">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <div class="md:col-span-2">
+                        <label for="procedureModalSearch" class="form-label">
+                            Pesquisar procedimento
+                        </label>
+
+                        <input id="procedureModalSearch" type="search" class="form-input"
+                            placeholder="Pesquisar por código ou nome...">
+                    </div>
+
+                    <div>
+                        <label for="procedureSpecialtyFilter" class="form-label">
+                            Especialidade
+                        </label>
+
+                        <select id="procedureSpecialtyFilter" class="form-input">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-5 flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-4 py-3">
+                    <label class="inline-flex items-center gap-2 text-sm font-medium text-slate-700">
+                        <input id="selectAllProcedures" type="checkbox" class="h-4 w-4 accent-primary-600">
+                        Selecionar todos
+                    </label>
+
+                    <span id="selectedProcedureCount" class="text-sm text-slate-500">
+                        0 procedimentos selecionados
+                    </span>
+                </div>
+
+                <div id="procedureResults" class="mt-4 max-h-96 space-y-2 overflow-y-auto" role="listbox"
+                    aria-label="Procedimentos disponíveis">
+                    <!-- Renderizado pelo JavaScript -->
+                </div>
+
+                <div id="procedureResultsEmpty" class="hidden py-10 text-center">
+                    <p class="font-semibold text-slate-800">
+                        Nenhum procedimento encontrado.
+                    </p>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Ajuste a pesquisa ou o filtro selecionado.
+                    </p>
+                </div>
+            </div>
+
+            <footer class="modal-footer">
+                <button type="button" class="action-secondary" data-close-modal="procedureModal">
                     Cancelar
                 </button>
-                <button id="btnConfirmDelete" type="button"
-                    class="inline-flex items-center justify-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-700">
-                    Confirmar Exclusão
+
+                <button id="associateProceduresBtn" type="button" class="action-primary" disabled>
+                    Associar selecionados
                 </button>
-            </div>
-        </div>
-    </dialog>
+            </footer>
+        </section>
+    </div>
+
+    <!-- Modal de documento -->
+    <div id="documentModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="documentModalTitle">
+
+        <div class="modal-overlay" data-close-modal="documentModal"></div>
+
+        <section class="modal-panel modal-panel-md">
+            <header class="modal-header">
+                <div>
+                    <h2 id="documentModalTitle" class="text-xl font-bold text-slate-900">
+                        Adicionar documento
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Configure um documento ou protocolo para o grupo.
+                    </p>
+                </div>
+
+                <button type="button" class="modal-close" data-close-modal="documentModal"
+                    aria-label="Fechar modal de documento">
+
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 6 6 18"></path>
+                        <path d="M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </header>
+
+            <form id="documentForm" novalidate>
+                <div class="modal-body space-y-5">
+                    <div>
+                        <label for="documentName" class="form-label">
+                            Nome do documento <span class="text-red-600">*</span>
+                        </label>
+
+                        <input id="documentName" type="text" class="form-input"
+                            placeholder="Ex.: Termo de Consentimento">
+
+                        <p id="documentNameError" class="field-error"></p>
+                    </div>
+
+                    <div>
+                        <label for="documentType" class="form-label">
+                            Tipo
+                        </label>
+
+                        <select id="documentType" class="form-input">
+                            <option value="Protocolo">Protocolo</option>
+                            <option value="Termo">Termo</option>
+                            <option value="Checklist">Checklist</option>
+                            <option value="Orientação">Orientação</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+
+                    <label class="rule-card">
+                        <span>
+                            <strong>Documento obrigatório</strong>
+                            <small>Exigir este documento antes da execução.</small>
+                        </span>
+
+                        <input id="documentRequired" type="checkbox">
+                    </label>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="action-secondary" data-close-modal="documentModal">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="action-primary">
+                        Adicionar documento
+                    </button>
+                </footer>
+            </form>
+        </section>
+    </div>
+
+    <!-- Modal de confirmação -->
+    <div id="confirmModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+
+        <div class="modal-overlay" data-close-modal="confirmModal"></div>
+
+        <section class="modal-panel modal-panel-sm">
+            <header class="modal-header">
+                <div class="flex items-start gap-3">
+                    <div
+                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+                        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 9v4"></path>
+                            <path d="M12 17h.01"></path>
+                            <path d="M10.3 3.8 2.8 17a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z">
+                            </path>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h2 id="confirmModalTitle" class="text-lg font-bold text-slate-900">
+                            Confirmar ação
+                        </h2>
+
+                        <p id="confirmModalMessage" class="mt-2 text-sm leading-6 text-slate-600">
+                            Confirme esta operação para continuar.
+                        </p>
+                    </div>
+                </div>
+
+                <button type="button" class="modal-close" data-close-modal="confirmModal"
+                    aria-label="Fechar confirmação">
+
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 6 6 18"></path>
+                        <path d="M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </header>
+
+            <footer class="modal-footer">
+                <button type="button" class="action-secondary" data-close-modal="confirmModal">
+                    Cancelar
+                </button>
+
+                <button id="confirmActionBtn" type="button"
+                    class="inline-flex min-h-12 items-center justify-center rounded-xl bg-rose-600 px-5 font-semibold text-white transition hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-600 focus:ring-offset-2">
+                    Confirmar
+                </button>
+            </footer>
+        </section>
+    </div>
+
+    <!-- Toasts -->
+    <div id="toastArea" class="fixed right-4 top-4 z-[130] flex w-[min(380px,calc(100vw-2rem))] flex-col gap-3"
+        aria-live="polite" aria-atomic="true">
+    </div>
+
+    <!-- Template de procedimento -->
+    <template id="procedureOptionTemplate">
+        <label class="procedure-option">
+            <input type="checkbox" class="procedure-checkbox">
+            <span class="min-w-0 flex-1">
+                <strong data-field="name"></strong>
+                <small data-field="meta"></small>
+            </span>
+            <span data-field="status" class="status-badge"></span>
+        </label>
+    </template>
+
+    <!-- Template de linha de grupo -->
+    <template id="groupRowTemplate">
+        <tr class="group-row">
+            <td data-field="code" class="px-5 py-4 font-semibold text-primary-700"></td>
+            <td data-field="name" class="px-5 py-4 font-medium text-slate-900"></td>
+            <td data-field="category" class="px-5 py-4 text-slate-600"></td>
+            <td data-field="parent" class="px-5 py-4 text-slate-600"></td>
+            <td data-field="procedures" class="px-5 py-4 text-slate-600"></td>
+            <td data-field="status" class="px-5 py-4"></td>
+            <td data-field="updatedAt" class="px-5 py-4 text-slate-500"></td>
+            <td class="px-5 py-4 text-right">
+                <div class="row-actions">
+                    <button type="button" class="row-menu-button" aria-haspopup="menu" aria-expanded="false"
+                        aria-label="Abrir ações do grupo">
+                        ⋮
+                    </button>
+
+                    <div class="row-menu hidden" role="menu">
+                        <button type="button" data-action="view" role="menuitem">
+                            Visualizar
+                        </button>
+
+                        <button type="button" data-action="edit" role="menuitem">
+                            Editar
+                        </button>
+
+                        <button type="button" data-action="duplicate" role="menuitem">
+                            Duplicar
+                        </button>
+
+                        <button type="button" data-action="procedures" role="menuitem">
+                            Gerenciar procedimentos
+                        </button>
+
+                        <button type="button" data-action="toggle" role="menuitem">
+                            Ativar/Inativar
+                        </button>
+
+                        <button type="button" data-action="delete" role="menuitem" class="danger-action">
+                            Excluir
+                        </button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </template>
 
     <script src="grupo-procedimentos.js"></script>
 </body>
