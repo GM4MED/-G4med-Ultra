@@ -1,515 +1,1314 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cadastro e gerenciamento de grupos de atendimento do G4Med">
+    <meta name="color-scheme" content="light">
+
     <title>Grupo de Atendimento | G4Med</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: "#F0FDFA",
+                            100: "#CCFBF1",
+                            600: "#0D9488",
+                            700: "#0F766E",
+                            800: "#115E59"
+                        },
+                        navy: "#0B1F3A"
+                    },
+                    boxShadow: {
+                        soft: "0 8px 30px rgba(15, 23, 42, .08)",
+                        modal: "0 20px 60px rgba(15, 23, 42, .20)"
+                    }
+                }
+            }
+        };
+    </script>
 
-    <style type="text/css">
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 400;
-            src: url(/cf-fonts/v/inter/5.2.8/latin/wght/normal.woff2);
-            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 400;
-            src: url(/cf-fonts/v/inter/5.2.8/cyrillic/wght/normal.woff2);
-            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 400;
-            src: url(/cf-fonts/v/inter/5.2.8/cyrillic-ext/wght/normal.woff2);
-            unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 400;
-            src: url(/cf-fonts/v/inter/5.2.8/latin-ext/wght/normal.woff2);
-            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 400;
-            src: url(/cf-fonts/v/inter/5.2.8/greek/wght/normal.woff2);
-            unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 400;
-            src: url(/cf-fonts/v/inter/5.2.8/greek-ext/wght/normal.woff2);
-            unicode-range: U+1F00-1FFF;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 400;
-            src: url(/cf-fonts/v/inter/5.2.8/vietnamese/wght/normal.woff2);
-            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 500;
-            src: url(/cf-fonts/v/inter/5.2.8/cyrillic-ext/wght/normal.woff2);
-            unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 500;
-            src: url(/cf-fonts/v/inter/5.2.8/latin/wght/normal.woff2);
-            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 500;
-            src: url(/cf-fonts/v/inter/5.2.8/vietnamese/wght/normal.woff2);
-            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 500;
-            src: url(/cf-fonts/v/inter/5.2.8/latin-ext/wght/normal.woff2);
-            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 500;
-            src: url(/cf-fonts/v/inter/5.2.8/cyrillic/wght/normal.woff2);
-            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 500;
-            src: url(/cf-fonts/v/inter/5.2.8/greek/wght/normal.woff2);
-            unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 500;
-            src: url(/cf-fonts/v/inter/5.2.8/greek-ext/wght/normal.woff2);
-            unicode-range: U+1F00-1FFF;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 600;
-            src: url(/cf-fonts/v/inter/5.2.8/latin-ext/wght/normal.woff2);
-            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 600;
-            src: url(/cf-fonts/v/inter/5.2.8/cyrillic-ext/wght/normal.woff2);
-            unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 600;
-            src: url(/cf-fonts/v/inter/5.2.8/vietnamese/wght/normal.woff2);
-            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 600;
-            src: url(/cf-fonts/v/inter/5.2.8/greek/wght/normal.woff2);
-            unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 600;
-            src: url(/cf-fonts/v/inter/5.2.8/cyrillic/wght/normal.woff2);
-            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 600;
-            src: url(/cf-fonts/v/inter/5.2.8/latin/wght/normal.woff2);
-            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 600;
-            src: url(/cf-fonts/v/inter/5.2.8/greek-ext/wght/normal.woff2);
-            unicode-range: U+1F00-1FFF;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 700;
-            src: url(/cf-fonts/v/inter/5.2.8/cyrillic-ext/wght/normal.woff2);
-            unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 700;
-            src: url(/cf-fonts/v/inter/5.2.8/greek-ext/wght/normal.woff2);
-            unicode-range: U+1F00-1FFF;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 700;
-            src: url(/cf-fonts/v/inter/5.2.8/vietnamese/wght/normal.woff2);
-            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 700;
-            src: url(/cf-fonts/v/inter/5.2.8/latin/wght/normal.woff2);
-            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 700;
-            src: url(/cf-fonts/v/inter/5.2.8/cyrillic/wght/normal.woff2);
-            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 700;
-            src: url(/cf-fonts/v/inter/5.2.8/latin-ext/wght/normal.woff2);
-            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 700;
-            src: url(/cf-fonts/v/inter/5.2.8/greek/wght/normal.woff2);
-            unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 800;
-            src: url(/cf-fonts/v/inter/5.2.8/greek/wght/normal.woff2);
-            unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 800;
-            src: url(/cf-fonts/v/inter/5.2.8/cyrillic/wght/normal.woff2);
-            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 800;
-            src: url(/cf-fonts/v/inter/5.2.8/latin/wght/normal.woff2);
-            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 800;
-            src: url(/cf-fonts/v/inter/5.2.8/greek-ext/wght/normal.woff2);
-            unicode-range: U+1F00-1FFF;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 800;
-            src: url(/cf-fonts/v/inter/5.2.8/vietnamese/wght/normal.woff2);
-            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 800;
-            src: url(/cf-fonts/v/inter/5.2.8/cyrillic-ext/wght/normal.woff2);
-            unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 800;
-            src: url(/cf-fonts/v/inter/5.2.8/latin-ext/wght/normal.woff2);
-            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-            font-display: swap;
-        }
-    </style>
-    <link rel="stylesheet" href="grupo-de-atendimento.css" />
+    <link rel="stylesheet" href="grupo-de-atendimento.css">
 </head>
 
-<body class="bg-slate-50 text-slate-900 antialiased">
-    <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
-        <div
-            class="mx-auto flex min-h-[72px] max-w-[1440px] items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+<body class="min-h-screen bg-slate-50 text-slate-700 antialiased">
+
+    <a href="#mainContent"
+        class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[120] focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:shadow-lg">
+        Pular para o conteúdo principal
+    </a>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white">
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+
             <div class="flex min-w-0 items-center gap-3">
-                <!-- <button type="button" onclick="history.back()"
-                    class="focusable grid h-11 w-11 shrink-0 place-items-center rounded-full border border-slate-300 text-slate-700 transition hover:bg-slate-100"
-                    aria-label="Voltar">
-                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2"
-                        aria-hidden="true">
-                        <path d="m15 18-6-6 6-6" />
-                    </svg>
-                </button> -->
                 <a href="../Menu-Principal.html"
-                    class="focusable grid h-11 w-11 shrink-0 place-items-center rounded-full border border-slate-300 text-slate-700 transition hover:bg-slate-100"
-                    aria-label="Voltar para o Menu Principal">
+                    class="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary-600"
+                    aria-label="Voltar para o menu principal">
+
                     <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2"
-                        aria-hidden="true">
-                        <path d="m15 18-6-6 6-6" />
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m15 18-6-6 6-6"></path>
                     </svg>
                 </a>
-                <div class="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-teal-200 bg-teal-50 text-teal-700"
+
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-50 text-primary-700"
                     aria-hidden="true">
-                    <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.2">
-                        <path d="M12 3v18M3 12h18" />
+                    <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3v18"></path>
+                        <path d="M3 12h18"></path>
                     </svg>
                 </div>
+
                 <div class="min-w-0">
-                    <div class="truncate text-lg font-extrabold tracking-tight">G4Med</div>
-                    <div class="hidden truncate text-xs font-medium text-slate-600 sm:block">Intelligent Health System
-                    </div>
+                    <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                        G4Med
+                    </p>
+
+                    <h1 class="truncate text-lg font-semibold text-slate-900">
+                        Grupo de Atendimento
+                    </h1>
                 </div>
             </div>
-            <div class="flex items-center gap-2 sm:gap-3">
+
+            <div class="hidden max-w-xl flex-1 md:block">
+                <label for="topSearch" class="sr-only">
+                    Pesquisar grupos de atendimento
+                </label>
+
+                <input id="topSearch" type="search"
+                    class="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-primary-600 focus:bg-white focus:ring-2 focus:ring-primary-600/20"
+                    placeholder="Buscar grupos de atendimento...">
+            </div>
+
+            <div class="flex items-center gap-2">
                 <button type="button"
-                    class="focusable relative grid h-11 w-11 place-items-center rounded-full text-slate-700 transition hover:bg-slate-100"
-                    aria-label="Notificações, 3 não lidas">
+                    class="relative flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
+                    aria-label="Notificações">
                     <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
-                        aria-hidden="true">
-                        <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5" />
-                        <path d="M9 17a3 3 0 0 0 6 0" />
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5">
+                        </path>
+                        <path d="M9 17a3 3 0 0 0 6 0"></path>
                     </svg>
                     <span
-                        class="absolute right-0 top-0 grid h-5 min-w-5 place-items-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">3</span>
+                        class="absolute -right-1 -top-1 min-w-5 rounded-full bg-red-600 px-1 text-center text-[10px] font-bold leading-5 text-white">3</span>
                 </button>
-                <div class="grid h-11 w-11 place-items-center rounded-full bg-teal-700 font-bold text-white"
-                    aria-label="Usuário Carlos Mendes">CM</div>
-                <div class="hidden leading-tight md:block">
-                    <div class="text-sm font-semibold">Dr. Carlos Mendes</div>
-                    <div class="text-xs font-medium text-slate-600">Administrador</div>
+
+                <div class="hidden items-center gap-3 sm:flex">
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 font-semibold text-white">
+                        CM
+                    </div>
+
+                    <div class="leading-tight">
+                        <p class="text-sm font-semibold text-slate-800">
+                            Dr. Carlos Mendes
+                        </p>
+                        <p class="text-xs text-slate-400">
+                            Administrador
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <main>
-        <section class="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-            <div class="max-w-3xl">
-                <p class="mb-2 text-sm font-bold uppercase tracking-[.12em] text-teal-700">Configuração de atendimento
+    <main id="mainContent" class="mx-auto max-w-7xl px-4 py-6 pb-16 sm:px-6 lg:px-8 lg:py-8">
+
+        <section class="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+            <div>
+                <nav class="mb-3 text-sm text-slate-500" aria-label="Navegação estrutural">
+                    <ol class="flex items-center gap-2">
+                        <li>Cadastros</li>
+                        <li>/</li>
+                        <li class="font-medium text-primary-700">
+                            Grupo de Atendimento
+                        </li>
+                    </ol>
+                </nav>
+
+                <h2 class="text-3xl font-semibold tracking-tight text-navy sm:text-4xl">
+                    Grupo de Atendimento
+                </h2>
+
+                <p class="mt-2 max-w-3xl text-base leading-7 text-slate-500">
+                    Organize e configure os tipos de atendimento realizados pela instituição.
                 </p>
-                <h1 class="text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">Grupo de Atendimento</h1>
-                <p class="mt-3 max-w-2xl text-base leading-7 text-slate-700">Pesquise e selecione os grupos que farão
-                    parte do fluxo clínico.</p>
             </div>
 
-            <div class="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
-                <article class="feature-card flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
-                    <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-slate-500" fill="none" stroke="currentColor"
-                        stroke-width="2" aria-hidden="true">
-                        <path d="M3 13h3l2-5 4 10 2-5h7" />
-                    </svg>
-                    <div>
-                        <h2 class="text-sm font-semibold text-slate-800">Monitoramento</h2>
-                        <p class="mt-1 text-xs leading-5 text-slate-600">Indicadores em tempo real</p>
-                    </div>
-                </article>
-                <article class="feature-card flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
-                    <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-slate-500" fill="none" stroke="currentColor"
-                        stroke-width="2" aria-hidden="true">
-                        <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z" />
-                    </svg>
-                    <div>
-                        <h2 class="text-sm font-semibold text-slate-800">Segurança</h2>
-                        <p class="mt-1 text-xs leading-5 text-slate-600">Controle de acesso</p>
-                    </div>
-                </article>
-                <article class="feature-card flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
-                    <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-slate-500" fill="none" stroke="currentColor"
-                        stroke-width="2" aria-hidden="true">
-                        <path d="M4 5h6l2 3h8v11H4z" />
-                    </svg>
-                    <div>
-                        <h2 class="text-sm font-semibold text-slate-800">Arquivos</h2>
-                        <p class="mt-1 text-xs leading-5 text-slate-600">Documentos centralizados</p>
-                    </div>
-                </article>
-                <article class="feature-card flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
-                    <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-slate-500" fill="none" stroke="currentColor"
-                        stroke-width="2" aria-hidden="true">
-                        <path d="M4 19V5M8 19v-8m4 8V8m4 11v-5m4 5V6" />
-                    </svg>
-                    <div>
-                        <h2 class="text-sm font-semibold text-slate-800">Relatórios</h2>
-                        <p class="mt-1 text-xs leading-5 text-slate-600">Desempenho e volume</p>
-                    </div>
-                </article>
+            <button id="newGroupBtn" type="button"
+                class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 font-semibold text-white shadow-sm transition hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2">
+
+                <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5v14"></path>
+                    <path d="M5 12h14"></path>
+                </svg>
+
+                Novo Grupo
+            </button>
+        </section>
+
+        <section class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+                <p class="text-sm text-slate-500">Total de grupos</p>
+                <p id="totalGroupsMetric" class="mt-2 text-3xl font-semibold text-slate-900">0</p>
+                <p class="mt-1 text-xs text-slate-400">Grupos cadastrados</p>
+            </article>
+
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+                <p class="text-sm text-slate-500">Grupos ativos</p>
+                <p id="activeGroupsMetric" class="mt-2 text-3xl font-semibold text-emerald-600">0</p>
+                <p class="mt-1 text-xs text-slate-400">Disponíveis para utilização</p>
+            </article>
+
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+                <p class="text-sm text-slate-500">Tipos vinculados</p>
+                <p id="linkedTypesMetric" class="mt-2 text-3xl font-semibold text-primary-600">0</p>
+                <p class="mt-1 text-xs text-slate-400">Tipos de atendimento</p>
+            </article>
+
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+                <p class="text-sm text-slate-500">Unidades relacionadas</p>
+                <p id="linkedUnitsMetric" class="mt-2 text-3xl font-semibold text-blue-600">0</p>
+                <p class="mt-1 text-xs text-slate-400">Estrutura multiunidade</p>
+            </article>
+        </section>
+
+        <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6"
+            aria-labelledby="filtersTitle">
+
+            <div class="mb-5">
+                <h3 id="filtersTitle" class="text-lg font-semibold text-slate-900">
+                    Pesquisar grupos
+                </h3>
+
+                <p class="mt-1 text-sm text-slate-500">
+                    Utilize os filtros para localizar um grupo rapidamente.
+                </p>
             </div>
 
-            <div class="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,.85fr)] lg:gap-8">
-                <section aria-labelledby="searchHeading"
-                    class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                    <h2 id="searchHeading" class="text-xl font-bold text-slate-950">Buscar grupos de atendimento</h2>
-                    <p class="mt-2 text-sm leading-6 text-slate-700">Digite um nome ou escolha uma opção frequente.</p>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
 
-                    <div class="relative mt-5">
-                        <label for="groupSearch" class="sr-only">Pesquisar grupos</label>
-                        <svg viewBox="0 0 24 24"
-                            class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500"
-                            fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <circle cx="11" cy="11" r="7" />
-                            <path d="m20 20-3.5-3.5" />
-                        </svg>
-                        <input id="groupSearch" type="search" autocomplete="off" placeholder="Pesquisar grupos..."
-                            aria-controls="searchResults" aria-describedby="searchHint"
-                            class="focusable h-12 w-full rounded-xl border border-slate-300 bg-white pl-12 pr-4 text-base text-slate-900 placeholder:text-slate-500 hover:border-slate-400 focus:border-teal-600 focus:outline-none" />
-                    </div>
-                    <p id="searchHint" class="mt-2 text-xs text-slate-600">Os resultados são atualizados enquanto você
-                        digita.</p>
-                    <div id="searchResults"
-                        class="mt-3 hidden overflow-hidden rounded-xl border border-slate-200 bg-white" role="listbox"
-                        aria-label="Resultados da busca"></div>
-                    <p id="noResults" class="mt-3 hidden rounded-xl bg-slate-50 p-4 text-sm text-slate-700">Nenhum grupo
-                        encontrado.</p>
+                <div class="xl:col-span-2">
+                    <label for="groupSearch" class="form-label">
+                        Busca
+                    </label>
 
-                    <div class="mt-8 border-t border-slate-200 pt-6">
-                        <h3 class="text-base font-bold text-slate-900">Grupos de atendimento frequentes</h3>
-                        <div id="frequentGroups" class="mt-4 flex flex-wrap gap-3"></div>
-                    </div>
-                </section>
+                    <input id="groupSearch" type="search" class="form-input"
+                        placeholder="Pesquisar por código ou nome do grupo..." aria-describedby="searchStatus">
 
-                <aside aria-labelledby="selectedHeading"
-                    class="flex min-h-[460px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:sticky lg:top-24">
-                    <div class="flex items-center justify-between gap-4 border-b border-slate-200 px-6 py-5">
-                        <h2 id="selectedHeading" class="text-xl font-bold text-slate-950">Grupos selecionados</h2>
-                        <span id="selectedCount" aria-live="polite" aria-atomic="true"
-                            class="shrink-0 rounded-full bg-teal-100 px-3 py-1 text-xs font-bold text-teal-900">0
-                            itens</span>
-                    </div>
+                    <p id="searchStatus" class="sr-only" aria-live="polite"></p>
+                </div>
 
-                    <div class="flex-1 p-6">
-                        <div id="selectedEmpty"
-                            class="flex min-h-[270px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center">
-                            <div class="mb-4 grid h-20 w-20 place-items-center rounded-full bg-teal-50 text-teal-700"
-                                aria-hidden="true">
-                                <svg viewBox="0 0 24 24" class="h-10 w-10" fill="none" stroke="currentColor"
-                                    stroke-width="1.8">
-                                    <path d="M8 4h8l2 2v14H6V6z" />
-                                    <path d="M9 12h6m-3-3v6" />
-                                </svg>
-                            </div>
-                            <h3 class="text-lg font-bold text-slate-900">Nenhum grupo selecionado</h3>
-                            <p class="mt-2 max-w-xs text-sm leading-6 text-slate-700">Use a busca ou selecione um grupo
-                                frequente para adicioná-lo aqui.</p>
-                        </div>
-                        <ul id="selectedList" class="hidden space-y-3" aria-label="Lista de grupos selecionados"></ul>
-                    </div>
+                <div>
+                    <label for="filterCategory" class="form-label">
+                        Categoria
+                    </label>
 
-                    <div class="border-t border-slate-200 bg-white p-6">
-                        <button id="saveButton" type="button" disabled
-                            class="focusable flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-teal-700 px-5 py-3 font-bold text-white shadow-sm transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-600 disabled:shadow-none">
-                            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor"
-                                stroke-width="2.2" aria-hidden="true">
-                                <path d="M20 6 9 17l-5-5" />
-                            </svg>
-                            Salvar grupo
-                        </button>
-                    </div>
-                </aside>
+                    <select id="filterCategory" class="form-input">
+                        <option value="">Todas</option>
+                        <option value="Ambulatorial">Ambulatorial</option>
+                        <option value="Consulta">Consulta</option>
+                        <option value="Retorno">Retorno</option>
+                        <option value="Urgência">Urgência</option>
+                        <option value="Emergência">Emergência</option>
+                        <option value="Internação">Internação</option>
+                        <option value="Diagnóstico">Diagnóstico</option>
+                        <option value="Terapêutico">Terapêutico</option>
+                        <option value="Cirúrgico">Cirúrgico</option>
+                        <option value="Preventivo">Preventivo</option>
+                        <option value="Teleatendimento">Teleatendimento</option>
+                        <option value="Multiprofissional">Multiprofissional</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filterStatus" class="form-label">
+                        Status
+                    </label>
+
+                    <select id="filterStatus" class="form-input">
+                        <option value="">Todos</option>
+                        <option value="ACTIVE">Ativo</option>
+                        <option value="INACTIVE">Inativo</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filterUnit" class="form-label">
+                        Unidade
+                    </label>
+
+                    <select id="filterUnit" class="form-input">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mt-4 flex justify-end">
+                <button id="clearFiltersBtn" type="button" class="action-secondary">
+                    Limpar filtros
+                </button>
+            </div>
+        </section>
+
+        <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft"
+            aria-labelledby="groupsTitle">
+
+            <div
+                class="flex flex-col gap-3 border-b border-slate-200 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                <div>
+                    <h3 id="groupsTitle" class="text-lg font-semibold text-slate-900">
+                        Grupos de atendimento
+                    </h3>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Consulte e gerencie os grupos cadastrados.
+                    </p>
+                </div>
+
+                <span id="resultCount" class="text-sm text-slate-500" aria-live="polite">
+                    0 grupos encontrados
+                </span>
+            </div>
+
+            <div id="groupsLoading" class="hidden space-y-3 p-6" aria-live="polite">
+                <span class="sr-only">Carregando grupos...</span>
+                <div class="skeleton h-14 rounded-xl"></div>
+                <div class="skeleton h-14 rounded-xl"></div>
+                <div class="skeleton h-14 rounded-xl"></div>
+                <div class="skeleton h-14 rounded-xl"></div>
+            </div>
+
+            <div id="groupsTableWrapper" class="overflow-x-auto">
+                <table class="min-w-[1100px] w-full text-left text-sm">
+                    <caption class="sr-only">
+                        Lista de grupos de atendimento
+                    </caption>
+
+                    <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                        <tr>
+                            <th class="px-5 py-4">Código</th>
+                            <th class="px-5 py-4">Grupo de Atendimento</th>
+                            <th class="px-5 py-4">Categoria</th>
+                            <th class="px-5 py-4">Grupo Pai</th>
+                            <th class="px-5 py-4">Tipos</th>
+                            <th class="px-5 py-4">Unidades</th>
+                            <th class="px-5 py-4">Status</th>
+                            <th class="px-5 py-4">Atualizado em</th>
+                            <th class="px-5 py-4 text-right">Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="groupTableBody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+
+            <div id="groupsEmptyState" class="hidden px-6 py-16 text-center">
+                <div
+                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+                    <svg viewBox="0 0 24 24" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 7h16"></path>
+                        <path d="M4 12h16"></path>
+                        <path d="M4 17h10"></path>
+                    </svg>
+                </div>
+
+                <h4 class="text-lg font-semibold text-slate-900">
+                    Nenhum grupo de atendimento encontrado.
+                </h4>
+
+                <p class="mx-auto mt-2 max-w-md text-sm text-slate-500">
+                    Cadastre o primeiro grupo ou altere os filtros selecionados.
+                </p>
+
+                <button id="emptyCreateBtn" type="button" class="action-primary mt-6">
+                    + Novo Grupo
+                </button>
+            </div>
+
+            <div id="groupsErrorState" class="hidden px-6 py-16 text-center">
+                <h4 class="text-lg font-semibold text-slate-900">
+                    Não foi possível carregar os grupos.
+                </h4>
+
+                <p class="mt-2 text-sm text-slate-500">
+                    Tente novamente em alguns instantes.
+                </p>
+
+                <button id="retryBtn" type="button" class="action-secondary mt-6">
+                    Tentar novamente
+                </button>
+            </div>
+
+            <div id="pagination"
+                class="flex flex-col gap-3 border-t border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+
+                <p id="paginationInfo" class="text-sm text-slate-500">
+                    Exibindo 0 grupos
+                </p>
+
+                <div class="flex items-center gap-2">
+                    <button id="previousPageBtn" type="button"
+                        class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm disabled:opacity-50">
+                        Anterior
+                    </button>
+
+                    <span id="pageLabel" class="min-w-24 text-center text-sm text-slate-600">
+                        Página 1
+                    </span>
+
+                    <button id="nextPageBtn" type="button"
+                        class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm disabled:opacity-50">
+                        Próxima
+                    </button>
+                </div>
             </div>
         </section>
     </main>
 
-    <div id="statusMessage" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+    <!-- Modal principal -->
+    <div id="groupModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="groupModalTitle">
+
+        <div class="modal-overlay" data-close-modal="groupModal"></div>
+
+        <section class="modal-panel modal-panel-xl">
+
+            <header class="modal-header">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-primary-700">
+                        Cadastro administrativo
+                    </p>
+
+                    <h2 id="groupModalTitle" class="mt-1 text-xl font-bold text-slate-900">
+                        Novo Grupo de Atendimento
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Cadastre e configure um novo grupo de atendimento.
+                    </p>
+                </div>
+
+                <button type="button" class="modal-close" data-close-modal="groupModal" aria-label="Fechar modal">
+                    ×
+                </button>
+            </header>
+
+            <nav class="modal-tabs" role="tablist" aria-label="Seções do grupo">
+
+                <button type="button" class="modal-tab is-active" data-tab="general" role="tab" aria-selected="true"
+                    aria-controls="panelGeneral">
+                    Dados Gerais
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="types" role="tab" aria-selected="false"
+                    aria-controls="panelTypes">
+                    Tipos
+                    <span id="typeCount" class="tab-counter">0</span>
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="rules" role="tab" aria-selected="false"
+                    aria-controls="panelRules">
+                    Regras
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="schedule" role="tab" aria-selected="false"
+                    aria-controls="panelSchedule">
+                    Agenda
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="flow" role="tab" aria-selected="false"
+                    aria-controls="panelFlow">
+                    Fluxo
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="triage" role="tab" aria-selected="false"
+                    aria-controls="panelTriage">
+                    Triagem
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="channels" role="tab" aria-selected="false"
+                    aria-controls="panelChannels">
+                    Canais
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="units" role="tab" aria-selected="false"
+                    aria-controls="panelUnits">
+                    Unidades
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="professionals" role="tab" aria-selected="false"
+                    aria-controls="panelProfessionals">
+                    Profissionais
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="procedures" role="tab" aria-selected="false"
+                    aria-controls="panelProcedures">
+                    Procedimentos
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="documents" role="tab" aria-selected="false"
+                    aria-controls="panelDocuments">
+                    Documentos
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="resources" role="tab" aria-selected="false"
+                    aria-controls="panelResources">
+                    Recursos
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="agreements" role="tab" aria-selected="false"
+                    aria-controls="panelAgreements">
+                    Convênios
+                </button>
+
+                <button type="button" class="modal-tab" data-tab="audit" role="tab" aria-selected="false"
+                    aria-controls="panelAudit">
+                    Auditoria
+                </button>
+            </nav>
+
+            <form id="groupForm" novalidate>
+                <input id="groupId" type="hidden">
+
+                <div class="modal-body">
+
+                    <!-- Dados gerais -->
+                    <section id="panelGeneral" class="tab-panel" data-panel="general" role="tabpanel">
+
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                            <div>
+                                <label for="groupCode" class="form-label">
+                                    Código *
+                                </label>
+
+                                <input id="groupCode" type="text" class="form-input bg-slate-100" readonly>
+
+                                <p id="groupCodeError" class="field-error"></p>
+                            </div>
+
+                            <div>
+                                <label class="form-label">Status *</label>
+
+                                <div class="flex min-h-12 items-center gap-5 rounded-xl border border-slate-300 px-4">
+                                    <label class="inline-flex items-center gap-2 text-sm">
+                                        <input id="statusActive" name="groupStatus" type="radio" value="ACTIVE" checked>
+                                        Ativo
+                                    </label>
+
+                                    <label class="inline-flex items-center gap-2 text-sm">
+                                        <input id="statusInactive" name="groupStatus" type="radio" value="INACTIVE">
+                                        Inativo
+                                    </label>
+                                </div>
+
+                                <p id="groupStatusError" class="field-error"></p>
+                            </div>
+
+                            <div>
+                                <label for="groupName" class="form-label">
+                                    Nome do Grupo *
+                                </label>
+
+                                <input id="groupName" type="text" class="form-input"
+                                    placeholder="Ex.: Atendimento Ambulatorial">
+
+                                <p id="groupNameError" class="field-error"></p>
+                            </div>
+
+                            <div>
+                                <label for="groupShortName" class="form-label">
+                                    Nome abreviado
+                                </label>
+
+                                <input id="groupShortName" type="text" class="form-input" placeholder="Ex.: AMB">
+                            </div>
+
+                            <div>
+                                <label for="groupCategory" class="form-label">
+                                    Categoria *
+                                </label>
+
+                                <select id="groupCategory" class="form-input">
+                                    <option value="">Selecione uma categoria</option>
+                                    <option value="Ambulatorial">Ambulatorial</option>
+                                    <option value="Consulta">Consulta</option>
+                                    <option value="Retorno">Retorno</option>
+                                    <option value="Urgência">Urgência</option>
+                                    <option value="Emergência">Emergência</option>
+                                    <option value="Internação">Internação</option>
+                                    <option value="Diagnóstico">Diagnóstico</option>
+                                    <option value="Terapêutico">Terapêutico</option>
+                                    <option value="Cirúrgico">Cirúrgico</option>
+                                    <option value="Preventivo">Preventivo</option>
+                                    <option value="Teleatendimento">Teleatendimento</option>
+                                    <option value="Multiprofissional">Multiprofissional</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+
+                                <p id="groupCategoryError" class="field-error"></p>
+                            </div>
+
+                            <div>
+                                <label for="groupParent" class="form-label">
+                                    Grupo Pai
+                                </label>
+
+                                <select id="groupParent" class="form-input">
+                                    <option value="">Nenhum — Grupo principal</option>
+                                </select>
+
+                                <p id="groupParentError" class="field-error"></p>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label for="groupDescription" class="form-label">
+                                    Descrição
+                                </label>
+
+                                <textarea id="groupDescription" rows="5" class="form-input resize-y"
+                                    placeholder="Descreva a finalidade do grupo."></textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Tipos -->
+                    <section id="panelTypes" class="tab-panel hidden" data-panel="types" role="tabpanel">
+
+                        <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h3 class="section-title">Tipos de Atendimento</h3>
+                                <p class="section-description">
+                                    Associe os tipos pertencentes ao grupo.
+                                </p>
+                            </div>
+
+                            <button id="addTypeBtn" type="button" class="action-primary">
+                                + Adicionar Tipo
+                            </button>
+                        </div>
+
+                        <div id="typesEmptyState"
+                            class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-12 text-center">
+                            <h4 class="font-semibold text-slate-800">
+                                Nenhum tipo associado
+                            </h4>
+                            <p class="mt-1 text-sm text-slate-500">
+                                Adicione tipos de atendimento para completar o grupo.
+                            </p>
+                        </div>
+
+                        <div id="typesTableWrapper" class="hidden overflow-x-auto rounded-xl border border-slate-200">
+
+                            <table class="min-w-[800px] w-full text-left text-sm">
+                                <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                                    <tr>
+                                        <th class="px-4 py-3">Código</th>
+                                        <th class="px-4 py-3">Tipo</th>
+                                        <th class="px-4 py-3">Especialidade</th>
+                                        <th class="px-4 py-3">Duração</th>
+                                        <th class="px-4 py-3">Canal</th>
+                                        <th class="px-4 py-3">Status</th>
+                                        <th class="px-4 py-3 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="typesTableBody" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+
+                        <p id="typesError" class="field-error"></p>
+                    </section>
+
+                    <!-- Regras -->
+                    <section id="panelRules" class="tab-panel hidden" data-panel="rules" role="tabpanel">
+
+                        <h3 class="section-title">Regras administrativas</h3>
+                        <p class="section-description">
+                            Configure as regras padrão do grupo.
+                        </p>
+
+                        <div class="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
+                            <label class="rule-card"><span><strong>Permite agendamento</strong><small>Disponibiliza o
+                                        grupo na agenda.</small></span><input id="ruleScheduling"
+                                    type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Permite encaixe</strong><small>Permite atendimento
+                                        fora da agenda.</small></span><input id="ruleWalkIn" type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Permite lista de espera</strong><small>Inclui
+                                        pacientes em espera.</small></span><input id="ruleWaitingList"
+                                    type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Atendimento particular</strong><small>Disponível para
+                                        particulares.</small></span><input id="rulePrivate" type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Atendimento por convênio</strong><small>Disponível
+                                        para conveniados.</small></span><input id="ruleAgreement"
+                                    type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Atendimento SUS</strong><small>Disponível para
+                                        atendimento público.</small></span><input id="ruleSus" type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Permite teleatendimento</strong><small>Permite
+                                        atendimento remoto.</small></span><input id="ruleTelemedicine"
+                                    type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Atendimento domiciliar</strong><small>Permite
+                                        atendimento externo.</small></span><input id="ruleHomeCare"
+                                    type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Exige confirmação</strong><small>Solicita confirmação
+                                        prévia.</small></span><input id="ruleConfirmation" type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Exige autorização</strong><small>Solicita autorização
+                                        prévia.</small></span><input id="ruleAuthorization" type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Exige solicitação médica</strong><small>Requer
+                                        solicitação profissional.</small></span><input id="ruleMedicalRequest"
+                                    type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Exige guia</strong><small>Requer guia
+                                        administrativa.</small></span><input id="ruleGuide" type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Permite reagendamento</strong><small>Permite alterar
+                                        o horário.</small></span><input id="ruleRescheduling" type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Permite retorno</strong><small>Permite registrar
+                                        retorno.</small></span><input id="ruleReturn" type="checkbox"></label>
+                            <label class="rule-card md:col-span-2"><span><strong>Atendimento sem
+                                        agendamento</strong><small>Permite iniciar o fluxo sem
+                                        reserva.</small></span><input id="ruleWithoutScheduling"
+                                    type="checkbox"></label>
+                        </div>
+                    </section>
+
+                    <!-- Agenda -->
+                    <section id="panelSchedule" class="tab-panel hidden" data-panel="schedule" role="tabpanel">
+
+                        <h3 class="section-title">Configurações de agenda</h3>
+                        <p class="section-description">
+                            Valores padrão que podem ser sobrescritos pelo tipo de atendimento.
+                        </p>
+
+                        <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+                            <div><label for="defaultDuration" class="form-label">Duração padrão</label><input
+                                    id="defaultDuration" type="number" min="1" value="30" class="form-input"></div>
+                            <div><label for="preparationTime" class="form-label">Tempo de preparação</label><input
+                                    id="preparationTime" type="number" min="0" value="10" class="form-input"></div>
+                            <div><label for="intervalTime" class="form-label">Intervalo entre atendimentos</label><input
+                                    id="intervalTime" type="number" min="0" value="5" class="form-input"></div>
+                            <div><label for="minimumAdvance" class="form-label">Antecedência mínima</label><input
+                                    id="minimumAdvance" type="number" min="0" value="30" class="form-input"></div>
+                            <div><label for="maximumAdvance" class="form-label">Antecedência máxima</label><input
+                                    id="maximumAdvance" type="number" min="0" value="90" class="form-input"></div>
+                            <div><label for="defaultRoom" class="form-label">Sala padrão</label><select id="defaultRoom"
+                                    class="form-input">
+                                    <option value="">Selecione uma sala</option>
+                                </select></div>
+                        </div>
+
+                        <div class="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
+                            <label class="rule-card"><span><strong>Permite encaixe</strong></span><input
+                                    id="scheduleWalkIn" type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Permite lista de espera</strong></span><input
+                                    id="scheduleWaitingList" type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Permite reagendamento</strong></span><input
+                                    id="scheduleRescheduling" type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Exige confirmação</strong></span><input
+                                    id="scheduleConfirmation" type="checkbox"></label>
+                        </div>
+                    </section>
+
+                    <!-- Fluxo -->
+                    <section id="panelFlow" class="tab-panel hidden" data-panel="flow" role="tabpanel">
+
+                        <h3 class="section-title">Fluxo do atendimento</h3>
+                        <p class="section-description">
+                            Ative as etapas aplicáveis ao grupo.
+                        </p>
+
+                        <div id="flowSteps" class="mt-5 space-y-3">
+                            <label class="flow-step"><span class="flow-step-order">1</span><span
+                                    class="flex-1"><strong>Agendamento</strong><small>Reserva de data e
+                                        horário.</small></span><input id="flowScheduling" type="checkbox"
+                                    checked></label>
+                            <label class="flow-step"><span class="flow-step-order">2</span><span
+                                    class="flex-1"><strong>Confirmação</strong><small>Confirmação da
+                                        presença.</small></span><input id="flowConfirmation" type="checkbox"
+                                    checked></label>
+                            <label class="flow-step"><span class="flow-step-order">3</span><span
+                                    class="flex-1"><strong>Check-in</strong><small>Registro da
+                                        chegada.</small></span><input id="flowCheckIn" type="checkbox" checked></label>
+                            <label class="flow-step"><span class="flow-step-order">4</span><span
+                                    class="flex-1"><strong>Recepção</strong><small>Atendimento
+                                        inicial.</small></span><input id="flowReception" type="checkbox"
+                                    checked></label>
+                            <label class="flow-step"><span class="flow-step-order">5</span><span
+                                    class="flex-1"><strong>Triagem</strong><small>Avaliação
+                                        inicial.</small></span><input id="flowTriage" type="checkbox"></label>
+                            <label class="flow-step"><span class="flow-step-order">6</span><span
+                                    class="flex-1"><strong>Aguardando Atendimento</strong><small>Entrada na fila
+                                        assistencial.</small></span><input id="flowWaiting" type="checkbox"
+                                    checked></label>
+                            <label class="flow-step"><span class="flow-step-order">7</span><span
+                                    class="flex-1"><strong>Atendimento</strong><small>Execução do
+                                        atendimento.</small></span><input id="flowAttendance" type="checkbox"
+                                    checked></label>
+                            <label class="flow-step"><span class="flow-step-order">8</span><span
+                                    class="flex-1"><strong>Procedimento</strong><small>Execução do
+                                        procedimento.</small></span><input id="flowProcedure" type="checkbox"></label>
+                            <label class="flow-step"><span class="flow-step-order">9</span><span
+                                    class="flex-1"><strong>Finalização</strong><small>Conclusão do
+                                        atendimento.</small></span><input id="flowCompletion" type="checkbox"
+                                    checked></label>
+                            <label class="flow-step"><span class="flow-step-order">10</span><span
+                                    class="flex-1"><strong>Faturamento</strong><small>Processamento
+                                        administrativo.</small></span><input id="flowBilling" type="checkbox"
+                                    checked></label>
+                        </div>
+                    </section>
+
+                    <!-- Triagem -->
+                    <section id="panelTriage" class="tab-panel hidden" data-panel="triage" role="tabpanel">
+                        <h3 class="section-title">Triagem</h3>
+                        <p class="section-description">Configure os requisitos assistenciais.</p>
+
+                        <div class="mt-5 space-y-3">
+                            <label class="rule-card"><span><strong>Exige triagem</strong><small>A triagem ocorre antes
+                                        do atendimento.</small></span><input id="triageRequired"
+                                    type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Exige sinais vitais</strong><small>Obriga o registro
+                                        dos sinais vitais.</small></span><input id="triageVitalSigns"
+                                    type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Exige classificação de
+                                        risco</strong><small>Classifica o risco assistencial.</small></span><input
+                                    id="triageRiskClassification" type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Exige avaliação de enfermagem</strong><small>Exige
+                                        avaliação da enfermagem.</small></span><input id="triageNursingAssessment"
+                                    type="checkbox"></label>
+                        </div>
+                    </section>
+
+                    <!-- Canais -->
+                    <section id="panelChannels" class="tab-panel hidden" data-panel="channels" role="tabpanel">
+                        <h3 class="section-title">Canais de atendimento</h3>
+                        <p class="section-description">Selecione os canais disponíveis.</p>
+
+                        <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <label class="selection-card"><input id="channelInPerson" type="checkbox"
+                                    value="Presencial"><span><strong>Presencial</strong><small>Atendimento na
+                                        unidade.</small></span></label>
+                            <label class="selection-card"><input id="channelTelemedicine" type="checkbox"
+                                    value="Telemedicina"><span><strong>Telemedicina</strong><small>Atendimento médico
+                                        remoto.</small></span></label>
+                            <label class="selection-card"><input id="channelTeleconsultation" type="checkbox"
+                                    value="Teleconsulta"><span><strong>Teleconsulta</strong><small>Consulta por
+                                        vídeo.</small></span></label>
+                            <label class="selection-card"><input id="channelPhone" type="checkbox"
+                                    value="Telefone"><span><strong>Telefone</strong><small>Atendimento
+                                        telefônico.</small></span></label>
+                            <label class="selection-card"><input id="channelHomeCare" type="checkbox"
+                                    value="Domiciliar"><span><strong>Domiciliar</strong><small>Atendimento
+                                        residencial.</small></span></label>
+                            <label class="selection-card"><input id="channelExternal" type="checkbox"
+                                    value="Externo"><span><strong>Externo</strong><small>Atendimento fora da
+                                        unidade.</small></span></label>
+                        </div>
+                    </section>
+
+                    <!-- Unidades -->
+                    <section id="panelUnits" class="tab-panel hidden" data-panel="units" role="tabpanel">
+                        <h3 class="section-title">Unidades e locais</h3>
+                        <p class="section-description">Associe unidades, setores e salas.</p>
+
+                        <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+                            <div><label for="groupUnits" class="form-label">Unidades</label><select id="groupUnits"
+                                    multiple class="form-input min-h-40"></select></div>
+                            <div><label for="groupSectors" class="form-label">Setores</label><select id="groupSectors"
+                                    multiple class="form-input min-h-40">
+                                    <option>Recepção</option>
+                                    <option>Triagem</option>
+                                    <option>Consultórios</option>
+                                    <option>Sala de procedimentos</option>
+                                    <option>Centro cirúrgico</option>
+                                </select></div>
+                            <div class="md:col-span-2"><label for="groupRooms" class="form-label">Salas</label><select
+                                    id="groupRooms" multiple class="form-input min-h-40"></select></div>
+                        </div>
+                    </section>
+
+                    <!-- Profissionais -->
+                    <section id="panelProfessionals" class="tab-panel hidden" data-panel="professionals"
+                        role="tabpanel">
+                        <h3 class="section-title">Profissionais e especialidades</h3>
+                        <p class="section-description">Defina regras de elegibilidade.</p>
+
+                        <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+                            <div><label for="groupSpecialties" class="form-label">Especialidades</label><select
+                                    id="groupSpecialties" multiple class="form-input min-h-48"></select></div>
+                            <div><label for="groupProfessionals" class="form-label">Profissionais
+                                    habilitados</label><select id="groupProfessionals" multiple
+                                    class="form-input min-h-48"></select></div>
+                        </div>
+                    </section>
+
+                    <!-- Procedimentos -->
+                    <section id="panelProcedures" class="tab-panel hidden" data-panel="procedures" role="tabpanel">
+                        <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h3 class="section-title">Procedimentos compatíveis</h3>
+                                <p class="section-description">Associe procedimentos ao grupo.</p>
+                            </div>
+
+                            <button id="addProcedureBtn" type="button" class="action-primary">
+                                + Associar Procedimento
+                            </button>
+                        </div>
+
+                        <div id="proceduresEmptyState"
+                            class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-12 text-center">
+                            <h4 class="font-semibold text-slate-800">Nenhum procedimento associado</h4>
+                            <p class="mt-1 text-sm text-slate-500">Associe procedimentos compatíveis.</p>
+                        </div>
+
+                        <div id="proceduresTableWrapper"
+                            class="hidden overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="min-w-[720px] w-full text-left text-sm">
+                                <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                                    <tr>
+                                        <th class="px-4 py-3">Código</th>
+                                        <th class="px-4 py-3">Procedimento</th>
+                                        <th class="px-4 py-3">Especialidade</th>
+                                        <th class="px-4 py-3">Duração</th>
+                                        <th class="px-4 py-3">Status</th>
+                                        <th class="px-4 py-3 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="proceduresTableBody" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Documentos -->
+                    <section id="panelDocuments" class="tab-panel hidden" data-panel="documents" role="tabpanel">
+                        <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h3 class="section-title">Documentos e prontuário</h3>
+                                <p class="section-description">Configure documentos e componentes assistenciais.</p>
+                            </div>
+
+                            <button id="addDocumentBtn" type="button" class="action-primary">
+                                + Adicionar Documento
+                            </button>
+                        </div>
+
+                        <div id="documentsEmptyState"
+                            class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center">
+                            <p class="font-medium text-slate-700">Nenhum documento associado.</p>
+                        </div>
+
+                        <div id="documentsTableWrapper"
+                            class="hidden overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="min-w-[700px] w-full text-left text-sm">
+                                <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                                    <tr>
+                                        <th class="px-4 py-3">Documento</th>
+                                        <th class="px-4 py-3">Tipo</th>
+                                        <th class="px-4 py-3">Obrigatoriedade</th>
+                                        <th class="px-4 py-3">Momento</th>
+                                        <th class="px-4 py-3 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="documentsTableBody" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <label class="selection-card"><input id="recordAnamnesis"
+                                    type="checkbox"><span><strong>Anamnese</strong></span></label>
+                            <label class="selection-card"><input id="recordPhysicalExam"
+                                    type="checkbox"><span><strong>Exame físico</strong></span></label>
+                            <label class="selection-card"><input id="recordVitalSigns"
+                                    type="checkbox"><span><strong>Sinais vitais</strong></span></label>
+                            <label class="selection-card"><input id="recordDiagnosis"
+                                    type="checkbox"><span><strong>Diagnóstico</strong></span></label>
+                            <label class="selection-card"><input id="recordPrescription"
+                                    type="checkbox"><span><strong>Prescrição</strong></span></label>
+                            <label class="selection-card"><input id="recordExamRequest"
+                                    type="checkbox"><span><strong>Solicitação de exames</strong></span></label>
+                            <label class="selection-card"><input id="recordCertificate"
+                                    type="checkbox"><span><strong>Atestado</strong></span></label>
+                            <label class="selection-card"><input id="recordEvolution"
+                                    type="checkbox"><span><strong>Evolução</strong></span></label>
+                        </div>
+                    </section>
+
+                    <!-- Recursos -->
+                    <section id="panelResources" class="tab-panel hidden" data-panel="resources" role="tabpanel">
+                        <h3 class="section-title">Recursos</h3>
+                        <p class="section-description">Associe recursos físicos e humanos.</p>
+
+                        <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-3">
+                            <div><label for="resourceRooms" class="form-label">Salas</label><select id="resourceRooms"
+                                    multiple class="form-input min-h-40"></select></div>
+                            <div><label for="resourceEquipment" class="form-label">Equipamentos</label><select
+                                    id="resourceEquipment" multiple class="form-input min-h-40"></select></div>
+                            <div><label for="resourceStaff" class="form-label">Recursos humanos</label><select
+                                    id="resourceStaff" multiple class="form-input min-h-40">
+                                    <option>Médico</option>
+                                    <option>Enfermeiro</option>
+                                    <option>Técnico de Enfermagem</option>
+                                    <option>Recepcionista</option>
+                                </select></div>
+                        </div>
+                    </section>
+
+                    <!-- Convênios -->
+                    <section id="panelAgreements" class="tab-panel hidden" data-panel="agreements" role="tabpanel">
+                        <h3 class="section-title">Convênios e modalidades</h3>
+                        <p class="section-description">Configure as modalidades aceitas.</p>
+
+                        <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <label class="selection-card"><input id="agreementPrivate" type="checkbox"
+                                    value="Particular"><span><strong>Particular</strong></span></label>
+                            <label class="selection-card"><input id="agreementHealthPlan" type="checkbox"
+                                    value="Convênio"><span><strong>Convênio</strong></span></label>
+                            <label class="selection-card"><input id="agreementSus" type="checkbox"
+                                    value="SUS"><span><strong>SUS</strong></span></label>
+                            <label class="selection-card"><input id="agreementCourtesy" type="checkbox"
+                                    value="Cortesia"><span><strong>Cortesia</strong></span></label>
+                            <label class="selection-card"><input id="agreementCorporate" type="checkbox"
+                                    value="Empresarial"><span><strong>Empresarial</strong></span></label>
+                            <label class="selection-card"><input id="agreementOther" type="checkbox"
+                                    value="Outros"><span><strong>Outros</strong></span></label>
+                        </div>
+
+                        <div class="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
+                            <label class="rule-card"><span><strong>Exige carteirinha</strong></span><input
+                                    id="agreementCardRequired" type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Exige autorização</strong></span><input
+                                    id="agreementAuthorization" type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Exige guia</strong></span><input id="agreementGuide"
+                                    type="checkbox"></label>
+                            <label class="rule-card"><span><strong>Permite cobrança</strong></span><input
+                                    id="agreementBilling" type="checkbox"></label>
+                        </div>
+                    </section>
+
+                    <!-- Auditoria -->
+                    <section id="panelAudit" class="tab-panel hidden" data-panel="audit" role="tabpanel">
+                        <h3 class="section-title">Auditoria</h3>
+                        <p class="section-description">Histórico das alterações realizadas.</p>
+
+                        <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div class="audit-field">
+                                <span>Última alteração por</span>
+                                <strong id="auditUser">—</strong>
+                            </div>
+
+                            <div class="audit-field">
+                                <span>Data da alteração</span>
+                                <strong id="auditDate">—</strong>
+                            </div>
+                        </div>
+
+                        <ol id="auditTimeline" class="audit-timeline mt-6">
+                        </ol>
+                    </section>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="action-secondary" data-close-modal="groupModal">
+                        Cancelar
+                    </button>
+
+                    <button id="saveGroupBtn" type="submit" class="action-primary">
+                        <span class="btn-label">Salvar Grupo</span>
+                        <span class="btn-spinner loading-spinner hidden" aria-hidden="true"></span>
+                    </button>
+                </footer>
+            </form>
+        </section>
+    </div>
+
+    <!-- Modal de tipos -->
+    <div id="typeModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="typeModalTitle">
+
+        <div class="modal-overlay" data-close-modal="typeModal"></div>
+
+        <section class="modal-panel modal-panel-lg">
+            <header class="modal-header">
+                <div>
+                    <h2 id="typeModalTitle" class="text-xl font-bold text-slate-900">
+                        Associar Tipos de Atendimento
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Selecione os tipos que farão parte do grupo.
+                    </p>
+                </div>
+
+                <button type="button" class="modal-close" data-close-modal="typeModal" aria-label="Fechar modal">
+                    ×
+                </button>
+            </header>
+
+            <div class="modal-body">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label for="typeSearch" class="form-label">
+                            Pesquisar tipo
+                        </label>
+
+                        <input id="typeSearch" type="search" class="form-input"
+                            placeholder="Pesquisar por nome ou código...">
+                    </div>
+
+                    <div>
+                        <label for="typeSpecialtyFilter" class="form-label">
+                            Especialidade
+                        </label>
+
+                        <select id="typeSpecialtyFilter" class="form-input">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-5 flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
+                    <label class="inline-flex items-center gap-2 text-sm">
+                        <input id="selectAllTypes" type="checkbox">
+                        Selecionar todos
+                    </label>
+
+                    <span id="selectedTypeCount" class="text-sm text-slate-500">
+                        0 tipos selecionados
+                    </span>
+                </div>
+
+                <div id="typeResults" class="mt-4 max-h-96 space-y-2 overflow-y-auto" role="listbox">
+                </div>
+
+                <div id="typeResultsEmpty" class="hidden py-10 text-center">
+                    <p class="font-semibold text-slate-800">
+                        Nenhum tipo encontrado.
+                    </p>
+                </div>
+            </div>
+
+            <footer class="modal-footer">
+                <button type="button" class="action-secondary" data-close-modal="typeModal">
+                    Cancelar
+                </button>
+
+                <button id="associateTypesBtn" type="button" class="action-primary" disabled>
+                    Associar selecionados
+                </button>
+            </footer>
+        </section>
+    </div>
+
+    <!-- Modal de procedimentos -->
+    <div id="procedureModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="procedureModalTitle">
+
+        <div class="modal-overlay" data-close-modal="procedureModal"></div>
+
+        <section class="modal-panel modal-panel-lg">
+            <header class="modal-header">
+                <div>
+                    <h2 id="procedureModalTitle" class="text-xl font-bold text-slate-900">
+                        Associar Procedimentos
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Selecione os procedimentos compatíveis.
+                    </p>
+                </div>
+
+                <button type="button" class="modal-close" data-close-modal="procedureModal" aria-label="Fechar modal">
+                    ×
+                </button>
+            </header>
+
+            <div class="modal-body">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label for="procedureSearch" class="form-label">
+                            Pesquisar procedimento
+                        </label>
+
+                        <input id="procedureSearch" type="search" class="form-input"
+                            placeholder="Pesquisar por nome ou código...">
+                    </div>
+
+                    <div>
+                        <label for="procedureSpecialtyFilter" class="form-label">
+                            Especialidade
+                        </label>
+
+                        <select id="procedureSpecialtyFilter" class="form-input">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-5 flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
+                    <label class="inline-flex items-center gap-2 text-sm">
+                        <input id="selectAllProcedures" type="checkbox">
+                        Selecionar todos
+                    </label>
+
+                    <span id="selectedProcedureCount" class="text-sm text-slate-500">
+                        0 procedimentos selecionados
+                    </span>
+                </div>
+
+                <div id="procedureResults" class="mt-4 max-h-96 space-y-2 overflow-y-auto" role="listbox">
+                </div>
+
+                <div id="procedureResultsEmpty" class="hidden py-10 text-center">
+                    <p class="font-semibold text-slate-800">
+                        Nenhum procedimento encontrado.
+                    </p>
+                </div>
+            </div>
+
+            <footer class="modal-footer">
+                <button type="button" class="action-secondary" data-close-modal="procedureModal">
+                    Cancelar
+                </button>
+
+                <button id="associateProceduresBtn" type="button" class="action-primary" disabled>
+                    Associar selecionados
+                </button>
+            </footer>
+        </section>
+    </div>
+
+    <!-- Modal de documento -->
+    <div id="documentModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="documentModalTitle">
+
+        <div class="modal-overlay" data-close-modal="documentModal"></div>
+
+        <section class="modal-panel modal-panel-md">
+            <header class="modal-header">
+                <div>
+                    <h2 id="documentModalTitle" class="text-xl font-bold text-slate-900">
+                        Adicionar Documento
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Configure o documento do grupo.
+                    </p>
+                </div>
+
+                <button type="button" class="modal-close" data-close-modal="documentModal" aria-label="Fechar modal">
+                    ×
+                </button>
+            </header>
+
+            <form id="documentForm" novalidate>
+                <div class="modal-body space-y-5">
+                    <div>
+                        <label for="documentName" class="form-label">
+                            Nome do documento *
+                        </label>
+
+                        <input id="documentName" type="text" class="form-input"
+                            placeholder="Ex.: Termo de Consentimento">
+
+                        <p id="documentNameError" class="field-error"></p>
+                    </div>
+
+                    <div>
+                        <label for="documentType" class="form-label">
+                            Tipo
+                        </label>
+
+                        <select id="documentType" class="form-input">
+                            <option value="Termo">Termo</option>
+                            <option value="Checklist">Checklist</option>
+                            <option value="Orientação">Orientação</option>
+                            <option value="Protocolo">Protocolo</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="documentMoment" class="form-label">
+                            Momento da coleta
+                        </label>
+
+                        <select id="documentMoment" class="form-input">
+                            <option value="Agendamento">Agendamento</option>
+                            <option value="Check-in">Check-in</option>
+                            <option value="Triagem">Triagem</option>
+                            <option value="Atendimento">Atendimento</option>
+                            <option value="Finalização">Finalização</option>
+                        </select>
+                    </div>
+
+                    <label class="rule-card">
+                        <span>
+                            <strong>Documento obrigatório</strong>
+                            <small>Exigir antes da etapa configurada.</small>
+                        </span>
+
+                        <input id="documentRequired" type="checkbox">
+                    </label>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="action-secondary" data-close-modal="documentModal">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="action-primary">
+                        Adicionar Documento
+                    </button>
+                </footer>
+            </form>
+        </section>
+    </div>
+
+    <!-- Modal de confirmação -->
+    <div id="confirmModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+
+        <div class="modal-overlay" data-close-modal="confirmModal"></div>
+
+        <section class="modal-panel modal-panel-sm">
+            <header class="modal-header">
+                <div>
+                    <h2 id="confirmModalTitle" class="text-lg font-bold text-slate-900">
+                        Confirmar ação
+                    </h2>
+
+                    <p id="confirmModalMessage" class="mt-2 text-sm leading-6 text-slate-600">
+                        Confirme esta operação para continuar.
+                    </p>
+                </div>
+
+                <button type="button" class="modal-close" data-close-modal="confirmModal"
+                    aria-label="Fechar confirmação">
+                    ×
+                </button>
+            </header>
+
+            <footer class="modal-footer">
+                <button type="button" class="action-secondary" data-close-modal="confirmModal">
+                    Cancelar
+                </button>
+
+                <button id="confirmActionBtn" type="button"
+                    class="inline-flex min-h-12 items-center justify-center rounded-xl bg-red-600 px-5 font-semibold text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2">
+                    Confirmar
+                </button>
+            </footer>
+        </section>
+    </div>
+
+    <div id="toastArea" class="fixed right-4 top-4 z-[130] flex w-[min(380px,calc(100vw-2rem))] flex-col gap-3"
+        aria-live="polite" aria-atomic="true">
+    </div>
 
     <script src="grupo-de-atendimento.js" defer></script>
 </body>
