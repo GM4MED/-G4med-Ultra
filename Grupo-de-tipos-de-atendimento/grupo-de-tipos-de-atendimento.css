@@ -1,3 +1,8 @@
+/* ==========================================================================
+   G4Med — Tipos de Atendimento
+   CSS completo
+   ========================================================================== */
+
 :root {
     color-scheme: light;
 
@@ -39,20 +44,34 @@
 
     --shadow-soft: 0 8px 30px rgba(15, 23, 42, 0.08);
     --shadow-modal: 0 20px 60px rgba(15, 23, 42, 0.22);
+    --shadow-dropdown: 0 12px 32px rgba(15, 23, 42, 0.16);
 }
 
-* {
+/* ==========================================================================
+   Reset e base
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
 html {
+    width: 100%;
+    min-width: 320px;
     min-height: 100%;
+    overflow-x: hidden;
     scroll-behavior: smooth;
 }
 
 body {
+    width: 100%;
     min-width: 320px;
+    max-width: 100%;
+    min-height: 100vh;
     margin: 0;
+    overflow-x: hidden;
     background: var(--slate-50);
     color: var(--slate-700);
     font-family:
@@ -71,6 +90,7 @@ button,
 input,
 select,
 textarea {
+    max-width: 100%;
     font: inherit;
 }
 
@@ -80,6 +100,14 @@ button {
 
 button:disabled {
     cursor: not-allowed;
+}
+
+img,
+svg,
+video,
+canvas,
+iframe {
+    max-width: 100%;
 }
 
 button:focus-visible,
@@ -96,7 +124,66 @@ textarea:focus-visible {
     color: var(--slate-900);
 }
 
-/* Formulários */
+/* ==========================================================================
+   Layout principal full-width
+   ========================================================================== */
+
+.app-container-fluid,
+.page-atendimento,
+main#mainContent {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-right: 0;
+    margin-left: 0;
+    box-sizing: border-box;
+}
+
+.app-container-fluid {
+    padding: 16px 12px;
+    overflow-x: clip;
+}
+
+.page-atendimento.container,
+.page-atendimento.container-fluid,
+.app-container-fluid.container,
+.app-container-fluid.container-fluid {
+    width: 100%;
+    max-width: 100%;
+    margin-right: 0;
+    margin-left: 0;
+}
+
+header>div.mx-auto,
+main#mainContent.mx-auto {
+    width: 100%;
+    max-width: 100%;
+    margin-right: 0;
+    margin-left: 0;
+}
+
+main,
+section,
+article,
+header,
+footer,
+form,
+.flex,
+.grid {
+    min-width: 0;
+}
+
+.app-container-fluid>*,
+.page-atendimento>*,
+main#mainContent>* {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+/* ==========================================================================
+   Formulários
+   ========================================================================== */
 
 .form-label {
     display: block;
@@ -109,6 +196,8 @@ textarea:focus-visible {
 .form-input {
     display: block;
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     min-height: 3rem;
     border: 1px solid var(--slate-300);
     border-radius: 0.75rem;
@@ -117,6 +206,7 @@ textarea:focus-visible {
     color: var(--slate-900);
     font-size: 0.875rem;
     line-height: 1.4;
+    outline: none;
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease,
@@ -133,7 +223,6 @@ textarea:focus-visible {
 
 .form-input:focus {
     border-color: var(--primary);
-    outline: none;
     box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.13);
 }
 
@@ -174,7 +263,54 @@ textarea:focus-visible {
     line-height: 1.5;
 }
 
-/* Botões */
+/* ==========================================================================
+   Filtros
+   ========================================================================== */
+
+#filtersForm {
+    display: grid;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.875rem;
+}
+
+#filtersForm>div {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+#filtersForm input,
+#filtersForm select {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+#filterGroup,
+#filterCategory,
+#filterModality,
+#filterStatus {
+    appearance: none;
+    padding-right: 2.5rem;
+    background-image:
+        linear-gradient(45deg, transparent 50%, var(--slate-500) 50%),
+        linear-gradient(135deg, var(--slate-500) 50%, transparent 50%);
+    background-position:
+        calc(100% - 15px) 21px,
+        calc(100% - 10px) 21px;
+    background-repeat: no-repeat;
+    background-size:
+        5px 5px,
+        5px 5px;
+}
+
+/* ==========================================================================
+   Botões
+   ========================================================================== */
 
 .action-primary,
 .action-secondary {
@@ -187,6 +323,7 @@ textarea:focus-visible {
     padding: 0 1.25rem;
     font-size: 0.875rem;
     font-weight: 600;
+    white-space: nowrap;
     transition:
         background-color 0.2s ease,
         border-color 0.2s ease,
@@ -207,16 +344,6 @@ textarea:focus-visible {
     background: var(--primary-hover);
 }
 
-.action-primary:active,
-.action-secondary:active {
-    transform: scale(0.98);
-}
-
-.action-primary:disabled,
-.action-secondary:disabled {
-    opacity: 0.55;
-}
-
 .action-secondary {
     border: 1px solid var(--slate-300);
     background: #fff;
@@ -228,58 +355,45 @@ textarea:focus-visible {
     background: var(--slate-50);
 }
 
-/* Badges */
-
-.status-badge {
-    display: inline-flex;
-    min-height: 1.75rem;
-    align-items: center;
-    gap: 0.375rem;
-    white-space: nowrap;
-    border-radius: 9999px;
-    padding: 0 0.625rem;
-    font-size: 0.75rem;
-    font-weight: 700;
+.action-primary:active,
+.action-secondary:active {
+    transform: scale(0.98);
 }
 
-.status-badge::before {
-    width: 0.4rem;
-    height: 0.4rem;
-    border-radius: 50%;
-    background: currentColor;
-    content: "";
+/* ==========================================================================
+   Cards KPI
+   ========================================================================== */
+
+.kpi-card,
+.stat-card,
+.summary-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
-.status-active {
-    background: var(--success-50);
-    color: var(--success-600);
+.kpi-card *,
+.stat-card *,
+.summary-card * {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 
-.status-inactive {
-    background: var(--slate-100);
-    color: var(--slate-600);
-}
-
-.inheritance-badge {
-    display: inline-flex;
-    min-height: 2.5rem;
-    align-items: center;
-    border: 1px solid var(--primary-border);
-    border-radius: 0.75rem;
-    background: var(--primary-soft);
-    padding: 0 0.875rem;
-    color: var(--primary-hover);
-    font-size: 0.8125rem;
-    font-weight: 600;
-}
-
-/* Cards */
+/* ==========================================================================
+   Cards internos
+   ========================================================================== */
 
 .rule-card,
 .selection-card,
 .flow-step {
     display: flex;
+    width: 100%;
+    max-width: 100%;
     min-height: 4.75rem;
+    min-width: 0;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
@@ -345,34 +459,159 @@ textarea:focus-visible {
     font-weight: 700;
 }
 
-/* Tabelas */
+/* ==========================================================================
+   Badges
+   ========================================================================== */
 
-.attendance-type-row,
-.specialty-row,
-.professional-row,
-.procedure-row,
-.document-row {
-    animation: fade-in 180ms ease-out;
+.status-badge {
+    display: inline-flex;
+    min-height: 1.75rem;
+    align-items: center;
+    gap: 0.375rem;
+    white-space: nowrap;
+    border-radius: 9999px;
+    padding: 0 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 700;
 }
 
-.attendance-type-row:hover,
-.specialty-row:hover,
-.professional-row:hover,
-.procedure-row:hover,
-.document-row:hover {
+.status-badge::before {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: currentColor;
+    content: "";
+}
+
+.status-active {
+    background: var(--success-50);
+    color: var(--success-600);
+}
+
+.status-inactive {
+    background: var(--slate-100);
+    color: var(--slate-600);
+}
+
+.inheritance-badge {
+    display: inline-flex;
+    min-height: 2.5rem;
+    align-items: center;
+    border: 1px solid var(--primary-border);
+    border-radius: 0.75rem;
+    background: var(--primary-soft);
+    padding: 0 0.875rem;
+    color: var(--primary-hover);
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Card da tabela
+   ========================================================================== */
+
+.table-card,
+.table-card-full,
+.data-table-card,
+.list-card {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: visible;
+    box-sizing: border-box;
+}
+
+/*
+ * O wrapper continua controlando a rolagem horizontal da tabela.
+ *
+ * O dropdown não deve permanecer dentro deste wrapper quando aberto.
+ * O JavaScript deve movê-lo para o body.
+ */
+.table-responsive-wrapper,
+#typesTableWrapper,
+.table-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-color: var(--slate-300) transparent;
+    scrollbar-width: thin;
+}
+
+.table-responsive-wrapper::-webkit-scrollbar,
+#typesTableWrapper::-webkit-scrollbar,
+.table-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive-wrapper::-webkit-scrollbar-track,
+#typesTableWrapper::-webkit-scrollbar-track,
+.table-wrapper::-webkit-scrollbar-track {
+    background: var(--slate-100);
+}
+
+.table-responsive-wrapper::-webkit-scrollbar-thumb,
+#typesTableWrapper::-webkit-scrollbar-thumb,
+.table-wrapper::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background: var(--slate-300);
+}
+
+.table-responsive-wrapper::-webkit-scrollbar-thumb:hover,
+#typesTableWrapper::-webkit-scrollbar-thumb:hover,
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: var(--slate-400);
+}
+
+/* ==========================================================================
+   Tabelas
+   ========================================================================== */
+
+.table-responsive-wrapper table,
+#typesTableWrapper table,
+.table-wrapper table,
+.table-card-full table {
+    width: 100%;
+    max-width: 100%;
+    min-width: 1100px;
+    border-spacing: 0;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.table-responsive-wrapper th,
+.table-responsive-wrapper td,
+#typesTableWrapper th,
+#typesTableWrapper td,
+.table-wrapper th,
+.table-wrapper td,
+.table-card-full th,
+.table-card-full td {
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+.table-responsive-wrapper tbody tr,
+#typesTableWrapper tbody tr,
+.table-wrapper tbody tr,
+.table-card-full tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table-responsive-wrapper tbody tr:hover,
+#typesTableWrapper tbody tr:hover,
+.table-wrapper tbody tr:hover,
+.table-card-full tbody tr:hover {
     background: var(--slate-50);
 }
 
 .attendance-type-row.is-inactive {
     opacity: 0.68;
-}
-
-.attendance-type-row td,
-.specialty-row td,
-.professional-row td,
-.procedure-row td,
-.document-row td {
-    vertical-align: middle;
 }
 
 .clickable-count {
@@ -384,22 +623,23 @@ textarea:focus-visible {
     text-underline-offset: 3px;
 }
 
-.clickable-count:hover {
-    color: var(--primary-active);
-}
-
-/* Menus de ações */
+/* ==========================================================================
+   Dropdown da tabela
+   ========================================================================== */
 
 .row-actions {
     position: relative;
-    display: inline-block;
-    text-align: left;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
 }
 
 .row-menu-button {
+    position: relative;
+    z-index: 2;
     display: inline-flex;
-    min-height: 2.5rem;
-    min-width: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
     align-items: center;
     justify-content: center;
     border: 1px solid var(--slate-200);
@@ -410,42 +650,77 @@ textarea:focus-visible {
     line-height: 1;
     transition:
         border-color 0.2s ease,
-        background-color 0.2s ease;
+        background-color 0.2s ease,
+        color 0.2s ease;
 }
 
-.row-menu-button:hover {
-    border-color: var(--slate-300);
-    background: var(--slate-100);
+.row-menu-button:hover,
+.row-menu-button[aria-expanded="true"] {
+    border-color: var(--primary-border);
+    background: var(--primary-soft);
+    color: var(--primary-hover);
 }
 
+/*
+ * O dropdown deve ser fixed.
+ *
+ * O JavaScript deve mover o elemento para document.body ao abrir:
+ *
+ * document.body.appendChild(menu);
+ */
 .row-menu {
-    position: absolute;
-    right: 0;
-    z-index: 30;
+    position: fixed !important;
+    z-index: 99999;
+    display: block;
+    width: max-content;
     min-width: 13rem;
-    margin-top: 0.5rem;
-    overflow: hidden;
+    max-width: calc(100vw - 1.5rem);
+    max-height: calc(100vh - 1.5rem);
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0.35rem;
     border: 1px solid var(--slate-200);
     border-radius: 0.75rem;
     background: #fff;
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--shadow-dropdown);
+    opacity: 1;
+    visibility: visible;
+    transform-origin: top right;
+    animation: dropdown-enter 140ms ease-out;
 }
 
 .row-menu.hidden {
-    display: none;
+    display: none !important;
+}
+
+.row-menu.is-positioned {
+    display: block !important;
+}
+
+.row-menu.is-open-up {
+    transform-origin: bottom right;
+    animation-name: dropdown-enter-up;
 }
 
 .row-menu button {
-    display: block;
+    display: flex;
     width: 100%;
+    min-height: 2.5rem;
+    align-items: center;
+    gap: 0.625rem;
     border: 0;
     border-bottom: 1px solid var(--slate-100);
+    border-radius: 0.5rem;
     background: transparent;
-    padding: 0.7rem 0.875rem;
+    padding: 0.625rem 0.75rem;
     color: var(--slate-700);
     text-align: left;
     font-size: 0.8125rem;
-    transition: background-color 0.15s ease;
+    white-space: nowrap;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
 }
 
 .row-menu button:last-child {
@@ -455,6 +730,7 @@ textarea:focus-visible {
 .row-menu button:hover,
 .row-menu button:focus-visible {
     background: var(--slate-50);
+    color: var(--primary-hover);
     outline: none;
 }
 
@@ -462,34 +738,15 @@ textarea:focus-visible {
     color: var(--danger-600);
 }
 
-.row-menu .danger-action:hover {
+.row-menu .danger-action:hover,
+.row-menu .danger-action:focus-visible {
     background: var(--danger-50);
+    color: var(--danger-800);
 }
 
-/* Botões de remoção */
-
-.remove-item-button {
-    display: inline-flex;
-    min-height: 2.25rem;
-    min-width: 2.25rem;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid transparent;
-    border-radius: 0.5rem;
-    background: transparent;
-    color: var(--slate-500);
-    font-size: 1.2rem;
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease;
-}
-
-.remove-item-button:hover {
-    background: var(--danger-50);
-    color: var(--danger-600);
-}
-
-/* Modais */
+/* ==========================================================================
+   Modais
+   ========================================================================== */
 
 .modal {
     position: fixed;
@@ -510,22 +767,21 @@ textarea:focus-visible {
     inset: 0;
     background: rgba(15, 23, 42, 0.58);
     backdrop-filter: blur(3px);
-    animation: fade-in 160ms ease-out;
 }
 
 .modal-panel {
     position: relative;
     z-index: 1;
     display: flex;
-    max-height: calc(100vh - 2rem);
     width: 100%;
+    max-width: 100%;
+    max-height: calc(100vh - 2rem);
     flex-direction: column;
     overflow: hidden;
     border: 1px solid var(--slate-200);
     border-radius: 1rem;
     background: #fff;
     box-shadow: var(--shadow-modal);
-    animation: modal-enter 180ms ease-out;
 }
 
 .modal-panel-sm {
@@ -565,14 +821,9 @@ textarea:focus-visible {
     background: #fff;
     color: var(--slate-500);
     font-size: 1.25rem;
-    transition:
-        background-color 0.2s ease,
-        border-color 0.2s ease,
-        color 0.2s ease;
 }
 
 .modal-close:hover {
-    border-color: var(--slate-300);
     background: var(--slate-50);
     color: var(--slate-800);
 }
@@ -580,6 +831,7 @@ textarea:focus-visible {
 .modal-tabs {
     display: flex;
     gap: 0.25rem;
+    max-width: 100%;
     overflow-x: auto;
     border-bottom: 1px solid var(--slate-200);
     padding: 0 1.5rem;
@@ -589,10 +841,8 @@ textarea:focus-visible {
 .modal-tab {
     display: inline-flex;
     min-height: 3.25rem;
-    flex: 0 0 auto;
     align-items: center;
-    gap: 0.4rem;
-    border: 0;
+    flex: 0 0 auto;
     border-bottom: 2px solid transparent;
     background: transparent;
     padding: 0 0.7rem;
@@ -600,18 +850,15 @@ textarea:focus-visible {
     font-size: 0.8rem;
     font-weight: 600;
     white-space: nowrap;
-    transition:
-        color 0.2s ease,
-        border-color 0.2s ease;
 }
 
-.modal-tab:hover {
+.modal-tab:hover,
+.modal-tab.is-active {
     color: var(--primary-hover);
 }
 
 .modal-tab.is-active {
     border-bottom-color: var(--primary);
-    color: var(--primary-hover);
 }
 
 .modal-body {
@@ -630,24 +877,18 @@ textarea:focus-visible {
     padding: 1rem 1.5rem;
 }
 
-.tab-panel {
-    animation: fade-in 160ms ease-out;
-}
+/* ==========================================================================
+   Loading, auditoria e toast
+   ========================================================================== */
 
-.section-title {
-    color: var(--slate-900);
-    font-size: 1.125rem;
-    font-weight: 700;
+.skeleton {
+    background: linear-gradient(90deg,
+            var(--slate-100) 25%,
+            var(--slate-200) 37%,
+            var(--slate-100) 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
 }
-
-.section-description {
-    margin-top: 0.25rem;
-    color: var(--slate-500);
-    font-size: 0.875rem;
-    line-height: 1.5;
-}
-
-/* Auditoria */
 
 .audit-field {
     display: flex;
@@ -665,7 +906,6 @@ textarea:focus-visible {
     color: var(--slate-500);
     font-size: 0.75rem;
     font-weight: 600;
-    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
@@ -673,64 +913,6 @@ textarea:focus-visible {
     color: var(--slate-800);
     font-size: 0.875rem;
 }
-
-.audit-timeline {
-    position: relative;
-    margin: 0;
-    padding-left: 1.5rem;
-    list-style: none;
-}
-
-.audit-timeline::before {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0.3rem;
-    width: 2px;
-    background: var(--primary-border);
-    content: "";
-}
-
-.audit-timeline li {
-    position: relative;
-    padding-bottom: 1.4rem;
-}
-
-.audit-timeline li::before {
-    position: absolute;
-    top: 0.2rem;
-    left: -1.45rem;
-    width: 0.75rem;
-    height: 0.75rem;
-    border: 2px solid #fff;
-    border-radius: 50%;
-    background: var(--primary);
-    box-shadow: 0 0 0 2px var(--primary-border);
-    content: "";
-}
-
-.audit-timeline time {
-    color: var(--slate-500);
-    font-size: 0.75rem;
-}
-
-.audit-timeline p {
-    margin: 0.35rem 0 0;
-    color: var(--slate-800);
-    font-size: 0.875rem;
-    line-height: 1.5;
-}
-
-.audit-values {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-    color: var(--slate-500);
-    font-size: 0.75rem;
-}
-
-/* Toasts */
 
 .toast {
     display: flex;
@@ -745,11 +927,6 @@ textarea:focus-visible {
     box-shadow: var(--shadow-soft);
     font-size: 0.875rem;
     font-weight: 600;
-    animation: toast-enter 220ms ease-out;
-}
-
-.toast.is-leaving {
-    animation: toast-leave 180ms ease-in forwards;
 }
 
 .toast.success {
@@ -776,30 +953,43 @@ textarea:focus-visible {
     color: var(--info-600);
 }
 
-/* Skeleton */
+/* ==========================================================================
+   Responsividade
+   ========================================================================== */
 
-.skeleton {
-    background: linear-gradient(90deg,
-            var(--slate-100) 25%,
-            var(--slate-200) 37%,
-            var(--slate-100) 63%);
-    background-size: 400% 100%;
-    animation: shimmer 1.4s ease infinite;
+@media (min-width: 640px) {
+    .app-container-fluid {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
 }
 
-/* Responsividade */
-
-@media (max-width: 900px) {
-    .modal-panel-xl {
-        max-width: calc(100vw - 2rem);
+@media (min-width: 1024px) {
+    .app-container-fluid {
+        padding-right: 20px;
+        padding-left: 20px;
     }
+}
 
-    .modal-tab {
-        padding: 0 0.6rem;
+@media (max-width: 1100px) {
+    #filtersForm {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 768px) {
+    .app-container-fluid {
+        padding: 16px 12px;
+    }
+
+    #filtersForm {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #filtersForm>div:first-child {
+        grid-column: 1 / -1;
+    }
+
     .modal {
         align-items: flex-end;
         padding: 0;
@@ -813,21 +1003,16 @@ textarea:focus-visible {
         border-radius: 1rem 1rem 0 0;
     }
 
-    .modal-header {
-        padding: 1rem;
-    }
-
-    .modal-tabs {
-        padding: 0 1rem;
-    }
-
-    .modal-body {
-        padding: 1rem;
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding-right: 1rem;
+        padding-left: 1rem;
     }
 
     .modal-footer {
         flex-direction: column-reverse;
-        padding: 1rem;
+        align-items: stretch;
     }
 
     .modal-footer>button {
@@ -835,27 +1020,38 @@ textarea:focus-visible {
     }
 
     .row-menu {
-        position: fixed;
-        right: 1rem;
-        max-width: calc(100vw - 2rem);
-    }
-
-    .rule-card,
-    .selection-card,
-    .flow-step {
-        align-items: flex-start;
+        min-width: 12rem;
+        max-width: calc(100vw - 1.5rem);
     }
 }
 
 @media (max-width: 640px) {
+    .app-container-fluid {
+        padding: 12px;
+    }
+
+    #filtersForm {
+        grid-template-columns: 1fr;
+    }
+
+    #filtersForm>div:first-child {
+        grid-column: auto;
+    }
+
+    .action-primary,
+    .action-secondary {
+        width: 100%;
+    }
+
     .modal-panel {
+        width: 100%;
         max-height: 100vh;
         height: 100%;
         border-radius: 0;
     }
 
     .modal-tabs {
-        gap: 0;
+        padding: 0 1rem;
     }
 
     .modal-tab {
@@ -866,10 +1062,6 @@ textarea:focus-visible {
 
     .form-input {
         font-size: 1rem;
-    }
-
-    .audit-field {
-        min-height: 4.25rem;
     }
 
     #toastArea {
@@ -883,7 +1075,33 @@ textarea:focus-visible {
     }
 }
 
-/* Animações */
+/* ==========================================================================
+   Animações
+   ========================================================================== */
+
+@keyframes dropdown-enter {
+    from {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes dropdown-enter-up {
+    from {
+        opacity: 0;
+        transform: translateY(4px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
 
 @keyframes fade-in {
     from {
@@ -897,42 +1115,6 @@ textarea:focus-visible {
     }
 }
 
-@keyframes modal-enter {
-    from {
-        opacity: 0;
-        transform: translateY(12px) scale(0.98);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes toast-enter {
-    from {
-        opacity: 0;
-        transform: translateX(1rem);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes toast-leave {
-    from {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-    to {
-        opacity: 0;
-        transform: translateX(1rem);
-    }
-}
-
 @keyframes shimmer {
     0% {
         background-position: 100% 0;
@@ -943,20 +1125,17 @@ textarea:focus-visible {
     }
 }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
 @media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
 
     *,
     *::before,
     *::after {
-        scroll-behavior: auto !important;
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
         transition-duration: 0.01ms !important;
     }
 }
