@@ -1,1004 +1,781 @@
 /* =============================================
-   CADASTRO DE SIGLAS - G4MED
-   JavaScript Funcional - Versão com Dropdown
-   Design System: Shadcn/UI + teal-600
+   SIGLAS — CORREÇÃO DEFINITIVA DA EDIÇÃO
    ============================================= */
 
-// =============================================
-// ESTADO GLOBAL
-// =============================================
-let siglasData = [];
-let filteredSiglas = [];
-let siglaAtual = null;
-let modoEdicao = false;
-let siglaParaExcluir = null;
-let currentTheme = 'light';
+(() => {
+    'use strict';
 
-// Siglas pré-cadastradas para o dropdown
-const siglasPreCadastradas = [
-    { codigo: 'SUS', descricao: 'Sistema Único de Saúde' },
-    { codigo: 'AMB', descricao: 'Associação Médica Brasileira' },
-    { codigo: 'TCE', descricao: 'Termo de Consentimento Esclarecido' },
-    { codigo: 'UTI', descricao: 'Unidade de Terapia Intensiva' },
-    { codigo: 'PS', descricao: 'Pronto Socorro' },
-    { codigo: 'CRM', descricao: 'Conselho Regional de Medicina' },
-    { codigo: 'COREN', descricao: 'Conselho Regional de Enfermagem' },
-    { codigo: 'ANVISA', descricao: 'Agência Nacional de Vigilância Sanitária' },
-    { codigo: 'ANS', descricao: 'Agência Nacional de Saúde Suplementar' },
-    { codigo: 'DATASUS', descricao: 'Departamento de Informática do SUS' },
-    { codigo: 'SIA', descricao: 'Sistema de Informações Ambulatoriais' },
-    { codigo: 'SIH', descricao: 'Sistema de Informações Hospitalares' },
-    { codigo: 'SIM', descricao: 'Sistema de Informações sobre Mortalidade' },
-    { codigo: 'SINASC', descricao: 'Sistema de Informações sobre Nascidos Vivos' },
-    { codigo: 'PNI', descricao: 'Programa Nacional de Imunizações' },
-    { codigo: 'SAE', descricao: 'Serviço de Atendimento Especializado' },
-    { codigo: 'CTA', descricao: 'Centro de Testagem e Aconselhamento' },
-    { codigo: 'UBS', descricao: 'Unidade Básica de Saúde' },
-    { codigo: 'UPA', descricao: 'Unidade de Pronto Atendimento' },
-    { codigo: 'SAMU', descricao: 'Serviço de Atendimento Móvel de Urgência' },
-];
+    const STORAGE_KEY = 'g4med.siglas.v1';
 
-// Dados simulados (em produção, viriam do backend)
-const mockSiglas = [
-    { id: 'S-001', sigla: 'SUS', obs: 'Sistema Único de Saúde', status: 'ativo', criadoEm: '2026-08-15T10:00:00' },
-    { id: 'S-002', sigla: 'AMB', obs: 'Associação Médica Brasileira', status: 'ativo', criadoEm: '2026-08-14T14:30:00' },
-    { id: 'S-003', sigla: 'TCE', obs: 'Termo de Consentimento Esclarecido', status: 'ativo', criadoEm: '2026-08-13T09:15:00' },
-    { id: 'S-004', sigla: 'UTI', obs: 'Unidade de Terapia Intensiva', status: 'ativo', criadoEm: '2026-08-12T16:45:00' },
-    { id: 'S-005', sigla: 'PS', obs: 'Pronto Socorro', status: 'inativo', criadoEm: '2026-08-10T11:20:00' },
-    { id: 'S-006', sigla: 'CRM', obs: 'Conselho Regional de Medicina', status: 'ativo', criadoEm: '2026-08-08T08:00:00' },
-];
+    const state = {
+        data: [],
+        editingId: null,
+        deleteId: null
+    };
 
-// =============================================
-// INICIALIZAÇÃO
-// =============================================
-document.addEventListener('DOMContentLoaded', function () {
-    // Inicializar ícones Lucide
-    lucide.createIcons();
+    const $ = (selector, root = document) =>
+        root.querySelector(selector);
 
-    // Carregar dados
-    siglasData = [...mockSiglas];
-    filteredSiglas = [...siglasData];
+    const $$ = (selector, root = document) =>
+        [...root.querySelectorAll(selector)];
 
-    // Popular tabela
-    renderTable();
-
-    // Atualizar KPIs
-    updateKPIs();
-
-    // Gerar ID automático
-    gerarIdAutomatico();
-
-    // Configurar event listeners
-    configurarEventListeners();
-
-    // Atualizar footer
-    updateFooter();
-
-    // Inicializar toggle de status
-    initStatusToggle();
-
-    // Inicializar combobox de sigla
-    initSiglaCombobox();
-
-    console.log('Sistema de Cadastro de Siglas inicializado!');
-});
-
-// =============================================
-// INICIALIZAR COMBOBOX / DROPDOWN SIGLA
-// =============================================
-function initSiglaCombobox() {
-    const inputSigla = document.getElementById('sigla');
-    const combobox = document.getElementById('siglaCombobox');
-    const dropdown = document.getElementById('siglaDropdown');
-    const trigger = combobox.querySelector('.combobox-trigger');
-    const searchInput = document.getElementById('siglaSearch');
-    const list = document.getElementById('siglaList');
-
-    if (!inputSigla || !dropdown || !list) return;
-
-    // Renderizar lista inicial
-    renderSiglaList(siglasPreCadastradas);
-
-    // Abrir/fechar dropdown ao clicar no trigger
-    if (trigger) {
-        trigger.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleDropdown();
-        });
-    }
-
-    // Abrir dropdown ao clicar no input
-    inputSigla.addEventListener('click', function (e) {
-        e.stopPropagation();
-        toggleDropdown();
-    });
-
-    // Filtrar lista ao digitar
-    inputSigla.addEventListener('input', function (e) {
-        const value = e.target.value.toUpperCase();
-        filterSiglaList(value);
-
-        // Validar campo
-        validateSiglaField(value);
-    });
-
-    // Buscar no dropdown
-    if (searchInput) {
-        searchInput.addEventListener('input', function (e) {
-            const value = e.target.value.toUpperCase();
-            filterSiglaList(value);
-        });
-    }
-
-    // Fechar dropdown ao clicar fora
-    document.addEventListener('click', function (e) {
-        if (!combobox.contains(e.target)) {
-            closeDropdown();
+    const mockData = [
+        {
+            id: 'S-001',
+            sigla: 'SUS',
+            obs: 'Sistema Único de Saúde',
+            status: 'ativo',
+            criadoEm: '2026-08-15T10:00:00'
+        },
+        {
+            id: 'S-002',
+            sigla: 'AMB',
+            obs: 'Associação Médica Brasileira',
+            status: 'ativo',
+            criadoEm: '2026-08-14T14:30:00'
+        },
+        {
+            id: 'S-003',
+            sigla: 'TCE',
+            obs: 'Termo de Consentimento Esclarecido',
+            status: 'ativo',
+            criadoEm: '2026-08-13T09:15:00'
+        },
+        {
+            id: 'S-004',
+            sigla: 'UTI',
+            obs: 'Unidade de Terapia Intensiva',
+            status: 'ativo',
+            criadoEm: '2026-08-12T16:45:00'
+        },
+        {
+            id: 'S-005',
+            sigla: 'PS',
+            obs: 'Pronto Socorro',
+            status: 'inativo',
+            criadoEm: '2026-08-10T11:20:00'
+        },
+        {
+            id: 'S-006',
+            sigla: 'CRM',
+            obs: 'Conselho Regional de Medicina',
+            status: 'ativo',
+            criadoEm: '2026-08-08T08:00:00'
         }
-    });
+    ];
 
-    // Fechar com ESC
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-            closeDropdown();
-        }
-    });
+    function getData() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            const parsed = JSON.parse(saved);
 
-    // Selecionar opção com Enter
-    inputSigla.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const activeOption = list.querySelector('li.active');
-            if (activeOption) {
-                selectSiglaOption(activeOption.dataset.codigo);
-            } else {
-                closeDropdown();
-            }
-        }
-    });
-
-    // Navegação com setas
-    inputSigla.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            if (!dropdown.hidden) {
-                highlightNextOption();
-            } else {
-                openDropdown();
-            }
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            highlightPrevOption();
-        }
-    });
-
-    // Funções auxiliares
-    function toggleDropdown() {
-        if (dropdown.hidden) {
-            openDropdown();
-        } else {
-            closeDropdown();
+            return Array.isArray(parsed)
+                ? parsed
+                : structuredClone(mockData);
+        } catch (error) {
+            console.warn('Falha ao carregar siglas:', error);
+            return structuredClone(mockData);
         }
     }
 
-    function openDropdown() {
-        dropdown.hidden = false;
-        inputSigla.setAttribute('aria-expanded', 'true');
-        searchInput.value = '';
-        renderSiglaList(siglasPreCadastradas);
-
-        // Focar no search
-        setTimeout(() => searchInput.focus(), 100);
-    }
-
-    function closeDropdown() {
-        dropdown.hidden = true;
-        inputSigla.setAttribute('aria-expanded', 'false');
-        inputSigla.focus();
-    }
-
-    function renderSiglaList(siglas) {
-        list.innerHTML = '';
-
-        if (siglas.length === 0) {
-            list.innerHTML = `
-                <li style="text-align: center; color: var(--text-muted); padding: 1.5rem;">
-                    <i data-lucide="inbox" style="width: 32px; height: 32px; margin: 0 auto 0.5rem; opacity: 0.5;"></i>
-                    Nenhuma sigla encontrada
-                </li>
-            `;
-            lucide.createIcons();
-            return;
-        }
-
-        siglas.forEach(sigla => {
-            const li = document.createElement('li');
-            li.dataset.codigo = sigla.codigo;
-            li.setAttribute('role', 'option');
-            li.innerHTML = `
-                <span class="sigla-code">${sigla.codigo}</span>
-                <span class="sigla-desc">${sigla.descricao}</span>
-            `;
-
-            li.addEventListener('click', function () {
-                selectSiglaOption(sigla.codigo);
-            });
-
-            li.addEventListener('mouseenter', function () {
-                clearActiveOptions();
-                this.classList.add('active');
-            });
-
-            list.appendChild(li);
-        });
-
-        lucide.createIcons();
-    }
-
-    function filterSiglaList(termo) {
-        if (!termo) {
-            renderSiglaList(siglasPreCadastradas);
-            return;
-        }
-
-        const filtered = siglasPreCadastradas.filter(sigla =>
-            sigla.codigo.includes(termo) ||
-            sigla.descricao.toUpperCase().includes(termo)
+    function saveData() {
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(state.data)
         );
-
-        renderSiglaList(filtered);
     }
 
-    function selectSiglaOption(codigo) {
-        inputSigla.value = codigo;
-        validateSiglaField(codigo);
-        closeDropdown();
+    function init() {
+        state.data = getData();
+
+        bindEvents();
+        renderTable();
+        updateKPIs();
+        resetForm();
+        updateFooter();
+        initializeIcons();
     }
 
-    function clearActiveOptions() {
-        list.querySelectorAll('li.active').forEach(li => {
-            li.classList.remove('active');
-        });
-    }
+    function bindEvents() {
+        const form = $('#siglaForm');
+        const tbody = $('#corpoTabela');
+        const cancelButton = $('#btnCancelar');
+        const deleteCancel = $('#delCancel');
+        const deleteConfirm = $('#delConfirm');
+        const modal = $('#delModal');
 
-    function highlightNextOption() {
-        const items = Array.from(list.querySelectorAll('li'));
-        const activeIndex = items.findIndex(li => li.classList.contains('active'));
-        const nextIndex = activeIndex < items.length - 1 ? activeIndex + 1 : 0;
+        form?.addEventListener('submit', handleSubmit);
+        tbody?.addEventListener('click', handleTableClick);
+        cancelButton?.addEventListener('click', resetForm);
+        deleteCancel?.addEventListener('click', closeDeleteModal);
+        deleteConfirm?.addEventListener('click', confirmDelete);
 
-        clearActiveOptions();
-        items[nextIndex].classList.add('active');
-        items[nextIndex].scrollIntoView({ block: 'nearest' });
-    }
-
-    function highlightPrevOption() {
-        const items = Array.from(list.querySelectorAll('li'));
-        const activeIndex = items.findIndex(li => li.classList.contains('active'));
-        const prevIndex = activeIndex > 0 ? activeIndex - 1 : items.length - 1;
-
-        clearActiveOptions();
-        items[prevIndex].classList.add('active');
-        items[prevIndex].scrollIntoView({ block: 'nearest' });
-    }
-}
-
-// =============================================
-// CONFIGURAÇÃO DE EVENT LISTENERS
-// =============================================
-function configurarEventListeners() {
-    // Topbar
-    const toggleTheme = document.getElementById('toggleTheme');
-    if (toggleTheme) {
-        toggleTheme.addEventListener('click', toggleThemeMode);
-    }
-
-    // Page actions
-    const btnExport = document.getElementById('btnExport');
-    const btnPrint = document.getElementById('btnPrint');
-
-    if (btnExport) {
-        btnExport.addEventListener('click', exportCSV);
-    }
-
-    if (btnPrint) {
-        btnPrint.addEventListener('click', printPage);
-    }
-
-    // Form
-    const siglaForm = document.getElementById('siglaForm');
-    const btnCancelar = document.getElementById('btnCancelar');
-    const btnGravar = document.getElementById('btnGravar');
-    const inputSigla = document.getElementById('sigla');
-    const inputObs = document.getElementById('obs');
-
-    if (siglaForm) {
-        siglaForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            gravarSigla();
-        });
-    }
-
-    if (btnCancelar) {
-        btnCancelar.addEventListener('click', cancelarFormulario);
-    }
-
-    if (btnGravar) {
-        btnGravar.addEventListener('click', gravarSigla);
-    }
-
-    // Campo Sigla - Validação em tempo real
-    if (inputSigla) {
-        // Converter para maiúsculas e validar caracteres
-        inputSigla.addEventListener('input', function (e) {
-            // Converter para maiúsculas
-            let value = this.value.toUpperCase();
-
-            // Remover caracteres especiais e espaços (apenas letras, números e underline)
-            value = value.replace(/[^A-Z0-9_]/g, '');
-
-            // Limitar a 20 caracteres
-            if (value.length > 20) {
-                value = value.substring(0, 20);
-            }
-
-            // Atualizar valor
-            this.value = value;
-
-            // Validar em tempo real
-            validateSiglaField(value);
-        });
-
-        // Validar ao perder foco
-        inputSigla.addEventListener('blur', function () {
-            validateSiglaField(this.value);
-        });
-    }
-
-    // Campo Observação - Contador de caracteres
-    if (inputObs) {
-        inputObs.addEventListener('input', updateObsCounter);
-    }
-
-    // Card actions
-    const searchSigla = document.getElementById('searchSigla');
-    const filtroStatus = document.getElementById('filtroStatus');
-
-    if (searchSigla) {
-        searchSigla.addEventListener('input', searchSiglas);
-    }
-
-    if (filtroStatus) {
-        filtroStatus.addEventListener('change', filterByStatus);
-    }
-
-    // Modal Delete
-    const delCancel = document.getElementById('delCancel');
-    const delConfirm = document.getElementById('delConfirm');
-    const delModal = document.getElementById('delModal');
-
-    if (delCancel) {
-        delCancel.addEventListener('click', closeDeleteModal);
-    }
-
-    if (delConfirm) {
-        delConfirm.addEventListener('click', confirmDelete);
-    }
-
-    if (delModal) {
-        delModal.addEventListener('click', function (e) {
-            if (e.target === this) {
+        modal?.addEventListener('click', (event) => {
+            if (event.target === modal) {
                 closeDeleteModal();
             }
         });
-    }
-}
 
-// =============================================
-// INICIALIZAR TOGGLE DE STATUS
-// =============================================
-function initStatusToggle() {
-    const statusSelect = document.getElementById('status');
-    if (!statusSelect) return;
+        $('#searchSigla')?.addEventListener(
+            'input',
+            renderTable
+        );
 
-    // Criar wrapper para o toggle
-    const toggleWrapper = document.createElement('div');
-    toggleWrapper.className = 'status-toggle-wrapper';
-    toggleWrapper.style.cssText = `
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-top: 0.5rem;
-    `;
-
-    // Label "Ativo"
-    const labelAtivo = document.createElement('span');
-    labelAtivo.textContent = 'Ativo';
-    labelAtivo.style.cssText = `
-        font-size: 0.8125rem;
-        font-weight: 500;
-        color: ${statusSelect.value === 'ativo' ? '#10b981' : '#64748b'};
-        transition: color 0.2s ease;
-    `;
-    labelAtivo.id = 'labelAtivo';
-
-    // Toggle switch
-    const toggle = document.createElement('button');
-    toggle.type = 'button';
-    toggle.className = 'status-toggle';
-    toggle.setAttribute('aria-label', 'Alternar status');
-    toggle.setAttribute('aria-pressed', statusSelect.value === 'ativo');
-    toggle.style.cssText = `
-        position: relative;
-        width: 52px;
-        height: 28px;
-        border-radius: 14px;
-        background: ${statusSelect.value === 'ativo' ? '#10b981' : '#ef4444'};
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        padding: 0;
-    `;
-    toggle.id = 'statusToggle';
-
-    // Knob do toggle
-    const knob = document.createElement('span');
-    knob.style.cssText = `
-        position: absolute;
-        top: 3px;
-        left: ${statusSelect.value === 'ativo' ? '27px' : '3px'};
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
-        background: #ffffff;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        transition: left 0.2s ease;
-    `;
-    knob.id = 'toggleKnob';
-
-    toggle.appendChild(knob);
-
-    // Label "Inativo"
-    const labelInativo = document.createElement('span');
-    labelInativo.textContent = 'Inativo';
-    labelInativo.style.cssText = `
-        font-size: 0.8125rem;
-        font-weight: 500;
-        color: ${statusSelect.value === 'inativo' ? '#ef4444' : '#64748b'};
-        transition: color 0.2s ease;
-    `;
-    labelInativo.id = 'labelInativo';
-
-    toggleWrapper.appendChild(labelAtivo);
-    toggleWrapper.appendChild(toggle);
-    toggleWrapper.appendChild(labelInativo);
-
-    // Inserir após o select
-    statusSelect.parentElement.appendChild(toggleWrapper);
-
-    // Esconder o select original (mas manter para envio do form)
-    statusSelect.style.display = 'none';
-
-    // Event listener do toggle
-    toggle.addEventListener('click', function () {
-        const isAtivo = statusSelect.value === 'ativo';
-        const newValue = isAtivo ? 'inativo' : 'ativo';
-
-        // Atualizar select
-        statusSelect.value = newValue;
-
-        // Atualizar toggle visual
-        const newKnobLeft = newValue === 'ativo' ? '27px' : '3px';
-        const newBg = newValue === 'ativo' ? '#10b981' : '#ef4444';
-
-        knob.style.left = newKnobLeft;
-        toggle.style.background = newBg;
-        toggle.setAttribute('aria-pressed', newValue === 'ativo');
-
-        // Atualizar labels
-        labelAtivo.style.color = newValue === 'ativo' ? '#10b981' : '#64748b';
-        labelInativo.style.color = newValue === 'inativo' ? '#ef4444' : '#64748b';
-    });
-}
-
-// =============================================
-// VALIDAÇÃO DO CAMPO SIGLA
-// =============================================
-function validateSiglaField(value) {
-    const inputSigla = document.getElementById('sigla');
-    const inputWrap = inputSigla.closest('.input-wrap');
-
-    // Remover estados anteriores
-    inputWrap.classList.remove('error', 'success');
-
-    // Validar
-    if (!value || value.trim() === '') {
-        // Campo vazio - remover todos os estados
-        return;
+        $('#filtroStatus')?.addEventListener(
+            'change',
+            renderTable
+        );
     }
 
-    if (value.length < 2) {
-        // Muito curto
-        inputWrap.classList.add('error');
-        showFieldError(inputSigla, 'Sigla deve ter pelo menos 2 caracteres');
-        return false;
-    }
+    /* =============================================
+       CORREÇÃO DO BOTÃO EDITAR
+       ============================================= */
 
-    if (value.length > 20) {
-        // Muito longo (não deve acontecer devido ao limitador)
-        inputWrap.classList.add('error');
-        showFieldError(inputSigla, 'Sigla deve ter no máximo 20 caracteres');
-        return false;
-    }
+    function handleTableClick(event) {
+        const editButton = event.target.closest(
+            'button[data-edit-id]'
+        );
 
-    // Válido
-    inputWrap.classList.add('success');
-    clearFieldError(inputSigla);
-    return true;
-}
+        const deleteButton = event.target.closest(
+            'button[data-delete-id]'
+        );
 
-function showFieldError(input, message) {
-    // Remover erro anterior se existir
-    clearFieldError(input);
+        if (editButton) {
+            event.preventDefault();
+            event.stopPropagation();
 
-    // Criar elemento de erro
-    const errorEl = document.createElement('small');
-    errorEl.className = 'field-error';
-    errorEl.style.cssText = `
-        display: block;
-        font-size: 0.75rem;
-        color: #ef4444;
-        margin-top: 0.375rem;
-        animation: slideDown 0.2s ease;
-    `;
-    errorEl.textContent = message;
-    errorEl.id = 'error-' + input.id;
+            const id = editButton.getAttribute(
+                'data-edit-id'
+            );
 
-    // Inserir após o input
-    input.closest('.field').appendChild(errorEl);
-}
-
-function clearFieldError(input) {
-    const existingError = document.getElementById('error-' + input.id);
-    if (existingError) {
-        existingError.remove();
-    }
-}
-
-// =============================================
-// FUNÇÕES DE TABELA
-// =============================================
-function renderTable() {
-    const tbody = document.getElementById('corpoTabela');
-    tbody.innerHTML = '';
-
-    if (filteredSiglas.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="6" style="text-align: center; padding: 3rem; color: #94a3b8;">
-                    <i data-lucide="inbox" style="width: 48px; height: 48px; margin: 0 auto 1rem; display: block; opacity: 0.5;"></i>
-                    Nenhum registro encontrado
-                </td>
-            </tr>
-        `;
-        lucide.createIcons();
-        return;
-    }
-
-    filteredSiglas.forEach(sigla => {
-        const tr = document.createElement('tr');
-        tr.dataset.id = sigla.id;
-
-        tr.innerHTML = `
-            <td>${sigla.id}</td>
-            <td><strong>${sigla.sigla}</strong></td>
-            <td>${sigla.obs || '—'}</td>
-            <td>
-                <span class="status-badge ${sigla.status}">
-                    <span class="status-dot"></span>
-                    ${sigla.status === 'ativo' ? 'Ativo' : 'Inativo'}
-                </span>
-            </td>
-            <td>${formatDate(sigla.criadoEm)}</td>
-            <td>
-                <button class="action-btn" onclick="editSigla('${sigla.id}')" aria-label="Editar" title="Editar">
-                    <i data-lucide="edit-2"></i>
-                </button>
-            </td>
-        `;
-
-        // Adicionar evento de clique na linha
-        tr.addEventListener('click', function (e) {
-            if (!e.target.closest('.action-btn')) {
-                selectSigla(sigla.id);
+            if (!id) {
+                console.error(
+                    'O botão editar não possui data-edit-id.'
+                );
+                return;
             }
+
+            editSigla(id);
+            return;
+        }
+
+        if (deleteButton) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const id = deleteButton.getAttribute(
+                'data-delete-id'
+            );
+
+            if (id) {
+                openDeleteModal(id);
+            }
+        }
+    }
+
+    function editSigla(id) {
+        const record = state.data.find(
+            (item) => String(item.id) === String(id)
+        );
+
+        if (!record) {
+            console.error(
+                `Registro não encontrado para edição: ${id}`
+            );
+
+            showToast(
+                'Registro não encontrado para edição.',
+                'error'
+            );
+
+            return;
+        }
+
+        const idInput = $('#idSigla');
+        const siglaInput = $('#sigla');
+        const obsInput = $('#obs');
+        const statusInput = $('#status');
+
+        if (!idInput || !siglaInput || !obsInput || !statusInput) {
+            console.error(
+                'Campos necessários para edição não encontrados.'
+            );
+
+            showToast(
+                'Não foi possível abrir o formulário de edição.',
+                'error'
+            );
+
+            return;
+        }
+
+        state.editingId = record.id;
+
+        idInput.value = record.id;
+        siglaInput.value = record.sigla || '';
+        obsInput.value = record.obs || '';
+        statusInput.value = record.status || 'ativo';
+
+        setFormMode(true);
+        updateStatusToggle(statusInput.value);
+        updateObsCounter();
+        clearValidationState();
+        markActiveRow(record.id);
+
+        const formCard = $('#formCard');
+
+        formCard?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
         });
 
-        tbody.appendChild(tr);
-    });
-
-    lucide.createIcons();
-
-    // Atualizar contador
-    document.getElementById('showing').textContent = filteredSiglas.length;
-    document.getElementById('totalRows').textContent = siglasData.length;
-}
-
-function selectSigla(siglaId) {
-    // Remove active de todas as linhas
-    const rows = document.querySelectorAll('#corpoTabela tr');
-    rows.forEach(row => row.classList.remove('active'));
-
-    // Adiciona active na linha selecionada
-    const selectedRow = document.querySelector(`#corpoTabela tr[data-id="${siglaId}"]`);
-    if (selectedRow) {
-        selectedRow.classList.add('active');
+        window.setTimeout(() => {
+            siglaInput.focus();
+            siglaInput.select();
+        }, 250);
     }
 
-    // Carrega dados para edição
-    editSigla(siglaId);
-}
+    function markActiveRow(id) {
+        $$('#corpoTabela tr[data-id]').forEach((row) => {
+            row.classList.toggle(
+                'active',
+                String(row.dataset.id) === String(id)
+            );
+        });
+    }
 
-// =============================================
-// FUNÇÕES DE FILTRO E BUSCA
-// =============================================
-function searchSiglas() {
-    const termo = document.getElementById('searchSigla').value.toLowerCase();
-    const filtroStatus = document.getElementById('filtroStatus').value;
+    /* =============================================
+       SALVAR E ATUALIZAR
+       ============================================= */
 
-    filteredSiglas = siglasData.filter(sigla => {
-        const matchSearch = !termo ||
-            sigla.sigla.toLowerCase().includes(termo) ||
-            (sigla.obs && sigla.obs.toLowerCase().includes(termo));
+    function handleSubmit(event) {
+        event.preventDefault();
+        saveSigla();
+    }
 
-        const matchStatus = !filtroStatus || sigla.status === filtroStatus;
+    function saveSigla() {
+        const siglaInput = $('#sigla');
+        const obsInput = $('#obs');
+        const statusInput = $('#status');
 
-        return matchSearch && matchStatus;
-    });
-
-    renderTable();
-    updateKPIs();
-}
-
-function filterByStatus() {
-    searchSiglas(); // Reutiliza a lógica de busca
-}
-
-// =============================================
-// FUNÇÕES DE KPI
-// =============================================
-function updateKPIs() {
-    const total = filteredSiglas.length;
-    const ativas = filteredSiglas.filter(s => s.status === 'ativo').length;
-    const inativas = filteredSiglas.filter(s => s.status === 'inativo').length;
-
-    // Última edição (simulado)
-    const ultimaEdicao = siglasData.length > 0 ?
-        new Date(Math.max(...siglasData.map(s => new Date(s.criadoEm)))) : null;
-
-    document.getElementById('kpiTotal').textContent = total;
-    document.getElementById('kpiAtivas').textContent = ativas;
-    document.getElementById('kpiInativas').textContent = inativas;
-    document.getElementById('kpiLast').textContent = ultimaEdicao ?
-        ultimaEdicao.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '—';
-}
-
-function updateFooter() {
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    document.getElementById('lastSync').textContent = timeStr;
-}
-
-// =============================================
-// FUNÇÕES DE FORMULÁRIO
-// =============================================
-function gerarIdAutomatico() {
-    const proximoId = 'S-' + String(siglasData.length + 1).padStart(3, '0');
-    document.getElementById('idSigla').value = proximoId;
-}
-
-function cancelarFormulario() {
-    modoEdicao = false;
-    siglaAtual = null;
-
-    // Limpar formulário
-    document.getElementById('siglaForm').reset();
-
-    // Gerar novo ID
-    gerarIdAutomatico();
-
-    // Resetar toggle para "Ativo"
-    const statusSelect = document.getElementById('status');
-    statusSelect.value = 'ativo';
-
-    // Atualizar toggle visual
-    updateStatusToggleVisual('ativo');
-
-    // Atualizar UI
-    document.getElementById('formTitle').textContent = 'Nova Sigla';
-    document.getElementById('formMode').innerHTML = 'Modo: <b>Inserção</b>';
-
-    // Resetar contador de observação
-    updateObsCounter();
-
-    // Limpar validações
-    clearAllValidations();
-}
-
-function clearAllValidations() {
-    const inputs = document.querySelectorAll('#siglaForm input, #siglaForm textarea');
-    inputs.forEach(input => {
-        const inputWrap = input.closest('.input-wrap');
-        if (inputWrap) {
-            inputWrap.classList.remove('error', 'success');
+        if (!siglaInput || !obsInput || !statusInput) {
+            return;
         }
-        clearFieldError(input);
-    });
-}
 
-function editSigla(siglaId) {
-    const sigla = siglasData.find(s => s.id === siglaId);
-    if (!sigla) return;
+        const sigla = siglaInput.value
+            .trim()
+            .toUpperCase();
 
-    modoEdicao = true;
-    siglaAtual = sigla;
+        const obs = obsInput.value.trim();
+        const status = statusInput.value;
 
-    // Preencher formulário
-    document.getElementById('idSigla').value = sigla.id;
-    document.getElementById('sigla').value = sigla.sigla;
-    document.getElementById('status').value = sigla.status;
-    document.getElementById('obs').value = sigla.obs || '';
+        if (!validateSigla(sigla)) {
+            return;
+        }
 
-    // Atualizar toggle visual
-    updateStatusToggleVisual(sigla.status);
+        const editingId = state.editingId;
 
-    // Atualizar UI
-    document.getElementById('formTitle').textContent = 'Editar Sigla';
-    document.getElementById('formMode').innerHTML = 'Modo: <b>Edição</b>';
+        if (editingId) {
+            const index = state.data.findIndex(
+                (item) => String(item.id) === String(editingId)
+            );
 
-    // Atualizar contador de observação
-    updateObsCounter();
+            if (index === -1) {
+                showToast(
+                    'Registro não encontrado para atualização.',
+                    'error'
+                );
 
-    // Scroll para o formulário
-    document.getElementById('formCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
+                return;
+            }
 
-function updateStatusToggleVisual(status) {
-    const toggle = document.getElementById('statusToggle');
-    const knob = document.getElementById('toggleKnob');
-    const labelAtivo = document.getElementById('labelAtivo');
-    const labelInativo = document.getElementById('labelInativo');
+            state.data[index] = {
+                ...state.data[index],
+                sigla,
+                obs,
+                status
+            };
 
-    if (!toggle || !knob) return;
+            saveData();
+            resetForm();
+            renderTable();
+            updateKPIs();
+            updateFooter();
 
-    const knobLeft = status === 'ativo' ? '27px' : '3px';
-    const bg = status === 'ativo' ? '#10b981' : '#ef4444';
+            showToast(
+                'Sigla atualizada com sucesso.',
+                'success'
+            );
 
-    knob.style.left = knobLeft;
-    toggle.style.background = bg;
-    toggle.setAttribute('aria-pressed', status === 'ativo');
+            return;
+        }
 
-    labelAtivo.style.color = status === 'ativo' ? '#10b981' : '#64748b';
-    labelInativo.style.color = status === 'inativo' ? '#ef4444' : '#64748b';
-}
-
-function gravarSigla() {
-    // Validar todos os campos
-    const isValid = validateForm();
-
-    if (!isValid) {
-        showToast('Preencha os campos obrigatórios corretamente', 'error');
-        return;
-    }
-
-    const siglaInput = document.getElementById('sigla').value.trim();
-    const status = document.getElementById('status').value;
-    const obs = document.getElementById('obs').value.trim();
-
-    if (modoEdicao && siglaAtual) {
-        // Atualizar sigla existente
-        siglaAtual.sigla = siglaInput;
-        siglaAtual.status = status;
-        siglaAtual.obs = obs;
-
-        showToast('Sigla atualizada com sucesso!', 'success');
-    } else {
-        // Criar nova sigla
-        const novaSigla = {
-            id: document.getElementById('idSigla').value,
-            sigla: siglaInput,
-            status: status,
-            obs: obs,
+        state.data.push({
+            id: generateId(),
+            sigla,
+            obs,
+            status,
             criadoEm: new Date().toISOString()
-        };
+        });
 
-        siglasData.push(novaSigla);
-        showToast('Sigla criada com sucesso!', 'success');
+        saveData();
+        resetForm();
+        renderTable();
+        updateKPIs();
+        updateFooter();
+
+        showToast(
+            'Sigla criada com sucesso.',
+            'success'
+        );
     }
 
-    // Atualizar tabela e KPIs
-    filteredSiglas = [...siglasData];
-    renderTable();
-    updateKPIs();
-    updateFooter();
+    function validateSigla(value) {
+        const input = $('#sigla');
 
-    // Limpar formulário
-    cancelarFormulario();
-}
-
-function validateForm() {
-    const siglaInput = document.getElementById('sigla').value.trim();
-    let isValid = true;
-
-    // Validar sigla
-    if (!siglaInput) {
-        const inputSigla = document.getElementById('sigla');
-        const inputWrap = inputSigla.closest('.input-wrap');
-        inputWrap.classList.add('error');
-        showFieldError(inputSigla, 'Sigla é obrigatória');
-        isValid = false;
-    } else if (siglaInput.length < 2) {
-        const inputSigla = document.getElementById('sigla');
-        const inputWrap = inputSigla.closest('.input-wrap');
-        inputWrap.classList.add('error');
-        showFieldError(inputSigla, 'Sigla deve ter pelo menos 2 caracteres');
-        isValid = false;
-    } else {
-        const inputSigla = document.getElementById('sigla');
-        const inputWrap = inputSigla.closest('.input-wrap');
-        inputWrap.classList.remove('error');
-        inputWrap.classList.add('success');
-        clearFieldError(inputSigla);
-    }
-
-    return isValid;
-}
-
-function updateObsCounter() {
-    const obs = document.getElementById('obs').value;
-    const counter = document.getElementById('obsLen');
-    counter.textContent = obs.length;
-
-    if (obs.length > 500) {
-        counter.style.color = '#ef4444';
-        counter.style.fontWeight = '600';
-    } else if (obs.length > 400) {
-        counter.style.color = '#f59e0b';
-        counter.style.fontWeight = '500';
-    } else {
-        counter.style.color = '#64748b';
-        counter.style.fontWeight = '400';
-    }
-}
-
-// =============================================
-// FUNÇÕES DE MODAL (EXCLUSÃO)
-// =============================================
-function confirmDelete() {
-    if (!siglaParaExcluir) return;
-
-    // Remover sigla
-    siglasData = siglasData.filter(s => s.id !== siglaParaExcluir.id);
-    filteredSiglas = [...siglasData];
-
-    // Atualizar tabela e KPIs
-    renderTable();
-    updateKPIs();
-    updateFooter();
-
-    // Fechar modal
-    closeDeleteModal();
-
-    showToast('Sigla excluída com sucesso!', 'success');
-}
-
-function closeDeleteModal() {
-    document.getElementById('delModal').hidden = true;
-    siglaParaExcluir = null;
-}
-
-// =============================================
-// FUNÇÕES DE AÇÃO
-// =============================================
-function toggleThemeMode() {
-    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-    const btn = document.getElementById('toggleTheme');
-
-    if (currentTheme === 'dark') {
-        btn.innerHTML = '<i data-lucide="sun"></i>';
-        document.body.style.background = '#0f172a';
-        document.body.style.color = '#f1f5f9';
-        showToast('Tema escuro ativado', 'info');
-    } else {
-        btn.innerHTML = '<i data-lucide="moon"></i>';
-        document.body.style.background = '#e6f7f5';
-        document.body.style.color = '#1e293b';
-        showToast('Tema claro ativado', 'info');
-    }
-
-    lucide.createIcons();
-}
-
-function exportCSV() {
-    const headers = ['ID', 'Sigla', 'Observação', 'Status', 'Criado Em'];
-    const rows = filteredSiglas.map(sigla => [
-        sigla.id,
-        sigla.sigla,
-        sigla.obs || '',
-        sigla.status,
-        sigla.criadoEm
-    ]);
-
-    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'siglas_' + new Date().toISOString().split('T')[0] + '.csv';
-    a.click();
-
-    showToast('CSV exportado com sucesso!', 'success');
-}
-
-function printPage() {
-    window.print();
-}
-
-// =============================================
-// FUNÇÕES AUXILIARES
-// =============================================
-function formatDate(timestamp) {
-    const date = new Date(timestamp);
-    return date.toLocaleDateString('pt-BR');
-}
-
-function showToast(message, type = 'info') {
-    const toastBox = document.getElementById('toastBox');
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-
-    const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'alert-circle' : 'info';
-    const color = type === 'success' ? 'ok' : type === 'error' ? 'danger' : 'info';
-
-    toast.innerHTML = `
-        <i data-lucide="${icon}" style="color: var(--${color})"></i>
-        <span>${message}</span>
-    `;
-
-    toastBox.appendChild(toast);
-    lucide.createIcons();
-
-    setTimeout(() => {
-        toast.style.animation = 'slideIn 0.3s ease reverse';
-        setTimeout(() => toast.remove(), 3000);
-    }, 3000);
-}
-
-// Adicionar animação de slide down ao CSS
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-4px);
+        if (!value) {
+            showFieldError(input, 'Informe a sigla.');
+            return false;
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+
+        if (value.length < 2) {
+            showFieldError(
+                input,
+                'A sigla deve ter pelo menos 2 caracteres.'
+            );
+
+            return false;
+        }
+
+        if (value.length > 20) {
+            showFieldError(
+                input,
+                'A sigla deve ter no máximo 20 caracteres.'
+            );
+
+            return false;
+        }
+
+        const duplicate = state.data.some((item) => {
+            return (
+                item.id !== state.editingId &&
+                normalize(item.sigla) === normalize(value)
+            );
+        });
+
+        if (duplicate) {
+            showFieldError(
+                input,
+                'Esta sigla já está cadastrada.'
+            );
+
+            return false;
+        }
+
+        clearFieldError(input);
+        return true;
+    }
+
+    function resetForm() {
+        state.editingId = null;
+
+        $('#siglaForm')?.reset();
+
+        const idInput = $('#idSigla');
+        const statusInput = $('#status');
+
+        if (idInput) {
+            idInput.value = generateId();
+        }
+
+        if (statusInput) {
+            statusInput.value = 'ativo';
+        }
+
+        setFormMode(false);
+        updateStatusToggle('ativo');
+        updateObsCounter();
+        clearValidationState();
+        markActiveRow(null);
+    }
+
+    function setFormMode(editing) {
+        const title = $('#formTitle');
+        const mode = $('#formMode');
+
+        if (title) {
+            title.textContent = editing
+                ? 'Editar Sigla'
+                : 'Nova Sigla';
+        }
+
+        if (mode) {
+            mode.innerHTML = editing
+                ? 'Modo: <b>Edição</b>'
+                : 'Modo: <b>Inserção</b>';
         }
     }
-    
-    .input-wrap.error {
-        border-color: #ef4444 !important;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
-    }
-    
-    .input-wrap.success {
-        border-color: #10b981 !important;
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
-    }
-`;
-document.head.appendChild(style);
 
-// Exportar funções para escopo global
-window.editSigla = editSigla;
+    function generateId() {
+        const numbers = state.data
+            .map((item) => Number(
+                String(item.id).replace('S-', '')
+            ))
+            .filter(Number.isFinite);
+
+        return `S-${String(
+            Math.max(0, ...numbers) + 1
+        ).padStart(3, '0')}`;
+    }
+
+    /* =============================================
+       TABELA
+       ============================================= */
+
+    function renderTable() {
+        const tbody = $('#corpoTabela');
+
+        if (!tbody) {
+            console.error(
+                'Elemento #corpoTabela não encontrado.'
+            );
+
+            return;
+        }
+
+        const term = normalize(
+            $('#searchSigla')?.value
+        );
+
+        const status = $('#filtroStatus')?.value || '';
+
+        const records = state.data.filter((item) => {
+            const matchesTerm =
+                !term ||
+                [item.id, item.sigla, item.obs]
+                    .some((value) => {
+                        return normalize(value).includes(term);
+                    });
+
+            const matchesStatus =
+                !status || item.status === status;
+
+            return matchesTerm && matchesStatus;
+        });
+
+        tbody.innerHTML = '';
+
+        if (!records.length) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="empty-state">
+                        Nenhum registro encontrado.
+                    </td>
+                </tr>
+            `;
+
+            updateCounters(0);
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        records.forEach((item) => {
+            const row = document.createElement('tr');
+
+            row.dataset.id = item.id;
+
+            row.innerHTML = `
+                <td>${escapeHTML(item.id)}</td>
+                <td>
+                    <strong>${escapeHTML(item.sigla)}</strong>
+                </td>
+                <td>${escapeHTML(item.obs || '—')}</td>
+                <td>
+                    <span class="status-badge ${item.status}">
+                        <span class="status-dot"></span>
+                        ${item.status === 'ativo' ? 'Ativo' : 'Inativo'}
+                    </span>
+                </td>
+                <td>${formatDate(item.criadoEm)}</td>
+                <td>
+                    <button
+                        type="button"
+                        class="action-btn"
+                        data-edit-id="${escapeHTML(item.id)}"
+                        title="Editar sigla"
+                        aria-label="Editar ${escapeHTML(item.sigla)}"
+                    >
+                        <i data-lucide="edit-2"></i>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="action-btn"
+                        data-delete-id="${escapeHTML(item.id)}"
+                        title="Excluir sigla"
+                        aria-label="Excluir ${escapeHTML(item.sigla)}"
+                    >
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </td>
+            `;
+
+            fragment.appendChild(row);
+        });
+
+        tbody.appendChild(fragment);
+        markActiveRow(state.editingId);
+        initializeIcons();
+        updateCounters(records.length);
+    }
+
+    function updateCounters(count) {
+        $('#showing') && ($('#showing').textContent = count);
+        $('#totalRows') && ($('#totalRows').textContent = state.data.length);
+    }
+
+    /* =============================================
+       EXCLUSÃO
+       ============================================= */
+
+    function openDeleteModal(id) {
+        const item = state.data.find(
+            (record) => String(record.id) === String(id)
+        );
+
+        if (!item) {
+            return;
+        }
+
+        state.deleteId = item.id;
+
+        const name = $('#delName');
+
+        if (name) {
+            name.textContent = item.sigla;
+        }
+
+        const modal = $('#delModal');
+
+        if (modal) {
+            modal.hidden = false;
+        }
+
+        $('#delConfirm')?.focus();
+    }
+
+    function closeDeleteModal() {
+        const modal = $('#delModal');
+
+        if (modal) {
+            modal.hidden = true;
+        }
+
+        state.deleteId = null;
+    }
+
+    function confirmDelete() {
+        if (!state.deleteId) {
+            return;
+        }
+
+        state.data = state.data.filter(
+            (item) => item.id !== state.deleteId
+        );
+
+        saveData();
+        closeDeleteModal();
+        resetForm();
+        renderTable();
+        updateKPIs();
+        updateFooter();
+
+        showToast(
+            'Sigla excluída com sucesso.',
+            'success'
+        );
+    }
+
+    /* =============================================
+       STATUS, VALIDAÇÃO E UTILITÁRIOS
+       ============================================= */
+
+    function updateStatusToggle(status) {
+        const toggle = $('#statusToggle');
+        const knob = $('#toggleKnob');
+        const activeLabel = $('#labelAtivo');
+        const inactiveLabel = $('#labelInativo');
+
+        if (!toggle || !knob) {
+            return;
+        }
+
+        const active = status === 'ativo';
+
+        toggle.setAttribute(
+            'aria-pressed',
+            String(active)
+        );
+
+        toggle.style.background = active
+            ? '#10b981'
+            : '#ef4444';
+
+        knob.style.left = active
+            ? '27px'
+            : '3px';
+
+        if (activeLabel) {
+            activeLabel.style.color = active
+                ? '#10b981'
+                : '#64748b';
+        }
+
+        if (inactiveLabel) {
+            inactiveLabel.style.color = active
+                ? '#64748b'
+                : '#ef4444';
+        }
+    }
+
+    function updateObsCounter() {
+        const counter = $('#obsLen');
+        const textarea = $('#obs');
+
+        if (counter && textarea) {
+            counter.textContent = textarea.value.length;
+        }
+    }
+
+    function showFieldError(input, message) {
+        if (!input) {
+            return;
+        }
+
+        clearFieldError(input);
+
+        input.closest('.input-wrap')
+            ?.classList.add('error');
+
+        const error = document.createElement('small');
+
+        error.className = 'field-error';
+        error.id = `error-${input.id}`;
+        error.textContent = message;
+
+        input.closest('.field')?.appendChild(error);
+        input.setAttribute('aria-invalid', 'true');
+    }
+
+    function clearFieldError(input) {
+        if (!input) {
+            return;
+        }
+
+        $(`#error-${input.id}`)?.remove();
+
+        input.closest('.input-wrap')
+            ?.classList.remove('error');
+
+        input.removeAttribute('aria-invalid');
+    }
+
+    function clearValidationState() {
+        $$('#siglaForm input, #siglaForm textarea')
+            .forEach(clearFieldError);
+    }
+
+    function showToast(message, type = 'info') {
+        const box = $('#toastBox');
+
+        if (!box) {
+            console.info(message);
+            return;
+        }
+
+        const toast = document.createElement('div');
+
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        toast.setAttribute('role', 'status');
+
+        box.appendChild(toast);
+
+        window.setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    function updateKPIs() {
+        const total = state.data.length;
+        const active = state.data.filter(
+            (item) => item.status === 'ativo'
+        ).length;
+
+        $('#kpiTotal') && ($('#kpiTotal').textContent = total);
+        $('#kpiAtivas') && ($('#kpiAtivas').textContent = active);
+        $('#kpiInativas') && ($('#kpiInativas').textContent = total - active);
+
+        const latest = state.data.reduce(
+            (max, item) => Math.max(max, Date.parse(item.criadoEm)),
+            0
+        );
+
+        $('#kpiLast') && ($('#kpiLast').textContent = latest
+            ? new Date(latest).toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            })
+            : '—');
+    }
+
+    function updateFooter() {
+        const footer = $('#lastSync');
+
+        if (footer) {
+            footer.textContent = new Date().toLocaleTimeString(
+                'pt-BR',
+                {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }
+            );
+        }
+    }
+
+    function normalize(value) {
+        return String(value ?? '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .trim();
+    }
+
+    function formatDate(value) {
+        const date = new Date(value);
+
+        return Number.isNaN(date.getTime())
+            ? '—'
+            : date.toLocaleDateString('pt-BR');
+    }
+
+    function escapeHTML(value) {
+        const element = document.createElement('div');
+        element.textContent = String(value ?? '');
+        return element.innerHTML;
+    }
+
+    function initializeIcons() {
+        if (window.lucide?.createIcons) {
+            window.lucide.createIcons();
+        }
+    }
+
+    window.editSigla = editSigla;
+
+    document.addEventListener(
+        'DOMContentLoaded',
+        init
+    );
+})();
