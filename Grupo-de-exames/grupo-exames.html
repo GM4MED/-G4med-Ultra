@@ -51,7 +51,7 @@
 
         <!-- Cabeçalho -->
         <header class="sticky top-0 z-40 border-b border-slate-200 bg-white">
-            <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+            <div class="flex w-full items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
 
                 <div class="flex min-w-0 items-center gap-3">
                     <a href="../Menu-Principal.html"
@@ -106,7 +106,7 @@
         </header>
 
         <!-- Conteúdo principal -->
-        <main id="conteudo-principal" class="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <main id="conteudo-principal" class="w-full px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
 
             <!-- Título da página -->
             <section class="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-center">
@@ -1147,6 +1147,7 @@
         <!-- Toasts renderizados pelo JavaScript -->
     </div>
 
+    <!-- Template de linha da tabela -->=======================================================================
     <!-- Template de linha da tabela -->
     <template id="groupRowTemplate">
         <tr class="group-row transition hover:bg-slate-50">
@@ -1172,7 +1173,7 @@
             <td class="whitespace-nowrap px-5 py-4 text-slate-500" data-field="atualizadoEm"></td>
 
             <td class="px-5 py-4 text-right">
-                <div class="relative inline-block text-left">
+                <div class="row-action-wrapper relative inline-block text-left">
                     <button type="button"
                         class="row-action-menu inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
                         aria-label="Abrir ações do grupo" aria-haspopup="menu">
@@ -1185,7 +1186,7 @@
                         </svg>
                     </button>
 
-                    <div class="row-action-list hidden absolute right-0 z-10 mt-2 w-48 rounded-xl border border-slate-200 bg-white py-1 text-left shadow-lg"
+                    <div class="row-action-list hidden absolute right-0 z-20 mt-2 w-48 rounded-xl border border-slate-200 bg-white py-1 text-left shadow-lg drop-down"
                         role="menu">
                         <button type="button" data-action="view" class="row-action-item" role="menuitem">
                             Visualizar

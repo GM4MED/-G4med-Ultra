@@ -1,6 +1,7 @@
 (() => {
     "use strict";
 
+
     const state = {
         grupos: [],
         exames: [],
@@ -12,7 +13,9 @@
         modalAnterior: null
     };
 
+
     const elementos = {};
+
 
     const categorias = [
         "Laboratorial",
@@ -27,6 +30,7 @@
         "Check-up",
         "Outros"
     ];
+
 
     const mockExames = [
         {
@@ -147,6 +151,7 @@
             status: "ATIVO"
         }
     ];
+
 
     const mockGrupos = [
         {
@@ -277,6 +282,7 @@
         }
     ];
 
+
     function cacheElements() {
         const ids = [
             "newGroupBtn",
@@ -336,18 +342,22 @@
             "auditHistory"
         ];
 
+
         ids.forEach((id) => {
             elementos[id] = document.getElementById(id);
         });
+
 
         elementos.tabButtons = document.querySelectorAll("[data-tab]");
         elementos.closeButtons = document.querySelectorAll("[data-close-modal]");
         elementos.tabPanels = document.querySelectorAll("[data-panel]");
     }
 
+
     function clonarDados(dados) {
         return JSON.parse(JSON.stringify(dados));
     }
+
 
     function normalizarTexto(valor) {
         return String(valor || "")
@@ -356,6 +366,7 @@
             .toLowerCase()
             .trim();
     }
+
 
     function escaparHtml(valor) {
         return String(valor || "")
@@ -366,26 +377,32 @@
             .replaceAll("'", "&#039;");
     }
 
+
     function formatarEspecialidades(especialidades = []) {
         if (!especialidades.length) {
             return "Não definida";
         }
 
+
         if (especialidades.length <= 2) {
             return especialidades.join(", ");
         }
 
+
         return `${especialidades.slice(0, 2).join(", ")} +${especialidades.length - 2}`;
     }
+
 
     function formatarQuantidadeExames(grupo) {
         const total = grupo.exames?.length || 0;
         return `${total} ${total === 1 ? "exame" : "exames"}`;
     }
 
+
     function obterExamePorId(id) {
         return state.exames.find((exame) => exame.id === id);
     }
+
 
     function obterExamesDoGrupo(grupo) {
         return [...(grupo.exames || [])]
@@ -397,10 +414,12 @@
             .filter((item) => item.dados);
     }
 
+
     function obterProximoCodigo() {
         const maiorId = state.grupos.reduce((maior, grupo) => Math.max(maior, grupo.id), 0);
         return `GR${String(maiorId + 1).padStart(3, "0")}`;
     }
+
 
     function obterDataAtual() {
         return new Intl.DateTimeFormat("pt-BR", {
@@ -409,19 +428,24 @@
         }).format(new Date());
     }
 
+
     /* Camada preparada para futura API REST */
+
 
     async function buscarGrupos() {
         return clonarDados(state.grupos);
     }
 
+
     async function buscarGrupoPorId(id) {
         return state.grupos.find((grupo) => grupo.id === Number(id)) || null;
     }
 
+
     async function criarGrupo(dados) {
         const novoId = Math.max(0, ...state.grupos.map((grupo) => grupo.id)) + 1;
         const agora = obterDataAtual();
+
 
         const novoGrupo = {
             ...dados,
@@ -440,19 +464,24 @@
             ]
         };
 
+
         state.grupos.push(novoGrupo);
         return novoGrupo;
     }
 
+
     async function atualizarGrupo(id, dados) {
         const indice = state.grupos.findIndex((grupo) => grupo.id === Number(id));
+
 
         if (indice === -1) {
             throw new Error("Grupo não encontrado.");
         }
 
+
         const grupoAnterior = state.grupos[indice];
         const agora = obterDataAtual();
+
 
         const grupoAtualizado = {
             ...grupoAnterior,
@@ -473,25 +502,32 @@
             ]
         };
 
+
         state.grupos[indice] = grupoAtualizado;
         return grupoAtualizado;
     }
 
+
     async function excluirGrupo(id) {
         const indice = state.grupos.findIndex((grupo) => grupo.id === Number(id));
+
 
         if (indice === -1) {
             throw new Error("Grupo não encontrado.");
         }
 
+
         state.grupos.splice(indice, 1);
     }
+
 
     async function buscarExames() {
         return clonarDados(state.exames);
     }
 
+
     /* Listagem */
+
 
     function obterFiltros() {
         return {
@@ -502,8 +538,10 @@
         };
     }
 
+
     function filtrarGrupos() {
         const filtros = obterFiltros();
+
 
         return state.grupos.filter((grupo) => {
             const textoBusca = normalizarTexto([
@@ -514,18 +552,23 @@
                 ...(grupo.especialidades || [])
             ].join(" "));
 
+
             const correspondeBusca =
                 !filtros.busca || textoBusca.includes(filtros.busca);
 
+
             const correspondeCategoria =
                 !filtros.categoria || grupo.categoria === filtros.categoria;
+
 
             const correspondeEspecialidade =
                 !filtros.especialidade ||
                 grupo.especialidades?.includes(filtros.especialidade);
 
+
             const correspondeStatus =
                 !filtros.status || grupo.status === filtros.status;
+
 
             return (
                 correspondeBusca &&
@@ -536,14 +579,17 @@
         });
     }
 
+
     function criarBadgeStatus(status) {
         const badge = document.createElement("span");
         badge.className = `status-badge ${status === "ATIVO" ? "status-badge-active" : "status-badge-inactive"
             }`;
 
+
         badge.textContent = status === "ATIVO" ? "Ativo" : "Inativo";
         return badge;
     }
+
 
     function renderizarTabela() {
         const gruposFiltrados = filtrarGrupos();
@@ -552,9 +598,11 @@
             Math.ceil(gruposFiltrados.length / state.itensPorPagina)
         );
 
+
         if (state.paginaAtual > totalPaginas) {
             state.paginaAtual = totalPaginas;
         }
+
 
         const inicio = (state.paginaAtual - 1) * state.itensPorPagina;
         const gruposPagina = gruposFiltrados.slice(
@@ -562,7 +610,9 @@
             inicio + state.itensPorPagina
         );
 
+
         elementos.groupsTableBody.innerHTML = "";
+
 
         gruposPagina.forEach((grupo) => {
             const linha = document.createElement("tr");
@@ -570,10 +620,12 @@
                 }`;
             linha.dataset.id = grupo.id;
 
+
             linha.innerHTML = `
                 <td class="whitespace-nowrap px-5 py-4 font-semibold text-teal-700">
                     ${escaparHtml(grupo.codigo)}
                 </td>
+
 
                 <td class="px-5 py-4">
                     <div class="min-w-48">
@@ -586,35 +638,43 @@
                     </div>
                 </td>
 
+
                 <td class="whitespace-nowrap px-5 py-4 text-slate-600">
                     ${escaparHtml(grupo.sigla || "—")}
                 </td>
+
 
                 <td class="whitespace-nowrap px-5 py-4 text-slate-600">
                     ${escaparHtml(grupo.categoria)}
                 </td>
 
+
                 <td class="max-w-48 px-5 py-4 text-slate-600">
                     ${escaparHtml(formatarEspecialidades(grupo.especialidades))}
                 </td>
+
 
                 <td class="whitespace-nowrap px-5 py-4 text-slate-600">
                     ${formatarQuantidadeExames(grupo)}
                 </td>
 
+
                 <td class="whitespace-nowrap px-5 py-4 status-cell"></td>
+
 
                 <td class="whitespace-nowrap px-5 py-4 text-slate-500">
                     ${escaparHtml(grupo.atualizadoEm || "—")}
                 </td>
 
+
                 <td class="px-5 py-4 text-right">
-                    <div class="relative inline-block text-left">
+                    <div class="row-action-wrapper relative inline-block text-left">
                         <button type="button"
                             class="row-action-menu inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
                             aria-label="Abrir ações do grupo ${escaparHtml(grupo.nome)}"
                             aria-haspopup="menu"
                             aria-expanded="false">
+
 
                             <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none"
                                 stroke="currentColor" stroke-width="2"
@@ -626,28 +686,34 @@
                             </svg>
                         </button>
 
-                        <div class="row-action-list hidden absolute right-0 z-10 mt-2 w-48 rounded-xl border border-slate-200 bg-white py-1 text-left shadow-lg"
+
+                        <div class="row-action-list hidden absolute right-0 z-20 mt-2 w-48 rounded-xl border border-slate-200 bg-white py-1 text-left shadow-lg drop-down"
                             role="menu">
+
 
                             <button type="button" data-action="view"
                                 class="row-action-item" role="menuitem">
                                 Visualizar
                             </button>
 
+
                             <button type="button" data-action="edit"
                                 class="row-action-item" role="menuitem">
                                 Editar
                             </button>
+
 
                             <button type="button" data-action="duplicate"
                                 class="row-action-item" role="menuitem">
                                 Duplicar
                             </button>
 
+
                             <button type="button" data-action="toggle"
                                 class="row-action-item" role="menuitem">
                                 ${grupo.status === "ATIVO" ? "Inativar" : "Ativar"}
                             </button>
+
 
                             <button type="button" data-action="delete"
                                 class="row-action-item text-red-600 hover:bg-red-50"
@@ -659,24 +725,30 @@
                 </td>
             `;
 
+
             linha.querySelector(".status-cell").appendChild(
                 criarBadgeStatus(grupo.status)
             );
 
+
             elementos.groupsTableBody.appendChild(linha);
         });
+
 
         atualizarEstadoLista(gruposFiltrados.length);
         atualizarPaginacao(gruposFiltrados.length, gruposPagina.length, inicio);
     }
 
+
     function atualizarEstadoLista(total) {
         const semResultados = total === 0;
+
 
         elementos.groupsTableWrapper.classList.toggle("hidden", semResultados);
         elementos.groupsEmptyState.classList.toggle("hidden", !semResultados);
         elementos.pagination.classList.toggle("hidden", semResultados);
     }
+
 
     function atualizarPaginacao(total, quantidadePagina, inicio) {
         const totalPaginas = Math.max(
@@ -684,19 +756,24 @@
             Math.ceil(total / state.itensPorPagina)
         );
 
+
         elementos.resultCount.textContent =
             `${total} ${total === 1 ? "grupo encontrado" : "grupos encontrados"}`;
+
 
         elementos.paginationInfo.textContent = total
             ? `Exibindo ${inicio + 1}–${inicio + quantidadePagina} de ${total} grupos`
             : "Exibindo 0 grupos";
 
+
         elementos.currentPageLabel.textContent =
             `Página ${state.paginaAtual} de ${totalPaginas}`;
+
 
         elementos.previousPageBtn.disabled = state.paginaAtual <= 1;
         elementos.nextPageBtn.disabled = state.paginaAtual >= totalPaginas;
     }
+
 
     function limparFiltros() {
         elementos.searchGroup.value = "";
@@ -707,79 +784,100 @@
         renderizarTabela();
     }
 
+
     /* Modais */
+
 
     function abrirModal(id) {
         const modal = document.getElementById(id);
 
+
         if (!modal) {
             return;
         }
+
 
         state.modalAnterior = document.activeElement;
         modal.classList.remove("hidden");
         document.body.classList.add("overflow-hidden");
 
+
         const primeiroFoco = modal.querySelector(
             "button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])"
         );
 
+
         window.setTimeout(() => primeiroFoco?.focus(), 50);
     }
 
+
     function fecharModal(id) {
         const modal = document.getElementById(id);
+
 
         if (!modal) {
             return;
         }
 
+
         modal.classList.add("hidden");
+
 
         const algumModalAberto = document.querySelector(".modal:not(.hidden)");
         if (!algumModalAberto) {
             document.body.classList.remove("overflow-hidden");
         }
 
+
         state.modalAnterior?.focus?.();
         state.modalAnterior = null;
     }
 
+
     function configurarNovoGrupo() {
         state.grupoAtual = null;
+
 
         elementos.groupModalTitle.textContent = "Novo Grupo de Exames";
         elementos.saveGroupLabel.textContent = "Salvar Grupo";
         elementos.groupForm.reset();
 
+
         elementos.groupCode.value = obterProximoCodigo();
         elementos.groupStatus.checked = true;
         elementos.groupExamsError.textContent = "";
+
 
         renderizarExamesDoGrupo([]);
         selecionarAba("general");
         abrirModal("groupModal");
     }
 
+
     function abrirEdicao(grupo, somenteVisualizacao = false) {
         state.grupoAtual = clonarDados(grupo);
+
 
         elementos.groupModalTitle.textContent = somenteVisualizacao
             ? "Visualizar Grupo de Exames"
             : "Editar Grupo de Exames";
 
+
         elementos.saveGroupLabel.textContent = somenteVisualizacao
             ? "Fechar"
             : "Salvar Alterações";
+
 
         preencherFormulario(grupo);
         renderizarExamesDoGrupo(grupo.exames || []);
         preencherAuditoria(grupo);
         selecionarAba("general");
 
+
         setFormularioSomenteLeitura(somenteVisualizacao);
         abrirModal("groupModal");
     }
+
 
     function preencherFormulario(grupo) {
         elementos.groupId.value = grupo.id || "";
@@ -789,6 +887,7 @@
         elementos.groupCategory.value = grupo.categoria || "";
         elementos.groupDescription.value = grupo.descricao || "";
         elementos.groupStatus.checked = grupo.status === "ATIVO";
+
 
         selecionarValores(elementos.groupSpecialties, grupo.especialidades || []);
         preencherCampo("generalPreparation", grupo.preparoGeral);
@@ -809,12 +908,15 @@
         preencherCampo("resultDeadline", grupo.prazoResultado);
     }
 
+
     function preencherCampo(id, valor, checkbox = false) {
         const campo = document.getElementById(id);
+
 
         if (!campo) {
             return;
         }
+
 
         if (checkbox) {
             campo.checked = Boolean(valor);
@@ -823,15 +925,18 @@
         }
     }
 
+
     function selecionarValores(select, valores) {
         if (!select) {
             return;
         }
 
+
         [...select.options].forEach((option) => {
             option.selected = valores.includes(option.value);
         });
     }
+
 
     function setFormularioSomenteLeitura(somenteLeitura) {
         elementos.groupForm
@@ -841,57 +946,73 @@
                     return;
                 }
 
+
                 if (campo.dataset.closeModal) {
                     return;
                 }
+
 
                 campo.disabled = somenteLeitura;
             });
     }
 
+
     function selecionarAba(nome) {
         elementos.tabButtons.forEach((botao) => {
             const ativo = botao.dataset.tab === nome;
 
+
             botao.classList.toggle("is-active", ativo);
             botao.setAttribute("aria-selected", String(ativo));
         });
+
 
         elementos.tabPanels.forEach((painel) => {
             painel.classList.toggle("hidden", painel.dataset.panel !== nome);
         });
     }
 
+
     /* Exames do grupo */
+
 
     function renderizarExamesDoGrupo(itens) {
         const examesOrdenados = [...itens].sort((a, b) => a.ordem - b.ordem);
 
+
         elementos.groupExamsTableBody.innerHTML = "";
         elementos.modalExamCount.textContent = examesOrdenados.length;
 
+
         const vazio = examesOrdenados.length === 0;
+
 
         elementos.groupExamsEmpty.classList.toggle("hidden", !vazio);
         elementos.groupExamsTableWrapper.classList.toggle("hidden", vazio);
 
+
         examesOrdenados.forEach((item, indice) => {
             const exame = item.dados || obterExamePorId(item.exameId);
+
 
             if (!exame) {
                 return;
             }
 
+
             const linha = document.createElement("tr");
+
 
             linha.innerHTML = `
                 <td class="px-4 py-4 font-semibold text-slate-700">
                     ${indice + 1}
                 </td>
 
+
                 <td class="px-4 py-4 font-medium text-teal-700">
                     ${escaparHtml(exame.codigo)}
                 </td>
+
 
                 <td class="px-4 py-4">
                     <span class="font-semibold text-slate-800">
@@ -899,13 +1020,16 @@
                     </span>
                 </td>
 
+
                 <td class="px-4 py-4 text-slate-600">
                     ${escaparHtml(exame.tipo)}
                 </td>
 
+
                 <td class="px-4 py-4 text-slate-600">
                     ${escaparHtml(exame.material)}
                 </td>
+
 
                 <td class="px-4 py-4">
                     <span class="status-badge ${exame.status === "ATIVO"
@@ -915,6 +1039,7 @@
                         ${exame.status === "ATIVO" ? "Ativo" : "Inativo"}
                     </span>
                 </td>
+
 
                 <td class="px-4 py-4 text-right">
                     <div class="exam-order-actions justify-end">
@@ -927,6 +1052,7 @@
                             ↑
                         </button>
 
+
                         <button type="button"
                             class="exam-order-button"
                             data-move-exam="down"
@@ -935,6 +1061,7 @@
                             ${indice === examesOrdenados.length - 1 ? "disabled" : ""}>
                             ↓
                         </button>
+
 
                         <button type="button"
                             class="exam-remove-button"
@@ -946,17 +1073,21 @@
                 </td>
             `;
 
+
             elementos.groupExamsTableBody.appendChild(linha);
         });
     }
 
+
     function abrirModalExames() {
         state.examesSelecionados.clear();
+
 
         renderizarResultadosExames();
         atualizarBotaoAdicionarExames();
         abrirModal("examModal");
     }
+
 
     function obterFiltrosExames() {
         return {
@@ -967,12 +1098,14 @@
         };
     }
 
+
     function renderizarResultadosExames() {
         const filtros = obterFiltrosExames();
         const grupo = state.grupoAtual;
         const idsAtuais = new Set(
             grupo?.exames?.map((item) => item.exameId) || []
         );
+
 
         const resultados = state.exames.filter((exame) => {
             const correspondeBusca =
@@ -981,14 +1114,18 @@
                     `${exame.codigo} ${exame.nome} ${exame.tipo}`
                 ).includes(filtros.busca);
 
+
             const correspondeTipo =
                 !filtros.tipo || exame.tipo === filtros.tipo;
+
 
             const correspondeMaterial =
                 !filtros.material || exame.material === filtros.material;
 
+
             const correspondeStatus =
                 !filtros.status || exame.status === filtros.status;
+
 
             return (
                 correspondeBusca &&
@@ -998,19 +1135,23 @@
             );
         });
 
+
         elementos.examResults.innerHTML = "";
         elementos.examResultsEmpty.classList.toggle(
             "hidden",
             resultados.length > 0
         );
 
+
         resultados.forEach((exame) => {
             const jaPertence = idsAtuais.has(exame.id);
             const selecionado = state.examesSelecionados.has(exame.id);
 
+
             const item = document.createElement("label");
             item.className = `exam-option flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 p-3 transition ${jaPertence ? "opacity-60" : ""
                 }`;
+
 
             item.innerHTML = `
                 <input type="checkbox"
@@ -1019,10 +1160,12 @@
                     ${selecionado ? "checked" : ""}
                     ${jaPertence ? "disabled" : ""}>
 
+
                 <span class="min-w-0 flex-1">
                     <span class="block truncate font-semibold text-slate-800">
                         ${escaparHtml(exame.nome)}
                     </span>
+
 
                     <span class="mt-1 block text-xs text-slate-500">
                         ${escaparHtml(exame.codigo)} ·
@@ -1030,6 +1173,7 @@
                         ${escaparHtml(exame.material)}
                     </span>
                 </span>
+
 
                 <span class="status-badge ${exame.status === "ATIVO"
                     ? "status-badge-active"
@@ -1039,14 +1183,17 @@
                 </span>
             `;
 
+
             elementos.examResults.appendChild(item);
         });
     }
+
 
     function atualizarBotaoAdicionarExames() {
         elementos.addSelectedExamsBtn.disabled =
             state.examesSelecionados.size === 0;
     }
+
 
     function adicionarExamesSelecionados() {
         if (!state.grupoAtual) {
@@ -1055,6 +1202,7 @@
             };
         }
 
+
         const examesAtuais = state.grupoAtual.exames || [];
         const idsAtuais = new Set(examesAtuais.map((item) => item.exameId));
         const maiorOrdem = Math.max(
@@ -1062,12 +1210,15 @@
             ...examesAtuais.map((item) => item.ordem)
         );
 
+
         let ordem = maiorOrdem;
+
 
         state.examesSelecionados.forEach((exameId) => {
             if (idsAtuais.has(exameId)) {
                 return;
             }
+
 
             ordem += 1;
             examesAtuais.push({
@@ -1076,18 +1227,22 @@
             });
         });
 
+
         state.grupoAtual.exames = examesAtuais;
         renderizarExamesDoGrupo(examesAtuais);
         fecharModal("examModal");
         selecionarAba("exams");
 
+
         mostrarToast("Exames adicionados ao grupo.", "success");
     }
+
 
     function removerExameDoGrupo(exameId) {
         if (!state.grupoAtual) {
             return;
         }
+
 
         state.grupoAtual.exames = (state.grupoAtual.exames || [])
             .filter((item) => item.exameId !== Number(exameId))
@@ -1096,24 +1251,30 @@
                 ordem: indice + 1
             }));
 
+
         renderizarExamesDoGrupo(state.grupoAtual.exames);
         mostrarToast("Exame removido do grupo.", "success");
     }
+
 
     function moverExame(exameId, direcao) {
         if (!state.grupoAtual) {
             return;
         }
 
+
         const itens = [...(state.grupoAtual.exames || [])]
             .sort((a, b) => a.ordem - b.ordem);
+
 
         const indiceAtual = itens.findIndex(
             (item) => item.exameId === Number(exameId)
         );
 
+
         const novoIndice =
             direcao === "up" ? indiceAtual - 1 : indiceAtual + 1;
+
 
         if (
             indiceAtual < 0 ||
@@ -1123,24 +1284,30 @@
             return;
         }
 
+
         [itens[indiceAtual], itens[novoIndice]] = [
             itens[novoIndice],
             itens[indiceAtual]
         ];
+
 
         state.grupoAtual.exames = itens.map((item, indice) => ({
             ...item,
             ordem: indice + 1
         }));
 
+
         renderizarExamesDoGrupo(state.grupoAtual.exames);
     }
 
+
     /* Formulário */
+
 
     function coletarDadosFormulario() {
         const selecionar = (campo) =>
             [...campo.selectedOptions].map((option) => option.value);
+
 
         return {
             nome: elementos.groupName.value.trim(),
@@ -1169,8 +1336,10 @@
         };
     }
 
+
     function validarFormulario(dados) {
         let valido = true;
+
 
         elementos.groupName.setAttribute("aria-invalid", "false");
         elementos.groupCategory.setAttribute("aria-invalid", "false");
@@ -1178,11 +1347,13 @@
         elementos.groupCategoryError.textContent = "";
         elementos.groupExamsError.textContent = "";
 
+
         if (!dados.nome) {
             elementos.groupName.setAttribute("aria-invalid", "true");
             elementos.groupNameError.textContent = "Este campo é obrigatório.";
             valido = false;
         }
+
 
         if (!dados.categoria) {
             elementos.groupCategory.setAttribute("aria-invalid", "true");
@@ -1191,34 +1362,43 @@
             valido = false;
         }
 
+
         if (!dados.exames.length) {
             elementos.groupExamsError.textContent =
                 "Adicione pelo menos um exame ao grupo.";
             valido = false;
         }
 
+
         if (!valido) {
             mostrarToast("Revise os campos obrigatórios.", "error");
         }
 
+
         return valido;
     }
 
+
     async function salvarGrupo(event) {
         event.preventDefault();
+
 
         if (elementos.saveGroupLabel.textContent === "Fechar") {
             fecharModal("groupModal");
             return;
         }
 
+
         const dados = coletarDadosFormulario();
+
 
         if (!validarFormulario(dados)) {
             return;
         }
 
+
         elementos.saveGroupBtn.disabled = true;
+
 
         try {
             if (state.grupoAtual?.id) {
@@ -1228,6 +1408,7 @@
                 await criarGrupo(dados);
                 mostrarToast("Grupo de exames criado com sucesso.", "success");
             }
+
 
             fecharModal("groupModal");
             state.paginaAtual = 1;
@@ -1239,54 +1420,50 @@
         }
     }
 
+
     /* Ações da tabela */
 
-    function abrirMenuAcoes(botao) {
-        document.querySelectorAll(".row-action-list").forEach((menu) => {
-            if (menu !== botao.nextElementSibling) {
-                menu.classList.add("hidden");
-            }
-        });
-
-        const menu = botao.nextElementSibling;
-        const aberto = !menu.classList.contains("hidden");
-
-        menu.classList.toggle("hidden", aberto);
-        botao.setAttribute("aria-expanded", String(!aberto));
-    }
 
     function executarAcaoGrupo(acao, id) {
         const grupo = state.grupos.find((item) => item.id === Number(id));
 
+
         if (!grupo) {
             return;
         }
+
 
         switch (acao) {
             case "view":
                 abrirEdicao(grupo, true);
                 break;
 
+
             case "edit":
                 abrirEdicao(grupo, false);
                 break;
+
 
             case "duplicate":
                 duplicarGrupo(grupo);
                 break;
 
+
             case "toggle":
                 confirmarAlteracaoStatus(grupo);
                 break;
+
 
             case "delete":
                 confirmarExclusao(grupo);
                 break;
 
+
             default:
                 break;
         }
     }
+
 
     function duplicarGrupo(grupo) {
         state.grupoAtual = {
@@ -1298,8 +1475,10 @@
             status: "ATIVO"
         };
 
+
         elementos.groupModalTitle.textContent = "Novo Grupo de Exames";
         elementos.saveGroupLabel.textContent = "Salvar Grupo";
+
 
         preencherFormulario(state.grupoAtual);
         renderizarExamesDoGrupo(state.grupoAtual.exames);
@@ -1307,6 +1486,7 @@
         selecionarAba("general");
         abrirModal("groupModal");
     }
+
 
     function confirmarExclusao(grupo) {
         elementos.confirmModalTitle.textContent = "Excluir Grupo de Exames?";
@@ -1316,45 +1496,56 @@
         elementos.confirmActionBtn.className =
             "inline-flex min-h-12 items-center justify-center rounded-xl bg-red-600 px-5 font-semibold text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2";
 
+
         state.acaoConfirmada = {
             tipo: "excluir",
             id: grupo.id
         };
 
+
         abrirModal("confirmModal");
     }
 
+
     function confirmarAlteracaoStatus(grupo) {
         const ativar = grupo.status === "INATIVO";
+
 
         elementos.confirmModalTitle.textContent = ativar
             ? "Ativar Grupo de Exames?"
             : "Inativar Grupo de Exames?";
 
+
         elementos.confirmModalMessage.textContent = ativar
             ? `Tem certeza que deseja ativar o grupo "${grupo.nome}"?`
             : `Tem certeza que deseja inativar o grupo "${grupo.nome}"?`;
+
 
         elementos.confirmActionBtn.textContent = ativar ? "Ativar" : "Inativar";
         elementos.confirmActionBtn.className = ativar
             ? "action-primary"
             : "inline-flex min-h-12 items-center justify-center rounded-xl bg-red-600 px-5 font-semibold text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2";
 
+
         state.acaoConfirmada = {
             tipo: "status",
             id: grupo.id
         };
 
+
         abrirModal("confirmModal");
     }
+
 
     async function executarConfirmacao() {
         if (!state.acaoConfirmada) {
             return;
         }
 
+
         const { tipo, id } = state.acaoConfirmada;
         const grupo = state.grupos.find((item) => item.id === id);
+
 
         try {
             if (tipo === "excluir") {
@@ -1362,11 +1553,13 @@
                 mostrarToast("Grupo excluído com sucesso.", "success");
             }
 
+
             if (tipo === "status" && grupo) {
                 await atualizarGrupo(id, {
                     ...grupo,
                     status: grupo.status === "ATIVO" ? "INATIVO" : "ATIVO"
                 });
+
 
                 mostrarToast(
                     grupo.status === "ATIVO"
@@ -1375,6 +1568,7 @@
                     "success"
                 );
             }
+
 
             fecharModal("confirmModal");
             renderizarTabela();
@@ -1385,7 +1579,9 @@
         }
     }
 
+
     /* Auditoria */
+
 
     function preencherAuditoria(grupo) {
         elementos.auditCreatedBy.textContent = grupo.criadoPor || "—";
@@ -1393,19 +1589,24 @@
         elementos.auditUpdatedAt.textContent = grupo.atualizadoEm || "—";
         elementos.auditUpdatedBy.textContent = grupo.alteradoPor || "—";
 
+
         elementos.auditHistory.innerHTML = "";
+
 
         (grupo.historico || []).forEach((evento, indice) => {
             const item = document.createElement("li");
             item.className = "relative";
 
+
             item.innerHTML = `
                 <span class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white ${indice === 0 ? "bg-teal-600" : "bg-slate-400"
                 }"></span>
 
+
                 <time class="text-xs text-slate-500">
                     ${escaparHtml(evento.data)}
                 </time>
+
 
                 <p class="mt-1 text-sm font-medium text-slate-800">
                     ${escaparHtml(evento.usuario)}:
@@ -1413,15 +1614,19 @@
                 </p>
             `;
 
+
             elementos.auditHistory.appendChild(item);
         });
     }
 
+
     /* Toasts */
+
 
     function mostrarToast(mensagem, tipo = "info", titulo = "") {
         const toast = document.createElement("div");
         toast.className = `toast toast-${tipo}`;
+
 
         const titulos = {
             success: "Sucesso",
@@ -1430,6 +1635,7 @@
             info: "Informação"
         };
 
+
         const icones = {
             success: "✓",
             error: "!",
@@ -1437,37 +1643,131 @@
             info: "i"
         };
 
+
         toast.innerHTML = `
             <span class="toast-icon font-bold text-teal-700">
                 ${icones[tipo] || icones.info}
             </span>
+
 
             <div class="toast-content">
                 <p class="toast-title">${escaparHtml(titulo || titulos[tipo])}</p>
                 <p class="toast-message">${escaparHtml(mensagem)}</p>
             </div>
 
+
             <button type="button" class="toast-close" aria-label="Fechar notificação">
                 ×
             </button>
         `;
 
+
         elementos.toastContainer.appendChild(toast);
+
 
         const remover = () => {
             toast.classList.add("is-leaving");
             window.setTimeout(() => toast.remove(), 180);
         };
 
+
         toast.querySelector(".toast-close").addEventListener("click", remover);
         window.setTimeout(remover, 4500);
     }
 
+
+    // ============================================
+    // Menu de ações da tabela (Smart Positioning)
+    // ============================================
+
+    let activeMenu = null;
+
+    function openRowMenu(button) {
+        const wrapper = button.closest('.row-action-wrapper');
+        const menu = wrapper.querySelector('.row-action-list');
+
+        // Fecha menu anterior se existir
+        if (activeMenu && activeMenu !== menu) {
+            closeRowMenu(activeMenu);
+        }
+
+        // Calcula posição inteligente
+        const rect = button.getBoundingClientRect();
+        const menuHeight = 220; // altura estimada do menu (5 itens ~44px cada)
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+
+        menu.classList.remove('drop-down', 'drop-up');
+
+        if (spaceBelow < menuHeight && spaceAbove > spaceBelow) {
+            menu.classList.add('drop-up');
+        } else {
+            menu.classList.add('drop-down');
+        }
+
+        // Abre o menu
+        menu.classList.remove('hidden');
+        // Força reflow para transição
+        menu.offsetHeight;
+        menu.classList.add('is-visible');
+        button.setAttribute('aria-expanded', 'true');
+        activeMenu = menu;
+    }
+
+    function closeRowMenu(menu) {
+        if (!menu) return;
+        const button = menu.closest('.row-action-wrapper').querySelector('.row-action-menu');
+        menu.classList.remove('is-visible');
+        button.removeAttribute('aria-expanded');
+
+        setTimeout(() => {
+            menu.classList.add('hidden');
+        }, 180);
+
+        if (activeMenu === menu) {
+            activeMenu = null;
+        }
+    }
+
+    function toggleRowMenu(button) {
+        const wrapper = button.closest('.row-action-wrapper');
+        const menu = wrapper.querySelector('.row-action-list');
+        const isOpen = menu.classList.contains('is-visible');
+
+        if (isOpen) {
+            closeRowMenu(menu);
+        } else {
+            openRowMenu(button);
+        }
+    }
+
+    // Listener global de clique (click outside)
+    document.addEventListener('click', (e) => {
+        if (!activeMenu) return;
+
+        const isInsideMenu = activeMenu.contains(e.target);
+        const isButton = e.target.closest('.row-action-menu');
+
+        if (!isInsideMenu && !isButton) {
+            closeRowMenu(activeMenu);
+        }
+    });
+
+    // Listener de teclado (Escape fecha o menu)
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && activeMenu) {
+            closeRowMenu(activeMenu);
+        }
+    });
+
+
     /* Eventos */
+
 
     function configurarEventos() {
         elementos.newGroupBtn.addEventListener("click", configurarNovoGrupo);
         elementos.emptyCreateBtn.addEventListener("click", configurarNovoGrupo);
+
 
         [
             elementos.searchGroup,
@@ -1480,13 +1780,16 @@
                 renderizarTabela();
             });
 
+
             campo.addEventListener("change", () => {
                 state.paginaAtual = 1;
                 renderizarTabela();
             });
         });
 
+
         elementos.clearFiltersBtn.addEventListener("click", limparFiltros);
+
 
         elementos.previousPageBtn.addEventListener("click", () => {
             if (state.paginaAtual > 1) {
@@ -1495,9 +1798,11 @@
             }
         });
 
+
         elementos.nextPageBtn.addEventListener("click", () => {
             const total = filtrarGrupos().length;
             const totalPaginas = Math.ceil(total / state.itensPorPagina);
+
 
             if (state.paginaAtual < totalPaginas) {
                 state.paginaAtual += 1;
@@ -1505,13 +1810,16 @@
             }
         });
 
+
         elementos.groupForm.addEventListener("submit", salvarGrupo);
+
 
         elementos.addExamBtn.addEventListener("click", abrirModalExames);
         elementos.addSelectedExamsBtn.addEventListener(
             "click",
             adicionarExamesSelecionados
         );
+
 
         [
             elementos.searchExam,
@@ -1523,12 +1831,15 @@
             campo.addEventListener("change", renderizarResultadosExames);
         });
 
+
         elementos.confirmActionBtn.addEventListener(
             "click",
             executarConfirmacao
         );
 
+
         elementos.retryGroupsBtn.addEventListener("click", inicializar);
+
 
         elementos.tabButtons.forEach((botao) => {
             botao.addEventListener("click", () => {
@@ -1536,25 +1847,21 @@
             });
         });
 
+
         elementos.closeButtons.forEach((botao) => {
             botao.addEventListener("click", () => {
                 fecharModal(botao.dataset.closeModal);
             });
         });
 
+
         document.addEventListener("click", (event) => {
             const menuButton = event.target.closest(".row-action-menu");
 
             if (menuButton) {
                 event.stopPropagation();
-                abrirMenuAcoes(menuButton);
+                toggleRowMenu(menuButton);
                 return;
-            }
-
-            if (!event.target.closest(".row-action-list")) {
-                document.querySelectorAll(".row-action-list").forEach((menu) => {
-                    menu.classList.add("hidden");
-                });
             }
 
             const actionButton = event.target.closest("[data-action]");
@@ -1565,6 +1872,7 @@
 
                 if (id) {
                     executarAcaoGrupo(actionButton.dataset.action, id);
+                    closeRowMenu(activeMenu);
                 }
             }
 
@@ -1598,6 +1906,7 @@
             }
         });
 
+
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
                 document.querySelectorAll(".modal:not(.hidden)").forEach((modal) => {
@@ -1607,11 +1916,13 @@
         });
     }
 
+
     function simularCarregamento(callback) {
         elementos.groupsSkeleton.classList.remove("hidden");
         elementos.groupsTableWrapper.classList.add("hidden");
         elementos.groupsEmptyState.classList.add("hidden");
         elementos.groupsErrorState.classList.add("hidden");
+
 
         window.setTimeout(() => {
             elementos.groupsSkeleton.classList.add("hidden");
@@ -1619,18 +1930,23 @@
         }, 350);
     }
 
+
     async function inicializar() {
         cacheElements();
+
 
         state.exames = clonarDados(mockExames);
         state.grupos = clonarDados(mockGrupos);
 
+
         configurarEventos();
+
 
         simularCarregamento(() => {
             renderizarTabela();
         });
     }
+
 
     inicializar();
 })();
