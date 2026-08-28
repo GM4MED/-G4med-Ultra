@@ -342,8 +342,9 @@ textarea {
     font-size: 0.75rem;
 }
 
-/* Tabela */
-------------------------------------------------------------------------------------- .group-row {
+/* Tabela e Linhas */
+
+.group-row {
     animation: fade-in 180ms ease-out;
 }
 
@@ -359,33 +360,7 @@ textarea {
     opacity: 0.7;
 }
 
-/* Wrapper da ação (menu dropdown) */
-.row-action-wrapper {
-    position: relative;
-}
-
-.row-action-menu {
-    transition:
-        background-color 0.2s ease,
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.row-action-menu:hover {
-    border-color: var(--slate-300);
-    background: var(--slate-100);
-}
-
-.row-action-menu[aria-expanded="true"] {
-    border-color: var(--teal-300);
-    background: var(--teal-50);
-    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.12);
-}
-
-/* ============================================================================================================== */
-/* ============================================
-   Menu de ações da tabela (Smart Positioning)
-   ============================================ */
+/* Menu de ações da tabela (Smart Positioning) */
 
 .row-action-wrapper {
     position: relative;
@@ -409,67 +384,6 @@ textarea {
     box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.12);
 }
 
-.row-action-list {
-    min-width: 12rem;
-    overflow: visible;
-    border-radius: 0.75rem;
-    background: #fff;
-    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.12);
-    opacity: 0;
-    transform: translateY(-4px);
-    transition:
-        opacity 0.18s ease,
-        transform 0.18s ease,
-        box-shadow 0.2s ease;
-    pointer-events: none;
-}
-
-.row-action-list.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-}
-
-/* Drop-down (abre para baixo) */
-.row-action-list.drop-down {
-    margin-top: 0.5rem;
-}
-
-/* Drop-up (abre para cima) */
-.row-action-list.drop-up {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-    bottom: 100%;
-    transform: translateY(4px);
-}
-
-.row-action-list.drop-up.is-visible {
-    transform: translateY(0);
-}
-
-.row-action-item {
-    display: block;
-    width: 100%;
-    border: 0;
-    background: transparent;
-    padding: 0.625rem 0.875rem;
-    color: var(--slate-700);
-    text-align: left;
-    font-size: 0.875rem;
-    transition: background-color 0.15s ease;
-}
-
-.row-action-item:hover,
-.row-action-item:focus-visible {
-    background: var(--slate-50);
-    outline: none;
-}
-
-.row-action-item+.row-action-item {
-    border-top: 1px solid var(--slate-100);
-}
-
-/* Lista de ações (dropdown) */
 .row-action-list {
     min-width: 12rem;
     overflow: visible;

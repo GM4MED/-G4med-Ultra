@@ -869,7 +869,7 @@
                                     <input id="estimatedTime" name="tempoEstimado" type="time" value="00:30"
                                         class="form-input">
                                 </div>
-
+                                <!-- ====================================================================================================== -->
                                 <div>
                                     <label for="responsibleProfessional" class="form-label">
                                         Profissional responsável
@@ -1147,7 +1147,6 @@
         <!-- Toasts renderizados pelo JavaScript -->
     </div>
 
-    <!-- Template de linha da tabela -->=======================================================================
     <!-- Template de linha da tabela -->
     <template id="groupRowTemplate">
         <tr class="group-row transition hover:bg-slate-50">
@@ -1166,7 +1165,7 @@
 
             <td class="max-w-48 px-5 py-4 text-slate-600" data-field="especialidade"></td>
 
-            <td class="whitespace-nowrap px-5 py-4 text-slate-600" data-field="exames"></td>
+            <td class="whitespace-nowrap px-5 py-4 text-slate-600" data-fiels="exames"></td>
 
             <td class="whitespace-nowrap px-5 py-4" data-field="status"></td>
 
@@ -1176,7 +1175,7 @@
                 <div class="row-action-wrapper relative inline-block text-left">
                     <button type="button"
                         class="row-action-menu inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                        aria-label="Abrir ações do grupo" aria-haspopup="menu">
+                        aria-label="Abrir ações do grupo" data-field-aria="nome" aria-haspopup="menu">
 
                         <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
