@@ -410,11 +410,12 @@
 
     <!-- Modal de grupo -->
     <div id="groupModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="groupModalTitle">
-        <div class="modal-overlay" data-close-modal="groupModal"></div>
+        <div class="modal-overlay" data-close-modal="groupModal" aria-hidden="true"></div>
 
-        <section class="modal-panel modal-panel-large">
-            <header class="modal-header">
-                <div>
+        <section class="modal-panel modal-panel-large w-full max-w-5xl overflow-hidden"
+            aria-describedby="groupModalDescription">
+            <header class="modal-header flex items-start justify-between gap-4">
+                <div class="min-w-0">
                     <p class="text-xs font-medium uppercase tracking-wide text-teal-700">
                         Cadastro administrativo
                     </p>
@@ -423,12 +424,12 @@
                         Novo Grupo de Exames
                     </h2>
 
-                    <p class="mt-1 text-sm text-slate-500">
-                        Configure os dados e exames pertencentes ao grupo.
+                    <p id="groupModalDescription" class="mt-1 max-w-2xl text-sm text-slate-500">
+                        Configure os dados, exames e informações complementares pertencentes ao grupo.
                     </p>
                 </div>
 
-                <button type="button" class="modal-close" data-close-modal="groupModal"
+                <button type="button" class="modal-close shrink-0" data-close-modal="groupModal"
                     aria-label="Fechar formulário de grupo">
                     <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -438,70 +439,69 @@
                 </button>
             </header>
 
-            <div class="modal-tabs" role="tablist" aria-label="Seções do grupo de exames">
-                <button type="button" id="tabGeneral" class="modal-tab is-active" role="tab" aria-selected="true"
-                    aria-controls="panelGeneral" data-tab="general">
+            <nav class="modal-tabs overflow-x-auto" role="tablist" aria-label="Seções do grupo de exames">
+                <button type="button" id="tabGeneral" class="modal-tab is-active whitespace-nowrap" role="tab"
+                    aria-selected="true" aria-controls="panelGeneral" data-tab="general">
                     Dados Gerais
                 </button>
 
-                <button type="button" id="tabExams" class="modal-tab" role="tab" aria-selected="false"
+                <button type="button" id="tabExams" class="modal-tab whitespace-nowrap" role="tab" aria-selected="false"
                     aria-controls="panelExams" data-tab="exams">
                     Exames
-                    <span id="modalExamCount" class="tab-counter">0</span>
+                    <span id="modalExamCount" class="tab-counter"
+                        aria-label="Quantidade de exames selecionados">0</span>
                 </button>
 
-                <button type="button" id="tabPreparation" class="modal-tab" role="tab" aria-selected="false"
-                    aria-controls="panelPreparation" data-tab="preparation">
+                <button type="button" id="tabPreparation" class="modal-tab whitespace-nowrap" role="tab"
+                    aria-selected="false" aria-controls="panelPreparation" data-tab="preparation">
                     Preparo
                 </button>
 
-                <button type="button" id="tabPrices" class="modal-tab" role="tab" aria-selected="false"
-                    aria-controls="panelPrices" data-tab="prices">
+                <button type="button" id="tabPrices" class="modal-tab whitespace-nowrap" role="tab"
+                    aria-selected="false" aria-controls="panelPrices" data-tab="prices">
                     Convênios e Valores
                 </button>
 
-                <button type="button" id="tabOperational" class="modal-tab" role="tab" aria-selected="false"
-                    aria-controls="panelOperational" data-tab="operational">
+                <button type="button" id="tabOperational" class="modal-tab whitespace-nowrap" role="tab"
+                    aria-selected="false" aria-controls="panelOperational" data-tab="operational">
                     Configurações
                 </button>
 
-                <button type="button" id="tabAudit" class="modal-tab" role="tab" aria-selected="false"
+                <button type="button" id="tabAudit" class="modal-tab whitespace-nowrap" role="tab" aria-selected="false"
                     aria-controls="panelAudit" data-tab="audit">
                     Auditoria
                 </button>
-            </div>
+            </nav>
 
             <form id="groupForm" novalidate>
                 <input type="hidden" id="groupId" name="groupId">
 
-                <div class="modal-body">
+                <div class="modal-body max-h-[70vh] overflow-y-auto">
 
                     <!-- Dados gerais -->
                     <section id="panelGeneral" class="tab-panel" role="tabpanel" aria-labelledby="tabGeneral"
                         data-panel="general">
 
+                        <div class="mb-6">
+                            <h3 class="section-title">Dados gerais do grupo</h3>
+                            <p class="section-description">
+                                Informe os dados principais utilizados para identificação e organização do grupo.
+                            </p>
+                        </div>
+
                         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
 
                             <div>
-                                <label for="groupCode" class="form-label">
-                                    Código
-                                </label>
-
+                                <label for="groupCode" class="form-label">Código</label>
                                 <input id="groupCode" name="codigo" type="text" readonly
                                     class="form-input bg-slate-100 text-slate-500" placeholder="Gerado automaticamente">
                             </div>
 
                             <div>
-                                <label for="groupStatus" class="form-label">
-                                    Status
-                                </label>
-
+                                <label for="groupStatus" class="form-label">Status</label>
                                 <div
                                     class="flex min-h-12 items-center justify-between rounded-xl border border-slate-300 px-4">
-                                    <span class="text-sm font-medium text-slate-700">
-                                        Grupo ativo
-                                    </span>
-
+                                    <span class="text-sm font-medium text-slate-700">Grupo ativo</span>
                                     <label class="toggle">
                                         <input id="groupStatus" name="status" type="checkbox" checked>
                                         <span class="toggle-slider"></span>
@@ -511,31 +511,25 @@
 
                             <div class="md:col-span-2">
                                 <label for="groupName" class="form-label">
-                                    Nome do Grupo <span class="text-red-600">*</span>
+                                    Nome do Grupo <span class="text-red-600" aria-hidden="true">*</span>
                                 </label>
-
-                                <input id="groupName" name="nome" type="text" maxlength="120"
-                                    placeholder="Ex.: Perfil Lipídico" class="form-input"
+                                <input id="groupName" name="nome" type="text" maxlength="120" required
+                                    autocomplete="off" placeholder="Ex.: Perfil Lipídico" class="form-input"
                                     aria-describedby="groupNameError">
-
-                                <p id="groupNameError" class="form-error"></p>
+                                <p id="groupNameError" class="form-error" role="alert"></p>
                             </div>
 
                             <div>
-                                <label for="groupShortName" class="form-label">
-                                    Sigla
-                                </label>
-
-                                <input id="groupShortName" name="sigla" type="text" maxlength="20" placeholder="Ex.: PL"
-                                    class="form-input">
+                                <label for="groupShortName" class="form-label">Sigla</label>
+                                <input id="groupShortName" name="sigla" type="text" maxlength="20" autocomplete="off"
+                                    placeholder="Ex.: PL" class="form-input">
                             </div>
 
                             <div>
                                 <label for="groupCategory" class="form-label">
-                                    Categoria <span class="text-red-600">*</span>
+                                    Categoria <span class="text-red-600" aria-hidden="true">*</span>
                                 </label>
-
-                                <select id="groupCategory" name="categoria" class="form-input"
+                                <select id="groupCategory" name="categoria" required class="form-input"
                                     aria-describedby="groupCategoryError">
                                     <option value="">Selecione uma categoria</option>
                                     <option value="Laboratorial">Laboratorial</option>
@@ -550,15 +544,11 @@
                                     <option value="Check-up">Check-up</option>
                                     <option value="Outros">Outros</option>
                                 </select>
-
-                                <p id="groupCategoryError" class="form-error"></p>
+                                <p id="groupCategoryError" class="form-error" role="alert"></p>
                             </div>
 
                             <div class="md:col-span-2">
-                                <label for="groupSpecialties" class="form-label">
-                                    Especialidades relacionadas
-                                </label>
-
+                                <label for="groupSpecialties" class="form-label">Especialidades relacionadas</label>
                                 <select id="groupSpecialties" name="especialidades" multiple
                                     class="form-input min-h-32">
                                     <option value="Clínica Médica">Clínica Médica</option>
@@ -572,17 +562,12 @@
                                     <option value="Endocrinologia">Endocrinologia</option>
                                     <option value="Outras">Outras</option>
                                 </select>
-
-                                <p class="form-help">
-                                    Utilize Ctrl ou Command para selecionar mais de uma especialidade.
+                                <p class="form-help">Utilize Ctrl ou Command para selecionar mais de uma especialidade.
                                 </p>
                             </div>
 
                             <div class="md:col-span-2">
-                                <label for="groupDescription" class="form-label">
-                                    Descrição
-                                </label>
-
+                                <label for="groupDescription" class="form-label">Descrição</label>
                                 <textarea id="groupDescription" name="descricao" rows="4" maxlength="500"
                                     placeholder="Descreva a finalidade deste grupo de exames."
                                     class="form-input resize-y"></textarea>
@@ -596,46 +581,33 @@
 
                         <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <h3 class="text-lg font-semibold text-slate-900">
-                                    Exames pertencentes ao grupo
-                                </h3>
-
-                                <p class="mt-1 text-sm text-slate-500">
-                                    A ordem dos exames será utilizada na solicitação ao paciente.
-                                </p>
+                                <h3 class="section-title">Exames pertencentes ao grupo</h3>
+                                <p class="section-description">A ordem dos exames será utilizada na solicitação ao
+                                    paciente.</p>
                             </div>
 
                             <button type="button" id="addExamBtn"
-                                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 text-sm font-semibold text-white transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500">
-
+                                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 text-sm font-semibold text-white transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
                                 <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="M12 5v14"></path>
                                     <path d="M5 12h14"></path>
                                 </svg>
-
                                 Adicionar Exame
                             </button>
                         </div>
 
                         <div id="groupExamsEmpty"
                             class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center">
-                            <p class="font-medium text-slate-700">
-                                Nenhum exame associado.
-                            </p>
-
-                            <p class="mt-1 text-sm text-slate-500">
-                                Adicione pelo menos um exame para concluir o cadastro.
-                            </p>
+                            <p class="font-medium text-slate-700">Nenhum exame associado.</p>
+                            <p class="mt-1 text-sm text-slate-500">Adicione pelo menos um exame para concluir o
+                                cadastro.</p>
                         </div>
 
                         <div id="groupExamsTableWrapper"
                             class="hidden overflow-x-auto rounded-xl border border-slate-200">
                             <table class="min-w-[760px] w-full text-left text-sm">
-                                <caption class="sr-only">
-                                    Exames associados ao grupo
-                                </caption>
-
+                                <caption class="sr-only">Exames associados ao grupo</caption>
                                 <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                                     <tr>
                                         <th scope="col" class="px-4 py-3">Ordem</th>
@@ -647,18 +619,17 @@
                                         <th scope="col" class="px-4 py-3 text-right">Ações</th>
                                     </tr>
                                 </thead>
-
                                 <tbody id="groupExamsTableBody" class="divide-y divide-slate-100">
                                     <!-- Renderizado pelo JavaScript -->
                                 </tbody>
                             </table>
                         </div>
 
-                        <p id="groupExamsError" class="form-error mt-3"></p>
+                        <p id="groupExamsError" class="form-error mt-3" role="alert"></p>
 
                         <p class="mt-4 rounded-lg bg-teal-50 px-4 py-3 text-sm text-teal-800">
-                            Os exames são armazenados por referência. Informações completas pertencem ao cadastro
-                            individual do exame.
+                            Os exames são armazenados por referência. As informações completas pertencem ao cadastro
+                            individual de cada exame.
                         </p>
                     </section>
 
@@ -669,42 +640,28 @@
                         <div class="space-y-5">
                             <div>
                                 <h3 class="section-title">Preparo e Orientações</h3>
-                                <p class="section-description">
-                                    As orientações abaixo pertencem ao grupo e não substituem o preparo específico de
-                                    cada exame.
-                                </p>
+                                <p class="section-description">As orientações abaixo pertencem ao grupo e não substituem
+                                    o preparo específico de cada exame.</p>
                             </div>
 
                             <div>
-                                <label for="generalPreparation" class="form-label">
-                                    Preparo geral
-                                </label>
-
+                                <label for="generalPreparation" class="form-label">Preparo geral</label>
                                 <textarea id="generalPreparation" name="preparoGeral" rows="5"
                                     placeholder="Informe orientações gerais de preparo para os exames deste grupo."
                                     class="form-input resize-y"></textarea>
-
-                                <p class="form-help">
-                                    O preparo específico continuará sendo controlado no cadastro individual de cada
-                                    exame.
-                                </p>
+                                <p class="form-help">O preparo específico continuará sendo controlado no cadastro
+                                    individual de cada exame.</p>
                             </div>
 
                             <div>
-                                <label for="patientInstructions" class="form-label">
-                                    Orientações ao paciente
-                                </label>
-
+                                <label for="patientInstructions" class="form-label">Orientações ao paciente</label>
                                 <textarea id="patientInstructions" name="orientacoesPaciente" rows="5"
                                     placeholder="Digite as orientações que serão apresentadas ao paciente."
                                     class="form-input resize-y"></textarea>
                             </div>
 
                             <div>
-                                <label for="internalNotes" class="form-label">
-                                    Observações internas
-                                </label>
-
+                                <label for="internalNotes" class="form-label">Observações internas</label>
                                 <textarea id="internalNotes" name="observacoesInternas" rows="5"
                                     placeholder="Informações internas para uso da equipe."
                                     class="form-input resize-y"></textarea>
@@ -719,16 +676,12 @@
                         <div class="space-y-5">
                             <div>
                                 <h3 class="section-title">Convênios e Valores</h3>
-                                <p class="section-description">
-                                    Estrutura preparada para integração futura com tabelas de preços.
-                                </p>
+                                <p class="section-description">Configure os convênios aceitos e os dados financeiros
+                                    relacionados ao grupo.</p>
                             </div>
 
                             <div>
-                                <label for="acceptedAgreements" class="form-label">
-                                    Convênios aceitos
-                                </label>
-
+                                <label for="acceptedAgreements" class="form-label">Convênios aceitos</label>
                                 <select id="acceptedAgreements" name="convenios" multiple class="form-input min-h-32">
                                     <option value="Particular">Particular</option>
                                     <option value="Unimed">Unimed</option>
@@ -736,18 +689,12 @@
                                     <option value="Bradesco Saúde">Bradesco Saúde</option>
                                     <option value="Hapvida">Hapvida</option>
                                 </select>
-
-                                <p class="form-help">
-                                    Utilize Ctrl ou Command para selecionar mais de um convênio.
-                                </p>
+                                <p class="form-help">Utilize Ctrl ou Command para selecionar mais de um convênio.</p>
                             </div>
 
                             <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                                 <div>
-                                    <label for="priceTable" class="form-label">
-                                        Tabela de preço
-                                    </label>
-
+                                    <label for="priceTable" class="form-label">Tabela de preço</label>
                                     <select id="priceTable" name="tabelaPreco" class="form-input">
                                         <option value="">Selecione uma tabela</option>
                                         <option value="Tabela particular">Tabela particular</option>
@@ -757,30 +704,21 @@
                                 </div>
 
                                 <div>
-                                    <label for="tussCode" class="form-label">
-                                        Código TUSS
-                                    </label>
-
+                                    <label for="tussCode" class="form-label">Código TUSS</label>
                                     <input id="tussCode" name="codigoTuss" type="text" placeholder="Ex.: 40301586"
                                         class="form-input">
                                 </div>
 
                                 <div>
-                                    <label for="cbhpmCode" class="form-label">
-                                        Código CBHPM
-                                    </label>
-
+                                    <label for="cbhpmCode" class="form-label">Código CBHPM</label>
                                     <input id="cbhpmCode" name="codigoCbhpm" type="text" placeholder="Código CBHPM"
                                         class="form-input">
                                 </div>
 
                                 <div>
-                                    <label for="groupPrice" class="form-label">
-                                        Valor
-                                    </label>
-
+                                    <label for="groupPrice" class="form-label">Valor</label>
                                     <input id="groupPrice" name="valor" type="number" min="0" step="0.01"
-                                        placeholder="0,00" class="form-input">
+                                        inputmode="decimal" placeholder="0,00" class="form-input">
                                 </div>
                             </div>
 
@@ -799,9 +737,8 @@
                         <div class="space-y-5">
                             <div>
                                 <h3 class="section-title">Configurações Operacionais</h3>
-                                <p class="section-description">
-                                    Defina os requisitos necessários para utilização deste grupo.
-                                </p>
+                                <p class="section-description">Defina os requisitos necessários para utilização deste
+                                    grupo.</p>
                             </div>
 
                             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -811,7 +748,6 @@
                                         <span class="option-card-description">Exige horário previamente
                                             reservado.</span>
                                     </span>
-
                                     <input id="requiresScheduling" name="necessitaAgendamento" type="checkbox"
                                         class="h-5 w-5 accent-teal-600">
                                 </label>
@@ -821,7 +757,6 @@
                                         <span class="option-card-title">Necessita autorização?</span>
                                         <span class="option-card-description">Exige autorização do convênio.</span>
                                     </span>
-
                                     <input id="requiresAuthorization" name="necessitaAutorizacao" type="checkbox"
                                         class="h-5 w-5 accent-teal-600">
                                 </label>
@@ -829,10 +764,7 @@
 
                             <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                                 <div>
-                                    <label for="executionLocation" class="form-label">
-                                        Local de realização
-                                    </label>
-
+                                    <label for="executionLocation" class="form-label">Local de realização</label>
                                     <select id="executionLocation" name="localRealizacao" class="form-input">
                                         <option value="">Selecione o local</option>
                                         <option value="Clínica">Clínica</option>
@@ -844,37 +776,26 @@
                                 </div>
 
                                 <div>
-                                    <label for="room" class="form-label">
-                                        Sala
-                                    </label>
-
+                                    <label for="room" class="form-label">Sala</label>
                                     <input id="room" name="sala" type="text" placeholder="Ex.: Sala 03"
                                         class="form-input">
                                 </div>
 
                                 <div>
-                                    <label for="equipment" class="form-label">
-                                        Equipamento
-                                    </label>
-
+                                    <label for="equipment" class="form-label">Equipamento</label>
                                     <input id="equipment" name="equipamento" type="text"
                                         placeholder="Ex.: Analisador automático" class="form-input">
                                 </div>
 
                                 <div>
-                                    <label for="estimatedTime" class="form-label">
-                                        Tempo estimado
-                                    </label>
-
+                                    <label for="estimatedTime" class="form-label">Tempo estimado</label>
                                     <input id="estimatedTime" name="tempoEstimado" type="time" value="00:30"
                                         class="form-input">
                                 </div>
-                                <!-- ====================================================================================================== -->
-                                <div>
-                                    <label for="responsibleProfessional" class="form-label">
-                                        Profissional responsável
-                                    </label>
 
+                                <div>
+                                    <label for="responsibleProfessional" class="form-label">Profissional
+                                        responsável</label>
                                     <select id="responsibleProfessional" name="profissionalResponsavel"
                                         class="form-input">
                                         <option value="">Selecione um profissional</option>
@@ -885,10 +806,7 @@
                                 </div>
 
                                 <div>
-                                    <label for="resultDeadline" class="form-label">
-                                        Prazo estimado para resultado
-                                    </label>
-
+                                    <label for="resultDeadline" class="form-label">Prazo estimado para resultado</label>
                                     <input id="resultDeadline" name="prazoResultado" type="text"
                                         placeholder="Ex.: 2 dias úteis" class="form-input">
                                 </div>
@@ -903,9 +821,8 @@
                         <div class="space-y-6">
                             <div>
                                 <h3 class="section-title">Auditoria</h3>
-                                <p class="section-description">
-                                    Informações somente leitura para rastreabilidade das alterações.
-                                </p>
+                                <p class="section-description">Informações somente leitura para rastreabilidade das
+                                    alterações.</p>
                             </div>
 
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -916,41 +833,29 @@
 
                                 <div class="audit-field">
                                     <span class="audit-label">Data de criação</span>
-                                    <strong id="auditCreatedAt">21/08/2026 14:32</strong>
+                                    <strong id="auditCreatedAt">—</strong>
                                 </div>
 
                                 <div class="audit-field">
                                     <span class="audit-label">Última alteração</span>
-                                    <strong id="auditUpdatedAt">21/08/2026 15:10</strong>
+                                    <strong id="auditUpdatedAt">—</strong>
                                 </div>
 
                                 <div class="audit-field">
                                     <span class="audit-label">Alterado por</span>
-                                    <strong id="auditUpdatedBy">Administrador</strong>
+                                    <strong id="auditUpdatedBy">—</strong>
                                 </div>
                             </div>
 
                             <div>
-                                <h4 class="mb-3 font-semibold text-slate-900">
-                                    Histórico de alterações
-                                </h4>
-
+                                <h4 class="mb-3 font-semibold text-slate-900">Histórico de alterações</h4>
                                 <ol id="auditHistory" class="space-y-3 border-l-2 border-teal-100 pl-5">
                                     <li class="relative">
                                         <span
-                                            class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white bg-teal-600"></span>
-                                        <time class="text-xs text-slate-500">21/08/2026 15:10</time>
-                                        <p class="mt-1 text-sm font-medium text-slate-800">
-                                            Administrador alterou o grupo.
-                                        </p>
-                                    </li>
-
-                                    <li class="relative">
-                                        <span
-                                            class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white bg-slate-400"></span>
-                                        <time class="text-xs text-slate-500">21/08/2026 14:32</time>
-                                        <p class="mt-1 text-sm font-medium text-slate-800">
-                                            Administrador criou o grupo.
+                                            class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white bg-teal-600"
+                                            aria-hidden="true"></span>
+                                        <time class="text-xs text-slate-500">—</time>
+                                        <p class="mt-1 text-sm font-medium text-slate-800">Nenhuma alteração registrada.
                                         </p>
                                     </li>
                                 </ol>
@@ -959,12 +864,12 @@
                     </section>
                 </div>
 
-                <footer class="modal-footer">
-                    <button type="button" class="action-secondary" data-close-modal="groupModal">
+                <footer class="modal-footer flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <button type="button" class="action-secondary w-full sm:w-auto" data-close-modal="groupModal">
                         Cancelar
                     </button>
 
-                    <button type="submit" id="saveGroupBtn" class="action-primary">
+                    <button type="submit" id="saveGroupBtn" class="action-primary w-full sm:w-auto">
                         <span id="saveGroupLabel">Salvar Grupo</span>
                     </button>
                 </footer>
@@ -974,7 +879,6 @@
 
     <!-- Modal de adicionar exames -->
     <div id="examModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="examModalTitle">
-
         <div class="modal-overlay" data-close-modal="examModal"></div>
 
         <section class="modal-panel modal-panel-medium">
@@ -1001,9 +905,7 @@
 
             <div class="modal-body">
                 <div class="mb-4">
-                    <label for="searchExam" class="form-label">
-                        Pesquisar exame
-                    </label>
+                    <label for="searchExam" class="form-label">Pesquisar exame</label>
 
                     <div class="relative">
                         <svg viewBox="0 0 24 24"
@@ -1022,7 +924,6 @@
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <div>
                         <label for="filterExamType" class="form-label">Tipo</label>
-
                         <select id="filterExamType" class="form-input">
                             <option value="">Todos</option>
                             <option value="Laboratorial">Laboratorial</option>
@@ -1033,7 +934,6 @@
 
                     <div>
                         <label for="filterExamMaterial" class="form-label">Material</label>
-
                         <select id="filterExamMaterial" class="form-input">
                             <option value="">Todos</option>
                             <option value="Sangue">Sangue</option>
@@ -1045,7 +945,6 @@
 
                     <div>
                         <label for="filterExamStatus" class="form-label">Status</label>
-
                         <select id="filterExamStatus" class="form-input">
                             <option value="">Todos</option>
                             <option value="ATIVO">Ativo</option>
@@ -1066,13 +965,8 @@
                 </div>
 
                 <div id="examResultsEmpty" class="hidden py-8 text-center">
-                    <p class="font-medium text-slate-700">
-                        Nenhum exame encontrado.
-                    </p>
-
-                    <p class="mt-1 text-sm text-slate-500">
-                        Ajuste os termos da pesquisa ou os filtros selecionados.
-                    </p>
+                    <p class="font-medium text-slate-700">Nenhum exame encontrado.</p>
+                    <p class="mt-1 text-sm text-slate-500">Ajuste os termos da pesquisa ou os filtros selecionados.</p>
                 </div>
             </div>
 
@@ -1090,7 +984,6 @@
 
     <!-- Modal de confirmação -->
     <div id="confirmModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
-
         <div class="modal-overlay" data-close-modal="confirmModal"></div>
 
         <section class="modal-panel modal-panel-small">
@@ -1142,7 +1035,7 @@
     </div>
 
     <!-- Toasts -->
-    <div id="toastContainer" class="fixed right-4 top-4 z-[120] flex w-[min( calc(100vw-2rem), 380px)] flex-col gap-3"
+    <div id="toastContainer" class="fixed right-4 top-4 z-[120] flex w-[min(calc(100vw-2rem),380px)] flex-col gap-3"
         aria-live="polite" aria-atomic="true">
         <!-- Toasts renderizados pelo JavaScript -->
     </div>
@@ -1165,7 +1058,7 @@
 
             <td class="max-w-48 px-5 py-4 text-slate-600" data-field="especialidade"></td>
 
-            <td class="whitespace-nowrap px-5 py-4 text-slate-600" data-fiels="exames"></td>
+            <td class="whitespace-nowrap px-5 py-4 text-slate-600" data-field="exames"></td>
 
             <td class="whitespace-nowrap px-5 py-4" data-field="status"></td>
 
@@ -1176,7 +1069,6 @@
                     <button type="button"
                         class="row-action-menu inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
                         aria-label="Abrir ações do grupo" data-field-aria="nome" aria-haspopup="menu">
-
                         <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <circle cx="5" cy="12" r="1"></circle>
