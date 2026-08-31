@@ -76,18 +76,36 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <button type="button"
-                        class="inline-flex min-h-12 min-w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
-                        aria-label="Abrir ajuda">
+                    <!-- ============================================================
+     BOTÃO DE AJUDA
+     Preparado para Popover / Modal de Ajuda
+     ============================================================ -->
 
-                        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <button type="button" id="helpButton" class="inline-flex min-h-12 min-w-12 items-center justify-center
+           gap-2 rounded-xl border border-slate-200 bg-white
+           px-3 text-sm font-medium text-slate-700
+           shadow-sm
+           transition-all duration-200
+           hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900
+           active:scale-[0.98]
+           focus:outline-none
+           focus-visible:ring-2
+           focus-visible:ring-teal-600
+           focus-visible:ring-offset-2
+           disabled:pointer-events-none
+           disabled:opacity-50
+           sm:px-4" aria-label="Abrir ajuda" aria-haspopup="dialog" aria-expanded="false" aria-controls="helpPanel">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 shrink-0"
+                            aria-hidden="true" focusable="false">
                             <circle cx="12" cy="12" r="10"></circle>
                             <path d="M9.5 9a3 3 0 1 1 4.9 2.3c-.9.7-1.4 1.2-1.4 2.7"></path>
                             <path d="M12 17h.01"></path>
                         </svg>
 
-                        <span class="ml-2 hidden sm:inline">Ajuda</span>
+                        <span class="hidden sm:inline">
+                            Ajuda
+                        </span>
                     </button>
 
                     <button type="button"
@@ -414,65 +432,182 @@
 
         <section class="modal-panel modal-panel-large w-full max-w-5xl overflow-hidden"
             aria-describedby="groupModalDescription">
-            <header class="modal-header flex items-start justify-between gap-4">
-                <div class="min-w-0">
-                    <p class="text-xs font-medium uppercase tracking-wide text-teal-700">
+
+            <!--```html
+<!-- ============================================================
+     CABEÇALHO DO MODAL
+     Botão de fechar fixo no canto superior direito
+     ============================================================ -->
+
+            <header class="modal-header relative
+           border-b border-slate-200
+           px-5 py-5 pr-16
+           sm:px-6 sm:py-6 sm:pr-20">
+                <!-- Conteúdo do cabeçalho -->
+                <div class="min-w-0 max-w-3xl">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-teal-700">
                         Cadastro administrativo
                     </p>
 
-                    <h2 id="groupModalTitle" class="mt-1 text-xl font-bold text-slate-900 sm:text-2xl">
+                    <h2 id="groupModalTitle" class="mt-1 text-xl font-bold leading-tight text-slate-900
+                   sm:text-2xl">
                         Novo Grupo de Exames
                     </h2>
 
-                    <p id="groupModalDescription" class="mt-1 max-w-2xl text-sm text-slate-500">
-                        Configure os dados, exames e informações complementares pertencentes ao grupo.
+                    <p id="groupModalDescription" class="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+                        Configure os dados, exames e informações complementares
+                        pertencentes ao grupo.
                     </p>
                 </div>
 
-                <button type="button" class="modal-close shrink-0" data-close-modal="groupModal"
-                    aria-label="Fechar formulário de grupo">
-                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <!-- ========================================================
+         BOTÃO FECHAR
+         Posicionamento independente do conteúdo
+         ======================================================== -->
+                <button type="button" id="closeGroupModalButton" class="modal-close absolute right-4 top-4
+               inline-flex h-11 w-11 items-center justify-center
+               rounded-xl
+               border border-slate-200
+               bg-white
+               text-slate-600
+               shadow-sm
+               transition-all duration-200
+               hover:border-slate-300
+               hover:bg-slate-50
+               hover:text-slate-900
+               active:scale-95
+               focus:outline-none
+               focus-visible:ring-2
+               focus-visible:ring-teal-600
+               focus-visible:ring-offset-2
+               sm:right-5 sm:top-5" data-close-modal="groupModal" aria-label="Fechar formulário de grupo">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 shrink-0"
+                        aria-hidden="true" focusable="false">
                         <path d="M18 6L6 18"></path>
                         <path d="M6 6l12 12"></path>
                     </svg>
                 </button>
             </header>
 
-            <nav class="modal-tabs overflow-x-auto" role="tablist" aria-label="Seções do grupo de exames">
-                <button type="button" id="tabGeneral" class="modal-tab is-active whitespace-nowrap" role="tab"
-                    aria-selected="true" aria-controls="panelGeneral" data-tab="general">
-                    Dados Gerais
-                </button>
+            <!-- NAVEGAÇÃO POR ABAS — GRUPO DE EXAMES
+            WAI-ARIA Tabs Pattern -->
 
-                <button type="button" id="tabExams" class="modal-tab whitespace-nowrap" role="tab" aria-selected="false"
-                    aria-controls="panelExams" data-tab="exams">
-                    Exames
-                    <span id="modalExamCount" class="tab-counter"
-                        aria-label="Quantidade de exames selecionados">0</span>
-                </button>
 
-                <button type="button" id="tabPreparation" class="modal-tab whitespace-nowrap" role="tab"
-                    aria-selected="false" aria-controls="panelPreparation" data-tab="preparation">
-                    Preparo
-                </button>
+            <nav class="relative border-b border-slate-200" aria-label="Seções do grupo de exames">
+                <!--
+        Container de rolagem:
+        - overflow-x-auto permite navegação em telas pequenas
+        - scrollbar-hide pode ser implementado via CSS
+        - scroll-smooth melhora a experiência ao trocar de aba
+    -->
+                <div class="modal-tabs overflow-x-auto scroll-smooth" role="tablist" aria-orientation="horizontal"
+                    tabindex="0">
+                    <div class="flex min-w-max gap-1 px-1">
 
-                <button type="button" id="tabPrices" class="modal-tab whitespace-nowrap" role="tab"
-                    aria-selected="false" aria-controls="panelPrices" data-tab="prices">
-                    Convênios e Valores
-                </button>
+                        <!-- ==================================================
+                 ABA: DADOS GERAIS
+                 ================================================== -->
+                        <button type="button" id="tabGeneral" class="modal-tab is-active whitespace-nowrap
+                       px-4 py-3
+                       focus:outline-none
+                       focus-visible:ring-2
+                       focus-visible:ring-teal-600
+                       focus-visible:ring-offset-2
+                       transition-colors duration-200" role="tab" aria-selected="true" aria-controls="panelGeneral"
+                            tabindex="0" data-tab="general">
+                            <span>Dados Gerais</span>
+                        </button>
 
-                <button type="button" id="tabOperational" class="modal-tab whitespace-nowrap" role="tab"
-                    aria-selected="false" aria-controls="panelOperational" data-tab="operational">
-                    Configurações
-                </button>
+                        <!-- ==================================================
+                 ABA: EXAMES
+                 ================================================== -->
+                        <button type="button" id="tabExams" class="modal-tab whitespace-nowrap
+                       px-4 py-3
+                       focus:outline-none
+                       focus-visible:ring-2
+                       focus-visible:ring-teal-600
+                       focus-visible:ring-offset-2
+                       transition-colors duration-200" role="tab" aria-selected="false" aria-controls="panelExams"
+                            tabindex="-1" data-tab="exams">
+                            <span>Exames</span>
 
-                <button type="button" id="tabAudit" class="modal-tab whitespace-nowrap" role="tab" aria-selected="false"
-                    aria-controls="panelAudit" data-tab="audit">
-                    Auditoria
-                </button>
+                            <span id="modalExamCount" class="tab-counter ml-1 inline-flex
+                           min-w-5 items-center justify-center
+                           rounded-full px-1.5 text-xs font-semibold" aria-label="0 exames selecionados"
+                                aria-live="polite">
+                                0
+                            </span>
+                        </button>
+
+                        <!-- ==================================================
+                 ABA: PREPARO
+                 ================================================== -->
+                        <button type="button" id="tabPreparation" class="modal-tab whitespace-nowrap
+                       px-4 py-3
+                       focus:outline-none
+                       focus-visible:ring-2
+                       focus-visible:ring-teal-600
+                       focus-visible:ring-offset-2
+                       transition-colors duration-200" role="tab" aria-selected="false"
+                            aria-controls="panelPreparation" tabindex="-1" data-tab="preparation">
+                            <span>Preparo</span>
+                        </button>
+
+                        <!-- ==================================================
+                 ABA: CONVÊNIOS E VALORES
+                 ================================================== -->
+                        <button type="button" id="tabPrices" class="modal-tab whitespace-nowrap
+                       px-4 py-3
+                       focus:outline-none
+                       focus-visible:ring-2
+                       focus-visible:ring-teal-600
+                       focus-visible:ring-offset-2
+                       transition-colors duration-200" role="tab" aria-selected="false" aria-controls="panelPrices"
+                            tabindex="-1" data-tab="prices">
+                            <span>Convênios e Valores</span>
+                        </button>
+
+                        <!-- ==================================================
+                 ABA: CONFIGURAÇÕES
+                 ================================================== -->
+                        <button type="button" id="tabOperational" class="modal-tab whitespace-nowrap
+                       px-4 py-3
+                       focus:outline-none
+                       focus-visible:ring-2
+                       focus-visible:ring-teal-600
+                       focus-visible:ring-offset-2
+                       transition-colors duration-200" role="tab" aria-selected="false"
+                            aria-controls="panelOperational" tabindex="-1" data-tab="operational">
+                            <span>Configurações</span>
+                        </button>
+
+                        <!-- ==================================================
+                 ABA: AUDITORIA
+                 ================================================== -->
+                        <button type="button" id="tabAudit" class="modal-tab whitespace-nowrap
+                       px-4 py-3
+                       focus:outline-none
+                       focus-visible:ring-2
+                       focus-visible:ring-teal-600
+                       focus-visible:ring-offset-2
+                       transition-colors duration-200" role="tab" aria-selected="false" aria-controls="panelAudit"
+                            tabindex="-1" data-tab="audit">
+                            <span>Auditoria</span>
+                        </button>
+
+                    </div>
+                </div>
+
+                <!-- Indicadores visuais de rolagem horizontal -->
+                <div class="pointer-events-none absolute inset-y-0 left-0 w-6
+               bg-gradient-to-r from-white to-transparent
+               opacity-0 transition-opacity" data-tabs-fade-left aria-hidden="true"></div>
+
+                <div class="pointer-events-none absolute inset-y-0 right-0 w-6
+               bg-gradient-to-l from-white to-transparent
+               opacity-100 transition-opacity" data-tabs-fade-right aria-hidden="true"></div>
             </nav>
-
             <form id="groupForm" novalidate>
                 <input type="hidden" id="groupId" name="groupId">
 
@@ -480,100 +615,337 @@
 
                     <!-- Dados gerais -->
                     <section id="panelGeneral" class="tab-panel" role="tabpanel" aria-labelledby="tabGeneral"
-                        data-panel="general">
+                        data-panel="general" tabindex="0">
+                        <!-- Cabeçalho da seção -->
+                        <header class="mb-6">
+                            <h2 class="section-title" id="generalSectionTitle">
+                                Dados gerais do grupo
+                            </h2>
 
-                        <div class="mb-6">
-                            <h3 class="section-title">Dados gerais do grupo</h3>
-                            <p class="section-description">
-                                Informe os dados principais utilizados para identificação e organização do grupo.
+                            <p id="generalSectionDescription" class="section-description mt-1">
+                                Informe os dados principais utilizados para identificação e
+                                organização do grupo.
                             </p>
-                        </div>
+                        </header>
 
-                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 
-                            <div>
-                                <label for="groupCode" class="form-label">Código</label>
-                                <input id="groupCode" name="codigo" type="text" readonly
-                                    class="form-input bg-slate-100 text-slate-500" placeholder="Gerado automaticamente">
-                            </div>
-
-                            <div>
-                                <label for="groupStatus" class="form-label">Status</label>
-                                <div
-                                    class="flex min-h-12 items-center justify-between rounded-xl border border-slate-300 px-4">
-                                    <span class="text-sm font-medium text-slate-700">Grupo ativo</span>
-                                    <label class="toggle">
-                                        <input id="groupStatus" name="status" type="checkbox" checked>
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="md:col-span-2">
-                                <label for="groupName" class="form-label">
-                                    Nome do Grupo <span class="text-red-600" aria-hidden="true">*</span>
+                            <!-- Código -->
+                            <div class="space-y-2">
+                                <label for="groupCode" class="form-label">
+                                    Código
                                 </label>
-                                <input id="groupName" name="nome" type="text" maxlength="120" required
-                                    autocomplete="off" placeholder="Ex.: Perfil Lipídico" class="form-input"
-                                    aria-describedby="groupNameError">
-                                <p id="groupNameError" class="form-error" role="alert"></p>
-                            </div>
 
-                            <div>
-                                <label for="groupShortName" class="form-label">Sigla</label>
-                                <input id="groupShortName" name="sigla" type="text" maxlength="20" autocomplete="off"
-                                    placeholder="Ex.: PL" class="form-input">
-                            </div>
+                                <input id="groupCode" name="codigo" type="text" readonly aria-readonly="true"
+                                    autocomplete="off" placeholder="Gerado automaticamente"
+                                    class="form-input cursor-not-allowed bg-slate-100 text-slate-500" />
 
-                            <div>
-                                <label for="groupCategory" class="form-label">
-                                    Categoria <span class="text-red-600" aria-hidden="true">*</span>
-                                </label>
-                                <select id="groupCategory" name="categoria" required class="form-input"
-                                    aria-describedby="groupCategoryError">
-                                    <option value="">Selecione uma categoria</option>
-                                    <option value="Laboratorial">Laboratorial</option>
-                                    <option value="Imagem">Imagem</option>
-                                    <option value="Cardiológico">Cardiológico</option>
-                                    <option value="Endoscópico">Endoscópico</option>
-                                    <option value="Oftalmológico">Oftalmológico</option>
-                                    <option value="Ginecológico">Ginecológico</option>
-                                    <option value="Neurológico">Neurológico</option>
-                                    <option value="Anatomopatológico">Anatomopatológico</option>
-                                    <option value="Microbiológico">Microbiológico</option>
-                                    <option value="Check-up">Check-up</option>
-                                    <option value="Outros">Outros</option>
-                                </select>
-                                <p id="groupCategoryError" class="form-error" role="alert"></p>
-                            </div>
-
-                            <div class="md:col-span-2">
-                                <label for="groupSpecialties" class="form-label">Especialidades relacionadas</label>
-                                <select id="groupSpecialties" name="especialidades" multiple
-                                    class="form-input min-h-32">
-                                    <option value="Clínica Médica">Clínica Médica</option>
-                                    <option value="Cardiologia">Cardiologia</option>
-                                    <option value="Pediatria">Pediatria</option>
-                                    <option value="Ginecologia">Ginecologia</option>
-                                    <option value="Neurologia">Neurologia</option>
-                                    <option value="Oftalmologia">Oftalmologia</option>
-                                    <option value="Dermatologia">Dermatologia</option>
-                                    <option value="Ortopedia">Ortopedia</option>
-                                    <option value="Endocrinologia">Endocrinologia</option>
-                                    <option value="Outras">Outras</option>
-                                </select>
-                                <p class="form-help">Utilize Ctrl ou Command para selecionar mais de uma especialidade.
+                                <p class="form-help">
+                                    O código será gerado automaticamente pelo sistema.
                                 </p>
                             </div>
 
-                            <div class="md:col-span-2">
-                                <label for="groupDescription" class="form-label">Descrição</label>
+                            <!-- Status -->
+                            <fieldset class="space-y-2">
+                                <legend class="form-label">
+                                    Status
+                                </legend>
+
+                                <div class="flex min-h-12 items-center justify-between rounded-xl
+                       border border-slate-300 bg-white px-4 py-2
+                       focus-within:border-teal-600
+                       focus-within:ring-2
+                       focus-within:ring-teal-600/20">
+                                    <span id="groupStatusLabel" class="text-sm font-medium text-slate-700">
+                                        Grupo ativo
+                                    </span>
+
+                                    <label for="groupStatus" class="toggle inline-flex cursor-pointer items-center">
+                                        <span class="sr-only">
+                                            Ativar ou desativar grupo
+                                        </span>
+
+                                        <input id="groupStatus" name="status" type="checkbox" value="ativo" checked
+                                            class="peer sr-only" aria-labelledby="groupStatusLabel" />
+
+                                        <span aria-hidden="true" class="toggle-slider"></span>
+                                    </label>
+                                </div>
+
+                                <p class="form-help">
+                                    Desative para impedir que o grupo seja utilizado em novos
+                                    cadastros.
+                                </p>
+                            </fieldset>
+
+                            <!-- Nome -->
+                            <div class="space-y-2 md:col-span-2">
+                                <label for="groupName" class="form-label">
+                                    Nome do grupo
+                                    <span class="text-red-600" aria-hidden="true">
+                                        *
+                                    </span>
+                                    <span class="sr-only">
+                                        campo obrigatório
+                                    </span>
+                                </label>
+
+                                <input id="groupName" name="nome" type="text" maxlength="120" required
+                                    autocomplete="off" placeholder="Ex.: Perfil Lipídico" class="form-input"
+                                    aria-required="true" aria-describedby="groupNameHelp groupNameError"
+                                    aria-invalid="false" />
+
+                                <p id="groupNameHelp" class="form-help">
+                                    Informe um nome claro e objetivo para identificar o grupo.
+                                </p>
+
+                                <p id="groupNameError" class="form-error hidden" role="alert" aria-live="polite"></p>
+                            </div>
+
+                            <!-- Sigla -->
+                            <div class="space-y-2">
+                                <label for="groupShortName" class="form-label">
+                                    Sigla
+                                </label>
+
+                                <input id="groupShortName" name="sigla" type="text" maxlength="20" autocomplete="off"
+                                    placeholder="Ex.: PL" class="form-input" aria-describedby="groupShortNameHelp" />
+
+                                <p id="groupShortNameHelp" class="form-help">
+                                    Opcional. Utilize uma abreviação curta para facilitar a
+                                    identificação.
+                                </p>
+                            </div>
+
+                            <!-- Categoria -->
+                            <div class="space-y-2">
+                                <label for="groupCategory" class="form-label">
+                                    Categoria
+                                    <span class="text-red-600" aria-hidden="true">
+                                        *
+                                    </span>
+                                    <span class="sr-only">
+                                        campo obrigatório
+                                    </span>
+                                </label>
+
+                                <select id="groupCategory" name="categoria" required class="form-input"
+                                    aria-required="true" aria-describedby="groupCategoryHelp groupCategoryError"
+                                    aria-invalid="false">
+                                    <option value="">
+                                        Selecione uma categoria
+                                    </option>
+
+                                    <option value="Laboratorial">
+                                        Laboratorial
+                                    </option>
+
+                                    <option value="Imagem">
+                                        Imagem
+                                    </option>
+
+                                    <option value="Cardiológico">
+                                        Cardiológico
+                                    </option>
+
+                                    <option value="Endoscópico">
+                                        Endoscópico
+                                    </option>
+
+                                    <option value="Oftalmológico">
+                                        Oftalmológico
+                                    </option>
+
+                                    <option value="Ginecológico">
+                                        Ginecológico
+                                    </option>
+
+                                    <option value="Neurológico">
+                                        Neurológico
+                                    </option>
+
+                                    <option value="Anatomopatológico">
+                                        Anatomopatológico
+                                    </option>
+
+                                    <option value="Microbiológico">
+                                        Microbiológico
+                                    </option>
+
+                                    <option value="Check-up">
+                                        Check-up
+                                    </option>
+
+                                    <option value="Outros">
+                                        Outros
+                                    </option>
+                                </select>
+
+                                <p id="groupCategoryHelp" class="form-help">
+                                    Selecione a categoria que melhor representa o grupo.
+                                </p>
+
+                                <p id="groupCategoryError" class="form-error hidden" role="alert" aria-live="polite">
+                                </p>
+                            </div>
+
+                            <!-- Especialidades -->
+                            <div class="space-y-2 md:col-span-2">
+                                <fieldset>
+                                    <legend class="form-label">
+                                        Especialidades relacionadas
+                                    </legend>
+
+                                    <p id="groupSpecialtiesHelp" class="form-help mb-3">
+                                        Selecione uma ou mais especialidades relacionadas ao
+                                        grupo de exames.
+                                    </p>
+
+                                    <!--
+                    Combobox / Tags:
+                    A implementação dinâmica pode ser controlada pelo
+                    JavaScript. O select permanece como fallback semântico.
+                -->
+                                    <div id="specialtiesContainer" class="rounded-xl border border-slate-300 bg-white p-3
+                           transition
+                           focus-within:border-teal-600
+                           focus-within:ring-2
+                           focus-within:ring-teal-600/20">
+                                        <!-- Tags selecionadas -->
+                                        <div id="specialtiesTags" class="mb-2 flex flex-wrap gap-2" aria-live="polite"
+                                            aria-label="Especialidades selecionadas">
+                                            <!--
+                            Exemplo gerado pelo JavaScript:
+
+                            <span class="inline-flex items-center gap-1
+                                         rounded-full bg-teal-50 px-3 py-1
+                                         text-sm font-medium text-teal-800">
+                                Cardiologia
+
+                                <button
+                                    type="button"
+                                    aria-label="Remover Cardiologia"
+                                    class="rounded-full p-0.5
+                                           hover:bg-teal-100
+                                           focus:outline-none
+                                           focus:ring-2
+                                           focus:ring-teal-600"
+                                >
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </span>
+                        -->
+                                        </div>
+
+                                        <!-- Campo de seleção -->
+                                        <label for="groupSpecialties" class="sr-only">
+                                            Adicionar especialidade
+                                        </label>
+
+                                        <select id="groupSpecialties" name="especialidades" multiple class="form-input min-h-12 border-0 p-0
+                               shadow-none focus:border-0
+                               focus:ring-0" aria-describedby="groupSpecialtiesHelp">
+                                            <option value="Clínica Médica">
+                                                Clínica Médica
+                                            </option>
+
+                                            <option value="Cardiologia">
+                                                Cardiologia
+                                            </option>
+
+                                            <option value="Pediatria">
+                                                Pediatria
+                                            </option>
+
+                                            <option value="Ginecologia">
+                                                Ginecologia
+                                            </option>
+
+                                            <option value="Neurologia">
+                                                Neurologia
+                                            </option>
+
+                                            <option value="Oftalmologia">
+                                                Oftalmologia
+                                            </option>
+
+                                            <option value="Dermatologia">
+                                                Dermatologia
+                                            </option>
+
+                                            <option value="Ortopedia">
+                                                Ortopedia
+                                            </option>
+
+                                            <option value="Endocrinologia">
+                                                Endocrinologia
+                                            </option>
+
+                                            <option value="Outras">
+                                                Outras
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <p class="form-help mt-2">
+                                        Em computadores, utilize Ctrl (Windows/Linux) ou
+                                        Command (macOS) para múltiplas seleções. Em dispositivos
+                                        móveis, toque nas opções desejadas.
+                                    </p>
+                                </fieldset>
+                            </div>
+
+                            <!-- Descrição -->
+                            <div class="space-y-2 md:col-span-2">
+                                <label for="groupDescription" class="form-label">
+                                    Descrição
+                                </label>
+
                                 <textarea id="groupDescription" name="descricao" rows="4" maxlength="500"
                                     placeholder="Descreva a finalidade deste grupo de exames."
-                                    class="form-input resize-y"></textarea>
+                                    class="form-input min-h-32 resize-y"
+                                    aria-describedby="groupDescriptionHelp groupDescriptionCounter"></textarea>
+
+                                <div class="flex items-center justify-between gap-4">
+                                    <p id="groupDescriptionHelp" class="form-help">
+                                        Descreva brevemente a finalidade e utilização do grupo.
+                                    </p>
+
+                                    <span id="groupDescriptionCounter" class="shrink-0 text-xs text-slate-500"
+                                        aria-live="polite">
+                                        0/500
+                                    </span>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Ações do formulário -->
+                        <div class="mt-8 flex flex-col-reverse gap-3
+               border-t border-slate-200 pt-6
+               sm:flex-row sm:justify-end">
+                            <button type="button" class="action-secondary w-full sm:w-auto"
+                                data-close-modal="groupModal">
+                                Cancelar
+                            </button>
+
+                            <button type="submit" id="saveGroupBtn" class="action-primary w-full sm:w-auto"
+                                aria-describedby="saveGroupStatus">
+                                <span id="saveGroupLabel">
+                                    Salvar grupo
+                                </span>
+
+                                <!-- Estado de carregamento controlado pelo JavaScript -->
+                                <span id="saveGroupLoading" class="hidden" aria-hidden="true">
+                                    Salvando...
+                                </span>
+                            </button>
+                        </div>
+
+                        <!-- Feedback global do formulário -->
+                        <div id="saveGroupStatus" class="mt-4" role="status" aria-live="polite" aria-atomic="true">
+                        </div>
                     </section>
+
 
                     <!-- Exames -->
                     <section id="panelExams" class="tab-panel hidden" role="tabpanel" aria-labelledby="tabExams"
@@ -864,7 +1236,7 @@
                     </section>
                 </div>
 
-                <footer class="modal-footer flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <!-- <footer class="modal-footer flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                     <button type="button" class="action-secondary w-full sm:w-auto" data-close-modal="groupModal">
                         Cancelar
                     </button>
@@ -872,7 +1244,7 @@
                     <button type="submit" id="saveGroupBtn" class="action-primary w-full sm:w-auto">
                         <span id="saveGroupLabel">Salvar Grupo</span>
                     </button>
-                </footer>
+                </footer> -->
             </form>
         </section>
     </div>
