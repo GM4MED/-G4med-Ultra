@@ -90,21 +90,40 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <button type="button"
-                    class="relative flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-600"
-                    aria-label="Notificações">
+                <button type="button" class="group relative flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl
+           bg-slate-100 text-slate-600
+           transition-all duration-200 ease-out
+           hover:bg-slate-200 hover:text-slate-800
+           focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-600
+           focus-visible:ring-offset-2
+           active:scale-95" aria-label="Notificações" aria-haspopup="true" aria-expanded="false" title="Notificações">
 
-                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <!-- Ícone de notificação -->
+                    <svg viewBox="0 0 24 24" class="h-5 w-5 transition-transform duration-200
+               group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" aria-hidden="true">
+
                         <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5">
                         </path>
+
                         <path d="M9 17a3 3 0 0 0 6 0"></path>
                     </svg>
 
-                    <span
-                        class="absolute -right-1 -top-1 min-w-5 rounded-full bg-rose-500 px-1 text-center text-[11px] font-semibold leading-5 text-white">
+                    <!-- Indicador de notificações não lidas -->
+                    <span class="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center
+               justify-center rounded-full bg-rose-500 px-1
+               text-[10px] font-bold leading-none text-white
+               ring-2 ring-white
+               transition-transform duration-200
+               group-hover:scale-110" aria-hidden="true">
                         3
                     </span>
+
+                    <!-- Informação para leitores de tela -->
+                    <span class="sr-only">
+                        3 notificações não lidas
+                    </span>
+
                 </button>
 
                 <button type="button"
