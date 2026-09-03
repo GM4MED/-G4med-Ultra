@@ -43,7 +43,7 @@
     box-sizing: border-box;
 }
 
-html {
+/* html {
     min-height: 100%;
     scroll-behavior: smooth;
 }
@@ -62,6 +62,59 @@ body {
         sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+} */
+html,
+body {
+    width: 100%;
+    min-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+/* Container principal */
+#mainContent {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+    box-sizing: border-box;
+}
+
+/* Elementos estruturais devem acompanhar o viewport */
+#mainContent>* {
+    width: 100%;
+    max-width: none;
+}
+
+/* Tabelas */
+#groupsTableWrapper {
+    width: 100%;
+    max-width: none;
+}
+
+/* Cards e componentes em grids */
+#mainContent .grid {
+    width: 100%;
+}
+
+/* Evita que elementos internos estourem o layout */
+#mainContent>*,
+#mainContent section,
+#mainContent article,
+#mainContent form {
+    min-width: 0;
+}
+
+/* Telas muito pequenas */
+@media (max-width: 640px) {
+    #mainContent {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }
 
 button,
