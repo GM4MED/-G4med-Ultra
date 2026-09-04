@@ -1,15 +1,19 @@
 <!doctype html>
 <html lang="pt-BR">
 
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Cadastro e gerenciamento de grupos de atendimento do G4Med">
     <meta name="color-scheme" content="light">
 
+
     <title>Grupo de Atendimento | G4Med</title>
 
+
     <script src="https://cdn.tailwindcss.com"></script>
+
 
     <script>
         tailwind.config = {
@@ -34,29 +38,37 @@
         };
     </script>
 
+
     <link rel="stylesheet" href="grupo-de-atendimento.css">
 </head>
 
+
 <body class="min-h-screen bg-slate-50 text-slate-700 antialiased">
+
 
     <a href="#mainContent"
         class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[120] focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:shadow-lg">
         Pular para o conteúdo principal
     </a>
 
+
+    <!-- Header em largura total -->
     <header class="sticky top-0 z-40 border-b border-slate-200 bg-white">
-        <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <div class="flex w-full items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+
 
             <div class="flex min-w-0 items-center gap-3">
                 <a href="../Menu-Principal.html"
                     class="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary-600"
                     aria-label="Voltar para o menu principal">
 
+
                     <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2"
                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="m15 18-6-6 6-6"></path>
                     </svg>
                 </a>
+
 
                 <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-50 text-primary-700"
                     aria-hidden="true">
@@ -67,10 +79,12 @@
                     </svg>
                 </div>
 
+
                 <div class="min-w-0">
                     <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
                         G4Med
                     </p>
+
 
                     <h1 class="truncate text-lg font-semibold text-slate-900">
                         Grupo de Atendimento
@@ -78,15 +92,18 @@
                 </div>
             </div>
 
+
             <div class="hidden max-w-xl flex-1 md:block">
                 <label for="topSearch" class="sr-only">
                     Pesquisar grupos de atendimento
                 </label>
 
+
                 <input id="topSearch" type="search"
                     class="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-primary-600 focus:bg-white focus:ring-2 focus:ring-primary-600/20"
                     placeholder="Buscar grupos de atendimento...">
             </div>
+
 
             <div class="flex items-center gap-2">
                 <button type="button"
@@ -102,11 +119,13 @@
                         class="absolute -right-1 -top-1 min-w-5 rounded-full bg-red-600 px-1 text-center text-[10px] font-bold leading-5 text-white">3</span>
                 </button>
 
+
                 <div class="hidden items-center gap-3 sm:flex">
                     <div
                         class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 font-semibold text-white">
                         CM
                     </div>
+
 
                     <div class="leading-tight">
                         <p class="text-sm font-semibold text-slate-800">
@@ -121,7 +140,10 @@
         </div>
     </header>
 
-    <main id="mainContent" class="mx-auto max-w-7xl px-4 py-6 pb-16 sm:px-6 lg:px-8 lg:py-8">
+
+    <!-- Container principal em largura total (fluid) -->
+    <main id="mainContent" class="w-full px-4 py-6 pb-16 sm:px-6 lg:px-8 lg:py-8">
+
 
         <section class="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
             <div>
@@ -135,17 +157,21 @@
                     </ol>
                 </nav>
 
+
                 <h2 class="text-3xl font-semibold tracking-tight text-navy sm:text-4xl">
                     Grupo de Atendimento
                 </h2>
+
 
                 <p class="mt-2 max-w-3xl text-base leading-7 text-slate-500">
                     Organize e configure os tipos de atendimento realizados pela instituição.
                 </p>
             </div>
 
+
             <button id="newGroupBtn" type="button"
                 class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 font-semibold text-white shadow-sm transition hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2">
+
 
                 <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -153,10 +179,13 @@
                     <path d="M5 12h14"></path>
                 </svg>
 
+
                 Novo Grupo
             </button>
         </section>
 
+
+        <!-- Cards de métricas (já responsivos) -->
         <section class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
                 <p class="text-sm text-slate-500">Total de grupos</p>
@@ -164,17 +193,20 @@
                 <p class="mt-1 text-xs text-slate-400">Grupos cadastrados</p>
             </article>
 
+
             <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
                 <p class="text-sm text-slate-500">Grupos ativos</p>
                 <p id="activeGroupsMetric" class="mt-2 text-3xl font-semibold text-emerald-600">0</p>
                 <p class="mt-1 text-xs text-slate-400">Disponíveis para utilização</p>
             </article>
 
+
             <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
                 <p class="text-sm text-slate-500">Tipos vinculados</p>
                 <p id="linkedTypesMetric" class="mt-2 text-3xl font-semibold text-primary-600">0</p>
                 <p class="mt-1 text-xs text-slate-400">Tipos de atendimento</p>
             </article>
+
 
             <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
                 <p class="text-sm text-slate-500">Unidades relacionadas</p>
@@ -183,36 +215,46 @@
             </article>
         </section>
 
+
+        <!-- Filtros (ocupando 100% do container) -->
         <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6"
             aria-labelledby="filtersTitle">
+
 
             <div class="mb-5">
                 <h3 id="filtersTitle" class="text-lg font-semibold text-slate-900">
                     Pesquisar grupos
                 </h3>
 
+
                 <p class="mt-1 text-sm text-slate-500">
                     Utilize os filtros para localizar um grupo rapidamente.
                 </p>
             </div>
 
+
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+
 
                 <div class="xl:col-span-2">
                     <label for="groupSearch" class="form-label">
                         Busca
                     </label>
 
+
                     <input id="groupSearch" type="search" class="form-input"
                         placeholder="Pesquisar por código ou nome do grupo..." aria-describedby="searchStatus">
 
+
                     <p id="searchStatus" class="sr-only" aria-live="polite"></p>
                 </div>
+
 
                 <div>
                     <label for="filterCategory" class="form-label">
                         Categoria
                     </label>
+
 
                     <select id="filterCategory" class="form-input">
                         <option value="">Todas</option>
@@ -232,10 +274,12 @@
                     </select>
                 </div>
 
+
                 <div>
                     <label for="filterStatus" class="form-label">
                         Status
                     </label>
+
 
                     <select id="filterStatus" class="form-input">
                         <option value="">Todos</option>
@@ -244,16 +288,19 @@
                     </select>
                 </div>
 
+
                 <div>
                     <label for="filterUnit" class="form-label">
                         Unidade
                     </label>
+
 
                     <select id="filterUnit" class="form-input">
                         <option value="">Todas</option>
                     </select>
                 </div>
             </div>
+
 
             <div class="mt-4 flex justify-end">
                 <button id="clearFiltersBtn" type="button" class="action-secondary">
@@ -262,8 +309,11 @@
             </div>
         </section>
 
+
+        <!-- Tabela de listagem (ocupando 100% do container) -->
         <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft"
             aria-labelledby="groupsTitle">
+
 
             <div
                 class="flex flex-col gap-3 border-b border-slate-200 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
@@ -272,15 +322,18 @@
                         Grupos de atendimento
                     </h3>
 
+
                     <p class="mt-1 text-sm text-slate-500">
                         Consulte e gerencie os grupos cadastrados.
                     </p>
                 </div>
 
+
                 <span id="resultCount" class="text-sm text-slate-500" aria-live="polite">
                     0 grupos encontrados
                 </span>
             </div>
+
 
             <div id="groupsLoading" class="hidden space-y-3 p-6" aria-live="polite">
                 <span class="sr-only">Carregando grupos...</span>
@@ -290,11 +343,13 @@
                 <div class="skeleton h-14 rounded-xl"></div>
             </div>
 
+
             <div id="groupsTableWrapper" class="overflow-x-auto">
                 <table class="min-w-[1100px] w-full text-left text-sm">
                     <caption class="sr-only">
                         Lista de grupos de atendimento
                     </caption>
+
 
                     <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                         <tr>
@@ -310,9 +365,11 @@
                         </tr>
                     </thead>
 
+
                     <tbody id="groupTableBody" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
+
 
             <div id="groupsEmptyState" class="hidden px-6 py-16 text-center">
                 <div
@@ -325,39 +382,48 @@
                     </svg>
                 </div>
 
+
                 <h4 class="text-lg font-semibold text-slate-900">
                     Nenhum grupo de atendimento encontrado.
                 </h4>
 
+
                 <p class="mx-auto mt-2 max-w-md text-sm text-slate-500">
                     Cadastre o primeiro grupo ou altere os filtros selecionados.
                 </p>
+
 
                 <button id="emptyCreateBtn" type="button" class="action-primary mt-6">
                     + Novo Grupo
                 </button>
             </div>
 
+
             <div id="groupsErrorState" class="hidden px-6 py-16 text-center">
                 <h4 class="text-lg font-semibold text-slate-900">
                     Não foi possível carregar os grupos.
                 </h4>
 
+
                 <p class="mt-2 text-sm text-slate-500">
                     Tente novamente em alguns instantes.
                 </p>
+
 
                 <button id="retryBtn" type="button" class="action-secondary mt-6">
                     Tentar novamente
                 </button>
             </div>
 
+
             <div id="pagination"
                 class="flex flex-col gap-3 border-t border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+
 
                 <p id="paginationInfo" class="text-sm text-slate-500">
                     Exibindo 0 grupos
                 </p>
+
 
                 <div class="flex items-center gap-2">
                     <button id="previousPageBtn" type="button"
@@ -365,9 +431,11 @@
                         Anterior
                     </button>
 
+
                     <span id="pageLabel" class="min-w-24 text-center text-sm text-slate-600">
                         Página 1
                     </span>
+
 
                     <button id="nextPageBtn" type="button"
                         class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm disabled:opacity-50">
@@ -378,12 +446,16 @@
         </section>
     </main>
 
+
     <!-- Modal principal -->
     <div id="groupModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="groupModalTitle">
 
+
         <div class="modal-overlay" data-close-modal="groupModal"></div>
 
+
         <section class="modal-panel modal-panel-xl">
+
 
             <header class="modal-header">
                 <div>
@@ -391,26 +463,32 @@
                         Cadastro administrativo
                     </p>
 
+
                     <h2 id="groupModalTitle" class="mt-1 text-xl font-bold text-slate-900">
                         Novo Grupo de Atendimento
                     </h2>
+
 
                     <p class="mt-1 text-sm text-slate-500">
                         Cadastre e configure um novo grupo de atendimento.
                     </p>
                 </div>
 
+
                 <button type="button" class="modal-close" data-close-modal="groupModal" aria-label="Fechar modal">
                     ×
                 </button>
             </header>
 
+
             <nav class="modal-tabs" role="tablist" aria-label="Seções do grupo">
+
 
                 <button type="button" class="modal-tab is-active" data-tab="general" role="tab" aria-selected="true"
                     aria-controls="panelGeneral">
                     Dados Gerais
                 </button>
+
 
                 <button type="button" class="modal-tab" data-tab="types" role="tab" aria-selected="false"
                     aria-controls="panelTypes">
@@ -418,60 +496,72 @@
                     <span id="typeCount" class="tab-counter">0</span>
                 </button>
 
+
                 <button type="button" class="modal-tab" data-tab="rules" role="tab" aria-selected="false"
                     aria-controls="panelRules">
                     Regras
                 </button>
+
 
                 <button type="button" class="modal-tab" data-tab="schedule" role="tab" aria-selected="false"
                     aria-controls="panelSchedule">
                     Agenda
                 </button>
 
+
                 <button type="button" class="modal-tab" data-tab="flow" role="tab" aria-selected="false"
                     aria-controls="panelFlow">
                     Fluxo
                 </button>
+
 
                 <button type="button" class="modal-tab" data-tab="triage" role="tab" aria-selected="false"
                     aria-controls="panelTriage">
                     Triagem
                 </button>
 
+
                 <button type="button" class="modal-tab" data-tab="channels" role="tab" aria-selected="false"
                     aria-controls="panelChannels">
                     Canais
                 </button>
+
 
                 <button type="button" class="modal-tab" data-tab="units" role="tab" aria-selected="false"
                     aria-controls="panelUnits">
                     Unidades
                 </button>
 
+
                 <button type="button" class="modal-tab" data-tab="professionals" role="tab" aria-selected="false"
                     aria-controls="panelProfessionals">
                     Profissionais
                 </button>
+
 
                 <button type="button" class="modal-tab" data-tab="procedures" role="tab" aria-selected="false"
                     aria-controls="panelProcedures">
                     Procedimentos
                 </button>
 
+
                 <button type="button" class="modal-tab" data-tab="documents" role="tab" aria-selected="false"
                     aria-controls="panelDocuments">
                     Documentos
                 </button>
+
 
                 <button type="button" class="modal-tab" data-tab="resources" role="tab" aria-selected="false"
                     aria-controls="panelResources">
                     Recursos
                 </button>
 
+
                 <button type="button" class="modal-tab" data-tab="agreements" role="tab" aria-selected="false"
                     aria-controls="panelAgreements">
                     Convênios
                 </button>
+
 
                 <button type="button" class="modal-tab" data-tab="audit" role="tab" aria-selected="false"
                     aria-controls="panelAudit">
@@ -479,13 +569,17 @@
                 </button>
             </nav>
 
+
             <form id="groupForm" novalidate>
                 <input id="groupId" type="hidden">
 
+
                 <div class="modal-body">
+
 
                     <!-- Dados gerais -->
                     <section id="panelGeneral" class="tab-panel" data-panel="general" role="tabpanel">
+
 
                         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                             <div>
@@ -493,13 +587,17 @@
                                     Código *
                                 </label>
 
+
                                 <input id="groupCode" type="text" class="form-input bg-slate-100" readonly>
+
 
                                 <p id="groupCodeError" class="field-error"></p>
                             </div>
 
+
                             <div>
                                 <label class="form-label">Status *</label>
+
 
                                 <div class="flex min-h-12 items-center gap-5 rounded-xl border border-slate-300 px-4">
                                     <label class="inline-flex items-center gap-2 text-sm">
@@ -507,38 +605,47 @@
                                         Ativo
                                     </label>
 
+
                                     <label class="inline-flex items-center gap-2 text-sm">
                                         <input id="statusInactive" name="groupStatus" type="radio" value="INACTIVE">
                                         Inativo
                                     </label>
                                 </div>
 
+
                                 <p id="groupStatusError" class="field-error"></p>
                             </div>
+
 
                             <div>
                                 <label for="groupName" class="form-label">
                                     Nome do Grupo *
                                 </label>
 
+
                                 <input id="groupName" type="text" class="form-input"
                                     placeholder="Ex.: Atendimento Ambulatorial">
 
+
                                 <p id="groupNameError" class="field-error"></p>
                             </div>
+
 
                             <div>
                                 <label for="groupShortName" class="form-label">
                                     Nome abreviado
                                 </label>
 
+
                                 <input id="groupShortName" type="text" class="form-input" placeholder="Ex.: AMB">
                             </div>
+
 
                             <div>
                                 <label for="groupCategory" class="form-label">
                                     Categoria *
                                 </label>
+
 
                                 <select id="groupCategory" class="form-input">
                                     <option value="">Selecione uma categoria</option>
@@ -557,25 +664,31 @@
                                     <option value="Outros">Outros</option>
                                 </select>
 
+
                                 <p id="groupCategoryError" class="field-error"></p>
                             </div>
+
 
                             <div>
                                 <label for="groupParent" class="form-label">
                                     Grupo Pai
                                 </label>
 
+
                                 <select id="groupParent" class="form-input">
                                     <option value="">Nenhum — Grupo principal</option>
                                 </select>
 
+
                                 <p id="groupParentError" class="field-error"></p>
                             </div>
+
 
                             <div class="md:col-span-2">
                                 <label for="groupDescription" class="form-label">
                                     Descrição
                                 </label>
+
 
                                 <textarea id="groupDescription" rows="5" class="form-input resize-y"
                                     placeholder="Descreva a finalidade do grupo."></textarea>
@@ -583,8 +696,10 @@
                         </div>
                     </section>
 
+
                     <!-- Tipos -->
                     <section id="panelTypes" class="tab-panel hidden" data-panel="types" role="tabpanel">
+
 
                         <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
@@ -594,10 +709,12 @@
                                 </p>
                             </div>
 
+
                             <button id="addTypeBtn" type="button" class="action-primary">
                                 + Adicionar Tipo
                             </button>
                         </div>
+
 
                         <div id="typesEmptyState"
                             class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-12 text-center">
@@ -609,7 +726,9 @@
                             </p>
                         </div>
 
+
                         <div id="typesTableWrapper" class="hidden overflow-x-auto rounded-xl border border-slate-200">
+
 
                             <table class="min-w-[800px] w-full text-left text-sm">
                                 <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
@@ -624,20 +743,25 @@
                                     </tr>
                                 </thead>
 
+
                                 <tbody id="typesTableBody" class="divide-y divide-slate-100"></tbody>
                             </table>
                         </div>
 
+
                         <p id="typesError" class="field-error"></p>
                     </section>
 
+
                     <!-- Regras -->
                     <section id="panelRules" class="tab-panel hidden" data-panel="rules" role="tabpanel">
+
 
                         <h3 class="section-title">Regras administrativas</h3>
                         <p class="section-description">
                             Configure as regras padrão do grupo.
                         </p>
+
 
                         <div class="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
                             <label class="rule-card"><span><strong>Permite agendamento</strong><small>Disponibiliza o
@@ -681,13 +805,16 @@
                         </div>
                     </section>
 
+
                     <!-- Agenda -->
                     <section id="panelSchedule" class="tab-panel hidden" data-panel="schedule" role="tabpanel">
+
 
                         <h3 class="section-title">Configurações de agenda</h3>
                         <p class="section-description">
                             Valores padrão que podem ser sobrescritos pelo tipo de atendimento.
                         </p>
+
 
                         <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
                             <div><label for="defaultDuration" class="form-label">Duração padrão</label><input
@@ -706,6 +833,7 @@
                                 </select></div>
                         </div>
 
+
                         <div class="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
                             <label class="rule-card"><span><strong>Permite encaixe</strong></span><input
                                     id="scheduleWalkIn" type="checkbox"></label>
@@ -718,13 +846,16 @@
                         </div>
                     </section>
 
+
                     <!-- Fluxo -->
                     <section id="panelFlow" class="tab-panel hidden" data-panel="flow" role="tabpanel">
+
 
                         <h3 class="section-title">Fluxo do atendimento</h3>
                         <p class="section-description">
                             Ative as etapas aplicáveis ao grupo.
                         </p>
+
 
                         <div id="flowSteps" class="mt-5 space-y-3">
                             <label class="flow-step"><span class="flow-step-order">1</span><span
@@ -767,10 +898,12 @@
                         </div>
                     </section>
 
+
                     <!-- Triagem -->
                     <section id="panelTriage" class="tab-panel hidden" data-panel="triage" role="tabpanel">
                         <h3 class="section-title">Triagem</h3>
                         <p class="section-description">Configure os requisitos assistenciais.</p>
+
 
                         <div class="mt-5 space-y-3">
                             <label class="rule-card"><span><strong>Exige triagem</strong><small>A triagem ocorre antes
@@ -788,10 +921,12 @@
                         </div>
                     </section>
 
+
                     <!-- Canais -->
                     <section id="panelChannels" class="tab-panel hidden" data-panel="channels" role="tabpanel">
                         <h3 class="section-title">Canais de atendimento</h3>
                         <p class="section-description">Selecione os canais disponíveis.</p>
+
 
                         <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <label class="selection-card"><input id="channelInPerson" type="checkbox"
@@ -815,10 +950,12 @@
                         </div>
                     </section>
 
+
                     <!-- Unidades -->
                     <section id="panelUnits" class="tab-panel hidden" data-panel="units" role="tabpanel">
                         <h3 class="section-title">Unidades e locais</h3>
                         <p class="section-description">Associe unidades, setores e salas.</p>
+
 
                         <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
                             <div><label for="groupUnits" class="form-label">Unidades</label><select id="groupUnits"
@@ -836,11 +973,13 @@
                         </div>
                     </section>
 
+
                     <!-- Profissionais -->
                     <section id="panelProfessionals" class="tab-panel hidden" data-panel="professionals"
                         role="tabpanel">
                         <h3 class="section-title">Profissionais e especialidades</h3>
                         <p class="section-description">Defina regras de elegibilidade.</p>
+
 
                         <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
                             <div><label for="groupSpecialties" class="form-label">Especialidades</label><select
@@ -851,6 +990,7 @@
                         </div>
                     </section>
 
+
                     <!-- Procedimentos -->
                     <section id="panelProcedures" class="tab-panel hidden" data-panel="procedures" role="tabpanel">
                         <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -859,16 +999,19 @@
                                 <p class="section-description">Associe procedimentos ao grupo.</p>
                             </div>
 
+
                             <button id="addProcedureBtn" type="button" class="action-primary">
                                 + Associar Procedimento
                             </button>
                         </div>
+
 
                         <div id="proceduresEmptyState"
                             class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-12 text-center">
                             <h4 class="font-semibold text-slate-800">Nenhum procedimento associado</h4>
                             <p class="mt-1 text-sm text-slate-500">Associe procedimentos compatíveis.</p>
                         </div>
+
 
                         <div id="proceduresTableWrapper"
                             class="hidden overflow-x-auto rounded-xl border border-slate-200">
@@ -888,6 +1031,7 @@
                         </div>
                     </section>
 
+
                     <!-- Documentos -->
                     <section id="panelDocuments" class="tab-panel hidden" data-panel="documents" role="tabpanel">
                         <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -896,15 +1040,18 @@
                                 <p class="section-description">Configure documentos e componentes assistenciais.</p>
                             </div>
 
+
                             <button id="addDocumentBtn" type="button" class="action-primary">
                                 + Adicionar Documento
                             </button>
                         </div>
 
+
                         <div id="documentsEmptyState"
                             class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center">
                             <p class="font-medium text-slate-700">Nenhum documento associado.</p>
                         </div>
+
 
                         <div id="documentsTableWrapper"
                             class="hidden overflow-x-auto rounded-xl border border-slate-200">
@@ -921,6 +1068,7 @@
                                 <tbody id="documentsTableBody" class="divide-y divide-slate-100"></tbody>
                             </table>
                         </div>
+
 
                         <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <label class="selection-card"><input id="recordAnamnesis"
@@ -942,10 +1090,12 @@
                         </div>
                     </section>
 
+
                     <!-- Recursos -->
                     <section id="panelResources" class="tab-panel hidden" data-panel="resources" role="tabpanel">
                         <h3 class="section-title">Recursos</h3>
                         <p class="section-description">Associe recursos físicos e humanos.</p>
+
 
                         <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-3">
                             <div><label for="resourceRooms" class="form-label">Salas</label><select id="resourceRooms"
@@ -962,10 +1112,12 @@
                         </div>
                     </section>
 
+
                     <!-- Convênios -->
                     <section id="panelAgreements" class="tab-panel hidden" data-panel="agreements" role="tabpanel">
                         <h3 class="section-title">Convênios e modalidades</h3>
                         <p class="section-description">Configure as modalidades aceitas.</p>
+
 
                         <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <label class="selection-card"><input id="agreementPrivate" type="checkbox"
@@ -982,6 +1134,7 @@
                                     value="Outros"><span><strong>Outros</strong></span></label>
                         </div>
 
+
                         <div class="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
                             <label class="rule-card"><span><strong>Exige carteirinha</strong></span><input
                                     id="agreementCardRequired" type="checkbox"></label>
@@ -994,10 +1147,12 @@
                         </div>
                     </section>
 
+
                     <!-- Auditoria -->
                     <section id="panelAudit" class="tab-panel hidden" data-panel="audit" role="tabpanel">
                         <h3 class="section-title">Auditoria</h3>
                         <p class="section-description">Histórico das alterações realizadas.</p>
+
 
                         <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div class="audit-field">
@@ -1005,21 +1160,25 @@
                                 <strong id="auditUser">—</strong>
                             </div>
 
+
                             <div class="audit-field">
                                 <span>Data da alteração</span>
                                 <strong id="auditDate">—</strong>
                             </div>
                         </div>
 
+
                         <ol id="auditTimeline" class="audit-timeline mt-6">
                         </ol>
                     </section>
                 </div>
 
+
                 <footer class="modal-footer">
                     <button type="button" class="action-secondary" data-close-modal="groupModal">
                         Cancelar
                     </button>
+
 
                     <button id="saveGroupBtn" type="submit" class="action-primary">
                         <span class="btn-label">Salvar Grupo</span>
@@ -1030,10 +1189,13 @@
         </section>
     </div>
 
+
     <!-- Modal de tipos -->
     <div id="typeModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="typeModalTitle">
 
+
         <div class="modal-overlay" data-close-modal="typeModal"></div>
+
 
         <section class="modal-panel modal-panel-lg">
             <header class="modal-header">
@@ -1042,15 +1204,18 @@
                         Associar Tipos de Atendimento
                     </h2>
 
+
                     <p class="mt-1 text-sm text-slate-500">
                         Selecione os tipos que farão parte do grupo.
                     </p>
                 </div>
 
+
                 <button type="button" class="modal-close" data-close-modal="typeModal" aria-label="Fechar modal">
                     ×
                 </button>
             </header>
+
 
             <div class="modal-body">
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -1059,14 +1224,17 @@
                             Pesquisar tipo
                         </label>
 
+
                         <input id="typeSearch" type="search" class="form-input"
                             placeholder="Pesquisar por nome ou código...">
                     </div>
+
 
                     <div>
                         <label for="typeSpecialtyFilter" class="form-label">
                             Especialidade
                         </label>
+
 
                         <select id="typeSpecialtyFilter" class="form-input">
                             <option value="">Todas</option>
@@ -1074,19 +1242,23 @@
                     </div>
                 </div>
 
+
                 <div class="mt-5 flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
                     <label class="inline-flex items-center gap-2 text-sm">
                         <input id="selectAllTypes" type="checkbox">
                         Selecionar todos
                     </label>
 
+
                     <span id="selectedTypeCount" class="text-sm text-slate-500">
                         0 tipos selecionados
                     </span>
                 </div>
 
+
                 <div id="typeResults" class="mt-4 max-h-96 space-y-2 overflow-y-auto" role="listbox">
                 </div>
+
 
                 <div id="typeResultsEmpty" class="hidden py-10 text-center">
                     <p class="font-semibold text-slate-800">
@@ -1095,10 +1267,12 @@
                 </div>
             </div>
 
+
             <footer class="modal-footer">
                 <button type="button" class="action-secondary" data-close-modal="typeModal">
                     Cancelar
                 </button>
+
 
                 <button id="associateTypesBtn" type="button" class="action-primary" disabled>
                     Associar selecionados
@@ -1107,10 +1281,13 @@
         </section>
     </div>
 
+
     <!-- Modal de procedimentos -->
     <div id="procedureModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="procedureModalTitle">
 
+
         <div class="modal-overlay" data-close-modal="procedureModal"></div>
+
 
         <section class="modal-panel modal-panel-lg">
             <header class="modal-header">
@@ -1119,15 +1296,18 @@
                         Associar Procedimentos
                     </h2>
 
+
                     <p class="mt-1 text-sm text-slate-500">
                         Selecione os procedimentos compatíveis.
                     </p>
                 </div>
 
+
                 <button type="button" class="modal-close" data-close-modal="procedureModal" aria-label="Fechar modal">
                     ×
                 </button>
             </header>
+
 
             <div class="modal-body">
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -1136,14 +1316,17 @@
                             Pesquisar procedimento
                         </label>
 
+
                         <input id="procedureSearch" type="search" class="form-input"
                             placeholder="Pesquisar por nome ou código...">
                     </div>
+
 
                     <div>
                         <label for="procedureSpecialtyFilter" class="form-label">
                             Especialidade
                         </label>
+
 
                         <select id="procedureSpecialtyFilter" class="form-input">
                             <option value="">Todas</option>
@@ -1151,19 +1334,23 @@
                     </div>
                 </div>
 
+
                 <div class="mt-5 flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
                     <label class="inline-flex items-center gap-2 text-sm">
                         <input id="selectAllProcedures" type="checkbox">
                         Selecionar todos
                     </label>
 
+
                     <span id="selectedProcedureCount" class="text-sm text-slate-500">
                         0 procedimentos selecionados
                     </span>
                 </div>
 
+
                 <div id="procedureResults" class="mt-4 max-h-96 space-y-2 overflow-y-auto" role="listbox">
                 </div>
+
 
                 <div id="procedureResultsEmpty" class="hidden py-10 text-center">
                     <p class="font-semibold text-slate-800">
@@ -1172,10 +1359,12 @@
                 </div>
             </div>
 
+
             <footer class="modal-footer">
                 <button type="button" class="action-secondary" data-close-modal="procedureModal">
                     Cancelar
                 </button>
+
 
                 <button id="associateProceduresBtn" type="button" class="action-primary" disabled>
                     Associar selecionados
@@ -1184,10 +1373,13 @@
         </section>
     </div>
 
+
     <!-- Modal de documento -->
     <div id="documentModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="documentModalTitle">
 
+
         <div class="modal-overlay" data-close-modal="documentModal"></div>
+
 
         <section class="modal-panel modal-panel-md">
             <header class="modal-header">
@@ -1196,15 +1388,18 @@
                         Adicionar Documento
                     </h2>
 
+
                     <p class="mt-1 text-sm text-slate-500">
                         Configure o documento do grupo.
                     </p>
                 </div>
 
+
                 <button type="button" class="modal-close" data-close-modal="documentModal" aria-label="Fechar modal">
                     ×
                 </button>
             </header>
+
 
             <form id="documentForm" novalidate>
                 <div class="modal-body space-y-5">
@@ -1213,16 +1408,20 @@
                             Nome do documento *
                         </label>
 
+
                         <input id="documentName" type="text" class="form-input"
                             placeholder="Ex.: Termo de Consentimento">
 
+
                         <p id="documentNameError" class="field-error"></p>
                     </div>
+
 
                     <div>
                         <label for="documentType" class="form-label">
                             Tipo
                         </label>
+
 
                         <select id="documentType" class="form-input">
                             <option value="Termo">Termo</option>
@@ -1233,10 +1432,12 @@
                         </select>
                     </div>
 
+
                     <div>
                         <label for="documentMoment" class="form-label">
                             Momento da coleta
                         </label>
+
 
                         <select id="documentMoment" class="form-input">
                             <option value="Agendamento">Agendamento</option>
@@ -1247,20 +1448,24 @@
                         </select>
                     </div>
 
+
                     <label class="rule-card">
                         <span>
                             <strong>Documento obrigatório</strong>
                             <small>Exigir antes da etapa configurada.</small>
                         </span>
 
+
                         <input id="documentRequired" type="checkbox">
                     </label>
                 </div>
+
 
                 <footer class="modal-footer">
                     <button type="button" class="action-secondary" data-close-modal="documentModal">
                         Cancelar
                     </button>
+
 
                     <button type="submit" class="action-primary">
                         Adicionar Documento
@@ -1270,10 +1475,13 @@
         </section>
     </div>
 
+
     <!-- Modal de confirmação -->
     <div id="confirmModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
 
+
         <div class="modal-overlay" data-close-modal="confirmModal"></div>
+
 
         <section class="modal-panel modal-panel-sm">
             <header class="modal-header">
@@ -1282,10 +1490,12 @@
                         Confirmar ação
                     </h2>
 
+
                     <p id="confirmModalMessage" class="mt-2 text-sm leading-6 text-slate-600">
                         Confirme esta operação para continuar.
                     </p>
                 </div>
+
 
                 <button type="button" class="modal-close" data-close-modal="confirmModal"
                     aria-label="Fechar confirmação">
@@ -1293,10 +1503,12 @@
                 </button>
             </header>
 
+
             <footer class="modal-footer">
                 <button type="button" class="action-secondary" data-close-modal="confirmModal">
                     Cancelar
                 </button>
+
 
                 <button id="confirmActionBtn" type="button"
                     class="inline-flex min-h-12 items-center justify-center rounded-xl bg-red-600 px-5 font-semibold text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2">
@@ -1306,11 +1518,14 @@
         </section>
     </div>
 
+
     <div id="toastArea" class="fixed right-4 top-4 z-[130] flex w-[min(380px,calc(100vw-2rem))] flex-col gap-3"
         aria-live="polite" aria-atomic="true">
     </div>
 
+
     <script src="grupo-de-atendimento.js" defer></script>
 </body>
+
 
 </html>
