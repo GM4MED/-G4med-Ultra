@@ -374,8 +374,9 @@ select:focus-visible {
    ========================================================= */
 
 .page {
-    max-width: 1640px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
     padding: 24px 28px;
 }
 

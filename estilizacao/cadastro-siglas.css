@@ -54,8 +54,8 @@ body {
 
 .container {
     width: 100%;
-    max-width: 1400px;
-    margin: auto;
+    max-width: 100%;
+    margin: 0;
 }
 
 /* =========================================================
@@ -568,7 +568,7 @@ body {
 @media(min-width:1600px) {
 
     .container {
-        max-width: 1550px;
+        max-width: 100%;
     }
 
     html {
